@@ -31,7 +31,7 @@ using namespace Microsoft::WRL;
 #include <DirectXMath.h>
 
 // D3D12 extension library.
-#include "Engine/d3dx12.h"
+#include "d3dx12.h"
 
 // STL Headers
 #include <algorithm>B
@@ -41,4 +41,4 @@ using namespace Microsoft::WRL;
 #include <memory>
 
 // Helper functions
-#include "Engine/Helpers.h"
+#include "Helpers.h"

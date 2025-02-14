@@ -129,29 +129,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BianGame.cpp" />
-    <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="DX12GE.cpp" />
-    <ClCompile Include="DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Application.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="HighResolutionClock.cpp" />
-    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Engine\CommandQueue.cpp" />
+    <ClCompile Include="Engine\DX12LibPCH.cpp" />
+    <ClCompile Include="Engine\Game.cpp" />
+    <ClCompile Include="Engine\HighResolutionClock.cpp" />
+    <ClCompile Include="Engine\Window.cpp" />
+    <ClCompile Include="Game\BianGame.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BianGame.h" />
-    <ClInclude Include="CommandQueue.h" />
-    <ClInclude Include="DX12LibPCH.h" />
     <ClInclude Include="Engine\Application.h" />
+    <ClInclude Include="Engine\CommandQueue.h" />
     <ClInclude Include="Engine\d3dx12.h" />
+    <ClInclude Include="Engine\DX12LibPCH.h" />
+    <ClInclude Include="Engine\Events.h" />
+    <ClInclude Include="Engine\Game.h" />
     <ClInclude Include="Engine\Helpers.h" />
+    <ClInclude Include="Engine\HighResolutionClock.h" />
+    <ClInclude Include="Engine\KeyCodes.h" />
     <ClInclude Include="Engine\resource.h" />
-    <ClInclude Include="Events.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="HighResolutionClock.h" />
-    <ClInclude Include="KeyCodes.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="Engine\Window.h" />
+    <ClInclude Include="Game\BianGame.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc" />

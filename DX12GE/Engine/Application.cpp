@@ -1,9 +1,9 @@
 #include "Application.h"
 #include "resource.h"
 
-#include "../Window.h"
-#include "../CommandQueue.h"
-#include "../Game.h"
+#include "Window.h"
+#include "CommandQueue.h"
+#include "Game.h"
 
 constexpr wchar_t WINDOW_CLASS_NAME[] = L"DX12RenderWindowClass";
 

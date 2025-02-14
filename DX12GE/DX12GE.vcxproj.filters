@@ -30,29 +30,29 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DX12GE.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Application.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="DX12LibPCH.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
+    <ClCompile Include="DX12GE.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="CommandQueue.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="HighResolutionClock.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="BianGame.cpp">
+    <ClCompile Include="Game\BianGame.cpp">
       <Filter>Исходные файлы\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\CommandQueue.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\DX12LibPCH.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Game.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\HighResolutionClock.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Window.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,31 +68,28 @@
     <ClInclude Include="Engine\Application.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="DX12LibPCH.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="CommandQueue.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Events.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyCodes.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="HighResolutionClock.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="BianGame.h">
+    <ClInclude Include="Game\BianGame.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="Engine\CommandQueue.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\DX12LibPCH.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Window.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Game.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\HighResolutionClock.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Events.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\KeyCodes.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>

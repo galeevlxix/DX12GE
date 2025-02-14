@@ -3,7 +3,7 @@
 #include <Shlwapi.h>
 
 #include "Engine/Application.h"
-#include "BianGame.h"
+#include "Game/BianGame.h"
 
 #include <dxgidebug.h>
 

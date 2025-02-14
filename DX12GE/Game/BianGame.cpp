@@ -1,12 +1,12 @@
 #include "BianGame.h"
 
-#include "Engine/Application.h"
-#include "CommandQueue.h"
-#include "Engine/Helpers.h"
+#include "../Engine/Application.h"
+#include "../Engine/CommandQueue.h"
+#include "../Engine/Helpers.h"
 
 using namespace Microsoft::WRL;
 
-#include "Engine/d3dx12.h"
+#include "../Engine/d3dx12.h"
 #include <d3dcompiler.h>
 
 #include <algorithm> // For std::min and std::max.

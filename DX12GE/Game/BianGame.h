@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Game.h"
-#include "Window.h"
+#include "../Engine/Game.h"
+#include "../Engine/Window.h"
 
 #include <DirectXMath.h>
 
