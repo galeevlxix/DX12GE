@@ -10,10 +10,21 @@ struct VertexPosColor
     XMFLOAT3 Color;
 };
 
+class Vector3
+{
+public:
+    float X;
+    float Y;
+    float Z;
+
+    void Set(float x, float y, float z);
+    void Increase(float dx, float dy, float dz);
+};
+
 class BaseObject
 {
 public:
-    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x, float y, float z);
     void OnUpdate(double totalTime);
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
 
@@ -26,11 +37,15 @@ public:
 
 private:
     XMMATRIX m_ModelMatrix;
-    XMMATRIX m_PositionMatrix;
+    /*XMMATRIX m_PositionMatrix;
     XMMATRIX m_RotationXMatrix;
     XMMATRIX m_RotationYMatrix;
     XMMATRIX m_RotationZMatrix;
-    XMMATRIX m_ScaleMatrix;
+    XMMATRIX m_ScaleMatrix; */
+
+    Vector3 m_Position;
+    Vector3 m_Rotation;
+    Vector3 m_Scale;
 
     // Vertex buffer for the cube.
     ComPtr<ID3D12Resource> m_VertexBuffer;

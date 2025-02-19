@@ -88,9 +88,7 @@ void BianGame::UpdateBufferResource(
         subresourceData.RowPitch = bufferSize;
         subresourceData.SlicePitch = subresourceData.RowPitch;
 
-        UpdateSubresources(commandList.Get(),
-            *pDestinationResource, *pIntermediateResource,
-            0, 0, 1, &subresourceData);
+        UpdateSubresources(commandList.Get(), *pDestinationResource, *pIntermediateResource, 0, 0, 1, &subresourceData);
     }
 }
 
@@ -100,7 +98,8 @@ bool BianGame::LoadContent()
     auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-    myObj.OnLoad(commandList);
+    myObj.OnLoad(commandList, -2, 0, 0);
+    myObj2.OnLoad(commandList, 2, 0, 0);
 
     // Create the descriptor heap for the depth-stencil view
     D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
@@ -272,6 +271,7 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     }
 
     myObj.OnUpdate(e.TotalTime);
+    myObj2.OnUpdate(e.TotalTime);
 
     // Update the view matrix
     const XMVECTOR eyePosition = XMVectorSet(0, 0, -10, 1);
@@ -333,6 +333,7 @@ void BianGame::OnRender(RenderEventArgs& e)
     commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
     myObj.OnRender(commandList, m_ViewMatrix, m_ProjectionMatrix);
+    myObj2.OnRender(commandList, m_ViewMatrix, m_ProjectionMatrix);
 
     // Present
     {

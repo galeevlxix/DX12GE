@@ -68,6 +68,7 @@ private:
     D3D12_RECT m_ScissorRect;
 
     BaseObject myObj;
+    BaseObject myObj2;
 
     float m_FoV;
 

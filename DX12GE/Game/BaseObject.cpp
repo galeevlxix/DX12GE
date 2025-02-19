@@ -2,6 +2,8 @@
 
 #include "../Engine/Application.h"
 
+#define PI 3.1415926535f
+
 void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
 {
     auto device = Application::Get().GetDevice();
@@ -28,13 +30,11 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
         subresourceData.RowPitch = bufferSize;
         subresourceData.SlicePitch = subresourceData.RowPitch;
 
-        UpdateSubresources(commandList.Get(),
-            *pDestinationResource, *pIntermediateResource,
-            0, 0, 1, &subresourceData);
+        UpdateSubresources(commandList.Get(), *pDestinationResource, *pIntermediateResource, 0, 0, 1, &subresourceData);
     }
 }
 
-void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x, float y, float z)
 {
     // Загрузить данные вершинного буфера
     UpdateBufferResource(commandList, &m_VertexBuffer, &intermediateVertexBuffer, _countof(m_Vertices), sizeof(VertexPosColor), m_Vertices);
@@ -52,8 +52,8 @@ void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
     m_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
     m_IndexBufferView.SizeInBytes = sizeof(m_Indicies);
 
-    SetPosition(-2, 0, 0);
-    SetRotation(0, 0, 0);
+    SetPosition(x, y, z);
+    SetRotation(PI / 4, 0, 0);
     SetScale(1, 1, 1);
 }
 
@@ -64,7 +64,12 @@ void BaseObject::OnUpdate(double totalTime)
     //const XMVECTOR rotationAxis = XMVectorSet(1, 0, 0, 0);
     //m_ModelMatrix = XMMatrixRotationAxis(rotationAxis, XMConvertToRadians(angle));
 
-    m_ModelMatrix = m_ScaleMatrix * m_RotationXMatrix * m_RotationYMatrix * m_RotationZMatrix * m_PositionMatrix;
+   m_ModelMatrix = 
+       XMMatrixScaling(m_Scale.X, m_Scale.Y, m_Scale.Z) *
+       XMMatrixRotationX(m_Rotation.X) *
+       XMMatrixRotationY(m_Rotation.Y) *
+       XMMatrixRotationZ(m_Rotation.Z) *
+       XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z);
 } 
 
 void BaseObject::TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
@@ -89,7 +94,7 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
 
 void BaseObject::SetPosition(float x, float y, float z)
 {
-    m_PositionMatrix = XMMatrixTranslation(x, y, z);
+    m_Position.Set(x, y, z);
 }
 
 void BaseObject::SetRotation(float angleX, float angleY, float angleZ)
@@ -101,22 +106,38 @@ void BaseObject::SetRotation(float angleX, float angleY, float angleZ)
 
 void BaseObject::SetRotationX(float angleX)
 {
-    m_RotationXMatrix = XMMatrixRotationX(angleX);
+    //m_RotationXMatrix = ;
+    m_Rotation.X = angleX;
 }
 
 void BaseObject::SetRotationY(float angleY)
 {
-    m_RotationYMatrix = XMMatrixRotationY(angleY);
+    //m_RotationYMatrix = ;
+    m_Rotation.Y = angleY;
 }
 
 void BaseObject::SetRotationZ(float angleZ)
 {
-    m_RotationZMatrix = XMMatrixRotationZ(angleZ);
+    //m_RotationZMatrix = ;
+    m_Rotation.Z = angleZ;
 }
-
 
 void BaseObject::SetScale(float x, float y, float z)
 {
-    m_ScaleMatrix = XMMatrixScaling(x, y, z);
+    //m_ScaleMatrix = ;
+    m_Scale.Set(x, y, z);
 }
 
+void Vector3::Set(float x, float y, float z)
+{
+    X = x;
+    Y = y;
+    Z = z;
+}
+
+void Vector3::Increase(float dx, float dy, float dz)
+{
+    X += dx;
+    Y += dy;
+    Z += dz;
+}
