@@ -75,7 +75,7 @@ public:
     /**
      * Get the Direct3D 12 device
      */
-    Microsoft::WRL::ComPtr<ID3D12Device2> GetDevice() const;
+    ComPtr<ID3D12Device2> GetDevice() const;
     /**
      * Get a command queue. Valid types are:
      * - D3D12_COMMAND_LIST_TYPE_DIRECT : Can be used for draw, dispatch, or copy commands.
@@ -87,7 +87,7 @@ public:
     // Flush all command queues.
     void Flush();
 
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type);
+    ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type);
     UINT GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type) const;
 
 protected:
@@ -97,8 +97,8 @@ protected:
     // Destroy the application instance and all windows associated with this application.
     virtual ~Application();
 
-    Microsoft::WRL::ComPtr<IDXGIAdapter4> GetAdapter(bool bUseWarp);
-    Microsoft::WRL::ComPtr<ID3D12Device2> CreateDevice(Microsoft::WRL::ComPtr<IDXGIAdapter4> adapter);
+    ComPtr<IDXGIAdapter4> GetAdapter(bool bUseWarp);
+    ComPtr<ID3D12Device2> CreateDevice(ComPtr<IDXGIAdapter4> adapter);
     bool CheckTearingSupport();
 
 private:
@@ -108,8 +108,8 @@ private:
     // The application instance handle that this application was created with.
     HINSTANCE m_hInstance;
 
-    Microsoft::WRL::ComPtr<IDXGIAdapter4> m_dxgiAdapter;
-    Microsoft::WRL::ComPtr<ID3D12Device2> m_d3d12Device;
+    ComPtr<IDXGIAdapter4> m_dxgiAdapter;
+    ComPtr<ID3D12Device2> m_d3d12Device;
 
     std::shared_ptr<CommandQueue> m_DirectCommandQueue;
     std::shared_ptr<CommandQueue> m_ComputeCommandQueue;

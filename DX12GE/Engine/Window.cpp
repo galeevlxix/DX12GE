@@ -1,4 +1,3 @@
-#include "DX12LibPCH.h"
 #include "Application.h"
 #include "CommandQueue.h"
 #include "Window.h"

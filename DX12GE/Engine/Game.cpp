@@ -1,15 +1,11 @@
-#include "DX12LibPCH.h"
+#include "Game.h"
 
 #include "Application.h"
-#include "Game.h"
 #include "Window.h"
 
-Game::Game(const std::wstring& name, int width, int height, bool vSync)
-    : m_Name(name)
-    , m_Width(width)
-    , m_Height(height)
-    , m_vSync(vSync)
+Game::Game(const std::wstring& name, int width, int height, bool vSync) : m_Name(name), m_Width(width), m_Height(height), m_vSync(vSync)
 {
+
 }
 
 Game::~Game()
