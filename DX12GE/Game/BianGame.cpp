@@ -270,8 +270,8 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
         totalTime = 0.0;
     }
 
-    myObj.OnUpdate(e.TotalTime);
-    myObj2.OnUpdate(e.TotalTime);
+    myObj.OnUpdate(e.ElapsedTime);
+    myObj2.OnUpdate(e.ElapsedTime);
 
     // Update the view matrix
     const XMVECTOR eyePosition = XMVectorSet(0, 0, -10, 1);

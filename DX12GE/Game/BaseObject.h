@@ -29,6 +29,7 @@ public:
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
 
     void SetPosition(float x, float y, float z);
+    void Move(float dx, float dy, float dz);
     void SetRotation(float x, float y, float z);
     void SetRotationX(float value);
     void SetRotationY(float value);

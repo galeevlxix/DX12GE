@@ -53,24 +53,9 @@ void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x,
     m_IndexBufferView.SizeInBytes = sizeof(m_Indicies);
 
     SetPosition(x, y, z);
-    SetRotation(PI / 4, 0, 0);
+    SetRotation(0, 0, 0);
     SetScale(1, 1, 1);
 }
-
-void BaseObject::OnUpdate(double totalTime)
-{
-   // float rotation_speed = 180.0f;
-    //float angle = static_cast<float>(totalTime * rotation_speed);
-    //const XMVECTOR rotationAxis = XMVectorSet(1, 0, 0, 0);
-    //m_ModelMatrix = XMMatrixRotationAxis(rotationAxis, XMConvertToRadians(angle));
-
-   m_ModelMatrix = 
-       XMMatrixScaling(m_Scale.X, m_Scale.Y, m_Scale.Z) *
-       XMMatrixRotationX(m_Rotation.X) *
-       XMMatrixRotationY(m_Rotation.Y) *
-       XMMatrixRotationZ(m_Rotation.Z) *
-       XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z);
-} 
 
 void BaseObject::TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
 {
@@ -92,9 +77,27 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
     commandList->DrawIndexedInstanced(_countof(m_Indicies), 1, 0, 0, 0);
 }
 
+void BaseObject::OnUpdate(double deltaTime)
+{
+    /*float cubeSpeed = 1;
+    Move(0, cubeSpeed * deltaTime, 0);*/
+
+    m_ModelMatrix =
+        XMMatrixScaling(m_Scale.X, m_Scale.Y, m_Scale.Z) *
+        XMMatrixRotationX(m_Rotation.X) *
+        XMMatrixRotationY(m_Rotation.Y) *
+        XMMatrixRotationZ(m_Rotation.Z) *
+        XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z);
+}
+
 void BaseObject::SetPosition(float x, float y, float z)
 {
     m_Position.Set(x, y, z);
+}
+
+void BaseObject::Move(float dx, float dy, float dz)
+{
+    m_Position.Increase(dx, dy, dz);
 }
 
 void BaseObject::SetRotation(float angleX, float angleY, float angleZ)
@@ -106,25 +109,21 @@ void BaseObject::SetRotation(float angleX, float angleY, float angleZ)
 
 void BaseObject::SetRotationX(float angleX)
 {
-    //m_RotationXMatrix = ;
     m_Rotation.X = angleX;
 }
 
 void BaseObject::SetRotationY(float angleY)
 {
-    //m_RotationYMatrix = ;
     m_Rotation.Y = angleY;
 }
 
 void BaseObject::SetRotationZ(float angleZ)
 {
-    //m_RotationZMatrix = ;
     m_Rotation.Z = angleZ;
 }
 
 void BaseObject::SetScale(float x, float y, float z)
 {
-    //m_ScaleMatrix = ;
     m_Scale.Set(x, y, z);
 }
 
