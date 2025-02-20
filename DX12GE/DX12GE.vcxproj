@@ -139,7 +139,6 @@
     <ClCompile Include="Game\BaseObject.cpp" />
     <ClCompile Include="Game\BianGame.cpp" />
     <ClCompile Include="Resource.cpp" />
-    <ClCompile Include="VertexBufferObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Application.h" />
@@ -156,7 +155,6 @@
     <ClInclude Include="Game\BaseObject.h" />
     <ClInclude Include="Game\BianGame.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="VertexBufferObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc" />

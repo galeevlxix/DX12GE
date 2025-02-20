@@ -27,7 +27,7 @@ public:
 class BaseObject
 {
 public:
-    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x, float y, float z);
+    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x, float y, float z, bool isWhite);
     void OnUpdate(double deltaTime);
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
 

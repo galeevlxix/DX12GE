@@ -34,8 +34,16 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
     }
 }
 
-void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x, float y, float z)
+void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x, float y, float z, bool isWhite)
 {
+    if (isWhite)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            m_Vertices[i].Color = XMFLOAT3(1, 1, 1);
+        }
+    }
+
     // Загрузить данные вершинного буфера
     UpdateBufferResource(commandList, &m_VertexBuffer, &intermediateVertexBuffer, _countof(m_Vertices), sizeof(VertexPosColor), m_Vertices);
 

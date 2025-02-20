@@ -43,6 +43,8 @@ bool BianGame::LoadContent()
 
     ball.OnLoad(commandList);
 
+    wall.OnLoad(commandList);
+
     // Create the descriptor heap for the depth-stencil view
     D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
     dsvHeapDesc.NumDescriptors = 1;
@@ -217,6 +219,8 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     
     ball.OnUpdate(e.ElapsedTime, &lRacket, &rRacket);
 
+    wall.OnUpdate(e.ElapsedTime);
+
     // Update the view matrix
     const XMVECTOR eyePosition = XMVectorSet(0, 0, -10, 1);
     const XMVECTOR focusPoint = XMVectorSet(0, 0, 0, 1);
@@ -282,6 +286,8 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     ball.OnRender(commandList, m_ViewMatrix, m_ProjectionMatrix);
 
+    wall.OnRender(commandList, m_ViewMatrix, m_ProjectionMatrix);
+
     // Present
     {
         TransitionResource(commandList, backBuffer,D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -312,17 +318,29 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
         break;
 
     case KeyCode::W:
-        lRacket.Move(1);
+        lRacket.Move(0, 1);
         break;
     case KeyCode::S:
-        lRacket.Move(-1);
+        lRacket.Move(0, -1);
+        break;
+    case KeyCode::A:
+        lRacket.Move(-1, 0);
+        break;
+    case KeyCode::D:
+        lRacket.Move(1, 0); 
         break;
 
     case KeyCode::Up:
-        rRacket.Move(1);
+        rRacket.Move(0, 1);
         break;
     case KeyCode::Down:
-        rRacket.Move(-1);
+        rRacket.Move(0, -1);
+        break;
+    case KeyCode::Left:
+        rRacket.Move(-1, 0);
+        break;
+    case KeyCode::Right:
+        rRacket.Move(1, 0);
         break;
     }
 }
@@ -338,6 +356,15 @@ void BianGame::OnMouseWheel(MouseWheelEventArgs& e)
 }
 
 
+bool Racket::CheckXBorder(float dx, bool isLeft)
+{
+    if (isLeft)
+    {
+        return !((dx < 0 && GetPosition().X == -borderX) || (dx > 0 && GetPosition().X == -1));
+    }
+    return !((dx > 0 && GetPosition().X == borderX) || (dx < 0 && GetPosition().X == 1));
+}
+
 bool Racket::CheckYBorder(float dy)
 {
     return !((dy > 0 && cubes[length - 1].GetPosition().Y == borderY) || (dy < 0 && cubes[0].GetPosition().Y == -borderY));
@@ -350,7 +377,7 @@ void Racket::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, bool left)
 
     for (int i = 0; i < length; i++)
     {
-        cubes[i].OnLoad(commandList, xPos, yPos + i - 2, 10);
+        cubes[i].OnLoad(commandList, xPos, yPos + i - 2, 10, true);
     }
 }
 
@@ -370,38 +397,44 @@ void Racket::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX v
     }
 }
 
-void Racket::Move(float dy)
+void Racket::Move(float dx, float dy)
 {
-    if (CheckYBorder(dy))
+    if (dy != 0 && CheckYBorder(dy))
     {
         for (int i = 0; i < length; i++)
         {
             cubes[i].Move(0, dy, 0);
         }
-    }        
+    }       
+
+    if (dx != 0 && CheckXBorder(dx, GetPosition().X < 0))
+    {
+        for (int i = 0; i < length; i++)
+        {
+            cubes[i].Move(dx, 0, 0);
+        }
+    }
 }
 
 void Racket::SetStartPosition()
 {
     for (int i = 0; i < length; i++)
     {
-        cubes[i].SetPosition(cubes[i].GetPosition().X, i - 2, cubes[i].GetPosition().Z);
+        cubes[i].SetPosition(GetPosition().X < 0 ? -borderX : borderX, i - 2, cubes[i].GetPosition().Z);
     }
 }
 
 Vector3 Racket::GetNewDirection(Vector3 ballPos, Vector3 direction)
 {
-    if (ballPos.Y <= cubes[2].GetPosition().Y + 2.5f && ballPos.Y >= cubes[2].GetPosition().Y - 2.5f)
-    {
-        float coef = ballPos.Y - cubes[2].GetPosition().Y;
-        Vector3 newDir = direction;
-        newDir.X = -newDir.X;
-        newDir.Y = coef / 2.5f;
+    float coef = ballPos.Y - GetPosition().Y;
+    Vector3 newDir;
+    newDir.Set(-direction.X, coef / 2.5f, direction.Z);
+    return newDir;
+}
 
-        return newDir;
-    }
-    
-    return direction;
+Vector3 Racket::GetPosition()
+{
+    return cubes[2].GetPosition();
 }
 
 void Ball::CheckYBorder()
@@ -414,11 +447,19 @@ void Ball::CheckYBorder()
 
 void Ball::CheckRackets(Racket* left, Racket* right)
 {
-    if (direction.X < 0 && cube.GetPosition().X <= -borderX + 1)
+    if (direction.X < 0 && 
+        cube.GetPosition().X <= left->GetPosition().X + 1 && 
+        cube.GetPosition().X >= left->GetPosition().X - 1 &&
+        cube.GetPosition().Y <= left->GetPosition().Y + 2.5f &&
+        cube.GetPosition().Y >= left->GetPosition().Y - 2.5f)
     {
         direction = left->GetNewDirection(cube.GetPosition(), direction);
     }
-    else if (direction.X > 0 && cube.GetPosition().X >= borderX - 1)
+    else if (direction.X > 0 &&
+        cube.GetPosition().X >= right->GetPosition().X - 1 &&
+        cube.GetPosition().X <= right->GetPosition().X + 1 &&
+        cube.GetPosition().Y <= right->GetPosition().Y + 2.5f &&
+        cube.GetPosition().Y >= right->GetPosition().Y - 2.5f)
     {
         direction = right->GetNewDirection(cube.GetPosition(), direction);
     }
@@ -468,13 +509,13 @@ void Ball::CheckXBorder(Racket* left, Racket* right)
     Vector3 newDir = GetRandomDirection();
     direction.Set(newDir.X, newDir.Y, newDir.Z);
 
-    speed = 8;
+    speed = 6;
 }
 
 void Ball::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
     srand(time(0));
-    cube.OnLoad(commandList, 0, 0, 10);
+    cube.OnLoad(commandList, 0, 0, 10, false);
     Vector3 newDir = GetRandomDirection();
     direction.Set(newDir.X, newDir.Y, newDir.Z);   
 }
@@ -492,4 +533,42 @@ void Ball::OnUpdate(double deltaTime, Racket* left, Racket* right)
 void Ball::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 {
     cube.OnRender(commandList, viewMatrix, projectionMatrix);
+}
+
+void Wall::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
+{
+    float centerX = 0;
+    float centerY = 0;
+
+    for (int i = 0; i < (borderX + 1) * 2 + 1; i += 2)
+    {
+        cubes[i].OnLoad(commandList, centerX - i + 19, borderY + 1, 10, true);
+        cubes[i].SetScale(0.25, 0.25, 0.25);
+        cubes[i + 1].OnLoad(commandList, centerX - i + 19, -borderY - 1, 10, true);
+        cubes[i + 1].SetScale(0.25, 0.25, 0.25);
+
+        char buffer[512];
+        sprintf_s(buffer, "%d\n", i + 1);
+        OutputDebugStringA(buffer);
+    }
+
+    
+}
+
+void Wall::OnUpdate(double deltaTime)
+{
+    for (int i = 0; i < 39; i += 2)
+    {
+        cubes[i].OnUpdate(deltaTime);
+        cubes[i + 1].OnUpdate(deltaTime);
+    }
+}
+
+void Wall::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+{
+    for (int i = 0; i < 39; i += 2)
+    {
+        cubes[i].OnRender(commandList, viewMatrix, projectionMatrix);
+        cubes[i + 1].OnRender(commandList, viewMatrix, projectionMatrix);
+    }
 }
