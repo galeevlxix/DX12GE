@@ -20,76 +20,12 @@ constexpr const T& clamp(const T& val, const T& min, const T& max)
     return val < min ? min : val > max ? max : val;
 }
 
-// Vertex data for a colored cube
-//struct VertexPosColor
-//{
-//    XMFLOAT3 Position;
-//    XMFLOAT3 Color;
-//};
-
-//static VertexPosColor g_Vertices[8] = 
-//{
-//    { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f) }, // 0
-//    { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) }, // 1
-//    { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) }, // 2
-//    { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) }, // 3
-//    { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) }, // 4
-//    { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f, 1.0f, 1.0f) }, // 5
-//    { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) }, // 6
-//    { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f, 0.0f, 1.0f) }  // 7
-//};
-//
-//static WORD g_Indicies[36] =
-//{
-//    0, 1, 2, 0, 2, 3,
-//    4, 6, 5, 4, 7, 6,
-//    4, 5, 1, 4, 1, 0,
-//    3, 2, 6, 3, 6, 7,
-//    1, 5, 6, 1, 6, 2,
-//    4, 0, 3, 4, 3, 7
-//};
-
 BianGame::BianGame(const std::wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
     , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
     , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)))
-    , m_FoV(40.0)
+    , m_FoV(60.0)
     , m_ContentLoaded(false)
 {
-}
-
-void BianGame::UpdateBufferResource(
-    ComPtr<ID3D12GraphicsCommandList2> commandList,
-    ID3D12Resource** pDestinationResource,
-    ID3D12Resource** pIntermediateResource,
-    size_t numElements, size_t elementSize, const void* bufferData,
-    D3D12_RESOURCE_FLAGS flags)
-{
-    auto device = Application::Get().GetDevice();
-
-    size_t bufferSize = numElements * elementSize;
-
-    auto r1 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-    auto r2 = CD3DX12_RESOURCE_DESC::Buffer(bufferSize, flags);
-
-    // Create a committed resource for the GPU resource in a default heap.
-    ThrowIfFailed(
-        device->CreateCommittedResource(&r1, D3D12_HEAP_FLAG_NONE, &r2, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(pDestinationResource)));
-
-    // Create an committed resource for the upload.
-    if (bufferData)
-    {
-        auto r3 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-        auto r4 = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
-        ThrowIfFailed(
-            device->CreateCommittedResource(&r3, D3D12_HEAP_FLAG_NONE, &r4, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(pIntermediateResource))); 
-
-        D3D12_SUBRESOURCE_DATA subresourceData = {};
-        subresourceData.pData = bufferData;
-        subresourceData.RowPitch = bufferSize;
-        subresourceData.SlicePitch = subresourceData.RowPitch;
-
-        UpdateSubresources(commandList.Get(), *pDestinationResource, *pIntermediateResource, 0, 0, 1, &subresourceData);
-    }
 }
 
 bool BianGame::LoadContent()
@@ -98,8 +34,14 @@ bool BianGame::LoadContent()
     auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-    myObj.OnLoad(commandList, -2, 0, 0);
-    myObj2.OnLoad(commandList, 2, 0, 0);
+    //x: -18 .. 18
+    //y: -10 .. 10
+    //z: 10
+
+    lRacket.OnLoad(commandList, true);
+    rRacket.OnLoad(commandList, false);
+
+    ball.OnLoad(commandList);
 
     // Create the descriptor heap for the depth-stencil view
     D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
@@ -262,16 +204,18 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     {
         double fps = frameCount / totalTime;
 
-        char buffer[512];
-        sprintf_s(buffer, "FPS: %f\n", fps);
-        OutputDebugStringA(buffer);
+        //char buffer[512];
+        //sprintf_s(buffer, "FPS: %f\n", fps);
+        //OutputDebugStringA(buffer);
 
         frameCount = 0;
         totalTime = 0.0;
     }
 
-    myObj.OnUpdate(e.ElapsedTime);
-    myObj2.OnUpdate(e.ElapsedTime);
+    lRacket.OnUpdate(e.ElapsedTime);
+    rRacket.OnUpdate(e.ElapsedTime);
+    
+    ball.OnUpdate(e.ElapsedTime, &lRacket, &rRacket);
 
     // Update the view matrix
     const XMVECTOR eyePosition = XMVectorSet(0, 0, -10, 1);
@@ -318,8 +262,9 @@ void BianGame::OnRender(RenderEventArgs& e)
     {
         TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-        FLOAT clearColor[] = { 0.4f, 0.6f, 0.9f, 1.0f };
+        //FLOAT clearColor[] = { 0.4f, 0.6f, 0.9f, 1.0f };
 
+        FLOAT clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         ClearRTV(commandList, rtv, clearColor);
         ClearDepth(commandList, dsv);
     }
@@ -332,8 +277,10 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
-    myObj.OnRender(commandList, m_ViewMatrix, m_ProjectionMatrix);
-    myObj2.OnRender(commandList, m_ViewMatrix, m_ProjectionMatrix);
+    lRacket.OnRender(commandList, m_ViewMatrix, m_ProjectionMatrix);
+    rRacket.OnRender(commandList, m_ViewMatrix, m_ProjectionMatrix);
+
+    ball.OnRender(commandList, m_ViewMatrix, m_ProjectionMatrix);
 
     // Present
     {
@@ -363,6 +310,20 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::V:
         m_pWindow->ToggleVSync();
         break;
+
+    case KeyCode::W:
+        lRacket.Move(1);
+        break;
+    case KeyCode::S:
+        lRacket.Move(-1);
+        break;
+
+    case KeyCode::Up:
+        rRacket.Move(1);
+        break;
+    case KeyCode::Down:
+        rRacket.Move(-1);
+        break;
     }
 }
 
@@ -374,4 +335,161 @@ void BianGame::OnMouseWheel(MouseWheelEventArgs& e)
     char buffer[256];
     sprintf_s(buffer, "FoV: %f\n", m_FoV);
     OutputDebugStringA(buffer);
+}
+
+
+bool Racket::CheckYBorder(float dy)
+{
+    return !((dy > 0 && cubes[length - 1].GetPosition().Y == borderY) || (dy < 0 && cubes[0].GetPosition().Y == -borderY));
+}
+
+void Racket::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, bool left)
+{
+    float xPos = left ? -borderX : borderX;
+    float yPos = 0;
+
+    for (int i = 0; i < length; i++)
+    {
+        cubes[i].OnLoad(commandList, xPos, yPos + i - 2, 10);
+    }
+}
+
+void Racket::OnUpdate(double deltaTime)
+{
+    for (int i = 0; i < length; i++)
+    {
+        cubes[i].OnUpdate(deltaTime);
+    }
+}
+
+void Racket::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+{
+    for (int i = 0; i < length; i++)
+    {
+        cubes[i].OnRender(commandList, viewMatrix, projectionMatrix);
+    }
+}
+
+void Racket::Move(float dy)
+{
+    if (CheckYBorder(dy))
+    {
+        for (int i = 0; i < length; i++)
+        {
+            cubes[i].Move(0, dy, 0);
+        }
+    }        
+}
+
+void Racket::SetStartPosition()
+{
+    for (int i = 0; i < length; i++)
+    {
+        cubes[i].SetPosition(cubes[i].GetPosition().X, i - 2, cubes[i].GetPosition().Z);
+    }
+}
+
+Vector3 Racket::GetNewDirection(Vector3 ballPos, Vector3 direction)
+{
+    if (ballPos.Y <= cubes[2].GetPosition().Y + 2.5f && ballPos.Y >= cubes[2].GetPosition().Y - 2.5f)
+    {
+        float coef = ballPos.Y - cubes[2].GetPosition().Y;
+        Vector3 newDir = direction;
+        newDir.X = -newDir.X;
+        newDir.Y = coef / 2.5f;
+
+        return newDir;
+    }
+    
+    return direction;
+}
+
+void Ball::CheckYBorder()
+{
+    if ((direction.Y > 0 && cube.GetPosition().Y >= borderY) || (direction.Y < 0 && cube.GetPosition().Y <= -borderY))
+    {
+        direction.Y = -direction.Y;
+    }       
+}
+
+void Ball::CheckRackets(Racket* left, Racket* right)
+{
+    if (direction.X < 0 && cube.GetPosition().X <= -borderX + 1)
+    {
+        direction = left->GetNewDirection(cube.GetPosition(), direction);
+    }
+    else if (direction.X > 0 && cube.GetPosition().X >= borderX - 1)
+    {
+        direction = right->GetNewDirection(cube.GetPosition(), direction);
+    }
+    else return;
+
+    speed += 1;
+}
+
+int GetRandomNumber(int start, int end)
+{
+    return rand() % (end - start + 1) + start;
+}
+
+Vector3 GetRandomDirection()
+{
+    Vector3 out;
+    float randNum = (float)GetRandomNumber(-100, 100);
+    randNum /= 100.0;
+    bool randNum2 = GetRandomNumber(-100, 100) < 0 ? false : true;
+    out.Set(randNum2 ? 1 : -1, randNum, 0);
+    return out;
+}
+
+void Ball::CheckXBorder(Racket* left, Racket* right)
+{
+    static int leftScore = 0;
+    static int rightScore = 0;
+
+    if (direction.X < 0 && cube.GetPosition().X <= -borderX)
+    {
+        rightScore++;
+    }
+    else if (direction.X > 0 && cube.GetPosition().X >= borderX)
+    {
+        leftScore++;
+    }
+    else return;
+
+    char buffer[512];
+    sprintf_s(buffer, "яв╗р %d:%d\n", leftScore, rightScore);
+    OutputDebugStringA(buffer);
+
+    left->SetStartPosition();
+    right->SetStartPosition();
+    
+    cube.SetPosition(0, 0, 10);
+    Vector3 newDir = GetRandomDirection();
+    direction.Set(newDir.X, newDir.Y, newDir.Z);
+
+    speed = 8;
+}
+
+void Ball::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
+{
+    srand(time(0));
+    cube.OnLoad(commandList, 0, 0, 10);
+    Vector3 newDir = GetRandomDirection();
+    direction.Set(newDir.X, newDir.Y, newDir.Z);   
+}
+
+void Ball::OnUpdate(double deltaTime, Racket* left, Racket* right)
+{
+    CheckYBorder();
+    CheckRackets(left, right);
+    CheckXBorder(left, right);
+    Vector3 moveVec = direction * speed * deltaTime;
+    cube.Move(moveVec.X, moveVec.Y, moveVec.Z);
+    cube.OnUpdate(deltaTime);
+}
+
+void Ball::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+{
+    cube.OnRender(commandList, viewMatrix, projectionMatrix);
 }

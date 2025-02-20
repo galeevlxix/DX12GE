@@ -54,7 +54,7 @@ void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x,
 
     SetPosition(x, y, z);
     SetRotation(0, 0, 0);
-    SetScale(1, 1, 1);
+    SetScale(0.5f, 0.5f, 0.5f);
 }
 
 void BaseObject::TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
@@ -79,9 +79,6 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
 
 void BaseObject::OnUpdate(double deltaTime)
 {
-    /*float cubeSpeed = 1;
-    Move(0, cubeSpeed * deltaTime, 0);*/
-
     m_ModelMatrix =
         XMMatrixScaling(m_Scale.X, m_Scale.Y, m_Scale.Z) *
         XMMatrixRotationX(m_Rotation.X) *
@@ -127,6 +124,21 @@ void BaseObject::SetScale(float x, float y, float z)
     m_Scale.Set(x, y, z);
 }
 
+Vector3 BaseObject::GetPosition()
+{
+    return m_Position;
+}
+
+Vector3 BaseObject::GetRotation()
+{
+    return m_Rotation;
+}
+
+Vector3 BaseObject::GetScale()
+{
+    return m_Scale;
+}
+
 void Vector3::Set(float x, float y, float z)
 {
     X = x;
@@ -139,4 +151,20 @@ void Vector3::Increase(float dx, float dy, float dz)
     X += dx;
     Y += dy;
     Z += dz;
+}
+
+void Vector3::Normalize()
+{
+    float length = X * X + Y * Y + Z * Z;
+    if (length != 0)
+    {
+        Set(X / length, Y / length, Z / length);
+    }
+}
+
+Vector3 Vector3::operator*(float value)
+{
+    Vector3 out;
+    out.Set(X * value, Y * value, Z * value);
+    return out;
 }

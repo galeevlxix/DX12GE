@@ -19,13 +19,16 @@ public:
 
     void Set(float x, float y, float z);
     void Increase(float dx, float dy, float dz);
+    void Normalize();
+
+    Vector3 operator*(float value);
 };
 
 class BaseObject
 {
 public:
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x, float y, float z);
-    void OnUpdate(double totalTime);
+    void OnUpdate(double deltaTime);
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
 
     void SetPosition(float x, float y, float z);
@@ -36,13 +39,11 @@ public:
     void SetRotationZ(float value);
     void SetScale(float x, float y, float z);
 
+    Vector3 GetPosition();
+    Vector3 GetRotation();
+    Vector3 GetScale();
 private:
     XMMATRIX m_ModelMatrix;
-    /*XMMATRIX m_PositionMatrix;
-    XMMATRIX m_RotationXMatrix;
-    XMMATRIX m_RotationYMatrix;
-    XMMATRIX m_RotationZMatrix;
-    XMMATRIX m_ScaleMatrix; */
 
     Vector3 m_Position;
     Vector3 m_Rotation;

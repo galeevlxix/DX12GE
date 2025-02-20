@@ -9,6 +9,44 @@
 
 using namespace Microsoft::WRL;
 
+class Racket
+{
+private:
+    const float borderX = 18.0f;
+    const float borderY = 10.0f;
+    const static int length = 5;
+    BaseObject cubes[length];
+
+    bool CheckYBorder(float dy);
+public:
+    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, bool left);
+    void OnUpdate(double deltaTime);
+    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
+    void Move(float dy);
+    void SetStartPosition();
+
+    Vector3 GetNewDirection(Vector3 ballPos, Vector3 direction);
+};
+
+class Ball
+{
+private:
+    const float borderX = 18.0f;
+    const float borderY = 10.0f;
+    BaseObject cube;
+
+    float speed = 8.0;
+    Vector3 direction;
+
+    void CheckYBorder();
+    void CheckRackets(Racket* left, Racket* right);
+    void CheckXBorder(Racket* left, Racket* right);
+public:
+    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void OnUpdate(double deltaTime, Racket *left, Racket * right);
+    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
+};
+
 class BianGame : public Game
 {
 public:
@@ -45,9 +83,6 @@ private:
     // Clear the depth of a depth-stencil view.
     void ClearDepth(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsv, FLOAT depth = 1.0f);
 
-    // Create a GPU buffer.
-    void UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE);
-
     // Resize the depth buffer to match the size of the client area.
     void ResizeDepthBuffer(int width, int height);
 
@@ -67,8 +102,10 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    BaseObject myObj;
-    BaseObject myObj2;
+    Racket lRacket;
+    Racket rRacket;
+
+    Ball ball;
 
     float m_FoV;
 
