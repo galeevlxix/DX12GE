@@ -34,13 +34,13 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
     }
 }
 
-void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x, float y, float z, bool isWhite)
+void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale, Vector3 Color)
 {
-    if (isWhite)
+    if (Color.Length() != 0)
     {
         for (int i = 0; i < 8; i++)
         {
-            m_Vertices[i].Color = XMFLOAT3(1, 1, 1);
+            m_Vertices[i].Color = Color.ToXM();
         }
     }
 
@@ -60,9 +60,9 @@ void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x,
     m_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
     m_IndexBufferView.SizeInBytes = sizeof(m_Indicies);
 
-    SetPosition(x, y, z);
-    SetRotation(0, 0, 0);
-    SetScale(0.5f, 0.5f, 0.5f);
+    SetPosition(position);
+    SetRotation(rotation);
+    SetScale(scale);
 }
 
 void BaseObject::TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
@@ -100,9 +100,19 @@ void BaseObject::SetPosition(float x, float y, float z)
     m_Position.Set(x, y, z);
 }
 
+void BaseObject::SetPosition(Vector3 Position)
+{
+    m_Position = Position;
+}
+
 void BaseObject::Move(float dx, float dy, float dz)
 {
     m_Position.Increase(dx, dy, dz);
+}
+
+void BaseObject::Move(Vector3 MoveVector)
+{
+    m_Position = m_Position + MoveVector;
 }
 
 void BaseObject::SetRotation(float angleX, float angleY, float angleZ)
@@ -110,6 +120,11 @@ void BaseObject::SetRotation(float angleX, float angleY, float angleZ)
     SetRotationX(angleX);
     SetRotationY(angleY);
     SetRotationZ(angleZ);
+}
+
+void BaseObject::SetRotation(Vector3 RotationVector)
+{
+    m_Rotation = RotationVector;
 }
 
 void BaseObject::SetRotationX(float angleX)
@@ -132,6 +147,11 @@ void BaseObject::SetScale(float x, float y, float z)
     m_Scale.Set(x, y, z);
 }
 
+void BaseObject::SetScale(Vector3 ScaleVector)
+{
+    m_Scale = ScaleVector;
+}
+
 Vector3 BaseObject::GetPosition()
 {
     return m_Position;
@@ -145,34 +165,4 @@ Vector3 BaseObject::GetRotation()
 Vector3 BaseObject::GetScale()
 {
     return m_Scale;
-}
-
-void Vector3::Set(float x, float y, float z)
-{
-    X = x;
-    Y = y;
-    Z = z;
-}
-
-void Vector3::Increase(float dx, float dy, float dz)
-{
-    X += dx;
-    Y += dy;
-    Z += dz;
-}
-
-void Vector3::Normalize()
-{
-    float length = X * X + Y * Y + Z * Z;
-    if (length != 0)
-    {
-        Set(X / length, Y / length, Z / length);
-    }
-}
-
-Vector3 Vector3::operator*(float value)
-{
-    Vector3 out;
-    out.Set(X * value, Y * value, Z * value);
-    return out;
 }

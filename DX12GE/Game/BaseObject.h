@@ -1,5 +1,6 @@
 #pragma once
 #include "../Engine/CommandQueue.h"
+#include "../Engine/Vector3.h"
 
 using namespace DirectX;
 
@@ -10,34 +11,24 @@ struct VertexPosColor
     XMFLOAT3 Color;
 };
 
-class Vector3
-{
-public:
-    float X;
-    float Y;
-    float Z;
-
-    void Set(float x, float y, float z);
-    void Increase(float dx, float dy, float dz);
-    void Normalize();
-
-    Vector3 operator*(float value);
-};
-
 class BaseObject
 {
 public:
-    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, float x, float y, float z, bool isWhite);
+    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale, Vector3 Color);
     void OnUpdate(double deltaTime);
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
 
     void SetPosition(float x, float y, float z);
+    void SetPosition(Vector3 PositionVector);
     void Move(float dx, float dy, float dz);
+    void Move(Vector3 MoveVector);
     void SetRotation(float x, float y, float z);
+    void SetRotation(Vector3 RotationVector);
     void SetRotationX(float value);
     void SetRotationY(float value);
     void SetRotationZ(float value);
     void SetScale(float x, float y, float z);
+    void SetScale(Vector3 ScaleVector);
 
     Vector3 GetPosition();
     Vector3 GetRotation();

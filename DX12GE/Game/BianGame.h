@@ -5,66 +5,9 @@
 
 #include <DirectXMath.h>
 
-#include "BaseObject.h"
+#include "Pong.h"
 
 using namespace Microsoft::WRL;
-
-class Racket
-{
-private:
-    const float borderX = 18.0f;
-    const float borderY = 10.0f;
-
-    const static int length = 5;
-    BaseObject cubes[length];
-
-    bool CheckXBorder(float dx, bool isLeft);
-    bool CheckYBorder(float dy);
-public:
-    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, bool left);
-    void OnUpdate(double deltaTime);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
-    void Move(float dx, float dy);
-    void SetStartPosition();
-
-    Vector3 GetNewDirection(Vector3 ballPos, Vector3 direction);
-
-    Vector3 GetPosition();
-};
-
-class Ball
-{
-private:
-    const float borderX = 18.0f;
-    const float borderY = 10.0f;
-    BaseObject cube;
-
-    float speed = 8.0;
-    Vector3 direction;
-
-    void CheckYBorder();
-    void CheckRackets(Racket* left, Racket* right);
-    void CheckXBorder(Racket* left, Racket* right);
-public:
-    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void OnUpdate(double deltaTime, Racket *left, Racket * right);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
-};
-
-class Wall
-{
-private:
-    const static int borderX = 18;
-    const static int borderY = 10;
-
-    const static int length = ((borderX + 1) * 2 + 1 + borderY) * 2; //98
-    BaseObject cubes[length];
-
-public :
-    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void OnUpdate(double deltaTime);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
-};
 
 class BianGame : public Game
 {
@@ -121,12 +64,7 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    Racket lRacket;
-    Racket rRacket;
-
-    Ball ball;
-
-    Wall wall;
+    PongGame pong;
 
     float m_FoV;
 

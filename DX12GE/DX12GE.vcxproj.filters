@@ -57,8 +57,11 @@
     <ClCompile Include="Game\BaseObject.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Resource.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="Game\Pong.cpp">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Vector3.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,8 +104,11 @@
     <ClInclude Include="Game\BaseObject.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Game\Pong.h">
+      <Filter>Файлы заголовков\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Vector3.h">
+      <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

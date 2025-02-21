@@ -135,10 +135,11 @@
     <ClCompile Include="Engine\DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Game.cpp" />
     <ClCompile Include="Engine\HighResolutionClock.cpp" />
+    <ClCompile Include="Engine\Vector3.cpp" />
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="Game\BaseObject.cpp" />
     <ClCompile Include="Game\BianGame.cpp" />
-    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="Game\Pong.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Application.h" />
@@ -151,10 +152,11 @@
     <ClInclude Include="Engine\HighResolutionClock.h" />
     <ClInclude Include="Engine\KeyCodes.h" />
     <ClInclude Include="Engine\resource.h" />
+    <ClInclude Include="Engine\Vector3.h" />
     <ClInclude Include="Engine\Window.h" />
     <ClInclude Include="Game\BaseObject.h" />
     <ClInclude Include="Game\BianGame.h" />
-    <ClInclude Include="Resource.h" />
+    <ClInclude Include="Game\Pong.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc" />
