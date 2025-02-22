@@ -2,12 +2,12 @@
 
 #include "../Engine/Game.h"
 #include "../Engine/Window.h"
-
 #include <DirectXMath.h>
-
-#include "Pong.h"
+#include "BaseObject.h"
+#include "Camera.h" 
 
 using namespace Microsoft::WRL;
+using namespace DirectX;
 
 class BianGame : public Game
 {
@@ -30,7 +30,15 @@ protected:
 
     virtual void OnKeyPressed(KeyEventArgs& e) override;
 
+    virtual void OnKeyReleased(KeyEventArgs& e) override;
+    
     virtual void OnMouseWheel(MouseWheelEventArgs& e) override;
+
+    virtual void OnMouseMoved(MouseMotionEventArgs& e) override;
+
+    virtual void OnMouseButtonPressed(MouseButtonEventArgs& e) override;
+
+    virtual void OnMouseButtonReleased(MouseButtonEventArgs& e) override;
 
     virtual void OnResize(ResizeEventArgs& e) override;
 
@@ -64,13 +72,10 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    PongGame pong;
+    BaseObject cube;
+    BaseObject sphere;
 
-    float m_FoV;
-
-    //DirectX::XMMATRIX m_ModelMatrix;
-    DirectX::XMMATRIX m_ViewMatrix;
-    DirectX::XMMATRIX m_ProjectionMatrix;
+    Camera m_Camera;
 
     bool m_ContentLoaded;
 };

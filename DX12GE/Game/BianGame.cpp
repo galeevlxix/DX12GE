@@ -11,17 +11,9 @@
 #undef max
 #endif
 
-// Clamp a value between a min and max range
-template<typename T>
-constexpr const T& clamp(const T& val, const T& min, const T& max)
-{
-    return val < min ? min : val > max ? max : val;
-}
-
 BianGame::BianGame(const std::wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
     , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
     , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)))
-    , m_FoV(60.0)
     , m_ContentLoaded(false)
 {
 }
@@ -40,7 +32,17 @@ bool BianGame::LoadContent()
     ThrowIfFailed(
         device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
-    pong.OnLoad(commandList);
+    cube.CreateCubeGeometry();
+    cube.OnLoad(commandList, Vector3(3, 0, 1), Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(0, 0, 0));
+
+    sphere.CreateSphereGeometry();
+    sphere.OnLoad(commandList, Vector3(-3, 0, 1), Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(0, 0, 0));
+
+    m_Camera.OnLoad(
+        XMVectorSet(0, 0, -5, 1),
+        XMVectorSet(0, 0, 1, 1),
+        XMVectorSet(0, 1, 0, 1),
+        60, static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight()), 0.1f, 100.0);
 
     // Load the vertex shader
     ComPtr<ID3DBlob> vertexShaderBlob;
@@ -174,6 +176,8 @@ void BianGame::OnResize(ResizeEventArgs& e)
         m_Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(e.Width), static_cast<float>(e.Height));
         ResizeDepthBuffer(e.Width, e.Height);
     }
+
+    m_Camera.Ratio = static_cast<float>(e.Width) / static_cast<float>(e.Height);
 }
 
 void BianGame::UnloadContent()
@@ -199,17 +203,8 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
         totalTime = 0.0;
     }
 
-    pong.OnUpdate(e.ElapsedTime);
-
-    // Update the view matrix
-    const XMVECTOR eyePosition = XMVectorSet(0, 0, -10, 1);
-    const XMVECTOR focusPoint = XMVectorSet(0, 0, 0, 1);
-    const XMVECTOR upDirection = XMVectorSet(0, 1, 0, 0);
-    m_ViewMatrix = XMMatrixLookAtLH(eyePosition, focusPoint, upDirection);
-
-    // Update the projection matrix
-    float aspectRatio = GetClientWidth() / static_cast<float>(GetClientHeight());
-    m_ProjectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(m_FoV), aspectRatio, 0.1f, 100.0f);
+    cube.OnUpdate(e.ElapsedTime);
+    sphere.OnUpdate(e.ElapsedTime);
 }
 
 // Transition a resource
@@ -260,7 +255,10 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
-    pong.OnRender(commandList, m_ViewMatrix, m_ProjectionMatrix);
+    XMMATRIX viewProjMatrix = m_Camera.GetViewProjMatrix();
+
+    cube.OnRender(commandList, viewProjMatrix);
+    sphere.OnRender(commandList, viewProjMatrix);
 
     // Present
     {
@@ -274,7 +272,7 @@ void BianGame::OnRender(RenderEventArgs& e)
 void BianGame::OnKeyPressed(KeyEventArgs& e)
 {
     super::OnKeyPressed(e);
-    pong.OnKeyPressed(e);
+    m_Camera.OnKeyPressed(e);
 
     switch (e.Key)
     {
@@ -294,12 +292,27 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
     }    
 }
 
+void BianGame::OnKeyReleased(KeyEventArgs& e)
+{
+    m_Camera.OnKeyReleased(e);
+}
+
 void BianGame::OnMouseWheel(MouseWheelEventArgs& e)
 {
-    m_FoV -= e.WheelDelta;
-    m_FoV = clamp(m_FoV, 12.0f, 90.0f);
+    m_Camera.OnMouseWheel(e);
+}
 
-    char buffer[256];
-    sprintf_s(buffer, "FoV: %f\n", m_FoV);
-    OutputDebugStringA(buffer);
+void BianGame::OnMouseMoved(MouseMotionEventArgs& e)
+{
+    m_Camera.OnMouseMoved(e);
+}
+
+void BianGame::OnMouseButtonPressed(MouseButtonEventArgs& e)
+{
+    m_Camera.OnMouseButtonPressed(e);
+}
+
+void BianGame::OnMouseButtonReleased(MouseButtonEventArgs& e)
+{
+    m_Camera.OnMouseButtonReleased(e);
 }

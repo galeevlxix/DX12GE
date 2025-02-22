@@ -33,11 +33,11 @@ void Racket::OnUpdate(double deltaTime)
     }
 }
 
-void Racket::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+void Racket::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     for (int i = 0; i < length; i++)
     {
-        cubes[i].OnRender(commandList, viewMatrix, projectionMatrix);
+        cubes[i].OnRender(commandList, viewProjMatrix);
     }
 }
 
@@ -174,9 +174,9 @@ void Ball::OnUpdate(double deltaTime, Racket* left, Racket* right)
     cube.OnUpdate(deltaTime);
 }
 
-void Ball::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+void Ball::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
-    cube.OnRender(commandList, viewMatrix, projectionMatrix);
+    cube.OnRender(commandList, viewProjMatrix);
 }
 
 void Wall::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -207,11 +207,11 @@ void Wall::OnUpdate(double deltaTime)
     }
 }
 
-void Wall::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+void Wall::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     for (int i = 0; i < length; i++)
     {
-        cubes[i].OnRender(commandList, viewMatrix, projectionMatrix);
+        cubes[i].OnRender(commandList, viewProjMatrix);
     }
 }
 
@@ -231,12 +231,12 @@ void PongGame::OnUpdate(double deltaTime)
     wall.OnUpdate(deltaTime);
 }
 
-void PongGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+void PongGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
-    lRacket.OnRender(commandList, viewMatrix, projectionMatrix);
-    rRacket.OnRender(commandList, viewMatrix, projectionMatrix);
-    ball.OnRender(commandList, viewMatrix, projectionMatrix);
-    wall.OnRender(commandList, viewMatrix, projectionMatrix);
+    lRacket.OnRender(commandList, viewProjMatrix);
+    rRacket.OnRender(commandList, viewProjMatrix);
+    ball.OnRender(commandList, viewProjMatrix);
+    wall.OnRender(commandList, viewProjMatrix);
 }
 
 void PongGame::OnKeyPressed(KeyEventArgs& e)

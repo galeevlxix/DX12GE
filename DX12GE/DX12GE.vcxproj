@@ -139,6 +139,8 @@
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="Game\BaseObject.cpp" />
     <ClCompile Include="Game\BianGame.cpp" />
+    <ClCompile Include="Game\Camera.cpp" />
+    <ClCompile Include="Game\GlobalScene.cpp" />
     <ClCompile Include="Game\Pong.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +158,8 @@
     <ClInclude Include="Engine\Window.h" />
     <ClInclude Include="Game\BaseObject.h" />
     <ClInclude Include="Game\BianGame.h" />
+    <ClInclude Include="Game\Camera.h" />
+    <ClInclude Include="Game\GlobalScene.h" />
     <ClInclude Include="Game\Pong.h" />
   </ItemGroup>
   <ItemGroup>

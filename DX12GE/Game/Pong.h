@@ -16,7 +16,7 @@ private:
 public:
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, bool left);
     void OnUpdate(double deltaTime);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
+    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
     void Move(float dx, float dy);
     void SetStartPosition();
     Vector3 GetNewDirection(Vector3 ballPos, Vector3 direction);
@@ -40,7 +40,7 @@ private:
 public:
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void OnUpdate(double deltaTime, Racket* left, Racket* right);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
+    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 };
 
 class Wall
@@ -52,7 +52,7 @@ private:
 public:
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void OnUpdate(double deltaTime);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
+    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 };
 
 class PongGame
@@ -65,6 +65,6 @@ private:
 public:
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void OnUpdate(double deltaTime);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
+    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
     void OnKeyPressed(KeyEventArgs& e);
 };

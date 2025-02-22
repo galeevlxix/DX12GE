@@ -2,6 +2,10 @@
 #include "../Engine/CommandQueue.h"
 #include "../Engine/Vector3.h"
 
+#include <vector>
+
+using namespace std;
+
 using namespace DirectX;
 
 // Vertex data for a colored cube
@@ -16,7 +20,7 @@ class BaseObject
 public:
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale, Vector3 Color);
     void OnUpdate(double deltaTime);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
+    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
     void SetPosition(float x, float y, float z);
     void SetPosition(Vector3 PositionVector);
@@ -33,6 +37,9 @@ public:
     Vector3 GetPosition();
     Vector3 GetRotation();
     Vector3 GetScale();
+
+    void CreateSphereGeometry();
+    void CreateCubeGeometry();
 private:
     XMMATRIX m_ModelMatrix;
 
@@ -50,27 +57,9 @@ private:
     D3D12_INDEX_BUFFER_VIEW m_IndexBufferView;
     ComPtr<ID3D12Resource> intermediateIndexBuffer;
 
-    VertexPosColor m_Vertices[8] =
-    {
-        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f) },  // 0
-        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },  // 1
-        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },   // 2
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },   // 3
-        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },  // 4
-        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f, 1.0f, 1.0f) },  // 5
-        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) },   // 6
-        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f, 0.0f, 1.0f) }    // 7
-    };
-
-    WORD m_Indicies[36] =
-    {
-        0, 1, 2, 0, 2, 3,
-        4, 6, 5, 4, 7, 6,
-        4, 5, 1, 4, 1, 0,
-        3, 2, 6, 3, 6, 7,
-        1, 5, 6, 1, 6, 2,
-        4, 0, 3, 4, 3, 7
-    };
+    vector<VertexPosColor> m_Vertices;
+    vector<WORD> m_Indices;
+    int indiciesCount;
 
     void TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState);
     void UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE);
