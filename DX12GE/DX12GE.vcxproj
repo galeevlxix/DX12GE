@@ -142,6 +142,7 @@
     <ClCompile Include="Game\Camera.cpp" />
     <ClCompile Include="Game\GlobalScene.cpp" />
     <ClCompile Include="Game\Pong.cpp" />
+    <ClCompile Include="Game\SolarSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Application.h" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Game\Camera.h" />
     <ClInclude Include="Game\GlobalScene.h" />
     <ClInclude Include="Game\Pong.h" />
+    <ClInclude Include="Game\SolarSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc" />

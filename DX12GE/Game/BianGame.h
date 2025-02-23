@@ -3,8 +3,9 @@
 #include "../Engine/Game.h"
 #include "../Engine/Window.h"
 #include <DirectXMath.h>
-#include "BaseObject.h"
 #include "Camera.h" 
+
+#include "SolarSystem.h" 
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -72,10 +73,14 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    BaseObject cube;
-    BaseObject sphere;
+    SolarSystem solarSystem;
 
     Camera m_Camera;
+
+    bool OrbitCameraMode = false;
+
+    XMVECTOR oldCameraPosition;
+    XMVECTOR oldCameraTarget;
 
     bool m_ContentLoaded;
 };

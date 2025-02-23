@@ -8,6 +8,8 @@ using namespace std;
 
 using namespace DirectX;
 
+#define PI 3.1415926535f
+
 // Vertex data for a colored cube
 struct VertexPosColor
 {
@@ -31,6 +33,7 @@ public:
     void SetRotationX(float value);
     void SetRotationY(float value);
     void SetRotationZ(float value);
+    void Rotate(Vector3 RotateVector);
     void SetScale(float x, float y, float z);
     void SetScale(Vector3 ScaleVector);
 
@@ -38,7 +41,7 @@ public:
     Vector3 GetRotation();
     Vector3 GetScale();
 
-    void CreateSphereGeometry();
+    void CreateSphereGeometry(int gx_segments, int gy_segments);
     void CreateCubeGeometry();
 private:
     XMMATRIX m_ModelMatrix;

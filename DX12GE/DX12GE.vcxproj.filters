@@ -69,6 +69,9 @@
     <ClCompile Include="Game\Camera.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Game\SolarSystem.cpp">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\d3dx12.h">
@@ -120,6 +123,9 @@
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\Camera.h">
+      <Filter>Файлы заголовков\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SolarSystem.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
   </ItemGroup>

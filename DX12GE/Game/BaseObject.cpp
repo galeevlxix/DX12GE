@@ -2,9 +2,6 @@
 
 #include "../Engine/Application.h"
 
-
-#define PI 3.1415926535f
-
 void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
 {
     auto device = Application::Get().GetDevice();
@@ -144,6 +141,11 @@ void BaseObject::SetRotationZ(float angleZ)
     m_Rotation.Z = angleZ;
 }
 
+void BaseObject::Rotate(Vector3 RotateVector)
+{
+    m_Rotation = m_Rotation + RotateVector;
+}
+
 void BaseObject::SetScale(float x, float y, float z)
 {
     m_Scale.Set(x, y, z);
@@ -169,13 +171,14 @@ Vector3 BaseObject::GetScale()
     return m_Scale;
 }
 
-void BaseObject::CreateSphereGeometry()
+void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)
 {
-    int gx_segments = 24;
-    int gy_segments = 24;
+    //int gx_segments = 32;
+    //int gy_segments = 32;
 
     XMFLOAT3 colors[8] =
     {
+         XMFLOAT3(0.5f, 0.5f, 0.5f),
          XMFLOAT3(1.0f, 0.0f, 0.0f),
          XMFLOAT3(0.0f, 1.0f, 0.0f),
          XMFLOAT3(0.0f, 0.0f, 1.0f),
@@ -199,7 +202,7 @@ void BaseObject::CreateSphereGeometry()
             float zPos = sin(xSegment * 2.0f * PI) * sin(ySegment * PI);
             vertices.push_back({ XMFLOAT3(xPos, yPos, zPos), colors[colorIndex]});
             colorIndex++;
-            colorIndex = colorIndex % 7;
+            colorIndex = colorIndex % 8;
         }
     }
     m_Vertices = vertices;
@@ -209,12 +212,13 @@ void BaseObject::CreateSphereGeometry()
     {
         for (int j = 0; j < gx_segments; j++)
         {
+            indices.push_back((i + 1) * (gx_segments + 1) + j + 1);
             indices.push_back((i + 1) * (gx_segments + 1) + j);
             indices.push_back(i * (gx_segments + 1) + j);
-            indices.push_back((i + 1) * (gx_segments + 1) + j + 1);
-            indices.push_back((i + 1) * (gx_segments + 1) + j + 1);
+
             indices.push_back(i * (gx_segments + 1) + j);
             indices.push_back(i * (gx_segments + 1) + j + 1);
+            indices.push_back((i + 1) * (gx_segments + 1) + j + 1);
         }
     }
     m_Indices = indices;

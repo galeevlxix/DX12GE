@@ -32,17 +32,13 @@ bool BianGame::LoadContent()
     ThrowIfFailed(
         device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
-    cube.CreateCubeGeometry();
-    cube.OnLoad(commandList, Vector3(3, 0, 1), Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(0, 0, 0));
-
-    sphere.CreateSphereGeometry();
-    sphere.OnLoad(commandList, Vector3(-3, 0, 1), Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(0, 0, 0));
+    solarSystem.OnLoad(commandList);
 
     m_Camera.OnLoad(
-        XMVectorSet(0, 0, -5, 1),
+        XMVectorSet(0, 50, -80, 1),
         XMVectorSet(0, 0, 1, 1),
         XMVectorSet(0, 1, 0, 1),
-        60, static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight()), 0.1f, 100.0);
+        80, static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight()), 0.1f, 300.0);
 
     // Load the vertex shader
     ComPtr<ID3DBlob> vertexShaderBlob;
@@ -203,8 +199,19 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
         totalTime = 0.0;
     }
 
-    cube.OnUpdate(e.ElapsedTime);
-    sphere.OnUpdate(e.ElapsedTime);
+    solarSystem.OnUpdate(e.ElapsedTime);
+    m_Camera.OnUpdate(e.ElapsedTime);
+
+    if (OrbitCameraMode)
+    {
+        static float speed = 0;
+        speed += e.ElapsedTime;
+        
+        Vector3 newPos = solarSystem.GetPlanetPosition() + Vector3(sin(speed), 0, cos(speed)) * 30;
+        m_Camera.Position = XMVectorSet(newPos.X, newPos.Y, newPos.Z, 1);
+        Vector3 target = solarSystem.GetPlanetPosition() + newPos * -1;
+        m_Camera.Target = XMVectorSet(target.X, target.Y, target.Z, 1);
+    }
 }
 
 // Transition a resource
@@ -257,8 +264,7 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     XMMATRIX viewProjMatrix = m_Camera.GetViewProjMatrix();
 
-    cube.OnRender(commandList, viewProjMatrix);
-    sphere.OnRender(commandList, viewProjMatrix);
+    solarSystem.OnRender(commandList, viewProjMatrix);
 
     // Present
     {
@@ -276,6 +282,19 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
 
     switch (e.Key)
     {
+    case KeyCode::Z:
+        OrbitCameraMode = !OrbitCameraMode;
+        if (OrbitCameraMode)
+        {
+            oldCameraPosition = m_Camera.Position;
+            oldCameraTarget = m_Camera.Target;
+        }
+        else
+        {
+            m_Camera.Position = oldCameraPosition;
+            m_Camera.Target = oldCameraTarget;
+        }
+        break;
     case KeyCode::Escape:
         Application::Get().Quit(0);
         break;

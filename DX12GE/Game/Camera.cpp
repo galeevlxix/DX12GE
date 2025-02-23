@@ -47,43 +47,80 @@ void Camera::OnLoad(XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, 
 
 XMMATRIX Camera::GetViewProjMatrix()
 {
-    Render();
 	return XMMatrixMultiply(XMMatrixLookAtLH(Position, Position + Target, Up), XMMatrixPerspectiveFovLH(XMConvertToRadians(Fov), Ratio, ZNear, ZFar));
 }
 
-void Camera::Render()
+void Camera::OnUpdate(float deltaTime)
 {
     XMVECTOR left, up;
-    if (monitor.W) Position += Target * speed;
-    if (monitor.S) Position -= Target * speed;
+    if (monitor.W) Position += Target * speed * deltaTime;
+    if (monitor.S) Position -= Target * speed * deltaTime;
     if (monitor.A)
     {
         left = XMVector3Cross(Target, Up);
         left = XMVector3Normalize(left);
-        Position += left * speed;
+        Position += left * speed * deltaTime;
     }
     if (monitor.D)
     {
         left = XMVector3Cross(Target, Up);
         left = XMVector3Normalize(left);
-        Position -= left * speed;
+        Position -= left * speed * deltaTime;
     }
     if (monitor.E)
     {
         up = XMVectorSet(0, 1, 0, 1);
-        Position += up * speed;
+        Position += up * speed * deltaTime;
     }
     if (monitor.Q)
     {
         up = XMVectorSet(0, 1, 0, 1);
-        Position -= up * speed;
+        Position -= up * speed * deltaTime;
     }
+}
+
+// Clamp a value between a min and max range
+template<typename T>
+constexpr const T& clamp(const T& val, const T& min, const T& max)
+{
+	return val < min ? min : val > max ? max : val;
+}
+
+void Camera::OnMouseWheel(MouseWheelEventArgs& e)
+{
+	Fov -= e.WheelDelta;
+	Fov = clamp(Fov, 12.0f, 90.0f);
+}
+
+void Camera::OnMouseMoved(MouseMotionEventArgs& e)
+{
+    if (!monitor.RBC) return;
+
+    float dx = e.X - prevX;
+    float dy = e.Y - prevY;
+
+    angle_h += dx * sensitivity;
+    if (angle_v + dy * sensitivity > -89 && angle_v + dy * sensitivity < 89) 
+        angle_v += dy * sensitivity;
+
+    float rotX = XMConvertToRadians(angle_h);
+    float rotY = XMConvertToRadians(angle_v);
+
+    float x = cos(PI + rotX) * sin(PI / 2 - rotY);
+    float y = cos(PI / 2 - rotY);
+    float z = sin(PI + rotX) * sin(PI / 2 - rotY);
+
+    Target = XMVectorSet(x, y, z, 1);
+    Target = XMVector3Normalize(Target);   
+    
+    prevX = e.X;
+    prevY = e.Y;
 }
 
 void Camera::OnKeyPressed(KeyEventArgs& e)
 {
-	switch (e.Key)
-	{
+    switch (e.Key)
+    {
     case KeyCode::W:
         monitor.W = true;
         break;
@@ -110,7 +147,7 @@ void Camera::OnKeyPressed(KeyEventArgs& e)
         monitor.Ctrl = true;
         speed = fastSpeed;
         break;
-	}
+    }
 }
 
 void Camera::OnKeyReleased(KeyEventArgs& e)
@@ -146,57 +183,20 @@ void Camera::OnKeyReleased(KeyEventArgs& e)
     }
 }
 
-// Clamp a value between a min and max range
-template<typename T>
-constexpr const T& clamp(const T& val, const T& min, const T& max)
-{
-	return val < min ? min : val > max ? max : val;
-}
-
-void Camera::OnMouseWheel(MouseWheelEventArgs& e)
-{
-	Fov -= e.WheelDelta;
-	Fov = clamp(Fov, 12.0f, 90.0f);
-}
-
-void Camera::OnMouseMoved(MouseMotionEventArgs& e)
-{
-    if (!RBC) return;
-
-    float dx = e.X - prevX;
-    float dy = e.Y - prevY;
-
-    angle_h += dx * sensitivity;
-    angle_v += dy * sensitivity;
-
-    float rotX = XMConvertToRadians(angle_h);
-    float rotY = XMConvertToRadians(angle_v);
-
-    float x = cos(PI + rotX) * sin(PI / 2 - rotY);
-    float y = cos(PI / 2 - rotY);
-    float z = sin(PI + rotX) * sin(PI / 2 - rotY);
-
-    Target = XMVectorSet(x, y, z, 1);
-    Target = XMVector3Normalize(Target);   
-    
-    prevX = e.X;
-    prevY = e.Y;
-}
-
 void Camera::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
     switch (e.Button)
     {
     case 1: //Left
-        
+        monitor.LBC = true;
         break;
     case 2: //Right
-        RBC = true;
+        monitor.RBC = true;
         prevX = e.X;
         prevY = e.Y;
         break;
     case 3: //Middel
-
+        monitor.MBC = true;
         break;
     }
 }
@@ -206,13 +206,13 @@ void Camera::OnMouseButtonReleased(MouseButtonEventArgs& e)
     switch (e.Button)
     {
     case 1: //Left
-
+        monitor.LBC = false;
         break;
     case 2: //Right
-        RBC = false;
+        monitor.RBC = false;
         break;
     case 3: //Middel
-
+        monitor.MBC = false;
         break;
     }
 }
