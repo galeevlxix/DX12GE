@@ -44,6 +44,8 @@ void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 
         }
     }
 
+    radius *= max(scale.X, max(scale.Y, scale.Z));
+
     // Загрузить данные вершинного буфера
     UpdateBufferResource(commandList, &m_VertexBuffer, &intermediateVertexBuffer, m_Vertices.size(), sizeof(VertexPosColor), m_Vertices.data());
 
@@ -173,6 +175,7 @@ Vector3 BaseObject::GetScale()
 
 void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)
 {
+    //float minY = D3D12_FLOAT32_MAX;
     //int gx_segments = 32;
     //int gy_segments = 32;
 
@@ -206,6 +209,8 @@ void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)
         }
     }
     m_Vertices = vertices;
+
+    radius = Vector3(vertices[0].Position.x, vertices[0].Position.y, vertices[0].Position.z).Length();
     
     vector<WORD> indices;
     for (int i = 0; i < gy_segments; i++)
@@ -227,6 +232,8 @@ void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)
 
 void BaseObject::CreateCubeGeometry()
 {
+    float minY = D3D12_FLOAT32_MAX;
+
     vector<VertexPosColor> vertices =
     {
         { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) },  // 0
@@ -239,6 +246,8 @@ void BaseObject::CreateCubeGeometry()
         { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f, 0.0f, 1.0f) }    // 7
     };
     m_Vertices = vertices;
+    //lowerPoint = XMVectorSet(-1.0f, -1.0f, -1.0f, 1);
+    radius = 1;
 
     vector<WORD> indices =
     {
@@ -252,3 +261,5 @@ void BaseObject::CreateCubeGeometry()
     m_Indices = indices;
     indiciesCount = indices.size();
 }
+
+

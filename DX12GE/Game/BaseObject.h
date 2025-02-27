@@ -43,9 +43,10 @@ public:
 
     void CreateSphereGeometry(int gx_segments, int gy_segments);
     void CreateCubeGeometry();
+
+    float radius;
 private:
     XMMATRIX m_ModelMatrix;
-
     Vector3 m_Position;
     Vector3 m_Rotation;
     Vector3 m_Scale;
@@ -63,6 +64,8 @@ private:
     vector<VertexPosColor> m_Vertices;
     vector<WORD> m_Indices;
     int indiciesCount;
+
+    
 
     void TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState);
     void UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE);

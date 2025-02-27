@@ -54,7 +54,17 @@ Vector3 Vector3::operator+(float value)
     return Vector3(X + value, Y + value, Z + value);
 }
 
+Vector3 Vector3::operator-(float value)
+{
+    return Vector3(X - value, Y - value, Z - value);
+}
+
 Vector3 Vector3::operator+(Vector3 value)
 {
     return Vector3(X + value.X, Y + value.Y, Z + value.Z);
+}
+
+Vector3 Vector3::operator-(Vector3 value)
+{
+    return Vector3(X - value.X, Y - value.Y, Z - value.Z);
 }

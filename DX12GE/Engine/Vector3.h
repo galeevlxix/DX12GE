@@ -25,5 +25,7 @@ public:
 
     Vector3 operator*(float value);
     Vector3 operator+(float value);
+    Vector3 operator-(float value);
     Vector3 operator+(Vector3 value);
+    Vector3 operator-(Vector3 value);
 };

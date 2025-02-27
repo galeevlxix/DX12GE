@@ -81,6 +81,7 @@ private:
 
     XMVECTOR oldCameraPosition;
     XMVECTOR oldCameraTarget;
+    float oldFov;
 
     bool m_ContentLoaded;
 };

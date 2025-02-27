@@ -13,6 +13,7 @@ public:
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
 	Vector3 GetPlanetPosition();
+	float GetNewFov(Vector3 CameraPos, float ratio);
 private:
 	BaseObject Sun;
 

@@ -90,6 +90,10 @@ void Camera::OnMouseWheel(MouseWheelEventArgs& e)
 {
 	Fov -= e.WheelDelta;
 	Fov = clamp(Fov, 12.0f, 90.0f);
+
+    //std::cout << Fov << std::endl;
+
+    //22
 }
 
 void Camera::OnMouseMoved(MouseMotionEventArgs& e)

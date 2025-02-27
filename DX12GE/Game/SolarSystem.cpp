@@ -1,4 +1,5 @@
 #include "SolarSystem.h"
+#include <math.h>
 
 void SolarSystem::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
@@ -123,5 +124,20 @@ void SolarSystem::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMAT
 
 Vector3 SolarSystem::GetPlanetPosition()
 {
-	return Earth.GetPosition();
+	return Sun.GetPosition();
 }
+
+float SolarSystem::GetNewFov(Vector3 CameraPos, float ratio)
+{
+	float distance = (GetPlanetPosition() - CameraPos).Length();
+	float tg = Sun.radius / distance;
+	float angle = 2 * XMConvertToDegrees(atan(tg));
+
+	return angle;
+}
+
+//катамари: текстуры и ассимп
+//освещение: поинт и директ
+//тени: камкадные
+//деферед рендеринг
+//частицы на гпу

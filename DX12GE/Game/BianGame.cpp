@@ -3,6 +3,8 @@
 #include "../Engine/Application.h"
 #include "../Engine/CommandQueue.h"
 
+#include <iostream>
+
 #if defined(min)
 #undef min
 #endif
@@ -207,10 +209,12 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
         static float speed = 0;
         speed += e.ElapsedTime;
         
-        Vector3 newPos = solarSystem.GetPlanetPosition() + Vector3(sin(speed), 0, cos(speed)) * 30;
+        Vector3 newPos = solarSystem.GetPlanetPosition() + Vector3(sin(speed), 0, cos(speed)) * 90;
         m_Camera.Position = XMVectorSet(newPos.X, newPos.Y, newPos.Z, 1);
         Vector3 target = solarSystem.GetPlanetPosition() + newPos * -1;
         m_Camera.Target = XMVectorSet(target.X, target.Y, target.Z, 1);
+
+        m_Camera.Fov = solarSystem.GetNewFov(Vector3(XMVectorGetX(m_Camera.Position), XMVectorGetY(m_Camera.Position), XMVectorGetZ(m_Camera.Position)), m_Camera.Ratio);
     }
 }
 
@@ -288,11 +292,13 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
         {
             oldCameraPosition = m_Camera.Position;
             oldCameraTarget = m_Camera.Target;
+            oldFov = m_Camera.Fov;
         }
         else
         {
             m_Camera.Position = oldCameraPosition;
             m_Camera.Target = oldCameraTarget;
+            m_Camera.Fov = oldFov;
         }
         break;
     case KeyCode::Escape:
@@ -319,6 +325,7 @@ void BianGame::OnKeyReleased(KeyEventArgs& e)
 void BianGame::OnMouseWheel(MouseWheelEventArgs& e)
 {
     m_Camera.OnMouseWheel(e);
+    
 }
 
 void BianGame::OnMouseMoved(MouseMotionEventArgs& e)
