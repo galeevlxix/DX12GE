@@ -20,7 +20,7 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
 
         XMFLOAT3 colors[8] =
         {
-             XMFLOAT3(1.5f, 1.5f, 1.5f),
+             XMFLOAT3(1.0f, 1.0f, 1.0f),
              XMFLOAT3(1.0f, 0.0f, 0.0f),
              XMFLOAT3(0.0f, 1.0f, 0.0f),
              XMFLOAT3(0.0f, 0.0f, 1.0f),
@@ -51,7 +51,7 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
                 const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ?
                     &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
 
-                VertexPosColor v({ XMFLOAT3(pPos->x, pPos->y, pPos->z), colors[colorIndex] } );
+                VertexPosColor v({ XMFLOAT3(pPos->x, pPos->y, pPos->z), XMFLOAT3(pNormal->x, pNormal->y, pNormal->z), colors[colorIndex] } );
                 
                 Vertices.push_back(v);
             }

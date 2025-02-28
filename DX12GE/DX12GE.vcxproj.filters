@@ -54,22 +54,13 @@
     <ClCompile Include="Engine\Window.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Pong.cpp">
-      <Filter>Исходные файлы\Game</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Vector3.cpp">
       <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\GlobalScene.cpp">
-      <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
     <ClCompile Include="Game\BaseObject.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
     <ClCompile Include="Game\Camera.cpp">
-      <Filter>Исходные файлы\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\SolarSystem.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
     <ClCompile Include="Game\BianObject.cpp">
@@ -113,22 +104,13 @@
     <ClInclude Include="Engine\KeyCodes.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Pong.h">
-      <Filter>Файлы заголовков\Game</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Vector3.h">
       <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\GlobalScene.h">
-      <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\BaseObject.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\Camera.h">
-      <Filter>Файлы заголовков\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\SolarSystem.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\BianObject.h">

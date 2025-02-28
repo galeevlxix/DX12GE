@@ -16,6 +16,7 @@ using namespace DirectX;
 struct VertexPosColor
 {
     XMFLOAT3 Position;
+    XMFLOAT3 Normal;
     XMFLOAT3 Color;
 };
 
@@ -42,7 +43,6 @@ public:
     Vector3 GetPosition();
     Vector3 GetRotation();
     Vector3 GetScale();
-
 
     void CreateMesh(vector<VertexPosColor> vertices, vector<WORD> indices);
     void CreateSphereGeometry(int gx_segments, int gy_segments);
