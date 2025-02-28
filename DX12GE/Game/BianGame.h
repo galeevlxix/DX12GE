@@ -73,8 +73,6 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    //SolarSystem solarSystem;
-
     BianObject bianObj;
     Camera m_Camera;
     bool m_ContentLoaded;

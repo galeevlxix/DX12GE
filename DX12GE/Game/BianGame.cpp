@@ -34,8 +34,8 @@ bool BianGame::LoadContent()
     ThrowIfFailed(
         device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
-    bianObj.OnLoad(commandList, "C:\\Users\\gtimu\\source\\repos\\DX12GE\\DX12GE\\Resources\\Models\\gltf tyan\\scene.gltf");
-
+    //bianObj.OnLoad(commandList, "C:/Users/gtimu/source/repos/DX12GE/DX12GE/Resources/Models/gltf tyan/scene.gltf");
+    bianObj.OnLoad(commandList, "C:\\Users\\gtimu\\source\\repos\\DX12GE\\DX12GE\\Resources\\Models\\cyber_samurai\\scene.gltf");
     m_Camera.OnLoad(
         XMVectorSet(0, 3, -10, 1),
         XMVectorSet(0, 0, 1, 1),
