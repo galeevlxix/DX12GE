@@ -1,8 +1,10 @@
 #pragma once
-#include "../Engine/CommandQueue.h"
+#include "../Engine/CommandQueue.h"                                                                          
 #include "../Engine/Vector3.h"
-
 #include <vector>
+#include <string>
+
+
 
 using namespace std;
 
@@ -41,6 +43,8 @@ public:
     Vector3 GetRotation();
     Vector3 GetScale();
 
+
+    void CreateMesh(vector<VertexPosColor> vertices, vector<WORD> indices);
     void CreateSphereGeometry(int gx_segments, int gy_segments);
     void CreateCubeGeometry();
 
@@ -65,9 +69,11 @@ private:
     vector<WORD> m_Indices;
     int indiciesCount;
 
-    
-
     void TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState);
     void UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE);
+
+    //bool InitFromScene(const aiScene* pScene, const string& Filename);
+    //void InitMesh(unsigned int Index, const aiMesh* paiMesh);
+    //bool InitMaterials(const aiScene* pScene, const string& Filename);
 };
 

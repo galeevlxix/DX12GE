@@ -5,7 +5,7 @@
 #include <DirectXMath.h>
 #include "Camera.h" 
 
-#include "SolarSystem.h" 
+#include "BianObject.h" 
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -73,15 +73,9 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    SolarSystem solarSystem;
+    //SolarSystem solarSystem;
 
+    BianObject bianObj;
     Camera m_Camera;
-
-    bool OrbitCameraMode = false;
-
-    XMVECTOR oldCameraPosition;
-    XMVECTOR oldCameraTarget;
-    float oldFov;
-
     bool m_ContentLoaded;
 };

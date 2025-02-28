@@ -34,10 +34,10 @@ bool BianGame::LoadContent()
     ThrowIfFailed(
         device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
-    solarSystem.OnLoad(commandList);
+    bianObj.OnLoad(commandList, "C:\\Users\\gtimu\\source\\repos\\DX12GE\\DX12GE\\Resources\\Models\\gltf tyan\\scene.gltf");
 
     m_Camera.OnLoad(
-        XMVectorSet(0, 50, -80, 1),
+        XMVectorSet(0, 3, -10, 1),
         XMVectorSet(0, 0, 1, 1),
         XMVectorSet(0, 1, 0, 1),
         80, static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight()), 0.1f, 300.0);
@@ -201,21 +201,8 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
         totalTime = 0.0;
     }
 
-    solarSystem.OnUpdate(e.ElapsedTime);
+    bianObj.OnUpdate(e.ElapsedTime);
     m_Camera.OnUpdate(e.ElapsedTime);
-
-    if (OrbitCameraMode)
-    {
-        static float speed = 0;
-        speed += e.ElapsedTime;
-        
-        Vector3 newPos = solarSystem.GetPlanetPosition() + Vector3(sin(speed), 0, cos(speed)) * 90;
-        m_Camera.Position = XMVectorSet(newPos.X, newPos.Y, newPos.Z, 1);
-        Vector3 target = solarSystem.GetPlanetPosition() + newPos * -1;
-        m_Camera.Target = XMVectorSet(target.X, target.Y, target.Z, 1);
-
-        m_Camera.Fov = solarSystem.GetNewFov(Vector3(XMVectorGetX(m_Camera.Position), XMVectorGetY(m_Camera.Position), XMVectorGetZ(m_Camera.Position)), m_Camera.Ratio);
-    }
 }
 
 // Transition a resource
@@ -268,7 +255,7 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     XMMATRIX viewProjMatrix = m_Camera.GetViewProjMatrix();
 
-    solarSystem.OnRender(commandList, viewProjMatrix);
+    bianObj.OnRender(commandList, viewProjMatrix);
 
     // Present
     {
@@ -286,21 +273,6 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
 
     switch (e.Key)
     {
-    case KeyCode::Z:
-        OrbitCameraMode = !OrbitCameraMode;
-        if (OrbitCameraMode)
-        {
-            oldCameraPosition = m_Camera.Position;
-            oldCameraTarget = m_Camera.Target;
-            oldFov = m_Camera.Fov;
-        }
-        else
-        {
-            m_Camera.Position = oldCameraPosition;
-            m_Camera.Target = oldCameraTarget;
-            m_Camera.Fov = oldFov;
-        }
-        break;
     case KeyCode::Escape:
         Application::Get().Quit(0);
         break;

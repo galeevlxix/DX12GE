@@ -21,9 +21,9 @@ struct PressedKeyMonitor
 	bool MBC = false;
 };
 
-const static float slowSpeed = 10;
-const static float normalSpeed = 25;
-const static float fastSpeed = 50;
+const static float slowSpeed = 3;
+const static float normalSpeed = 6;
+const static float fastSpeed = 12;
 
 class Camera
 {

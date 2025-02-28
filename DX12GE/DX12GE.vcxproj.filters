@@ -72,6 +72,9 @@
     <ClCompile Include="Game\SolarSystem.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Game\BianObject.cpp">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\d3dx12.h">
@@ -126,6 +129,9 @@
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\SolarSystem.h">
+      <Filter>Файлы заголовков\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\BianObject.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
   </ItemGroup>

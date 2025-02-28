@@ -104,11 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Windows\lib\assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Windows\dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,6 +141,7 @@
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="Game\BaseObject.cpp" />
     <ClCompile Include="Game\BianGame.cpp" />
+    <ClCompile Include="Game\BianObject.cpp" />
     <ClCompile Include="Game\Camera.cpp" />
     <ClCompile Include="Game\GlobalScene.cpp" />
     <ClCompile Include="Game\Pong.cpp" />
@@ -159,6 +162,7 @@
     <ClInclude Include="Engine\Window.h" />
     <ClInclude Include="Game\BaseObject.h" />
     <ClInclude Include="Game\BianGame.h" />
+    <ClInclude Include="Game\BianObject.h" />
     <ClInclude Include="Game\Camera.h" />
     <ClInclude Include="Game\GlobalScene.h" />
     <ClInclude Include="Game\Pong.h" />
@@ -191,6 +195,5 @@
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

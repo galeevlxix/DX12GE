@@ -32,6 +32,7 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
     }
 }
 
+
 void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale, Vector3 Color)
 {
     if (m_Vertices.size() == 0) CreateCubeGeometry();
@@ -171,6 +172,13 @@ Vector3 BaseObject::GetRotation()
 Vector3 BaseObject::GetScale()
 {
     return m_Scale;
+}
+
+void BaseObject::CreateMesh(vector<VertexPosColor> vertices, vector<WORD> indices)
+{
+    m_Vertices = vertices;
+    m_Indices = indices;
+    indiciesCount = indices.size();
 }
 
 void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)
