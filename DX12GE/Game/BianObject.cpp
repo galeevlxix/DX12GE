@@ -49,7 +49,7 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
             m_Meshes.push_back(BaseObject());
             const aiMesh* paiMesh = pScene->mMeshes[i];
 
-            vector<VertexPosColor> Vertices;
+            vector<VertexStruct> Vertices;
             vector<WORD> Indices;
 
             const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
@@ -59,7 +59,7 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
                 const aiVector3D* pNormal = paiMesh->HasNormals() ? &(paiMesh->mNormals[i]) : & Zero3D;
                 const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
 
-                VertexPosColor v({ XMFLOAT3(pPos->x, pPos->y, pPos->z), XMFLOAT3(pNormal->x, pNormal->y, pNormal->z), colors[colorIndex] } );
+                VertexStruct v({ XMFLOAT3(pPos->x, pPos->y, pPos->z), XMFLOAT3(pNormal->x, pNormal->y, pNormal->z), colors[colorIndex] } );
                 
                 Vertices.push_back(v);
             }

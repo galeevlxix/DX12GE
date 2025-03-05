@@ -47,12 +47,12 @@ void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 
     radius *= max(scale.X, max(scale.Y, scale.Z));
 
     // Загрузить данные вершинного буфера
-    UpdateBufferResource(commandList, &m_VertexBuffer, &intermediateVertexBuffer, m_Vertices.size(), sizeof(VertexPosColor), m_Vertices.data());
+    UpdateBufferResource(commandList, &m_VertexBuffer, &intermediateVertexBuffer, m_Vertices.size(), sizeof(VertexStruct), m_Vertices.data());
 
     // Создать представление буфера вершин
     m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();
-    m_VertexBufferView.SizeInBytes = m_Vertices.size() * sizeof(VertexPosColor);
-    m_VertexBufferView.StrideInBytes = sizeof(VertexPosColor);
+    m_VertexBufferView.SizeInBytes = static_cast<UINT>(m_Vertices.size() * sizeof(VertexStruct));
+    m_VertexBufferView.StrideInBytes = sizeof(VertexStruct);
 
     // Загрузить данные индексного буфера
     UpdateBufferResource(commandList, &m_IndexBuffer, &intermediateIndexBuffer, m_Indices.size(), sizeof(WORD), m_Indices.data());
@@ -60,7 +60,7 @@ void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 
     // Создать представление индексного буфера
     m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
     m_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
-    m_IndexBufferView.SizeInBytes = m_Indices.size() * sizeof(WORD);
+    m_IndexBufferView.SizeInBytes = static_cast<UINT>(m_Indices.size() * sizeof(WORD));
 
     SetPosition(position);
     SetRotation(rotation);
@@ -174,11 +174,11 @@ Vector3 BaseObject::GetScale()
     return m_Scale;
 }
 
-void BaseObject::CreateMesh(vector<VertexPosColor> vertices, vector<WORD> indices)
+void BaseObject::CreateMesh(vector<VertexStruct> vertices, vector<WORD> indices)
 {
     m_Vertices = vertices;
     m_Indices = indices;
-    indiciesCount = indices.size();
+    indiciesCount = static_cast<UINT>(indices.size());
 }
 
 void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)
@@ -199,18 +199,18 @@ void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)
          XMFLOAT3(1.0f, 1.0f, 1.0f),
     };
 
-    vector<VertexPosColor> vertices;
+    vector<VertexStruct> vertices;
     int colorIndex = 0;
 
     for (int y = 0; y <= gy_segments; y++)
     {
         for (int x = 0; x <= gx_segments; x++)
         {
-            float xSegment = (float)x / (float)gx_segments;
-            float ySegment = (float)y / (float)gy_segments;
-            float xPos = cos(xSegment * 2.0f * PI) * sin(ySegment * PI);
-            float yPos = cos(ySegment * PI);
-            float zPos = sin(xSegment * 2.0f * PI) * sin(ySegment * PI);
+            double xSegment = (double)x / (double)gx_segments;
+            double ySegment = (double)y / (double)gy_segments;
+            double xPos = cos(xSegment * 2.0f * PI) * sin(ySegment * PI);
+            double yPos = cos(ySegment * PI);
+            double zPos = sin(xSegment * 2.0f * PI) * sin(ySegment * PI);
             vertices.push_back({ XMFLOAT3(xPos, yPos, zPos), colors[colorIndex]});
             colorIndex++;
             colorIndex = colorIndex % 8;
@@ -242,7 +242,7 @@ void BaseObject::CreateCubeGeometry()
 {
     float minY = D3D12_FLOAT32_MAX;
 
-    vector<VertexPosColor> vertices =
+    vector<VertexStruct> vertices =
     {
         { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) },  // 0
         { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },  // 1

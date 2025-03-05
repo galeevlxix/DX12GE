@@ -10,8 +10,7 @@ using namespace DirectX;
 
 #define PI 3.1415926535f
 
-// Vertex data for a colored cube
-struct VertexPosColor
+struct VertexStruct
 {
     XMFLOAT3 Position;
     XMFLOAT3 Normal;
@@ -44,7 +43,7 @@ public:
     Vector3 GetRotation();
     Vector3 GetScale();
 
-    void CreateMesh(vector<VertexPosColor> vertices, vector<WORD> indices);
+    void CreateMesh(vector<VertexStruct> vertices, vector<WORD> indices);
     void CreateSphereGeometry(int gx_segments, int gy_segments);
     void CreateCubeGeometry();
 
@@ -65,9 +64,9 @@ private:
     D3D12_INDEX_BUFFER_VIEW m_IndexBufferView;
     ComPtr<ID3D12Resource> intermediateIndexBuffer;
 
-    vector<VertexPosColor> m_Vertices;
+    vector<VertexStruct> m_Vertices;
     vector<WORD> m_Indices;
-    int indiciesCount;
+    UINT indiciesCount;
 
     void TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState);
     void UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE);

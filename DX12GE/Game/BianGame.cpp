@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include "DirectXTex.h"
+
 #if defined(min)
 #undef min
 #endif
@@ -34,12 +36,11 @@ bool BianGame::LoadContent()
     ThrowIfFailed(
         device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
-    //bianObj.OnLoad(commandList, "C:/Users/gtimu/source/repos/DX12GE/DX12GE/Resources/Models/gltf tyan/scene.gltf");
     bianObj.OnLoad(commandList, "C:\\Users\\gtimu\\source\\repos\\DX12GE\\DX12GE\\Resources\\Models\\cyber_samurai\\scene.gltf");
     m_Camera.OnLoad(
-        XMVectorSet(0, 3, -10, 1),
-        XMVectorSet(0, 0, 1, 1),
-        XMVectorSet(0, 1, 0, 1),
+        XMVectorSet(0, 3, -10, 1), // Position
+        XMVectorSet(0, 0, 1, 1),   // Target
+        XMVectorSet(0, 1, 0, 1),   // Up
         80, static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight()), 0.1f, 300.0);
 
     // Load the vertex shader
@@ -78,7 +79,6 @@ bool BianGame::LoadContent()
     // A single 32-bit constant root parameter that is used by the vertex shader
     CD3DX12_ROOT_PARAMETER1 rootParameters[1];
     rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 2, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
-    //rootParameters[1].InitAsConstants(sizeof(XMMATRIX) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
     rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
@@ -256,6 +256,8 @@ void BianGame::OnRender(RenderEventArgs& e)
     commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
     XMMATRIX viewProjMatrix = m_Camera.GetViewProjMatrix();
+
+    
 
     bianObj.OnRender(commandList, viewProjMatrix);
 
