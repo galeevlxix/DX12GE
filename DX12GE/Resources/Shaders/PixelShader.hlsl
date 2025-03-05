@@ -1,8 +1,8 @@
 struct PixelShaderInput
 {
-    float4 Color : COLOR;
-    float4 Normal : NORMAL;
     float4 Position : SV_Position;
+    float4 Normal : NORMAL;
+    float2 TextCoord : TEXCOORD;
 };
 
 float4 main(PixelShaderInput IN) : SV_Target
@@ -13,5 +13,5 @@ float4 main(PixelShaderInput IN) : SV_Target
     
     float3 lightIntensity = ambientLightIntensity + sunLightIntensity * max(dot(IN.Normal.xyz, sunLightDirection), 0.0f);
 
-    return IN.Color * float4(lightIntensity, 1.0);
+    return float4(IN.TextCoord.x, IN.TextCoord.y, 0.0, 1.0) * float4(lightIntensity, 1.0);
 }

@@ -32,17 +32,17 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
 }
 
 
-void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale, Vector3 Color)
+void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale)
 {
-    if (m_Vertices.size() == 0) CreateCubeGeometry();
+    //if (m_Vertices.size() == 0) CreateCubeGeometry();
 
-    if (Color.Length() != 0)
+    /*if (Color.Length() != 0)
     {
         for (int i = 0; i < m_Vertices.size(); i++)
         {
             m_Vertices[i].Color = Color.ToXM();
         }
-    }
+    }*/
 
     radius *= max(scale.X, max(scale.Y, scale.Z));
 
@@ -181,93 +181,93 @@ void BaseObject::CreateMesh(vector<VertexStruct> vertices, vector<WORD> indices)
     indiciesCount = static_cast<UINT>(indices.size());
 }
 
-void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)
-{
-    //float minY = D3D12_FLOAT32_MAX;
-    //int gx_segments = 32;
-    //int gy_segments = 32;
-
-    XMFLOAT3 colors[8] =
-    {
-         XMFLOAT3(0.5f, 0.5f, 0.5f),
-         XMFLOAT3(1.0f, 0.0f, 0.0f),
-         XMFLOAT3(0.0f, 1.0f, 0.0f),
-         XMFLOAT3(0.0f, 0.0f, 1.0f),
-         XMFLOAT3(1.0f, 1.0f, 0.0f),
-         XMFLOAT3(0.0f, 1.0f, 1.0f),
-         XMFLOAT3(1.0f, 0.0f, 1.0f),
-         XMFLOAT3(1.0f, 1.0f, 1.0f),
-    };
-
-    vector<VertexStruct> vertices;
-    int colorIndex = 0;
-
-    for (int y = 0; y <= gy_segments; y++)
-    {
-        for (int x = 0; x <= gx_segments; x++)
-        {
-            double xSegment = (double)x / (double)gx_segments;
-            double ySegment = (double)y / (double)gy_segments;
-            double xPos = cos(xSegment * 2.0f * PI) * sin(ySegment * PI);
-            double yPos = cos(ySegment * PI);
-            double zPos = sin(xSegment * 2.0f * PI) * sin(ySegment * PI);
-            vertices.push_back({ XMFLOAT3(xPos, yPos, zPos), colors[colorIndex]});
-            colorIndex++;
-            colorIndex = colorIndex % 8;
-        }
-    }
-    m_Vertices = vertices;
-
-    radius = Vector3(vertices[0].Position.x, vertices[0].Position.y, vertices[0].Position.z).Length();
-    
-    vector<WORD> indices;
-    for (int i = 0; i < gy_segments; i++)
-    {
-        for (int j = 0; j < gx_segments; j++)
-        {
-            indices.push_back((i + 1) * (gx_segments + 1) + j + 1);
-            indices.push_back((i + 1) * (gx_segments + 1) + j);
-            indices.push_back(i * (gx_segments + 1) + j);
-
-            indices.push_back(i * (gx_segments + 1) + j);
-            indices.push_back(i * (gx_segments + 1) + j + 1);
-            indices.push_back((i + 1) * (gx_segments + 1) + j + 1);
-        }
-    }
-    m_Indices = indices;
-    indiciesCount = indices.size();
-}
-
-void BaseObject::CreateCubeGeometry()
-{
-    float minY = D3D12_FLOAT32_MAX;
-
-    vector<VertexStruct> vertices =
-    {
-        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) },  // 0
-        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },  // 1
-        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },   // 2
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },   // 3
-        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },  // 4
-        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f, 1.0f, 1.0f) },  // 5
-        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) },   // 6
-        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f, 0.0f, 1.0f) }    // 7
-    };
-    m_Vertices = vertices;
-    //lowerPoint = XMVectorSet(-1.0f, -1.0f, -1.0f, 1);
-    radius = 1;
-
-    vector<WORD> indices =
-    {
-        0, 1, 2, 0, 2, 3,
-        4, 6, 5, 4, 7, 6,
-        4, 5, 1, 4, 1, 0,
-        3, 2, 6, 3, 6, 7,
-        1, 5, 6, 1, 6, 2,
-        4, 0, 3, 4, 3, 7
-    };
-    m_Indices = indices;
-    indiciesCount = indices.size();
-}
+//void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)
+//{
+//    //float minY = D3D12_FLOAT32_MAX;
+//    //int gx_segments = 32;
+//    //int gy_segments = 32;
+//
+//    XMFLOAT3 colors[8] =
+//    {
+//         XMFLOAT3(0.5f, 0.5f, 0.5f),
+//         XMFLOAT3(1.0f, 0.0f, 0.0f),
+//         XMFLOAT3(0.0f, 1.0f, 0.0f),
+//         XMFLOAT3(0.0f, 0.0f, 1.0f),
+//         XMFLOAT3(1.0f, 1.0f, 0.0f),
+//         XMFLOAT3(0.0f, 1.0f, 1.0f),
+//         XMFLOAT3(1.0f, 0.0f, 1.0f),
+//         XMFLOAT3(1.0f, 1.0f, 1.0f),
+//    };
+//
+//    vector<VertexStruct> vertices;
+//    int colorIndex = 0;
+//
+//    for (int y = 0; y <= gy_segments; y++)
+//    {
+//        for (int x = 0; x <= gx_segments; x++)
+//        {
+//            double xSegment = (double)x / (double)gx_segments;
+//            double ySegment = (double)y / (double)gy_segments;
+//            double xPos = cos(xSegment * 2.0f * PI) * sin(ySegment * PI);
+//            double yPos = cos(ySegment * PI);
+//            double zPos = sin(xSegment * 2.0f * PI) * sin(ySegment * PI);
+//            vertices.push_back({ XMFLOAT3(xPos, yPos, zPos), colors[colorIndex]});
+//            colorIndex++;
+//            colorIndex = colorIndex % 8;
+//        }
+//    }
+//    m_Vertices = vertices;
+//
+//    radius = Vector3(vertices[0].Position.x, vertices[0].Position.y, vertices[0].Position.z).Length();
+//    
+//    vector<WORD> indices;
+//    for (int i = 0; i < gy_segments; i++)
+//    {
+//        for (int j = 0; j < gx_segments; j++)
+//        {
+//            indices.push_back((i + 1) * (gx_segments + 1) + j + 1);
+//            indices.push_back((i + 1) * (gx_segments + 1) + j);
+//            indices.push_back(i * (gx_segments + 1) + j);
+//
+//            indices.push_back(i * (gx_segments + 1) + j);
+//            indices.push_back(i * (gx_segments + 1) + j + 1);
+//            indices.push_back((i + 1) * (gx_segments + 1) + j + 1);
+//        }
+//    }
+//    m_Indices = indices;
+//    indiciesCount = indices.size();
+//}
+//
+//void BaseObject::CreateCubeGeometry()
+//{
+//    float minY = D3D12_FLOAT32_MAX;
+//
+//    vector<VertexStruct> vertices =
+//    {
+//        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) },  // 0
+//        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },  // 1
+//        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },   // 2
+//        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },   // 3
+//        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },  // 4
+//        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f, 1.0f, 1.0f) },  // 5
+//        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) },   // 6
+//        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f, 0.0f, 1.0f) }    // 7
+//    };
+//    m_Vertices = vertices;
+//    //lowerPoint = XMVectorSet(-1.0f, -1.0f, -1.0f, 1);
+//    radius = 1;
+//
+//    vector<WORD> indices =
+//    {
+//        0, 1, 2, 0, 2, 3,
+//        4, 6, 5, 4, 7, 6,
+//        4, 5, 1, 4, 1, 0,
+//        3, 2, 6, 3, 6, 7,
+//        1, 5, 6, 1, 6, 2,
+//        4, 0, 3, 4, 3, 7
+//    };
+//    m_Indices = indices;
+//    indiciesCount = indices.size();
+//}
 
 

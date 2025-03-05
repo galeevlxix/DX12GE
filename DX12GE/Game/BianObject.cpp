@@ -20,7 +20,7 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
         int meshesCount = pScene->mNumMeshes;
         int materialsCount = pScene->mNumMaterials;
 
-        XMFLOAT3 colors[8] =
+        /*XMFLOAT3 colors[8] =
         {
              XMFLOAT3(1.0f, 1.0f, 1.0f),
              XMFLOAT3(1.0f, 0.0f, 0.0f),
@@ -31,7 +31,7 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
              XMFLOAT3(1.0f, 0.0f, 1.0f),
              XMFLOAT3(1.0f, 1.0f, 1.0f),
         };
-        int colorIndex = 0;        
+        int colorIndex = 0;   */     
 
         for (unsigned int i = 0; i < materialsCount; i++)
         {
@@ -59,13 +59,13 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
                 const aiVector3D* pNormal = paiMesh->HasNormals() ? &(paiMesh->mNormals[i]) : & Zero3D;
                 const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
 
-                VertexStruct v({ XMFLOAT3(pPos->x, pPos->y, pPos->z), XMFLOAT3(pNormal->x, pNormal->y, pNormal->z), colors[colorIndex] } );
+                VertexStruct v({ XMFLOAT3(pPos->x, pPos->y, pPos->z), XMFLOAT3(pNormal->x, pNormal->y, pNormal->z), XMFLOAT2(pTexCoord->x, pTexCoord->y)});
                 
                 Vertices.push_back(v);
             }
 
-            colorIndex++;
-            colorIndex = colorIndex % 8;
+            //colorIndex++;
+            //colorIndex = colorIndex % 8;
 
             for (unsigned int i = 0; i < paiMesh->mNumFaces; i++) 
             {
@@ -77,7 +77,7 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
             }
 
             m_Meshes[i].CreateMesh(Vertices, Indices);
-            m_Meshes[i].OnLoad(commandList, Vector3(0, 0, 0), Vector3(-PI / 2, PI, 0), Vector3(2, 2, 2), Vector3(0, 0, 0));
+            m_Meshes[i].OnLoad(commandList, Vector3(0, 0, 0), Vector3(-PI / 2, PI, 0), Vector3(2, 2, 2));
         }
     }
     else

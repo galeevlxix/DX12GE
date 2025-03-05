@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include "DirectXTex.h"
+
 using namespace std;
 
 using namespace DirectX;
@@ -14,7 +16,7 @@ struct VertexStruct
 {
     XMFLOAT3 Position;
     XMFLOAT3 Normal;
-    XMFLOAT3 Color;
+    XMFLOAT2 TexCoord;
 };
 
 class BaseObject
@@ -22,7 +24,7 @@ class BaseObject
 public:
     unsigned int MaterialIndex;
 
-    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale, Vector3 Color);
+    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale);
     void OnUpdate(double deltaTime);
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
@@ -44,8 +46,8 @@ public:
     Vector3 GetScale();
 
     void CreateMesh(vector<VertexStruct> vertices, vector<WORD> indices);
-    void CreateSphereGeometry(int gx_segments, int gy_segments);
-    void CreateCubeGeometry();
+    /*void CreateSphereGeometry(int gx_segments, int gy_segments);
+    void CreateCubeGeometry();*/
 
     float radius;
 private:
