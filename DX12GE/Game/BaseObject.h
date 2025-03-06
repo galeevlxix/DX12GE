@@ -4,8 +4,6 @@
 #include <vector>
 #include <string>
 
-#include "DirectXTex.h"
-
 using namespace std;
 
 using namespace DirectX;
@@ -23,8 +21,10 @@ class BaseObject
 {
 public:
     unsigned int MaterialIndex;
+    bool NotDraw = false;
 
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale);
+    
     void OnUpdate(double deltaTime);
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 

@@ -41,7 +41,14 @@ public:
         GLTF_METALLIC_ROUGHNESS = 27,
     };
     map<TextureType, string> m_ImagePaths;
-    Material();
+
+    void Load(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void Render(ComPtr<ID3D12GraphicsCommandList2> commandList);
+
+private:
+    ComPtr<ID3D12Resource> m_Texture;
+    ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
+    ComPtr<ID3D12Resource> uploadBuffer;
 };
 
 class BianObject
