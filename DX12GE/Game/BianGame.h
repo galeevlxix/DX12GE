@@ -76,4 +76,7 @@ private:
     BianObject bianObj;
     Camera m_Camera;
     bool m_ContentLoaded;
+
+    ComPtr<ID3D12Resource> m_Texture;
+    ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
 };

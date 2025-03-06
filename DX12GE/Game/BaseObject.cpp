@@ -1,6 +1,19 @@
 #include "BaseObject.h"
 #include "../Engine/Application.h"
 
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <list>
+#include <numeric>
+#include <random>
+#include <vector>
+
+#include <iostream>
+#include <ranges>
+
+
+
 void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
 {
     auto device = Application::Get().GetDevice();
@@ -67,12 +80,6 @@ void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 
     SetScale(scale);
 }
 
-void BaseObject::TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
-{
-    CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource.Get(), beforeState, afterState);
-    commandList->ResourceBarrier(1, &barrier);
-}
-
 void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -83,6 +90,8 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
     XMMATRIX mvpMatrix = XMMatrixMultiply(m_ModelMatrix, viewProjMatrix);
     commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &m_ModelMatrix, 0);
     commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvpMatrix, sizeof(XMMATRIX) / 4);
+
+    
 
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
 }

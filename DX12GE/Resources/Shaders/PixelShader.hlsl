@@ -5,6 +5,9 @@ struct PixelShaderInput
     float2 TextCoord : TEXCOORD;
 };
 
+Texture2D text : register(t0);
+SamplerState samp : register(s0);
+
 float4 main(PixelShaderInput IN) : SV_Target
 {
     float3 ambientLightIntensity = float3(0.3, 0.3, 0.3);
@@ -13,5 +16,5 @@ float4 main(PixelShaderInput IN) : SV_Target
     
     float3 lightIntensity = ambientLightIntensity + sunLightIntensity * max(dot(IN.Normal.xyz, sunLightDirection), 0.0f);
 
-    return float4(IN.TextCoord.x, IN.TextCoord.y, 0.0, 1.0) * float4(lightIntensity, 1.0);
+    return text.Sample(samp, IN.TextCoord) * float4(lightIntensity, 1.0);
 }
