@@ -17,4 +17,5 @@ float4 main(PixelShaderInput IN) : SV_Target
     float3 lightIntensity = ambientLightIntensity + sunLightIntensity * max(dot(IN.Normal.xyz, sunLightDirection), 0.0f);
 
     return text.Sample(samp, IN.TextCoord) * float4(lightIntensity, 1.0);
+    //return float4(IN.TextCoord.x, 0.0, IN.TextCoord.y, 1.0) * float4(lightIntensity, 1.0);
 }

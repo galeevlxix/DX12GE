@@ -1,31 +1,18 @@
 #include "BaseObject.h"
 #include "../Engine/Application.h"
 
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
-#include <list>
-#include <numeric>
-#include <random>
-#include <vector>
-
-#include <iostream>
-#include <ranges>
-
-
-
 void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
 {
     auto device = Application::Get().GetDevice();
 
     size_t bufferSize = numElements * elementSize;
 
-    auto r1 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-    auto r2 = CD3DX12_RESOURCE_DESC::Buffer(bufferSize, flags);
+    auto heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+    auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize, flags);
 
     // Create a committed resource for the GPU resource in a default heap.
     ThrowIfFailed(
-        device->CreateCommittedResource(&r1, D3D12_HEAP_FLAG_NONE, &r2, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(pDestinationResource)));
+        device->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(pDestinationResource)));
 
     // Create an committed resource for the upload.
     if (bufferData)

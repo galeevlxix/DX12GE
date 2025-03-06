@@ -23,7 +23,7 @@ BianGame::BianGame(const std::wstring& name, int width, int height, bool vSync) 
 bool BianGame::LoadContent()
 {
     auto device = Application::Get().GetDevice();
-    auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
+    auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
     // Create the descriptor heap for the depth-stencil view
@@ -34,7 +34,7 @@ bool BianGame::LoadContent()
     ThrowIfFailed(
         device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
-    bianObj.OnLoad(commandList, "C:\\Users\\gtimu\\source\\repos\\DX12GE\\DX12GE\\Resources\\Models\\cyber_samurai\\scene.gltf");
+    bianObj.OnLoad(commandList, "..\\..\\DX12GE\\Resources\\Models\\cyber_samurai\\scene.gltf");
     m_Camera.OnLoad(
         XMVectorSet(0, 3, -10, 1), // Position
         XMVectorSet(0, 0, 1, 1),   // Target
@@ -68,7 +68,7 @@ bool BianGame::LoadContent()
 
     // load image data from disk
     ScratchImage image;
-    LoadFromWICFile(L"C:\\Users\\gtimu\\source\\repos\\DX12GE\\DX12GE\\Resources\\Models\\garden\\textures\\Material.001_baseColor.png", WIC_FLAGS_NONE, nullptr, image);
+    LoadFromWICFile(L"..\\..\\DX12GE\\Resources\\Models\\garden\\textures\\Material.001_baseColor.png", WIC_FLAGS_NONE, nullptr, image);
 
     // generate mip chain
     ScratchImage mipChain;
@@ -134,8 +134,12 @@ bool BianGame::LoadContent()
             nullptr,
             IID_PPV_ARGS(&uploadBuffer)));
 
+    uploadBuffer.Get()->SetName(L"TextureUploadBuffer");
+
     //commandList.Reset();
     //commandAllocator reset
+
+
 
     // write commands to copy data to upload texture (copying each subresource)
     UpdateSubresources(
@@ -146,8 +150,8 @@ bool BianGame::LoadContent()
         0,
         (UINT)subresources.size(),
         subresources.data());
-
-    TransitionResource(commandList, m_Texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    
+    TransitionResource(commandList, m_Texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);// | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 
     // DESCRIPTOR HEAP FOR SHADER RESOURCE VIEW
     D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = { };
@@ -161,15 +165,13 @@ bool BianGame::LoadContent()
 
     {
         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
-        srvDesc.Format = m_Texture.Get()->GetDesc().Format;
+        srvDesc.Format = m_Texture->GetDesc().Format;
         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        D3D12_TEX2D_SRV texture2d;
-        texture2d.MipLevels = m_Texture.Get()->GetDesc().MipLevels;
-        texture2d.MostDetailedMip = 0;
-        texture2d.PlaneSlice = 0;
 
-        srvDesc.Texture2D = texture2d;
+        srvDesc.Texture2D.MipLevels = m_Texture->GetDesc().MipLevels;
+        srvDesc.Texture2D.MostDetailedMip = 0; 
+        srvDesc.Texture2D.PlaneSlice = 0;
 
         device->CreateShaderResourceView(m_Texture.Get(), &srvDesc, srvHandle);
     }
@@ -186,14 +188,10 @@ bool BianGame::LoadContent()
     // A single 32-bit constant root parameter that is used by the vertex shader
     CD3DX12_ROOT_PARAMETER1 rootParameters[2];
     rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 2, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
-
-    {
-        const CD3DX12_DESCRIPTOR_RANGE1 descRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-        rootParameters[1].InitAsDescriptorTable(1, &descRange);
-    }
+    const CD3DX12_DESCRIPTOR_RANGE1 descRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+    rootParameters[1].InitAsDescriptorTable(1, &descRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
     const CD3DX12_STATIC_SAMPLER_DESC staticSampler(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR);
-
 
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
     rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1, &staticSampler, rootSignatureFlags);
@@ -368,10 +366,11 @@ void BianGame::OnRender(RenderEventArgs& e)
     commandList->RSSetViewports(1, &m_Viewport);
     commandList->RSSetScissorRects(1, &m_ScissorRect);
 
+    commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+
     commandList->SetDescriptorHeaps(1, m_SRVHeap.GetAddressOf());
     commandList->SetGraphicsRootDescriptorTable(1, m_SRVHeap.Get()->GetGPUDescriptorHandleForHeapStart());
 
-    commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
     XMMATRIX viewProjMatrix = m_Camera.GetViewProjMatrix();
 
