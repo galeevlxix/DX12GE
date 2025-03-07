@@ -34,7 +34,13 @@ bool BianGame::LoadContent()
     ThrowIfFailed(
         device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
-    bianObj.OnLoad(commandList, "../../DX12GE/Resources/Models/cyber_samurai/scene.gltf");
+    car.OnLoad(commandList, "../../DX12GE/Resources/Models/car/Pony_cartoon.obj");
+    car.SetScale(0.01, 0.01, 0.01);
+    car.SetPosition(-5, 0, 0);
+    car2.OnLoad(commandList, "../../DX12GE/Resources/Models/car/Pony_cartoon.obj");
+    car2.SetScale(0.01, 0.01, 0.01);
+    car2.SetPosition(5, 0, 0);
+
     m_Camera.OnLoad(
         XMVectorSet(0, 3, -10, 1), // Position
         XMVectorSet(0, 0, 1, 1),   // Target
@@ -206,7 +212,13 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
         totalTime = 0.0;
     }
 
-    bianObj.OnUpdate(e.ElapsedTime);
+    static float rot_speed = PI / 4;
+
+    car.Rotate(Vector3(0, rot_speed * e.ElapsedTime, 0));
+    car.OnUpdate(e.ElapsedTime);
+    car2.Rotate(Vector3(0, rot_speed * e.ElapsedTime, 0));
+    car2.OnUpdate(e.ElapsedTime);
+
     m_Camera.OnUpdate(e.ElapsedTime);
 }
 
@@ -244,7 +256,7 @@ void BianGame::OnRender(RenderEventArgs& e)
     {
         TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-        FLOAT clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+        FLOAT clearColor[] = { 0.8f, 0.5f, 0.5f, 1.0f };
 
         ClearRTV(commandList, rtv, clearColor);
         ClearDepth(commandList, dsv);
@@ -258,13 +270,10 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
-    
-
-
     XMMATRIX viewProjMatrix = m_Camera.GetViewProjMatrix();
 
-    bianObj.OnRender(commandList, viewProjMatrix);
-
+    car.OnRender(commandList, viewProjMatrix);
+    car2.OnRender(commandList, viewProjMatrix);
     // Present
     {
         TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

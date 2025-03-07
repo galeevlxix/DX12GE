@@ -73,7 +73,9 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    BianObject bianObj;
+    BianObject car;
+    BianObject car2;
+
     Camera m_Camera;
     bool m_ContentLoaded;
 

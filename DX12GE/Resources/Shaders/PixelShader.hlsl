@@ -10,12 +10,15 @@ SamplerState samp : register(s0);
 
 float4 main(PixelShaderInput IN) : SV_Target
 {
+    float4 texel = text.Sample(samp, IN.TextCoord);
+    if (texel.a < 0.3)
+        discard;
     float3 ambientLightIntensity = float3(0.3, 0.3, 0.3);
     float3 sunLightIntensity = float3(1, 1, 1);
-    float3 sunLightDirection = normalize(float3(-1, 1, 0));
+    float3 sunLightDirection = normalize(float3(-1, 1, -1));
     
-    float3 lightIntensity = ambientLightIntensity + sunLightIntensity * max(dot(IN.Normal.xyz, sunLightDirection), 0.0f);
+    float3 lightIntensity = ambientLightIntensity + sunLightIntensity * max(dot(normalize(IN.Normal.xyz), sunLightDirection), 0.0f);
 
-    return text.Sample(samp, IN.TextCoord) * float4(lightIntensity, 1.0);
+    return texel * float4(lightIntensity, 1.0);
     //return float4(IN.TextCoord.x, 0.0, IN.TextCoord.y, 1.0) * float4(lightIntensity, 1.0);
 }

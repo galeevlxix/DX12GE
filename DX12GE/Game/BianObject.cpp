@@ -79,10 +79,8 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
             }
 
             m_Meshes[i].CreateMesh(Vertices, Indices);
-            m_Meshes[i].OnLoad(commandList, Vector3(0, 0, 0), Vector3(-PI / 2, PI, 0), Vector3(2, 2, 2));
+            m_Meshes[i].OnLoad(commandList, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0));
         }
-
-
     }
     else
     {
@@ -92,10 +90,8 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
 
 void BianObject::OnUpdate(double deltaTime)
 {
-    static float rot_speed = PI / 4;
     for (int i = 0; i < m_Meshes.size(); i++)
     {
-        m_Meshes[i].Rotate(Vector3(0, rot_speed * deltaTime, 0));
         m_Meshes[i].OnUpdate(deltaTime);
     }
 }
@@ -106,6 +102,102 @@ void BianObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
     {
         m_Materials[m_Meshes[i].MaterialIndex].Render(commandList);
         m_Meshes[i].OnRender(commandList, viewProjMatrix);
+    }
+}
+
+void BianObject::SetPosition(float x, float y, float z)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].SetPosition(x, y, z);
+    }
+}
+
+void BianObject::SetPosition(Vector3 PositionVector)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].SetPosition(PositionVector);
+    }
+}
+
+void BianObject::Move(float dx, float dy, float dz)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].Move(dx, dy, dz);
+    }
+}
+
+void BianObject::Move(Vector3 MoveVector)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].Move(MoveVector);
+    }
+}
+
+void BianObject::SetRotation(float x, float y, float z)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].SetRotation(x, y, z);
+    }
+}
+
+void BianObject::SetRotation(Vector3 RotationVector)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].SetRotation(RotationVector);
+    }
+}
+
+void BianObject::SetRotationX(float value)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].SetRotationX(value);
+    }
+}
+
+void BianObject::SetRotationY(float value)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].SetRotationY(value);
+    }
+}
+
+void BianObject::SetRotationZ(float value)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].SetRotationZ(value);
+    }
+}
+
+void BianObject::Rotate(Vector3 RotateVector)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].Rotate(RotateVector);
+    }
+}
+
+void BianObject::SetScale(float x, float y, float z)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].SetScale(x, y, z);
+    }
+}
+
+void BianObject::SetScale(Vector3 ScaleVector)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].SetScale(ScaleVector);
     }
 }
 
@@ -132,7 +224,7 @@ void Material::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
     
     wstring widestr = wstring(path.begin(), path.end());
     const wchar_t* widecstr = widestr.c_str();
-    LoadFromWICFile(widecstr, WIC_FLAGS_NONE, nullptr, image);
+    ThrowIfFailed(LoadFromWICFile(widecstr, WIC_FLAGS_ALL_FRAMES, nullptr, image));
 
     // generate mip chain
     ScratchImage mipChain;
@@ -190,8 +282,7 @@ void Material::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
     //uploadBuffer.Get()->SetName(L"TextureUploadBuffer");
 
     // write commands to copy data to upload texture (copying each subresource)
-    UpdateSubresources(commandList.Get(), m_Texture.Get(), uploadBuffer.Get(), 0, 0, (UINT)subresources.size(),
-        subresources.data());
+    UpdateSubresources(commandList.Get(), m_Texture.Get(), uploadBuffer.Get(), 0, 0, (UINT)subresources.size(), subresources.data());
 
     CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_Texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     commandList->ResourceBarrier(1, &barrier);
