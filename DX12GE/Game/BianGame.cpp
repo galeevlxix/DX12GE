@@ -84,6 +84,7 @@ bool BianGame::LoadContent()
     // A single 32-bit constant root parameter that is used by the vertex shader
     CD3DX12_ROOT_PARAMETER1 rootParameters[2];
     rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 2, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    
     const CD3DX12_DESCRIPTOR_RANGE1 descRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
     rootParameters[1].InitAsDescriptorTable(1, &descRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
@@ -274,6 +275,7 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     car.OnRender(commandList, viewProjMatrix);
     car2.OnRender(commandList, viewProjMatrix);
+
     // Present
     {
         TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

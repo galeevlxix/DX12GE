@@ -5,8 +5,46 @@ struct PixelShaderInput
     float2 TextCoord : TEXCOORD;
 };
 
+struct AmbientLight
+{
+    float3 Color;
+    float Intensity;
+};
+
+struct DirectionalLight
+{
+    float3 Color;
+    float Intensity;
+    
+    float3 Direction;
+};
+
+struct PointLight
+{
+    float3 Color;
+    float Intensity;
+    
+    float AttenuationConstant;
+    float AttenuationLinear;
+    float AttenuationExp;
+};
+
+struct SpotLight
+{
+    float3 Color;
+    float Intensity;
+    
+    float3 Direction;
+    
+    float AttenuationConstant;
+    float AttenuationLinear;
+    float AttenuationExp;
+};
+
+
 Texture2D text : register(t0);
 SamplerState samp : register(s0);
+
 
 float4 main(PixelShaderInput IN) : SV_Target
 {
@@ -20,5 +58,4 @@ float4 main(PixelShaderInput IN) : SV_Target
     float3 lightIntensity = ambientLightIntensity + sunLightIntensity * max(dot(normalize(IN.Normal.xyz), sunLightDirection), 0.0f);
 
     return texel * float4(lightIntensity, 1.0);
-    //return float4(IN.TextCoord.x, 0.0, IN.TextCoord.y, 1.0) * float4(lightIntensity, 1.0);
 }

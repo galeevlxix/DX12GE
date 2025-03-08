@@ -26,7 +26,6 @@ VertexShaderOutput main(VertexPosColor IN)
 
     OUT.Position = mul(WorldViewProjectionCB.WVP, float4(IN.Position, 1.0f));
     OUT.Normal = normalize(mul(WorldViewProjectionCB.MVP, float4(IN.Normal, 0.0f)));
-    //OUT.Color = float4(IN.Color, 1.0f);
     OUT.TextCoord = IN.TextCoord;
 
     return OUT;

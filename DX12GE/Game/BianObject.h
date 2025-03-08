@@ -45,10 +45,13 @@ public:
     void Load(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void Render(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
+    bool CanDrawIt() { return DrawIt; }
 private:
     ComPtr<ID3D12Resource> m_Texture;
     ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
     ComPtr<ID3D12Resource> uploadBuffer;
+
+    bool DrawIt = true;
 };
 
 class BianObject
