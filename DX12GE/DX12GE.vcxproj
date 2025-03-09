@@ -143,6 +143,7 @@
     <ClCompile Include="Game\BianGame.cpp" />
     <ClCompile Include="Game\BianObject.cpp" />
     <ClCompile Include="Game\Camera.cpp" />
+    <ClCompile Include="Game\LightManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Application.h" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Game\BianGame.h" />
     <ClInclude Include="Game\BianObject.h" />
     <ClInclude Include="Game\Camera.h" />
+    <ClInclude Include="Game\LightManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc" />

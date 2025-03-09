@@ -7,6 +7,8 @@
 
 #include "BianObject.h" 
 
+#include "LightManager.h"
+
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
@@ -53,6 +55,7 @@ private:
 
     // Clear the depth of a depth-stencil view.
     void ClearDepth(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsv, FLOAT depth = 1.0f);
+    
 
     // Resize the depth buffer to match the size of the client area.
     void ResizeDepthBuffer(int width, int height);
@@ -76,8 +79,8 @@ private:
     BianObject car;
     BianObject car2;
 
+    LightManager lights;
+
     Camera m_Camera;
     bool m_ContentLoaded;
-
-    
 };

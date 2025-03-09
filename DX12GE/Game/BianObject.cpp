@@ -150,7 +150,7 @@ void Material::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
     texDesc.Width = (UINT)chainBase.width;
     texDesc.Height = (UINT)chainBase.height;
     texDesc.DepthOrArraySize = 1;
-    texDesc.MipLevels = (UINT16)mipChain.GetImageCount();
+    texDesc.MipLevels = 0; // (UINT16)mipChain.GetImageCount();
     texDesc.Format = chainBase.format;
     texDesc.SampleDesc = DXGI_SAMPLE_DESC();
     texDesc.SampleDesc.Count = 1;

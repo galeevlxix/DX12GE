@@ -82,11 +82,14 @@ bool BianGame::LoadContent()
         D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
 
     // A single 32-bit constant root parameter that is used by the vertex shader
-    CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[4];
     rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 2, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
     
     const CD3DX12_DESCRIPTOR_RANGE1 descRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
     rootParameters[1].InitAsDescriptorTable(1, &descRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    rootParameters[2].InitAsConstants(lights.SizeOfAmbientLight() / 4, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParameters[3].InitAsConstants(lights.SizeOfDirectionalLight() / 4, 1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
     const CD3DX12_STATIC_SAMPLER_DESC staticSampler(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR);
 
@@ -112,6 +115,7 @@ bool BianGame::LoadContent()
         CD3DX12_PIPELINE_STATE_STREAM_PS PS;
         CD3DX12_PIPELINE_STATE_STREAM_DEPTH_STENCIL_FORMAT DSVFormat;
         CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS RTVFormats;
+        //CD3DX12_PIPELINE_STATE_STREAM_SAMPLE_DESC SampleDesc;
     } pipelineStateStream;
 
     D3D12_RT_FORMAT_ARRAY rtvFormats = {};
@@ -125,6 +129,7 @@ bool BianGame::LoadContent()
     pipelineStateStream.PS = CD3DX12_SHADER_BYTECODE(pixelShaderBlob.Get());
     pipelineStateStream.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     pipelineStateStream.RTVFormats = rtvFormats;
+    //pipelineStateStream.SampleDesc = staticSampler;
 
     D3D12_PIPELINE_STATE_STREAM_DESC pipelineStateStreamDesc = 
     {
@@ -270,6 +275,11 @@ void BianGame::OnRender(RenderEventArgs& e)
     commandList->RSSetScissorRects(1, &m_ScissorRect);
 
     commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+
+    //commandList->SetGraphicsRootShaderResourceView(1, )
+
+    commandList->SetGraphicsRoot32BitConstants(2, lights.SizeOfAmbientLight() / 4, &lights.m_AmbientLight, 0);
+    commandList->SetGraphicsRoot32BitConstants(3, lights.SizeOfDirectionalLight() / 4, &lights.m_DirectionalLight, 0);
 
     XMMATRIX viewProjMatrix = m_Camera.GetViewProjMatrix();
 
