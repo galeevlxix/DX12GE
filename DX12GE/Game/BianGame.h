@@ -9,6 +9,8 @@
 
 #include "LightManager.h"
 
+#include "../Engine/UploadBuffer.h"
+
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
@@ -56,7 +58,7 @@ private:
     // Clear the depth of a depth-stencil view.
     void ClearDepth(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsv, FLOAT depth = 1.0f);
     
-
+    void SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, size_t numElements, size_t elementSize, const void* bufferData);
     // Resize the depth buffer to match the size of the client area.
     void ResizeDepthBuffer(int width, int height);
 
@@ -78,6 +80,8 @@ private:
 
     BianObject car;
     BianObject car2;
+
+    unique_ptr<UploadBuffer> m_UploadBuffer;
 
     LightManager lights;
 

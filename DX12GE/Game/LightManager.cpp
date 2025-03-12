@@ -19,7 +19,18 @@ LightManager::LightManager()
 	m_AmbientLight.Intensity = 0.1;
 
 	// DirectionalLight
-	m_DirectionalLight.BaseLightComponent.Color = COLOR_PURPLE;
-	m_DirectionalLight.BaseLightComponent.Intensity = 1;
+	m_DirectionalLight.BaseLightComponent.Color = COLOR_WHITE;
+	m_DirectionalLight.BaseLightComponent.Intensity = 0;
 	m_DirectionalLight.Direction = Vector3(1, -1, 1);
+
+	m_LightProperties.PointLightsCount = 1;
+	m_LightProperties.SpotlightsCount = 0;
+
+	PointLight pl1;
+	pl1.BaseLightComponent.Color = COLOR_RED;
+	pl1.BaseLightComponent.Intensity = 20;
+	pl1.Position = Vector3(0, 0, 0);
+	pl1.AttenuationComponent = m_DefaultAttenuation;
+
+	m_PointLights.push_back(pl1);
 }

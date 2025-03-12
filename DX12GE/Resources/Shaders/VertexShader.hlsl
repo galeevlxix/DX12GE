@@ -18,6 +18,7 @@ struct VertexShaderOutput
     float4 Position : SV_Position;
     float4 Normal : NORMAL;
     float2 TextCoord : TEXCOORD;
+    float3 WorldPos : POSITION;
 };
 
 VertexShaderOutput main(VertexPosColor IN)
@@ -27,6 +28,8 @@ VertexShaderOutput main(VertexPosColor IN)
     OUT.Position = mul(WorldViewProjectionCB.WVP, float4(IN.Position, 1.0f));
     OUT.Normal = normalize(mul(WorldViewProjectionCB.MVP, float4(IN.Normal, 0.0f)));
     OUT.TextCoord = IN.TextCoord;
+    
+    OUT.WorldPos = (mul(WorldViewProjectionCB.MVP, float4(IN.Position, 1.0f))).xyz;
 
     return OUT;
 }

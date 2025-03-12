@@ -25,6 +25,14 @@ private:
 		float Exp;
 	};
 
+	Attenuation m_DefaultAttenuation = { 1, 0.09, 0.032 };
+
+	struct LightProperties
+	{
+		UINT PointLightsCount;
+		UINT SpotlightsCount;
+	};
+
 	struct PointLight
 	{
 		BaseLight BaseLightComponent;
@@ -36,11 +44,9 @@ private:
 	{
 		PointLight PointLightComponent;
 		Vector3 Direction;
-		float Cutoff;
 		Attenuation AttenuationComponent;
-	};
-
-	
+		float Cutoff;
+	};	
 
 public:
 
@@ -48,6 +54,7 @@ public:
 
 	BaseLight m_AmbientLight;
 	DirectionalLight m_DirectionalLight;
+	LightProperties m_LightProperties;
 	vector<PointLight> m_PointLights;
 	vector<SpotLight> m_SpotLights;
 
@@ -61,4 +68,18 @@ public:
 		return sizeof(DirectionalLight);
 	}
 
+	static UINT SizeOfPointLight()
+	{
+		return sizeof(PointLight);
+	}
+
+	static UINT SizeOfSpotLight()
+	{
+		return sizeof(SpotLight);
+	}
+
+	static UINT SizeOfLightProperties()
+	{
+		return sizeof(LightProperties);
+	}
 };

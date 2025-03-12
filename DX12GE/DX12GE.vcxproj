@@ -137,6 +137,7 @@
     <ClCompile Include="Engine\DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Game.cpp" />
     <ClCompile Include="Engine\HighResolutionClock.cpp" />
+    <ClCompile Include="Engine\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Vector3.cpp" />
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="Game\BaseObject.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Engine\HighResolutionClock.h" />
     <ClInclude Include="Engine\KeyCodes.h" />
     <ClInclude Include="Engine\resource.h" />
+    <ClInclude Include="Engine\UploadBuffer.h" />
     <ClInclude Include="Engine\Vector3.h" />
     <ClInclude Include="Engine\Window.h" />
     <ClInclude Include="Game\BaseObject.h" />
