@@ -58,9 +58,9 @@ struct LightProperties
 ConstantBuffer<AmbientLight> AmbientLightCB : register(b0, space1);
 ConstantBuffer<DirectionalLight> DirectionalLightCB : register(b1);
 
-ConstantBuffer<LightProperties> LightPropertiesCB : register(b2);
+//ConstantBuffer<LightProperties> LightPropertiesCB : register(b2);
 
-StructuredBuffer<PointLight> PointLightsCB : register(t1);
+//StructuredBuffer<PointLight> PointLightsCB : register(t1);
 //ConstantBuffer<SpotLight> SpotLightsCB : register(t4);
 
 float4 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, float3 Normal)
@@ -89,10 +89,10 @@ float4 main(PixelShaderInput IN) : SV_Target
     float4 DirectionalColor = CalcLightInternal(DirectionalLightCB.Color, DirectionalLightCB.Intensity, DirectionalLightCB.Direction, normalize(IN.Normal).xyz);
     float3 ResultLightIntensity = AmbientColor + DirectionalColor;
     
-    for (int i = 0; i < LightPropertiesCB.PointLightsCount; i++)
-    {
-        ResultLightIntensity += CalcPointLight(PointLightsCB[i], IN.Normal.xyz, IN.WorldPos);
-    }
+    //for (int i = 0; i < LightPropertiesCB.PointLightsCount; i++)
+    //{
+    //    ResultLightIntensity += CalcPointLight(PointLightsCB[i], IN.Normal.xyz, IN.WorldPos);
+    //}
 
     return texel * float4(ResultLightIntensity, 1.0);
 }

@@ -44,6 +44,11 @@ XMFLOAT3 Vector3::ToXM()
     return XMFLOAT3(X, Y, Z);
 }
 
+XMVECTOR Vector3::ToXMVector()
+{
+    return XMVectorSet(X, Y, Z, 1);
+}
+
 Vector3 Vector3::operator*(float value)
 {
     return Vector3(X * value, Y * value, Z * value);

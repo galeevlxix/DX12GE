@@ -153,6 +153,11 @@ void BaseObject::SetScale(Vector3 ScaleVector)
     m_Scale = ScaleVector;
 }
 
+void BaseObject::Expand(float value)
+{
+    m_Scale = m_Scale * value;
+}
+
 Vector3 BaseObject::GetPosition()
 {
     return m_Position;

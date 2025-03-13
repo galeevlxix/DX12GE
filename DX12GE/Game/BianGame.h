@@ -26,6 +26,8 @@ public:
 
     // Выгрузить контент, загруженный в LoadContent
     virtual void UnloadContent() override;
+
+    KatamariGame katamari;
 protected:
     // Обновите игровую логику
     virtual void OnUpdate(UpdateEventArgs& e) override;
@@ -46,6 +48,7 @@ protected:
     virtual void OnMouseButtonReleased(MouseButtonEventArgs& e) override;
 
     virtual void OnResize(ResizeEventArgs& e) override;
+
 
 private:
     // Helper functions
@@ -78,7 +81,7 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    KatamariGame katamari;
+    
 
     unique_ptr<UploadBuffer> m_UploadBuffer;
 

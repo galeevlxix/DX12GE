@@ -1,0 +1,28 @@
+#pragma once
+#include "BianObject.h"
+
+class Player
+{
+private:
+	
+public:
+	float ballRadius = 3;
+	float flyRadius = 15.0;
+
+	bool canRotateForward = false;
+	bool canRotateBack = false;
+
+	Vector3 Direction;
+	float Angle = 0.0;
+
+	BianObject ball;
+	BianObject prince;
+
+	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void OnUpdate(double deltaTime);
+	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
+
+	Vector3 GetPosition();
+
+	void Move(Vector3 MoveVector);
+};

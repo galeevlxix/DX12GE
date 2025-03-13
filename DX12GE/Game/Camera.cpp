@@ -2,14 +2,24 @@
 
 #define PI 3.1415926535f
 
-void Camera::OnLoad(XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, float ratio, float zNear, float zFar)
+// Clamp a value between a min and max range
+template<typename T>
+constexpr const T& clamp(const T& val, const T& min, const T& max)
 {
+    return val < min ? min : val > max ? max : val;
+}
+
+void Camera::OnLoad(XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, float ratio, float zNear, float zFar, Player* l_player)
+{
+    player = l_player;
+
 	Position = position;
 	Target = target;
 	Target = XMVector3Normalize(Target);
 	Up = up;
 	Up = XMVector3Normalize(Up);
 
+    startFov = fov;
 	Fov = fov;
 	Ratio = ratio;
 	ZNear = zNear;
@@ -52,8 +62,29 @@ XMMATRIX Camera::GetViewProjMatrix()
 void Camera::OnUpdate(float deltaTime)
 {
     XMVECTOR left, up;
+
+    Position = Vector3((*player).GetPosition() + Vector3(sin(angle_h) * ((*player).flyRadius + (*player).ballRadius), (*player).GetPosition().Y + 10, cos(angle_h) * ((*player).flyRadius + (*player).ballRadius))).ToXMVector();
+
+    Vector3 razn = (*player).GetPosition() - Vector3(XMVectorGetX(Position), XMVectorGetY(Position), XMVectorGetZ(Position));
+    razn.Normalize();
+    Target = razn.ToXMVector();
+
+    (*player).Direction = Vector3(Target.m128_f32[0], 0, Target.m128_f32[2]);
+    (*player).Angle = angle_h;
+
+    Vector3 forward = (*player).GetPosition() + (*player).Direction * speed * deltaTime;
+    bool canGoForward = forward.X < 70 && forward.X > -70 && forward.Z < 70 && forward.Z > -70;
+    Vector3 back = (*player).GetPosition() + (*player).Direction * (-speed) * deltaTime;
+    bool canGoBack = back.X < 70 && back.X > -70 && back.Z < 70 && back.Z > -70;
+
+    if (monitor.W && canGoForward) (*player).Move((*player).Direction * speed * deltaTime);
+    if (monitor.S && canGoBack) (*player).Move((*player).Direction * (-speed) * deltaTime); 
+
+    return;
+
     if (monitor.W) Position += Target * speed * deltaTime;
     if (monitor.S) Position -= Target * speed * deltaTime;
+
     if (monitor.A)
     {
         left = XMVector3Cross(Target, Up);
@@ -78,15 +109,11 @@ void Camera::OnUpdate(float deltaTime)
     }
 }
 
-// Clamp a value between a min and max range
-template<typename T>
-constexpr const T& clamp(const T& val, const T& min, const T& max)
-{
-	return val < min ? min : val > max ? max : val;
-}
+
 
 void Camera::OnMouseWheel(MouseWheelEventArgs& e)
 {
+    return;
 	Fov -= e.WheelDelta;
 	Fov = clamp(Fov, 12.0f, 90.0f);
 
@@ -106,6 +133,14 @@ void Camera::OnMouseMoved(MouseMotionEventArgs& e)
     if (angle_v + dy * sensitivity > -89 && angle_v + dy * sensitivity < 89) 
         angle_v += dy * sensitivity;
 
+    
+
+    
+    prevX = e.X;
+    prevY = e.Y;
+
+    return;
+
     float rotX = XMConvertToRadians(angle_h);
     float rotY = XMConvertToRadians(angle_v);
 
@@ -116,8 +151,7 @@ void Camera::OnMouseMoved(MouseMotionEventArgs& e)
     Target = XMVectorSet(x, y, z, 1);
     Target = XMVector3Normalize(Target);   
     
-    prevX = e.X;
-    prevY = e.Y;
+    
 }
 
 void Camera::OnKeyPressed(KeyEventArgs& e)
@@ -126,9 +160,12 @@ void Camera::OnKeyPressed(KeyEventArgs& e)
     {
     case KeyCode::W:
         monitor.W = true;
+        (*player).canRotateForward = true;
+        
         break;
     case KeyCode::S:
         monitor.S = true;
+        (*player).canRotateBack = true;
         break;
     case KeyCode::A:
         monitor.A = true;
@@ -144,11 +181,11 @@ void Camera::OnKeyPressed(KeyEventArgs& e)
         break;
     case KeyCode::ShiftKey:
         monitor.Shift = true;
-        speed = slowSpeed;
+        speed = slowSpeed * 20;
         break;
     case KeyCode::ControlKey:
         monitor.Ctrl = true;
-        speed = fastSpeed;
+        speed = fastSpeed * 20;
         break;
     }
 }
@@ -159,9 +196,12 @@ void Camera::OnKeyReleased(KeyEventArgs& e)
     {
     case KeyCode::W:
         monitor.W = false;
+        (*player).canRotateForward = false;
+        
         break;
     case KeyCode::S:
         monitor.S = false;
+        (*player).canRotateBack = false;
         break;
     case KeyCode::A:
         monitor.A = false;
@@ -177,11 +217,11 @@ void Camera::OnKeyReleased(KeyEventArgs& e)
         break;
     case KeyCode::ShiftKey:
         monitor.Shift = false;
-        speed = normalSpeed;
+        speed = normalSpeed * 20;
         break;
     case KeyCode::ControlKey:
         monitor.Ctrl = false;
-        speed = normalSpeed;
+        speed = normalSpeed * 20;
         break;
     }
 }

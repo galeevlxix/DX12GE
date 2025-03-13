@@ -22,6 +22,7 @@ public:
     float Length();
 
     XMFLOAT3 ToXM();
+    XMVECTOR ToXMVector();
 
     Vector3 operator*(float value);
     Vector3 operator+(float value);

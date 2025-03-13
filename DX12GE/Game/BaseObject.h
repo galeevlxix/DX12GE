@@ -39,6 +39,7 @@ public:
     void Rotate(Vector3 RotateVector);
     void SetScale(float x, float y, float z);
     void SetScale(Vector3 ScaleVector);
+    void Expand(float value);
 
     Vector3 GetPosition();
     Vector3 GetRotation();

@@ -146,6 +146,7 @@
     <ClCompile Include="Game\Camera.cpp" />
     <ClCompile Include="Game\KatamariGame.cpp" />
     <ClCompile Include="Game\LightManager.cpp" />
+    <ClCompile Include="Game\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Application.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="Game\Camera.h" />
     <ClInclude Include="Game\KatamariGame.h" />
     <ClInclude Include="Game\LightManager.h" />
+    <ClInclude Include="Game\Player.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc" />

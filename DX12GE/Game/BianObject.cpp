@@ -132,6 +132,8 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
     {
         printf("Error parsing '%s': '%s'\n", filePath.c_str(), importer.GetErrorString());
     }
+
+    Position = Vector3(0, 0, 0);
 }
 
 void BianObject::OnUpdate(double deltaTime )
@@ -284,6 +286,7 @@ void BianObject::SetPosition(float x, float y, float z)
     {
         m_Meshes[i].SetPosition(x, y, z);
     }
+    Position = Vector3(x, y, z);
 }
 
 void BianObject::SetPosition(Vector3 PositionVector)
@@ -292,6 +295,8 @@ void BianObject::SetPosition(Vector3 PositionVector)
     {
         m_Meshes[i].SetPosition(PositionVector);
     }
+
+    Position = PositionVector;
 }
 
 void BianObject::Move(float dx, float dy, float dz)
@@ -300,6 +305,8 @@ void BianObject::Move(float dx, float dy, float dz)
     {
         m_Meshes[i].Move(dx, dy, dz);
     }
+
+    Position = Position + Vector3(dx, dy, dz);
 }
 
 void BianObject::Move(Vector3 MoveVector)
@@ -308,6 +315,7 @@ void BianObject::Move(Vector3 MoveVector)
     {
         m_Meshes[i].Move(MoveVector);
     }
+    Position = Position + MoveVector;
 }
 
 void BianObject::SetRotation(float x, float y, float z)
@@ -316,6 +324,7 @@ void BianObject::SetRotation(float x, float y, float z)
     {
         m_Meshes[i].SetRotation(x, y, z);
     }
+    Rotation = Vector3(x, y, z);
 }
 
 void BianObject::SetRotation(Vector3 RotationVector)
@@ -324,6 +333,7 @@ void BianObject::SetRotation(Vector3 RotationVector)
     {
         m_Meshes[i].SetRotation(RotationVector);
     }
+    Rotation = RotationVector;
 }
 
 void BianObject::SetRotationX(float value)
@@ -332,6 +342,7 @@ void BianObject::SetRotationX(float value)
     {
         m_Meshes[i].SetRotationX(value);
     }
+    Rotation = Vector3(value, Rotation.Y, Rotation.Z);
 }
 
 void BianObject::SetRotationY(float value)
@@ -340,6 +351,7 @@ void BianObject::SetRotationY(float value)
     {
         m_Meshes[i].SetRotationY(value);
     }
+    Rotation = Vector3(Rotation.X, value, Rotation.Z);
 }
 
 void BianObject::SetRotationZ(float value)
@@ -348,6 +360,7 @@ void BianObject::SetRotationZ(float value)
     {
         m_Meshes[i].SetRotationZ(value);
     }
+    Rotation = Vector3(Rotation.X, Rotation.Y, value);
 }
 
 void BianObject::Rotate(Vector3 RotateVector)
@@ -356,6 +369,7 @@ void BianObject::Rotate(Vector3 RotateVector)
     {
         m_Meshes[i].Rotate(RotateVector);
     }
+    Rotation = Rotation + RotateVector;
 }
 
 void BianObject::SetScale(float x, float y, float z)
@@ -371,5 +385,13 @@ void BianObject::SetScale(Vector3 ScaleVector)
     for (int i = 0; i < m_Meshes.size(); i++)
     {
         m_Meshes[i].SetScale(ScaleVector);
+    }
+}
+
+void BianObject::Expand(float ExpandValue)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].Expand(ExpandValue);
     }
 }

@@ -1,62 +1,116 @@
 #include "KatamariGame.h"
 
-void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
+int GetRandomNumber(int start, int end)
 {
-	Add(commandList, "prince", "../../DX12GE/Resources/Katamari Objects/prince_katamari_damacy/scene.gltf");
-	//"C:\Users\gtimu\source\repos\DX12GE\DX12GE\Resources\Katamari Objects\low-poly-boot\source\model.fbx"
-	m_objects["prince"].SetRotationY(PI);
-
-	CreateField(commandList);
-
-	Add(commandList, "ball", "../../DX12GE/Resources/Katamari Objects/katamari_ball/core_01.obj");
-	m_objects["ball"].Move(10, 2.2f, 0);
-	m_objects["ball"].SetScale(100, 100, 100);
-
-	Add(commandList, "boot", "../../DX12GE/Resources/Katamari Objects/low-poly-boot/model.fbx");
-	m_objects["boot"].Move(20, 0, 0);
-	m_objects["boot"].SetRotationY(PI);
-	m_objects["boot"].SetScale(20, 20, 20);
-
-	Add(commandList, "cup", "../../DX12GE/Resources/Katamari Objects/low-poly-cup-with-lemon-tea/Cup.fbx");
-	m_objects["cup"].Move(30, 0, 0);
-	m_objects["cup"].SetScale(0.3f, 0.3f, 0.3f);
-
-	Add(commandList, "juice", "../../DX12GE/Resources/Katamari Objects/low-poly-stylized-juice/model.dae");
-	m_objects["juice"].Move(40, 2, 0);
-	m_objects["juice"].SetScale(150, 150, 150);
-
-	Add(commandList, "chair", "../../DX12GE/Resources/Katamari Objects/old-wooden-chair-low-poly/chair.fbx");
-	m_objects["chair"].Move(-10, 0, 0);
-	m_objects["chair"].SetRotationY(PI);
-	m_objects["chair"].SetScale(0.05, 0.05, 0.05);
-
-	Add(commandList, "toothbrush", "../../DX12GE/Resources/Katamari Objects/toothbrush/model.dae");
-	m_objects["toothbrush"].Move(-20, -100 + 2, 0);
-	m_objects["toothbrush"].SetRotationY(PI);
-	m_objects["toothbrush"].SetScale(0.03, 0.03, 0.03);
+	return rand() % (end - start + 1) + start;
 }
 
-void KatamariGame::Start()
+
+void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
+	player.OnLoad(commandList);
+
+	CreateField(commandList);	
+
+	srand(time(0));
+
+	for (int i = 0; i < itemCount; i++)
+	{
+		string name = "boot" + to_string(i);
+		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/low-poly-boot/model.fbx");
+		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
+		m_objects[name].Move(randVector.X, 0, randVector.Z);
+		m_objects[name].SetRotationY(randVector.Y);
+		m_objects[name].SetScale(20, 20, 20);
+	}
+
+	for (int i = 0; i < itemCount; i++)
+	{
+		string name = "cup" + to_string(i);
+		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/low-poly-cup-with-lemon-tea/Cup.fbx");
+		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
+		m_objects[name].Move(randVector.X, 0, randVector.Z);
+		m_objects[name].SetRotationY(randVector.Y);
+		m_objects[name].SetScale(0.3f, 0.3f, 0.3f);
+	}
+
+	for (int i = 0; i < itemCount; i++)
+	{
+		string name = "juice" + to_string(i);
+		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/low-poly-stylized-juice/model.dae");
+		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
+		m_objects[name].Move(randVector.X, 2, randVector.Z);
+		m_objects[name].SetRotationY(randVector.Y);
+		m_objects[name].SetScale(150, 150, 150);
+	}
+
+	for (int i = 0; i < itemCount; i++)
+	{
+		string name = "chair" + to_string(i);
+		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/old-wooden-chair-low-poly/chair.fbx");
+		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
+		m_objects[name].Move(randVector.X, 2, randVector.Z);
+		m_objects[name].SetRotationY(randVector.Y);
+		m_objects[name].SetScale(0.05, 0.05, 0.05);
+	}
+
+	for (int i = 0; i < itemCount; i++)
+	{
+		string name = "toothbrush" + to_string(i);
+		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/toothbrush/model.dae");
+		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
+		m_objects[name].Move(randVector.X, -98, randVector.Z);
+		//m_objects[name].SetRotationY(randVector.Y);
+		m_objects[name].SetScale(0.03, 0.03, 0.03);
+	}
+}
+
+void KatamariGame::CheckCollisions()
+{
+	static float step = 0.5;
+	for (string name : m_names)
+	{
+		if (m_objects.find(name) == m_objects.end() || string::npos != name.find("field") || m_objects[name].eaten) { continue; }
+		
+		Vector3 objPos = m_objects[name].Position;
+
+		float dx = abs(objPos.X - player.ball.Position.X);
+		float dz = abs(objPos.Z - player.ball.Position.Z);
+
+		if (dx * dx + dz * dz < player.ballRadius * player.ballRadius)
+		{
+			m_objects[name].eaten = true;
+
+			player.ballRadius += step;
+			float ratio = player.ballRadius / (player.ballRadius - step);
+
+			player.ball.Expand(ratio);
+
+			player.ball.SetPosition(player.ball.Position.X, player.ballRadius, player.ball.Position.Z);
+			//player.flyRadius *= ratio;
+		}
+	}
 }
 
 void KatamariGame::OnUpdate(float deltaTime)
 {
-	static Vector3 rotSpeed(PI / 2, 0, 0);
-	m_objects["ball"].Rotate(rotSpeed * deltaTime);
+	player.OnUpdate(deltaTime);
+
+	CheckCollisions();
 
 	for (string name : m_names)
 	{
-		if (m_objects.find(name) == m_objects.end()) { continue; }
+		if (m_objects.find(name) == m_objects.end() || m_objects[name].eaten) { continue; }
 		m_objects[name].OnUpdate(deltaTime);
 	}
 }
 
 void KatamariGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
+	player.OnRender(commandList, viewProjMatrix);
 	for (string name : m_names)
 	{
-		if (m_objects.find(name) == m_objects.end()) { continue; }
+		if (m_objects.find(name) == m_objects.end() || m_objects[name].eaten) { continue; }
 		m_objects[name].OnRender(commandList, viewProjMatrix);
 	}
 }

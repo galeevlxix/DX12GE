@@ -1,6 +1,9 @@
 #pragma once
+#include "../Engine/Vector3.h"
 #include "DirectXMath.h"
 #include "../Engine/Events.h"
+
+#include "Player.h"
 
 using namespace DirectX;
 
@@ -21,20 +24,23 @@ struct PressedKeyMonitor
 	bool MBC = false;
 };
 
-const static float slowSpeed = 3;
-const static float normalSpeed = 6;
-const static float fastSpeed = 12;
+const static float slowSpeed = 6;
+const static float normalSpeed = 12;
+const static float fastSpeed = 24;
 
 class Camera
 {
 private:
-	float speed = normalSpeed;
+	float speed = normalSpeed * 20;
 	
-	float sensitivity = 0.07;
+	float sensitivity = 0.01;
 	float angle_h = 0.0;
 	float angle_v = 0.0;
 	float prevX;
 	float prevY;
+	float startFov;
+
+	//float flyRadius = 15.0;
 
 	PressedKeyMonitor monitor;
 public:
@@ -42,12 +48,15 @@ public:
 	XMVECTOR Target = XMVectorSet(0, 0, 1, 1);  
 	XMVECTOR Up = XMVectorSet(0, 1, 0, 0);
 
+	
 	float Fov = 60.0f;
 	float Ratio = 1.0f;
 	float ZNear = 0.1f;
 	float ZFar = 300.0f;
 
-	void OnLoad(XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, float ratio, float zNear, float zFar);
+	Player* player;
+
+	void OnLoad(XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, float ratio, float zNear, float zFar, Player* l_player);
 	void OnUpdate(float deltaTime);
 	XMMATRIX GetViewProjMatrix();
 
