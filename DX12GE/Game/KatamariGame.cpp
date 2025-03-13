@@ -2,7 +2,7 @@
 
 void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	Add(commandList, "prince", "../../DX12GE/Resources/Katamari Objects/prince_katamari_damacy/gltf/scene.gltf");
+	Add(commandList, "prince", "../../DX12GE/Resources/Katamari Objects/prince_katamari_damacy/scene.gltf");
 	//"C:\Users\gtimu\source\repos\DX12GE\DX12GE\Resources\Katamari Objects\low-poly-boot\source\model.fbx"
 	m_objects["prince"].SetRotationY(PI);
 
@@ -12,12 +12,12 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	m_objects["ball"].Move(10, 2.2f, 0);
 	m_objects["ball"].SetScale(100, 100, 100);
 
-	Add(commandList, "boot", "../../DX12GE/Resources/Katamari Objects/low-poly-boot/source/model.fbx");
+	Add(commandList, "boot", "../../DX12GE/Resources/Katamari Objects/low-poly-boot/model.fbx");
 	m_objects["boot"].Move(20, 0, 0);
 	m_objects["boot"].SetRotationY(PI);
 	m_objects["boot"].SetScale(20, 20, 20);
 
-	Add(commandList, "cup", "../../DX12GE/Resources/Katamari Objects/low-poly-cup-with-lemon-tea/source/Cup.fbx");
+	Add(commandList, "cup", "../../DX12GE/Resources/Katamari Objects/low-poly-cup-with-lemon-tea/Cup.fbx");
 	m_objects["cup"].Move(30, 0, 0);
 	m_objects["cup"].SetScale(0.3f, 0.3f, 0.3f);
 
@@ -68,7 +68,7 @@ void KatamariGame::CreateField(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		for (UINT j = 0; j < fieldSize; j++)
 		{
 			string name = "field" + to_string(i) + "_" + to_string(j);
-			Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/field/cube/cube.obj");
+			Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/field/cube.obj");
 			m_objects[name].SetScale(cellSize, 0.01f, cellSize);
 			float offset = fieldSize % 2 == 1 ? cellSize : 0;
 			m_objects[name].SetPosition((i - fieldSize * 0.5f) * cellSize * 2 + cellSize, -0.01f / 2.0f , (j - fieldSize * 0.5f) * cellSize * 2 + cellSize);

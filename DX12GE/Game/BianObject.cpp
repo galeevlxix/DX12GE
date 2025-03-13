@@ -45,7 +45,7 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
                 {
                     p = "gltf_embedded_0.png";
                 }
-                else if (filePath == "../../DX12GE/Resources/Katamari Objects/low-poly-cup-with-lemon-tea/source/Cup.fbx")
+                else if (filePath == "../../DX12GE/Resources/Katamari Objects/low-poly-cup-with-lemon-tea/Cup.fbx")
                 {
                     p = "MadeiraHouse_Atlas_T.png";
                 }

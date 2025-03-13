@@ -1,6 +1,0 @@
-1. Select Mesh
-2. Go to Materials tab in the properties browser
-3. change surface to emission shader for cartoon effect, or leave as principled BSDF
-4. Change base color/color to image texture and select the image texture provided.
-
-5. Enjoy
