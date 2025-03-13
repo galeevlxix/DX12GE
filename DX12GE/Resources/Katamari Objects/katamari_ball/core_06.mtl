@@ -1,0 +1,4 @@
+newmtl Mat
+Kd 0.800000 0.800000 0.800000
+illum 1
+map_Kd core_06.png

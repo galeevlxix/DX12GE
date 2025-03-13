@@ -5,7 +5,7 @@
 #include <DirectXMath.h>
 #include "Camera.h" 
 
-#include "BianObject.h" 
+#include "KatamariGame.h" 
 
 #include "LightManager.h"
 
@@ -78,8 +78,7 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    BianObject car;
-    BianObject car2;
+    KatamariGame katamari;
 
     unique_ptr<UploadBuffer> m_UploadBuffer;
 

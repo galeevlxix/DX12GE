@@ -72,6 +72,9 @@
     <ClCompile Include="Engine\UploadBuffer.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Game\KatamariGame.cpp">
+      <Filter>Исходные файлы\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\d3dx12.h">
@@ -127,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="Engine\UploadBuffer.h">
       <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\KatamariGame.h">
+      <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

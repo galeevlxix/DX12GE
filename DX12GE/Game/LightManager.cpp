@@ -16,11 +16,11 @@ LightManager::LightManager()
 {
 	// AmbientLight
 	m_AmbientLight.Color = COLOR_WHITE;
-	m_AmbientLight.Intensity = 0.1;
+	m_AmbientLight.Intensity = 0.3;
 
 	// DirectionalLight
 	m_DirectionalLight.BaseLightComponent.Color = COLOR_WHITE;
-	m_DirectionalLight.BaseLightComponent.Intensity = 0;
+	m_DirectionalLight.BaseLightComponent.Intensity = 1;
 	m_DirectionalLight.Direction = Vector3(1, -1, 1);
 
 	m_LightProperties.PointLightsCount = 1;

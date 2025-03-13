@@ -18,7 +18,6 @@ BianGame::BianGame(const std::wstring& name, int width, int height, bool vSync) 
     , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)))
     , m_ContentLoaded(false)
 {
-
     m_UploadBuffer = make_unique<UploadBuffer>();
 }
 
@@ -36,12 +35,7 @@ bool BianGame::LoadContent()
     ThrowIfFailed(
         device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
-    car.OnLoad(commandList, "../../DX12GE/Resources/Models/car/Pony_cartoon.obj");
-    car.SetScale(0.01, 0.01, 0.01);
-    car.SetPosition(-5, 0, 0);
-    car2.OnLoad(commandList, "../../DX12GE/Resources/Models/car/Pony_cartoon.obj");
-    car2.SetScale(0.01, 0.01, 0.01);
-    car2.SetPosition(5, 0, 0);
+    katamari.OnLoad(commandList);
 
     m_Camera.OnLoad(
         XMVectorSet(0, 3, -10, 1), // Position
@@ -120,8 +114,10 @@ bool BianGame::LoadContent()
         CD3DX12_PIPELINE_STATE_STREAM_PRIMITIVE_TOPOLOGY PrimitiveTopologyType;
         CD3DX12_PIPELINE_STATE_STREAM_VS VS;
         CD3DX12_PIPELINE_STATE_STREAM_PS PS;
+        CD3DX12_PIPELINE_STATE_STREAM_RASTERIZER Rasterizer;
         CD3DX12_PIPELINE_STATE_STREAM_DEPTH_STENCIL_FORMAT DSVFormat;
         CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS RTVFormats;
+        
         //CD3DX12_PIPELINE_STATE_STREAM_SAMPLE_DESC SampleDesc;
     } pipelineStateStream;
 
@@ -129,14 +125,17 @@ bool BianGame::LoadContent()
     rtvFormats.NumRenderTargets = 1;
     rtvFormats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 
+    CD3DX12_RASTERIZER_DESC rasterizerDesc(D3D12_DEFAULT);
+    rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+
     pipelineStateStream.pRootSignature = m_RootSignature.Get();
     pipelineStateStream.InputLayout = { inputLayout, _countof(inputLayout) };
     pipelineStateStream.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     pipelineStateStream.VS = CD3DX12_SHADER_BYTECODE(vertexShaderBlob.Get());
     pipelineStateStream.PS = CD3DX12_SHADER_BYTECODE(pixelShaderBlob.Get());
+    pipelineStateStream.Rasterizer = rasterizerDesc;
     pipelineStateStream.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     pipelineStateStream.RTVFormats = rtvFormats;
-    //pipelineStateStream.SampleDesc = staticSampler;
 
     D3D12_PIPELINE_STATE_STREAM_DESC pipelineStateStreamDesc = 
     {
@@ -227,10 +226,8 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
 
     static float rot_speed = PI / 4;
 
-    car.Rotate(Vector3(0, rot_speed * e.ElapsedTime, 0));
-    car.OnUpdate(e.ElapsedTime);
-    car2.Rotate(Vector3(0, rot_speed * e.ElapsedTime, 0));
-    car2.OnUpdate(e.ElapsedTime);
+    //field.Rotate(Vector3(0, rot_speed * e.ElapsedTime, 0));
+    katamari.OnUpdate(e.ElapsedTime);
 
     m_Camera.OnUpdate(e.ElapsedTime);
 }
@@ -303,8 +300,7 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     XMMATRIX viewProjMatrix = m_Camera.GetViewProjMatrix();
 
-    car.OnRender(commandList, viewProjMatrix);
-    car2.OnRender(commandList, viewProjMatrix);
+    katamari.OnRender(commandList, viewProjMatrix);
 
     // Present
     {

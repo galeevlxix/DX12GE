@@ -15,7 +15,9 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
         aiProcess_Triangulate |
         aiProcess_GenSmoothNormals |
         aiProcess_CalcTangentSpace |
-        aiProcess_FlipUVs);
+        aiProcess_FlipUVs |
+        aiProcess_PreTransformVertices
+    );
 
     if (pScene)
     {
@@ -38,14 +40,54 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
                 pScene->mMaterials[i]->GetTexture((aiTextureType)tt, 0, &path, NULL, NULL, NULL, NULL, NULL);
                 
                 string p = path.C_Str();
+
+                if (pScene->mName.C_Str() == "blockbench_export")
+                {
+                    p = "gltf_embedded_0.png";
+                }
+                else if (filePath == "../../DX12GE/Resources/Katamari Objects/low-poly-cup-with-lemon-tea/source/Cup.fbx")
+                {
+                    p = "MadeiraHouse_Atlas_T.png";
+                }
+                else if (filePath == "../../DX12GE/Resources/Katamari Objects/low-poly-stylized-juice/model.dae")
+                {
+                    p = "Juice Cup_albedo.jpg";
+                }
+                else if (filePath == "../../DX12GE/Resources/Katamari Objects/old-wooden-chair-low-poly/chair.fbx")
+                {
+                    p = "chair_Albedo.png";
+                }
+                else if (filePath == "../../DX12GE/Resources/Katamari Objects/toothbrush/model.dae")
+                {
+                    p = "1_albedo.jpg";
+                }
+                
                 if (p != "")
                 {
+                    {
+                        int slashInd = p.rfind('\\');
+                        if (string::npos != slashInd)
+                        {
+                            p = p.substr(slashInd + 1, p.length() - slashInd);
+                        }
+                    }
+
+                    {
+                        int slashInd = p.rfind('/');
+                        if (string::npos != slashInd)
+                        {
+                            p = p.substr(slashInd + 1, p.length() - slashInd);
+                        }
+                    }
+
                     m_Materials[i].m_ImagePaths[(Material::TextureType)tt] = directory + "/" + p;
                 }
             }    
 
             m_Materials[i].Load(commandList);
         }
+
+        float yOffset = 0.0f;
 
         for (unsigned int i = 0; i < meshesCount; i++)
         {
@@ -63,6 +105,8 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
                 const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
 
                 VertexStruct v({ XMFLOAT3(pPos->x, pPos->y, pPos->z), XMFLOAT3(pNormal->x, pNormal->y, pNormal->z), XMFLOAT2(pTexCoord->x, pTexCoord->y)});
+
+                yOffset = pPos->y < yOffset ? pPos->y : yOffset;
                 
                 Vertices.push_back(v);
             }
@@ -79,8 +123,10 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
             }
 
             m_Meshes[i].CreateMesh(Vertices, Indices);
-            m_Meshes[i].OnLoad(commandList, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0));
+            m_Meshes[i].OnLoad(commandList, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1));
         }
+
+        Move(0, -yOffset, 0);
     }
     else
     {
