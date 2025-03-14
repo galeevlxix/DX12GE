@@ -41,7 +41,7 @@ bool BianGame::LoadContent()
         XMVectorSet(0, 3, -10, 1), // Position
         XMVectorSet(0, 0, 1, 1),   // Target
         XMVectorSet(0, 1, 0, 1),   // Up
-        100, static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight()), 0.1f, 300.0, &(katamari.player));
+        80, static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight()), 0.1f, 300.0, &(katamari.player));
 
     // Load the vertex shader
     ComPtr<ID3DBlob> vertexShaderBlob;
@@ -227,9 +227,8 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     static float rot_speed = PI / 4;
 
     //field.Rotate(Vector3(0, rot_speed * e.ElapsedTime, 0));
-    katamari.OnUpdate(e.ElapsedTime);
-
     m_Camera.OnUpdate(e.ElapsedTime);
+    katamari.OnUpdate(e.ElapsedTime);
 }
 
 // Transition a resource

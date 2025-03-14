@@ -91,6 +91,14 @@ void BaseObject::OnUpdate(double deltaTime)
         XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z);
 }
 
+void BaseObject::OnUpdateBall(double deltaTime, XMMATRIX rotMat)
+{
+    m_ModelMatrix =
+        XMMatrixScaling(m_Scale.X, m_Scale.Y, m_Scale.Z) *
+        rotMat *
+        XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z);
+}
+
 void BaseObject::SetPosition(float x, float y, float z)
 {
     m_Position.Set(x, y, z);

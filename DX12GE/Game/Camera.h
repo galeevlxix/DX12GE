@@ -31,7 +31,7 @@ const static float fastSpeed = 24;
 class Camera
 {
 private:
-	float speed = normalSpeed * 20;
+	float speed = fastSpeed * 20;
 	
 	float sensitivity = 0.01;
 	float angle_h = 0.0;
@@ -40,7 +40,7 @@ private:
 	float prevY;
 	float startFov;
 
-	//float flyRadius = 15.0;
+	float dx;
 
 	PressedKeyMonitor monitor;
 public:

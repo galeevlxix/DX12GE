@@ -6,32 +6,49 @@ void Player::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	//prince.SetRotationY(PI);
 	prince.Move(0, 2.2f, -3);
 
-	ball.OnLoad(commandList, "../../DX12GE/Resources/Katamari Objects/katamari_ball/core_01.obj");
+	ball.OnLoad(commandList, "../../DX12GE/Resources/Katamari Objects/katamari_ball/core_03.obj");
 	ball.Move(0, ballRadius, 0);
 	ball.SetScale(100, 100, 100);
 }
 
 void Player::OnUpdate(double deltaTime)
 {
-	ball.SetRotation(ball.Rotation.X, Angle + PI, ball.Rotation.Z);
 
-	static Vector3 rotSpeed(PI, 0, 0);
+	//XMVECTOR right = XMVector3Normalize(XMVector3Cross(XMVectorSet(Direction.X, Direction.Y, Direction.Z, 1.0), XMVectorSet(0.0, 1.0, 0.0, 1.0)));
+	//SimpleMath::Vector3 rightVec(right);
+
+	Vector3 right = Vector3(0, 1, 0);
+	Direction.Normalize();
+	right.Cross(Direction);
+	right.Normalize();
 
 	if (canRotateForward)
 	{
-		ball.Rotate(rotSpeed * deltaTime);
-	} 
-	
-	if (canRotateBack)
-	{
-		ball.Rotate(rotSpeed * -deltaTime);
+		ballAngle += PI * deltaTime;
 	}
+
+	XMMATRIX rotMat = XMMatrixSet
+	(
+		cos(ballAngle) + right.X * right.X * (1 - cos(ballAngle)),	
+		right.X * right.Y * (1 - cos(ballAngle)) - right.Z * sin(ballAngle),
+
+	);
+	
+
+	
+
+	//SimpleMath::Matrix rotMat;
+	//rotMat = SimpleMath::Matrix::CreateFromAxisAngle(rightVec, ballAngle);
+	
+	// симпл math прикрутить
+
 
 	prince.SetPosition(
 		sin(Angle) * ballRadius + ball.Position.X, 
 		prince.Position.Y, 
 		cos(Angle) * ballRadius + ball.Position.Z);
-	prince.SetRotation(prince.Rotation.X, Angle + PI, prince.Rotation.Z);
+
+	//ball.SetPosition(Vector3(prince.Position.X + ballRadius, ball.Position.Y, prince.Position.Z));
 
 	prince.OnUpdate(deltaTime);
 	ball.OnUpdate(deltaTime);
@@ -41,15 +58,5 @@ void Player::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX v
 {
 	prince.OnRender(commandList, viewProjMatrix);
 	ball.OnRender(commandList, viewProjMatrix);
-}
-
-Vector3 Player::GetPosition()
-{
-	return ball.Position;
-}
-
-void Player::Move(Vector3 MoveVector)
-{
-	ball.Move(MoveVector);
 }
 

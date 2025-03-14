@@ -20,6 +20,8 @@ public:
     void Increase(float dx, float dy, float dz);
     void Normalize();
     float Length();
+    
+    void Cross(Vector3 rVec);
 
     XMFLOAT3 ToXM();
     XMVECTOR ToXMVector();

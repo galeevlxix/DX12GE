@@ -51,6 +51,8 @@ void Camera::OnLoad(XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, 
         }
     }
 
+    angle_h = 0;
+
     angle_v = -XMConvertToDegrees(asin(XMVectorGetY(Target)));
 }
 
@@ -63,22 +65,51 @@ void Camera::OnUpdate(float deltaTime)
 {
     XMVECTOR left, up;
 
-    Position = Vector3((*player).GetPosition() + Vector3(sin(angle_h) * ((*player).flyRadius + (*player).ballRadius), (*player).GetPosition().Y + 10, cos(angle_h) * ((*player).flyRadius + (*player).ballRadius))).ToXMVector();
+    if ((*player).win)
+    {
+        
+        return;
+    }
 
-    Vector3 razn = (*player).GetPosition() - Vector3(XMVectorGetX(Position), XMVectorGetY(Position), XMVectorGetZ(Position));
+    Position = Vector3(
+        (*player).ball.Position + Vector3(
+            sin(angle_h) * ((*player).flyRadius + (*player).ballRadius), 
+            (*player).prince.Position.Y + 5,
+            cos(angle_h) * ((*player).flyRadius + (*player).ballRadius)
+        )).ToXMVector();
+    
+    Vector3 razn = (*player).ball.Position - Vector3(XMVectorGetX(Position), XMVectorGetY(Position), XMVectorGetZ(Position));
     razn.Normalize();
     Target = razn.ToXMVector();
+
+    float rotY = angle_h + PI;
+    if (dx < 0)
+    {
+        rotY += PI / 2;
+    }
+    else if (dx > 0)
+    {
+        rotY -= PI / 2;
+    }
+
+    (*player).prince.SetRotation((*player).prince.Rotation.X, rotY, (*player).prince.Rotation.Z);
 
     (*player).Direction = Vector3(Target.m128_f32[0], 0, Target.m128_f32[2]);
     (*player).Angle = angle_h;
 
-    Vector3 forward = (*player).GetPosition() + (*player).Direction * speed * deltaTime;
+    Vector3 forward = (*player).ball.Position + (*player).Direction * speed * deltaTime;
     bool canGoForward = forward.X < 70 && forward.X > -70 && forward.Z < 70 && forward.Z > -70;
-    Vector3 back = (*player).GetPosition() + (*player).Direction * (-speed) * deltaTime;
+    Vector3 back = (*player).ball.Position + (*player).Direction * (-speed) * deltaTime;
     bool canGoBack = back.X < 70 && back.X > -70 && back.Z < 70 && back.Z > -70;
 
-    if (monitor.W && canGoForward) (*player).Move((*player).Direction * speed * deltaTime);
-    if (monitor.S && canGoBack) (*player).Move((*player).Direction * (-speed) * deltaTime); 
+    if (monitor.W && canGoForward && !monitor.RBC)
+    {
+        (*player).ball.Move((*player).Direction * speed * deltaTime);
+    }
+    if (monitor.S && canGoBack && !monitor.RBC)
+    {
+        (*player).ball.Move((*player).Direction * (-speed) * deltaTime);
+    }
 
     return;
 
@@ -126,7 +157,9 @@ void Camera::OnMouseMoved(MouseMotionEventArgs& e)
 {
     if (!monitor.RBC) return;
 
-    float dx = e.X - prevX;
+    if ((*player).win) return;
+
+    dx = e.X - prevX;
     float dy = e.Y - prevY;
 
     angle_h += dx * sensitivity;
@@ -156,6 +189,8 @@ void Camera::OnMouseMoved(MouseMotionEventArgs& e)
 
 void Camera::OnKeyPressed(KeyEventArgs& e)
 {
+    if ((*player).win) return;
+
     switch (e.Key)
     {
     case KeyCode::W:
@@ -180,12 +215,12 @@ void Camera::OnKeyPressed(KeyEventArgs& e)
         monitor.Q = true;
         break;
     case KeyCode::ShiftKey:
-        monitor.Shift = true;
-        speed = slowSpeed * 20;
+        //monitor.Shift = true;
+        //speed = slowSpeed * 20;
         break;
     case KeyCode::ControlKey:
-        monitor.Ctrl = true;
-        speed = fastSpeed * 20;
+        //monitor.Ctrl = true;
+        //speed = fastSpeed * 20;
         break;
     }
 }
@@ -216,12 +251,12 @@ void Camera::OnKeyReleased(KeyEventArgs& e)
         monitor.Q = false;
         break;
     case KeyCode::ShiftKey:
-        monitor.Shift = false;
-        speed = normalSpeed * 20;
+        //monitor.Shift = false;
+        //speed = normalSpeed * 20;
         break;
     case KeyCode::ControlKey:
-        monitor.Ctrl = false;
-        speed = normalSpeed * 20;
+        //monitor.Ctrl = false;
+        //speed = normalSpeed * 20;
         break;
     }
 }
@@ -253,6 +288,7 @@ void Camera::OnMouseButtonReleased(MouseButtonEventArgs& e)
         break;
     case 2: //Right
         monitor.RBC = false;
+        dx = 0;
         break;
     case 3: //Middel
         monitor.MBC = false;

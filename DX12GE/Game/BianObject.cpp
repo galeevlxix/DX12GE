@@ -144,6 +144,14 @@ void BianObject::OnUpdate(double deltaTime )
     }
 }
 
+void BianObject::OnUpdateRotMat(double deltaTime, XMMATRIX rotMat)
+{
+    for (int i = 0; i < m_Meshes.size(); i++)
+    {
+        m_Meshes[i].OnUpdateBall(deltaTime, rotMat);
+    }
+}
+
 void BianObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
@@ -229,8 +237,9 @@ void Material::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
     }
 
     // create the intermediate upload buffer
+    //CD3DX12_HEAP_PROPERTIES heapProps2{ D3D12_HEAP_TYPE_UPLOAD };
     CD3DX12_HEAP_PROPERTIES heapProps2{ D3D12_HEAP_TYPE_UPLOAD };
-    const UINT16 uploadBufferSize = GetRequiredIntermediateSize(m_Texture.Get(), 0, static_cast<uint32_t>(subresources.size()));
+    const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_Texture.Get(), 0, static_cast<uint32_t>(subresources.size()));
     const CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
     ThrowIfFailed(
         device->CreateCommittedResource(

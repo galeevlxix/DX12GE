@@ -12,6 +12,8 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 	CreateField(commandList);	
 
+	
+
 	srand(time(0));
 
 	for (int i = 0; i < itemCount; i++)
@@ -49,7 +51,7 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		string name = "chair" + to_string(i);
 		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/old-wooden-chair-low-poly/chair.fbx");
 		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.X, 2, randVector.Z);
+		m_objects[name].Move(randVector.X, 0, randVector.Z);
 		m_objects[name].SetRotationY(randVector.Y);
 		m_objects[name].SetScale(0.05, 0.05, 0.05);
 	}
@@ -68,6 +70,9 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 void KatamariGame::CheckCollisions()
 {
 	static float step = 0.5;
+
+	int nonEaten = 0;
+
 	for (string name : m_names)
 	{
 		if (m_objects.find(name) == m_objects.end() || string::npos != name.find("field") || m_objects[name].eaten) { continue; }
@@ -89,6 +94,15 @@ void KatamariGame::CheckCollisions()
 			player.ball.SetPosition(player.ball.Position.X, player.ballRadius, player.ball.Position.Z);
 			//player.flyRadius *= ratio;
 		}
+
+		nonEaten++;
+	}
+
+	if (nonEaten == 0)
+	{
+		player.win = true;
+
+		player.prince.Rotate(Vector3(0, PI, 0));
 	}
 }
 
@@ -133,10 +147,7 @@ void KatamariGame::CreateField(ComPtr<ID3D12GraphicsCommandList2> commandList)
 void KatamariGame::Add(ComPtr<ID3D12GraphicsCommandList2> commandList, string name, string path)
 {
 	// KEY found
-	if (m_objects.find(name) != m_objects.end()) 
-	{ 
-		return; 
-	}
+	if (m_objects.find(name) != m_objects.end()) { return; }
 
 	m_names.push_back(name);
 	m_objects.insert({ name, BianObject() });

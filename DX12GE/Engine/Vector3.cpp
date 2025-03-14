@@ -27,7 +27,7 @@ void Vector3::Increase(float dx, float dy, float dz)
 
 void Vector3::Normalize()
 {
-    float length = X * X + Y * Y + Z * Z;
+    float length = Length();
     if (length != 0)
     {
         Set(X / length, Y / length, Z / length);
@@ -37,6 +37,12 @@ void Vector3::Normalize()
 float Vector3::Length()
 {
     return sqrtf(X * X + Y * Y + Z * Z);
+}
+
+void Vector3::Cross(Vector3 rVec)
+{
+    //[V1.y * V2.z - V1.z * V2.y, V1.z * V2.x - V1.x * V2.z, V1.x * V2.y - V1.y * V2.x]
+    Set(Y * rVec.Z - Z * rVec.Y, Z * rVec.X - X * rVec.Z, X * rVec.Y - Y * rVec.X);
 }
 
 XMFLOAT3 Vector3::ToXM()

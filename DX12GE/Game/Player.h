@@ -12,6 +12,10 @@ public:
 	bool canRotateForward = false;
 	bool canRotateBack = false;
 
+	float ballAngle = 0;
+
+	bool win = false;
+
 	Vector3 Direction;
 	float Angle = 0.0;
 
@@ -21,8 +25,4 @@ public:
 	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void OnUpdate(double deltaTime);
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
-
-	Vector3 GetPosition();
-
-	void Move(Vector3 MoveVector);
 };
