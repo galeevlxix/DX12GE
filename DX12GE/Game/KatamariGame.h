@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Player.h"
 //#include "BianObject.h"
 #include <vector>

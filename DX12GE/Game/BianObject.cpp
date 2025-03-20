@@ -61,6 +61,10 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
                 {
                     p = "1_albedo.jpg";
                 }
+                else if (filePath == "../../DX12GE/Resources/Katamari Objects/bulb/Low_Poly_Light_Bulb.fbx")
+                {
+                    p = "#LMP0003_Textures_COL_2k.png";
+                }
                 
                 if (p != "")
                 {

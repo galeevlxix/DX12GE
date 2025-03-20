@@ -1,3 +1,6 @@
+#pragma once
+
+#include "BianObject.h"
 #include "../Engine/Vector3.h"
 #include <vector>
 
@@ -52,11 +55,18 @@ public:
 
 	LightManager();
 
+	void CreateLamps(ComPtr<ID3D12GraphicsCommandList2> commandList);
+
+	void OnUpdate(float deltaTime);
+	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
+
 	BaseLight m_AmbientLight;
 	DirectionalLight m_DirectionalLight;
 	LightProperties m_LightProperties;
 	vector<PointLight> m_PointLights;
 	vector<SpotLight> m_SpotLights;
+
+	vector<BianObject> m_lamps;
 
 	static UINT SizeOfAmbientLight()
 	{

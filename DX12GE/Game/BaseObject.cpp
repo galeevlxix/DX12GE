@@ -93,10 +93,15 @@ void BaseObject::OnUpdate(double deltaTime)
 
 void BaseObject::OnUpdateBall(double deltaTime, XMMATRIX rotMat)
 {
-    m_ModelMatrix =
+    m_ModelMatrix = 
         XMMatrixScaling(m_Scale.X, m_Scale.Y, m_Scale.Z) *
-        rotMat *
-        XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z);
+        /*XMMatrixRotationX(m_Rotation.X) *
+        XMMatrixRotationY(m_Rotation.Y) *
+        XMMatrixRotationZ(m_Rotation.Z) **/
+        rotMat * 
+        XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z)
+        
+        ;
 }
 
 void BaseObject::SetPosition(float x, float y, float z)

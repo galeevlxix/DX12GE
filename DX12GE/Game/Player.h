@@ -14,8 +14,6 @@ public:
 
 	float ballAngle = 0;
 
-	bool win = false;
-
 	Vector3 Direction;
 	float Angle = 0.0;
 
@@ -25,4 +23,11 @@ public:
 	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void OnUpdate(double deltaTime);
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
+
+
+	static float GetAngleOfMatrixAndAxis(XMMATRIX rotMat, Vector3 axis);
+	static XMMATRIX GetMatrixRotationAxis(Vector3 axis, float angle);
+
+	Vector3 RotationAxis = Vector3(1.0, 0, 0);
+	XMMATRIX RotationMatrix = GetMatrixRotationAxis(RotationAxis, 0);
 };

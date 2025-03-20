@@ -1,3 +1,5 @@
+#pragma once
+
 #include "BaseObject.h"
 #include <string>
 #include <vector>
@@ -80,6 +82,7 @@ public:
     Vector3 Rotation;
 
     bool eaten = false;
+    bool canEatIt = false;
 private:
 	vector<BaseObject> m_Meshes;
     vector<Material> m_Materials;	

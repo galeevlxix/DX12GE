@@ -61,7 +61,9 @@ private:
     // Clear the depth of a depth-stencil view.
     void ClearDepth(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsv, FLOAT depth = 1.0f);
     
-    void SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, size_t numElements, size_t elementSize, const void* bufferData);
+    template<typename T>
+    void SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const std::vector<T>& bufferData);
+
     // Resize the depth buffer to match the size of the client area.
     void ResizeDepthBuffer(int width, int height);
 
@@ -81,8 +83,6 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    
-
     unique_ptr<UploadBuffer> m_UploadBuffer;
 
     LightManager lights;
@@ -90,3 +90,4 @@ private:
     Camera m_Camera;
     bool m_ContentLoaded;
 };
+

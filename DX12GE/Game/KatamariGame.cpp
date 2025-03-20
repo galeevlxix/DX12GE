@@ -5,14 +5,11 @@ int GetRandomNumber(int start, int end)
 	return rand() % (end - start + 1) + start;
 }
 
-
 void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	player.OnLoad(commandList);
 
-	CreateField(commandList);	
-
-	
+	CreateField(commandList);		
 
 	srand(time(0));
 
@@ -24,6 +21,7 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		m_objects[name].Move(randVector.X, 0, randVector.Z);
 		m_objects[name].SetRotationY(randVector.Y);
 		m_objects[name].SetScale(20, 20, 20);
+		m_objects[name].canEatIt = true;
 	}
 
 	for (int i = 0; i < itemCount; i++)
@@ -34,6 +32,7 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		m_objects[name].Move(randVector.X, 0, randVector.Z);
 		m_objects[name].SetRotationY(randVector.Y);
 		m_objects[name].SetScale(0.3f, 0.3f, 0.3f);
+		m_objects[name].canEatIt = true;
 	}
 
 	for (int i = 0; i < itemCount; i++)
@@ -44,6 +43,7 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		m_objects[name].Move(randVector.X, 2, randVector.Z);
 		m_objects[name].SetRotationY(randVector.Y);
 		m_objects[name].SetScale(150, 150, 150);
+		m_objects[name].canEatIt = true;
 	}
 
 	for (int i = 0; i < itemCount; i++)
@@ -54,6 +54,7 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		m_objects[name].Move(randVector.X, 0, randVector.Z);
 		m_objects[name].SetRotationY(randVector.Y);
 		m_objects[name].SetScale(0.05, 0.05, 0.05);
+		m_objects[name].canEatIt = true;
 	}
 
 	for (int i = 0; i < itemCount; i++)
@@ -64,6 +65,7 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		m_objects[name].Move(randVector.X, -98, randVector.Z);
 		//m_objects[name].SetRotationY(randVector.Y);
 		m_objects[name].SetScale(0.03, 0.03, 0.03);
+		m_objects[name].canEatIt = true;
 	}
 }
 
@@ -71,11 +73,9 @@ void KatamariGame::CheckCollisions()
 {
 	static float step = 0.5;
 
-	int nonEaten = 0;
-
 	for (string name : m_names)
 	{
-		if (m_objects.find(name) == m_objects.end() || string::npos != name.find("field") || m_objects[name].eaten) { continue; }
+		if (m_objects.find(name) == m_objects.end() || string::npos != name.find("field") || m_objects[name].eaten || !m_objects[name].canEatIt) { continue; }
 		
 		Vector3 objPos = m_objects[name].Position;
 
@@ -94,15 +94,6 @@ void KatamariGame::CheckCollisions()
 			player.ball.SetPosition(player.ball.Position.X, player.ballRadius, player.ball.Position.Z);
 			//player.flyRadius *= ratio;
 		}
-
-		nonEaten++;
-	}
-
-	if (nonEaten == 0)
-	{
-		player.win = true;
-
-		player.prince.Rotate(Vector3(0, PI, 0));
 	}
 }
 

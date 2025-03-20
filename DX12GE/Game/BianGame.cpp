@@ -36,6 +36,7 @@ bool BianGame::LoadContent()
         device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
     katamari.OnLoad(commandList);
+    lights.CreateLamps(commandList);
 
     m_Camera.OnLoad(
         XMVectorSet(0, 3, -10, 1), // Position
@@ -78,7 +79,7 @@ bool BianGame::LoadContent()
         D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
 
     // A single 32-bit constant root parameter that is used by the vertex shader
-    CD3DX12_ROOT_PARAMETER1 rootParameters[4];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[6];
     rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 2, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
     
     const CD3DX12_DESCRIPTOR_RANGE1 descRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
@@ -87,10 +88,10 @@ bool BianGame::LoadContent()
     rootParameters[2].InitAsConstants(lights.SizeOfAmbientLight() / 4, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL);
     rootParameters[3].InitAsConstants(lights.SizeOfDirectionalLight() / 4, 1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
-    //rootParameters[4].InitAsConstants(lights.SizeOfLightProperties() / 4, 2, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParameters[4].InitAsConstants(lights.SizeOfLightProperties() / 4, 2, 0, D3D12_SHADER_VISIBILITY_PIXEL);
     //rootParameters[5].InitAsConstants(lights.SizeOfPointLight() / 4 * lights.m_LightProperties.PointLightsCount, 3, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
-    //rootParameters[5].InitAsShaderResourceView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParameters[5].InitAsShaderResourceView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);
 
     const CD3DX12_STATIC_SAMPLER_DESC staticSampler(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR);
 
@@ -229,6 +230,7 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     //field.Rotate(Vector3(0, rot_speed * e.ElapsedTime, 0));
     m_Camera.OnUpdate(e.ElapsedTime);
     katamari.OnUpdate(e.ElapsedTime);
+    lights.OnUpdate(e.ElapsedTime);
 }
 
 // Transition a resource
@@ -249,11 +251,12 @@ void BianGame::ClearDepth(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_
     commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, depth, 0, 0, nullptr);
 }
 
-void BianGame::SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, size_t numElements, size_t elementSize, const void* bufferData)
+template<typename T>
+void BianGame::SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const std::vector<T>& bufferData)
 {
-    size_t bufferSize = numElements * elementSize;
-    auto heapAllocation = m_UploadBuffer->Allocate(bufferSize, elementSize);
-    memcpy(heapAllocation.CPU, bufferData, bufferSize);
+    size_t bufferSize = bufferData.size() * sizeof(T);
+    auto heapAllocation = m_UploadBuffer->Allocate(bufferSize, sizeof(T));
+    memcpy(heapAllocation.CPU, bufferData.data(), bufferSize);
     commandList->SetGraphicsRootShaderResourceView(slot, heapAllocation.GPU);
 }
 
@@ -292,14 +295,16 @@ void BianGame::OnRender(RenderEventArgs& e)
     commandList->SetGraphicsRoot32BitConstants(2, lights.SizeOfAmbientLight() / 4, &lights.m_AmbientLight, 0);
     commandList->SetGraphicsRoot32BitConstants(3, lights.SizeOfDirectionalLight() / 4, &lights.m_DirectionalLight, 0);
 
-    //commandList->SetGraphicsRoot32BitConstants(4, lights.SizeOfLightProperties() / 4, &lights.m_LightProperties, 0);
+    commandList->SetGraphicsRoot32BitConstants(4, lights.SizeOfLightProperties() / 4, &lights.m_LightProperties, 0);
 
     //commandList->SetGraphicsRoot32BitConstants(5, lights.SizeOfPointLight() / 4 * lights.m_LightProperties.PointLightsCount , &lights.m_PointLights, 0);
-    //SetGraphicsDynamicStructuredBuffer(commandList, 5, lights.m_LightProperties.PointLightsCount, lights.SizeOfPointLight(), &lights.m_PointLights);
+    //SetGraphicsDynamicStructuredBuffer(commandList,  lights.m_LightProperties.PointLightsCount, lights.SizeOfPointLight(), lights.m_PointLights);
+    SetGraphicsDynamicStructuredBuffer(commandList, 5, lights.m_PointLights);
 
     XMMATRIX viewProjMatrix = m_Camera.GetViewProjMatrix();
 
     katamari.OnRender(commandList, viewProjMatrix);
+    lights.OnRender(commandList, viewProjMatrix);
 
     // Present
     {

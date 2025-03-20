@@ -63,13 +63,10 @@ XMMATRIX Camera::GetViewProjMatrix()
 
 void Camera::OnUpdate(float deltaTime)
 {
-    XMVECTOR left, up;
+    
 
-    if ((*player).win)
-    {
-        
-        return;
-    }
+    ////////////////////////////////
+    // œŒÀŒ∆≈Õ»≈  ¿Ã≈–€
 
     Position = Vector3(
         (*player).ball.Position + Vector3(
@@ -81,6 +78,9 @@ void Camera::OnUpdate(float deltaTime)
     Vector3 razn = (*player).ball.Position - Vector3(XMVectorGetX(Position), XMVectorGetY(Position), XMVectorGetZ(Position));
     razn.Normalize();
     Target = razn.ToXMVector();
+
+    ////////////////////////////////////
+    //// ¬–¿Ÿ≈Õ»≈ »√–Œ ¿
 
     float rotY = angle_h + PI;
     if (dx < 0)
@@ -97,6 +97,9 @@ void Camera::OnUpdate(float deltaTime)
     (*player).Direction = Vector3(Target.m128_f32[0], 0, Target.m128_f32[2]);
     (*player).Angle = angle_h;
 
+    ////////////////////////////////////
+    //// œ≈–≈Ã≈Ÿ≈Õ»≈ »√–Œ ¿
+
     Vector3 forward = (*player).ball.Position + (*player).Direction * speed * deltaTime;
     bool canGoForward = forward.X < 70 && forward.X > -70 && forward.Z < 70 && forward.Z > -70;
     Vector3 back = (*player).ball.Position + (*player).Direction * (-speed) * deltaTime;
@@ -105,13 +108,25 @@ void Camera::OnUpdate(float deltaTime)
     if (monitor.W && canGoForward && !monitor.RBC)
     {
         (*player).ball.Move((*player).Direction * speed * deltaTime);
+        (*player).canRotateForward = true;
     }
+    else
+    {
+        (*player).canRotateForward = false;
+    }
+    
     if (monitor.S && canGoBack && !monitor.RBC)
     {
         (*player).ball.Move((*player).Direction * (-speed) * deltaTime);
+        (*player).canRotateBack = true;
+    }
+    else
+    {
+        (*player).canRotateBack = false;
     }
 
     return;
+    XMVECTOR left, up;
 
     if (monitor.W) Position += Target * speed * deltaTime;
     if (monitor.S) Position -= Target * speed * deltaTime;
@@ -140,8 +155,6 @@ void Camera::OnUpdate(float deltaTime)
     }
 }
 
-
-
 void Camera::OnMouseWheel(MouseWheelEventArgs& e)
 {
     return;
@@ -157,18 +170,13 @@ void Camera::OnMouseMoved(MouseMotionEventArgs& e)
 {
     if (!monitor.RBC) return;
 
-    if ((*player).win) return;
-
     dx = e.X - prevX;
     float dy = e.Y - prevY;
 
     angle_h += dx * sensitivity;
-    if (angle_v + dy * sensitivity > -89 && angle_v + dy * sensitivity < 89) 
+    if (angle_v + dy * sensitivity > -89 && angle_v + dy * sensitivity < 89)
         angle_v += dy * sensitivity;
 
-    
-
-    
     prevX = e.X;
     prevY = e.Y;
 
@@ -183,24 +191,17 @@ void Camera::OnMouseMoved(MouseMotionEventArgs& e)
 
     Target = XMVectorSet(x, y, z, 1);
     Target = XMVector3Normalize(Target);   
-    
-    
 }
 
 void Camera::OnKeyPressed(KeyEventArgs& e)
 {
-    if ((*player).win) return;
-
     switch (e.Key)
     {
     case KeyCode::W:
         monitor.W = true;
-        (*player).canRotateForward = true;
-        
         break;
     case KeyCode::S:
         monitor.S = true;
-        (*player).canRotateBack = true;
         break;
     case KeyCode::A:
         monitor.A = true;
@@ -215,12 +216,12 @@ void Camera::OnKeyPressed(KeyEventArgs& e)
         monitor.Q = true;
         break;
     case KeyCode::ShiftKey:
-        //monitor.Shift = true;
-        //speed = slowSpeed * 20;
+        monitor.Shift = true;
+        speed = slowSpeed;
         break;
     case KeyCode::ControlKey:
-        //monitor.Ctrl = true;
-        //speed = fastSpeed * 20;
+        monitor.Ctrl = true;
+        speed = fastSpeed;
         break;
     }
 }
@@ -231,7 +232,7 @@ void Camera::OnKeyReleased(KeyEventArgs& e)
     {
     case KeyCode::W:
         monitor.W = false;
-        (*player).canRotateForward = false;
+        
         
         break;
     case KeyCode::S:
@@ -251,12 +252,12 @@ void Camera::OnKeyReleased(KeyEventArgs& e)
         monitor.Q = false;
         break;
     case KeyCode::ShiftKey:
-        //monitor.Shift = false;
-        //speed = normalSpeed * 20;
+        monitor.Shift = false;
+        speed = normalSpeed;
         break;
     case KeyCode::ControlKey:
-        //monitor.Ctrl = false;
-        //speed = normalSpeed * 20;
+        monitor.Ctrl = false;
+        speed = normalSpeed;
         break;
     }
 }
