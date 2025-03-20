@@ -152,7 +152,7 @@ void BianObject::OnUpdateRotMat(double deltaTime, XMMATRIX rotMat)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
-        m_Meshes[i].OnUpdateBall(deltaTime, rotMat);
+        m_Meshes[i].OnUpdateByRotMat(deltaTime, rotMat);
     }
 }
 

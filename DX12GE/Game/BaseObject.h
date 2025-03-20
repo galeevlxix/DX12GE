@@ -25,7 +25,7 @@ public:
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale);
     
     void OnUpdate(double deltaTime);
-    void OnUpdateBall(double deltaTime, XMMATRIX rotMat);
+    void OnUpdateByRotMat(double deltaTime, XMMATRIX rotMat);
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
     void SetPosition(float x, float y, float z);

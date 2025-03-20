@@ -12,14 +12,10 @@
 #define COLOR_BLUE Vector3(0, 0, 1)
 #define COLOR_PURPLE Vector3(0.5, 0, 1)
 
-
-int GetRandom(int start, int end)
+void LightManager::Init(Player* player)
 {
-	return rand() % (end - start + 1) + start;
-}
+	m_player = player;
 
-LightManager::LightManager()
-{
 	// AmbientLight
 	m_AmbientLight.Color = COLOR_WHITE;
 	m_AmbientLight.Intensity = 0.2;
@@ -30,7 +26,7 @@ LightManager::LightManager()
 	m_DirectionalLight.Direction = Vector3(1, -1, 1);
 
 	m_LightProperties.PointLightsCount = 14;
-	m_LightProperties.SpotlightsCount = 1;
+	m_LightProperties.SpotlightsCount = 2;
 
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
@@ -38,7 +34,15 @@ LightManager::LightManager()
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = Vector3(0, defaultHeight, 0);
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
 	m_SpotLights[m_SpotLights.size() - 1].Direction = Vector3(0, -1, 0);
-	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.82f;
+	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.8f;
+
+	m_SpotLights.push_back(SpotLight());
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = 8;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*player).ball.Position;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
+	m_SpotLights[m_SpotLights.size() - 1].Direction = (*player).Direction;
+	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.65f;
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -86,11 +90,6 @@ LightManager::LightManager()
 	}
 }
 
-void LightManager::CreateLamps(ComPtr<ID3D12GraphicsCommandList2> commandList)
-{
-	
-}
-
 void LightManager::OnUpdate(float deltaTime)
 {
 	static float path = 0;
@@ -108,6 +107,9 @@ void LightManager::OnUpdate(float deltaTime)
 			m_PointLights[j + 7 * i].Position = Vector3(cos(j * step + PI * i + path) * radius, defaultHeight, sin(j * step + PI * i + path) * radius);
 		}
 	}
+
+	m_SpotLights[1].PointLightComponent.Position = (*m_player).ball.Position;
+	m_SpotLights[1].Direction = (*m_player).Direction;
 }
 
 void LightManager::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)

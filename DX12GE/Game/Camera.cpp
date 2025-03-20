@@ -63,8 +63,6 @@ XMMATRIX Camera::GetViewProjMatrix()
 
 void Camera::OnUpdate(float deltaTime)
 {
-    
-
     ////////////////////////////////
     // онкнфемхе йюлепш
 

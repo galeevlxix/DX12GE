@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BianObject.h"
+#include "Player.h"
 #include "../Engine/Vector3.h"
 #include <vector>
 
@@ -58,11 +58,10 @@ private:
 
 	float speed = PI / 4;
 
+	Player* m_player;
+
 public:
-
-	LightManager();
-
-	void CreateLamps(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void Init(Player* player);
 
 	void OnUpdate(float deltaTime);
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);

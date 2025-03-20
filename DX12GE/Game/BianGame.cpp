@@ -3,6 +3,8 @@
 #include "../Engine/Application.h"
 #include "../Engine/CommandQueue.h"
 
+#include "../Engine/SimpleMath.h"
+
 #include <iostream>
 
 #if defined(min)
@@ -36,7 +38,7 @@ bool BianGame::LoadContent()
         device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
     katamari.OnLoad(commandList);
-    lights.CreateLamps(commandList);
+    lights.Init(&(katamari.player));
 
     m_Camera.OnLoad(
         XMVectorSet(0, 3, -10, 1), // Position

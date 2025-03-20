@@ -34,16 +34,6 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
 
 void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale)
 {
-    //if (m_Vertices.size() == 0) CreateCubeGeometry();
-
-    /*if (Color.Length() != 0)
-    {
-        for (int i = 0; i < m_Vertices.size(); i++)
-        {
-            m_Vertices[i].Color = Color.ToXM();
-        }
-    }*/
-
     radius *= max(scale.X, max(scale.Y, scale.Z));
 
     // Загрузить данные вершинного буфера
@@ -91,17 +81,12 @@ void BaseObject::OnUpdate(double deltaTime)
         XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z);
 }
 
-void BaseObject::OnUpdateBall(double deltaTime, XMMATRIX rotMat)
+void BaseObject::OnUpdateByRotMat(double deltaTime, XMMATRIX rotMat)
 {
     m_ModelMatrix = 
         XMMatrixScaling(m_Scale.X, m_Scale.Y, m_Scale.Z) *
-        /*XMMatrixRotationX(m_Rotation.X) *
-        XMMatrixRotationY(m_Rotation.Y) *
-        XMMatrixRotationZ(m_Rotation.Z) **/
         rotMat * 
-        XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z)
-        
-        ;
+        XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z);
 }
 
 void BaseObject::SetPosition(float x, float y, float z)
