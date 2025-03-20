@@ -79,7 +79,7 @@ bool BianGame::LoadContent()
         D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
 
     // A single 32-bit constant root parameter that is used by the vertex shader
-    CD3DX12_ROOT_PARAMETER1 rootParameters[6];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[7];
     rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 2, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
     
     const CD3DX12_DESCRIPTOR_RANGE1 descRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
@@ -92,6 +92,7 @@ bool BianGame::LoadContent()
     //rootParameters[5].InitAsConstants(lights.SizeOfPointLight() / 4 * lights.m_LightProperties.PointLightsCount, 3, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
     rootParameters[5].InitAsShaderResourceView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParameters[6].InitAsShaderResourceView(2, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);
 
     const CD3DX12_STATIC_SAMPLER_DESC staticSampler(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR);
 
@@ -300,6 +301,7 @@ void BianGame::OnRender(RenderEventArgs& e)
     //commandList->SetGraphicsRoot32BitConstants(5, lights.SizeOfPointLight() / 4 * lights.m_LightProperties.PointLightsCount , &lights.m_PointLights, 0);
     //SetGraphicsDynamicStructuredBuffer(commandList,  lights.m_LightProperties.PointLightsCount, lights.SizeOfPointLight(), lights.m_PointLights);
     SetGraphicsDynamicStructuredBuffer(commandList, 5, lights.m_PointLights);
+    SetGraphicsDynamicStructuredBuffer(commandList, 6, lights.m_SpotLights);
 
     XMMATRIX viewProjMatrix = m_Camera.GetViewProjMatrix();
 

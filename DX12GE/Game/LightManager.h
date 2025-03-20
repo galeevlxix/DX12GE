@@ -47,9 +47,16 @@ private:
 	{
 		PointLight PointLightComponent;
 		Vector3 Direction;
-		Attenuation AttenuationComponent;
 		float Cutoff;
 	};	
+
+	float step = PI / 7.0;
+	float max_radius = 50;
+	float radius = 50;
+	float defaultIntensity = 1;
+	float defaultHeight = 8;
+
+	float speed = PI / 4;
 
 public:
 

@@ -42,11 +42,14 @@ struct SpotLight
     float Intensity;
     
     float3 Position;
-    float3 Direction;
     
     float AttenuationConstant;
     float AttenuationLinear;
     float AttenuationExp;
+    
+    float3 Direction;
+    
+    float Cutoff;
 };
 
 struct LightProperties
@@ -61,7 +64,7 @@ ConstantBuffer<DirectionalLight> DirectionalLightCB : register(b1);
 ConstantBuffer<LightProperties> LightPropertiesCB : register(b2);
 
 StructuredBuffer<PointLight> PointLightsCB : register(t1);
-//ConstantBuffer<SpotLight> SpotLightsCB : register(t4);
+StructuredBuffer<SpotLight> SpotLightsCB : register(t2);
 
 float4 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, float3 Normal)
 {
@@ -79,6 +82,28 @@ float4 CalcPointLight(PointLight pLight, float3 normal, float3 worldPos)
     return Color / Attenuation;
 }
 
+float4 CalcSpotLight(SpotLight sLight, float3 normal, float3 worldPos)
+{
+    float3 LightToPixel = normalize(worldPos - sLight.Position);
+    float SpotFactor = dot(LightToPixel, sLight.Direction);
+    
+    if (SpotFactor > sLight.Cutoff)
+    {
+        PointLight pointLight;
+        pointLight.Position = sLight.Position;
+        pointLight.Color = sLight.Color;
+        pointLight.Intensity = sLight.Intensity;
+        pointLight.AttenuationConstant = sLight.AttenuationConstant;
+        pointLight.AttenuationLinear = sLight.AttenuationLinear;
+        pointLight.AttenuationExp = sLight.AttenuationExp;
+        
+        float4 Color = CalcPointLight(pointLight, normal, worldPos);
+        return Color * (1.0 - (1.0 - SpotFactor) * 1.0 / (1.0 - sLight.Cutoff));
+    }
+
+    return float4(0, 0, 0, 0);
+}
+
 float4 main(PixelShaderInput IN) : SV_Target
 {
     float4 texel = text.Sample(samp, IN.TextCoord);
@@ -92,6 +117,11 @@ float4 main(PixelShaderInput IN) : SV_Target
     for (int i = 0; i < LightPropertiesCB.PointLightsCount; i++)
     {
         ResultLightIntensity += CalcPointLight(PointLightsCB[i], IN.Normal.xyz, IN.WorldPos);
+    }
+    
+    for (int i = 0; i < LightPropertiesCB.SpotLightsCount; i++)
+    {
+        ResultLightIntensity += CalcSpotLight(SpotLightsCB[i], IN.Normal.xyz, IN.WorldPos);
     }
 
     return texel * float4(ResultLightIntensity, 1.0);

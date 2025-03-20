@@ -29,88 +29,88 @@ LightManager::LightManager()
 	m_DirectionalLight.BaseLightComponent.Intensity = 0.2;
 	m_DirectionalLight.Direction = Vector3(1, -1, 1);
 
-	m_LightProperties.PointLightsCount = 35;
+	m_LightProperties.PointLightsCount = 14;
+	m_LightProperties.SpotlightsCount = 1;
 
-	m_LightProperties.SpotlightsCount = 0;
+	m_SpotLights.push_back(SpotLight());
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = Vector3(0, defaultHeight, 0);
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
+	m_SpotLights[m_SpotLights.size() - 1].Direction = Vector3(0, -1, 0);
+	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.82f;
 
-	float defaultIntensity = 0.75;
-	float defaultHeight = 6;
-
-	float width = 5;
-
-	for (int i = 0; i < width; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_RED;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-50 + i * 100.0 / width, defaultHeight, -50 + 0 * 15);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(0 * step + PI * i) * radius, defaultHeight, sin(0 * step + PI * i) * radius);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_ORANGE;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-50 + i * 100.0 / width, defaultHeight, -50 + 1 * 15);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(1 * step + PI * i) * radius, defaultHeight, sin(1 * step + PI * i) * radius);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_YELLOW;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-50 + i * 100.0 / width, defaultHeight, -50 + 2 * 15);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(2 * step + PI * i) * radius, defaultHeight, sin(2 * step + PI * i) * radius);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_GREEN;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-50 + i * 100.0 / width, defaultHeight, -50 + 3 * 15);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(3 * step + PI * i) * radius, defaultHeight, sin(3 * step + PI * i) * radius);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_CYAN;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-50 + i * 100.0 / width, defaultHeight, -50 + 4 * 15);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(4 * step + PI * i) * radius, defaultHeight, sin(4 * step + PI * i) * radius);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_BLUE;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-50 + i * 100.0 / width, defaultHeight, -50 + 5 * 15);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(5 * step + PI * i) * radius, defaultHeight, sin(5 * step + PI * i) * radius);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_PURPLE;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-50 + i * 100.0 / width, defaultHeight, -50 + 6 * 15);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(6 * step + PI * i) * radius, defaultHeight, sin(6 * step + PI * i) * radius);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 	}
-
-	
 }
 
 void LightManager::CreateLamps(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	for (int i = 0; i < m_PointLights.size(); i++)
-	{
-		m_lamps.push_back(BianObject());
-		m_lamps[i].OnLoad(commandList, "../../DX12GE/Resources/Katamari Objects/field/cube.obj");
-		m_lamps[i].Move(0, 2, 0);
-		m_lamps[i].SetRotation(0, 0, 0);
-		m_lamps[i].SetScale(1, 1, 1);
-	}
+	
 }
 
 void LightManager::OnUpdate(float deltaTime)
 {
-	for (BianObject obj : m_lamps)
+	static float path = 0;
+
+	path += speed * 2 * deltaTime;
+	if (path >= 2 * PI) path -= 2 * PI;
+
+	radius = max_radius * ((sin(path) + 1.0) / 2.0 + 0.3);
+
+
+	for (int i = 0; i < 2; i++)
 	{
-		//obj.Move(0, -3 * deltaTime, 0);
-		obj.OnUpdate(deltaTime);
+		for (int j = 0; j < 7; j++)
+		{
+			m_PointLights[j + 7 * i].Position = Vector3(cos(j * step + PI * i + path) * radius, defaultHeight, sin(j * step + PI * i + path) * radius);
+		}
 	}
 }
 
 void LightManager::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
-	for (BianObject obj : m_lamps)
-	{
-		obj.OnRender(commandList, viewProjMatrix);
-	}
+	
 }
