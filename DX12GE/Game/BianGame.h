@@ -2,11 +2,12 @@
 
 #include "../Engine/Game.h"
 #include "../Engine/Window.h"
+#include "../Engine/Pipeline.h"
+#include "../Engine/DepthBuffer.h"
 #include <DirectXMath.h>
 #include "Camera.h" 
 
 #include "KatamariGame.h" 
-
 #include "LightManager.h"
 
 #include "../Engine/UploadBuffer.h"
@@ -24,8 +25,7 @@ public:
     // Загрузка контента, необходимого для рендера
     virtual bool LoadContent() override;
 
-    // Выгрузить контент, загруженный в LoadContent
-    virtual void UnloadContent() override;
+    virtual void UnloadContent() override {};
 
     KatamariGame katamari;
 protected:
@@ -49,7 +49,6 @@ protected:
 
     virtual void OnResize(ResizeEventArgs& e) override;
 
-
 private:
     // Helper functions
     // Transition a resource
@@ -64,21 +63,11 @@ private:
     template<typename T>
     void SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const std::vector<T>& bufferData);
 
-    // Resize the depth buffer to match the size of the client area.
-    void ResizeDepthBuffer(int width, int height);
-
     uint64_t m_FenceValues[Window::BufferCount] = {};
 
-    // Depth buffer.
-    ComPtr<ID3D12Resource> m_DepthBuffer;
-    // Descriptor heap for depth buffer.
-    ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
+    Pipeline m_Pipeline;
 
-    // Root signature
-    ComPtr<ID3D12RootSignature> m_RootSignature;
-
-    // Pipeline state object.
-    ComPtr<ID3D12PipelineState> m_PipelineState;
+    DepthBuffer m_DepthBuffer;
 
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
@@ -88,6 +77,5 @@ private:
     LightManager lights;
 
     Camera m_Camera;
-    bool m_ContentLoaded;
 };
 

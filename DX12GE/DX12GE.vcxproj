@@ -134,9 +134,11 @@
     <ClCompile Include="DX12GE.cpp" />
     <ClCompile Include="Engine\Application.cpp" />
     <ClCompile Include="Engine\CommandQueue.cpp" />
+    <ClCompile Include="Engine\DepthBuffer.cpp" />
     <ClCompile Include="Engine\DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Game.cpp" />
     <ClCompile Include="Engine\HighResolutionClock.cpp" />
+    <ClCompile Include="Engine\Pipeline.cpp" />
     <ClCompile Include="Engine\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Vector3.cpp" />
     <ClCompile Include="Engine\Window.cpp" />
@@ -152,12 +154,14 @@
     <ClInclude Include="Engine\Application.h" />
     <ClInclude Include="Engine\CommandQueue.h" />
     <ClInclude Include="Engine\d3dx12.h" />
+    <ClInclude Include="Engine\DepthBuffer.h" />
     <ClInclude Include="Engine\DX12LibPCH.h" />
     <ClInclude Include="Engine\Events.h" />
     <ClInclude Include="Engine\Game.h" />
     <ClInclude Include="Engine\Helpers.h" />
     <ClInclude Include="Engine\HighResolutionClock.h" />
     <ClInclude Include="Engine\KeyCodes.h" />
+    <ClInclude Include="Engine\Pipeline.h" />
     <ClInclude Include="Engine\resource.h" />
     <ClInclude Include="Engine\UploadBuffer.h" />
     <ClInclude Include="Engine\Vector3.h" />

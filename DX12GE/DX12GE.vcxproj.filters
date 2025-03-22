@@ -78,6 +78,12 @@
     <ClCompile Include="Game\Player.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Pipeline.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\DepthBuffer.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\d3dx12.h">
@@ -139,6 +145,12 @@
     </ClInclude>
     <ClInclude Include="Game\Player.h">
       <Filter>Файлы заголовков\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipeline.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\DepthBuffer.h">
+      <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
