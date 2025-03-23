@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Player.h"
-#include "../Engine/Vector3.h"
 #include <vector>
 
 using namespace std;
@@ -62,9 +61,7 @@ private:
 
 public:
 	void Init(Player* player);
-
 	void OnUpdate(float deltaTime);
-	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
 	BaseLight m_AmbientLight;
 	DirectionalLight m_DirectionalLight;

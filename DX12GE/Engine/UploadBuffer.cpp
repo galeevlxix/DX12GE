@@ -1,7 +1,7 @@
-#include "DX12LibPCH.h":
 #include "UploadBuffer.h"
 #include "Application.h"
-#include "Helpers.h"
+
+#include "../Game/LightManager.h"
 
 UploadBuffer::UploadBuffer(size_t pageSize)
     : m_PageSize(pageSize)
@@ -14,7 +14,7 @@ UploadBuffer::Allocation UploadBuffer::Allocate(size_t sizeInBytes, size_t align
 {
     if (sizeInBytes > m_PageSize)
     {
-        throw std::bad_alloc();
+        throw bad_alloc();
     }
 
     // If there is no current page, or the requested allocation exceeds the
@@ -27,9 +27,9 @@ UploadBuffer::Allocation UploadBuffer::Allocate(size_t sizeInBytes, size_t align
     return m_CurrentPage->Allocate(sizeInBytes, alignment);
 }
 
-std::shared_ptr<UploadBuffer::Page> UploadBuffer::RequestPage()
+shared_ptr<UploadBuffer::Page> UploadBuffer::RequestPage()
 {
-    std::shared_ptr<Page> page;
+    shared_ptr<Page> page;
 
     if (!m_AvailablePages.empty())
     {
@@ -38,7 +38,7 @@ std::shared_ptr<UploadBuffer::Page> UploadBuffer::RequestPage()
     }
     else
     {
-        page = std::make_shared<Page>(m_PageSize);
+        page = make_shared<Page>(m_PageSize);
         m_PagePool.push_back(page);
     }
 
@@ -102,7 +102,7 @@ UploadBuffer::Allocation UploadBuffer::Page::Allocate(size_t sizeInBytes, size_t
     if (!HasSpace(sizeInBytes, alignment))
     {
         // Can't allocate space from page.
-        throw std::bad_alloc();
+        throw bad_alloc();
     }
 
     size_t alignedSize = Math::AlignUp(sizeInBytes, alignment);

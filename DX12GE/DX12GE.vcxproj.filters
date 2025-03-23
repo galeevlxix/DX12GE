@@ -28,6 +28,21 @@
     <Filter Include="Файлы ресурсов\Shaders">
       <UniqueIdentifier>{0bf15d24-ef45-46fa-9cd4-9822064d0070}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\Shaders\Simple">
+      <UniqueIdentifier>{f22fb156-0bc8-494d-9bb6-047d09067bc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы ресурсов\Shaders\Default">
+      <UniqueIdentifier>{691a6bd6-0ebf-455f-b08b-c7a1f11a228c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы ресурсов\Shaders\Textured">
+      <UniqueIdentifier>{331f9f4e-cfe2-48f3-bf2e-423f4f1ca25e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Debug">
+      <UniqueIdentifier>{f294d541-8036-454c-82ac-fede22300a48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Debug">
+      <UniqueIdentifier>{35a56de1-4cb4-4491-a3f7-3e5224538b4c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Application.cpp">
@@ -52,9 +67,6 @@
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Window.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Vector3.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Game\BaseObject.cpp">
@@ -83,6 +95,15 @@
     </ClCompile>
     <ClCompile Include="Engine\DepthBuffer.cpp">
       <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Debug\SimplePipeline.cpp">
+      <Filter>Исходные файлы\Engine\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Debug\TexturedPipeline.cpp">
+      <Filter>Исходные файлы\Engine\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Debug\DebugRenderSystem.cpp">
+      <Filter>Исходные файлы\Engine\Debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,9 +143,6 @@
     <ClInclude Include="Engine\KeyCodes.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Vector3.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Game\BaseObject.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
@@ -152,6 +170,15 @@
     <ClInclude Include="Engine\DepthBuffer.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Debug\SimplePipeline.h">
+      <Filter>Файлы заголовков\Engine\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Debug\TexturedPipeline.h">
+      <Filter>Файлы заголовков\Engine\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Debug\DebugRenderSystem.h">
+      <Filter>Файлы заголовков\Engine\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc">
@@ -170,11 +197,23 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Resources\Shaders\VertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Resources\Shaders\PixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders</Filter>
+      <Filter>Файлы ресурсов\Shaders\Default</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\VertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Default</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\SimplePixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Simple</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\SimpleVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Simple</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\TexturedPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Textured</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\TexturedVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Textured</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

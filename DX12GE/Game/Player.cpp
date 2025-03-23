@@ -16,7 +16,7 @@ void Player::OnUpdate(double deltaTime)
 {
 	Direction.Normalize();
 	RotationAxis = Direction;
-	RotationAxis.Cross(Vector3(0, 1, 0));
+	RotationAxis = RotationAxis.Cross(Vector3(0, 1, 0));
 	RotationAxis.Normalize();
 	RotationAxis = RotationAxis * -1;
 
@@ -35,10 +35,7 @@ void Player::OnUpdate(double deltaTime)
 		RotationMatrix = GetMatrixRotationAxis(RotationAxis, ballAngle);
 	}		
 
-	prince.SetPosition(
-		sin(Angle) * ballRadius + ball.Position.X, 
-		prince.Position.Y, 
-		cos(Angle) * ballRadius + ball.Position.Z);
+	prince.SetPosition(sin(Angle) * ballRadius + ball.Position.x, prince.Position.y, cos(Angle) * ballRadius + ball.Position.z);
 
 	prince.OnUpdate(deltaTime);
 	ball.OnUpdateRotMat(deltaTime, RotationMatrix);
@@ -57,19 +54,19 @@ XMMATRIX Player::GetMatrixRotationAxis(Vector3 axis, float angle)
 
 	XMMATRIX rotMat = XMMatrixSet
 	(
-		axis.X * axis.X * (1.0 - cosValue) + cosValue,
-		-axis.X * axis.Y * (1.0 - cosValue) + axis.Z * sinValue,
-		axis.X * axis.Z * (1.0 - cosValue) + axis.Y * sinValue,
+		axis.x * axis.x * (1.0 - cosValue) + cosValue,
+		-axis.x * axis.y * (1.0 - cosValue) + axis.z * sinValue,
+		axis.x * axis.z * (1.0 - cosValue) + axis.y * sinValue,
 		0.0,
 
-		-axis.Y * axis.X * (1.0 - cosValue) - axis.Z * sinValue,
-		axis.Y * axis.Y * (1.0 - cosValue) + cosValue,
-		axis.Y * axis.Z * (1.0 - cosValue) + axis.X * sinValue,
+		-axis.y * axis.x * (1.0 - cosValue) - axis.z * sinValue,
+		axis.y * axis.y * (1.0 - cosValue) + cosValue,
+		axis.y * axis.z * (1.0 - cosValue) + axis.x * sinValue,
 		0.0,
 
-		axis.Z * axis.X * (1.0 - cosValue) + axis.Y * sinValue,
-		-axis.Z * axis.Y * (1.0 - cosValue) - axis.X * sinValue,
-		axis.Z * axis.Z * (1.0 - cosValue) + cosValue,
+		axis.z * axis.x * (1.0 - cosValue) + axis.y * sinValue,
+		-axis.z * axis.y * (1.0 - cosValue) - axis.x * sinValue,
+		axis.z * axis.z * (1.0 - cosValue) + cosValue,
 		0.0,
 
 		0.0, 0.0, 0.0, 1.0
@@ -90,19 +87,19 @@ float Player::GetAngleOfMatrixAndAxis(XMMATRIX rotMat, Vector3 axis)
 	float cosVal = 0.0;
 	float sinVal = 1.0;
 
-	if (1.0 - axis.X * axis.X != 0.0)
+	if (1.0 - axis.x * axis.x != 0.0)
 	{
-		cosVal = (val00 - axis.X * axis.X) / (1.0 - axis.X * axis.X);
+		cosVal = (val00 - axis.x * axis.x) / (1.0 - axis.x * axis.x);
 	}
 
-	if (1.0 - axis.Z * axis.Z != 0.0 && (cosVal > 1.0 || cosVal < -1.0))
+	if (1.0 - axis.z * axis.z != 0.0 && (cosVal > 1.0 || cosVal < -1.0))
 	{
-		cosVal = (val22 - axis.Z * axis.Z) / (1.0 - axis.Z * axis.Z);
+		cosVal = (val22 - axis.z * axis.z) / (1.0 - axis.z * axis.z);
 	}
 
-	if (1.0 - axis.Y * axis.Y != 0.0 && (cosVal > 1.0 || cosVal < -1.0))
+	if (1.0 - axis.y * axis.y != 0.0 && (cosVal > 1.0 || cosVal < -1.0))
 	{
-		cosVal = (val11 - axis.Y * axis.Y) / (1.0 - axis.Y * axis.Y);
+		cosVal = (val11 - axis.y * axis.y) / (1.0 - axis.y * axis.y);
 	}
 
 	if ((cosVal > 1.0 || cosVal < -1.0))
@@ -111,17 +108,17 @@ float Player::GetAngleOfMatrixAndAxis(XMMATRIX rotMat, Vector3 axis)
 	}
 
 
-	if (axis.X != 0)
+	if (axis.x != 0)
 	{
-		sinVal = (val12 - axis.Z * axis.Y * (1.0 - cosVal)) / axis.X;
+		sinVal = (val12 - axis.z * axis.y * (1.0 - cosVal)) / axis.x;
 	}
-	else if (axis.Z != 0)
+	else if (axis.z != 0)
 	{
-		sinVal = (val01 + axis.X * axis.Y * (1.0 - cosVal)) / axis.Z;
+		sinVal = (val01 + axis.x * axis.y * (1.0 - cosVal)) / axis.z;
 	}
-	else if (axis.Y != 0)
+	else if (axis.y != 0)
 	{
-		sinVal = (val02 - axis.Z * axis.X * (1.0 - cosVal)) / axis.Y;
+		sinVal = (val02 - axis.z * axis.x * (1.0 - cosVal)) / axis.y;
 	}
 	else
 	{
@@ -146,19 +143,19 @@ float Player::GetAngleOfMatrixAndAxis(XMMATRIX rotMat, Vector3 axis)
 
 /*XMMATRIX rotMat = XMMatrixSet
 (
-	right.X * right.X * (1 - cos(ballAngle)) + cos(ballAngle),
-	right.X * right.Y * (1 - cos(ballAngle)) - right.Z * sin(ballAngle),
-	right.X * right.Z * (1 - cos(ballAngle)) + right.Y * sin(ballAngle),
+	right.x * right.x * (1 - cos(ballAngle)) + cos(ballAngle),
+	right.x * right.y * (1 - cos(ballAngle)) - right.z * sin(ballAngle),
+	right.x * right.z * (1 - cos(ballAngle)) + right.y * sin(ballAngle),
 	0,
 
-	right.Y * right.X * (1 - cos(ballAngle)) + right.Z * sin(ballAngle),
-	right.Y * right.Y * (1 - cos(ballAngle)) + cos(ballAngle),
-	right.Y * right.Z * (1 - cos(ballAngle)) + right.X * sin(ballAngle),
+	right.y * right.x * (1 - cos(ballAngle)) + right.z * sin(ballAngle),
+	right.y * right.y * (1 - cos(ballAngle)) + cos(ballAngle),
+	right.y * right.z * (1 - cos(ballAngle)) + right.x * sin(ballAngle),
 	0,
 
-	right.Z * right.X * (1 - cos(ballAngle)) + right.Y * sin(ballAngle),
-	right.Z * right.Y * (1 - cos(ballAngle)) + right.X * sin(ballAngle),
-	right.Z * right.Z * (1 - cos(ballAngle)) + cos(ballAngle),
+	right.z * right.x * (1 - cos(ballAngle)) + right.y * sin(ballAngle),
+	right.z * right.y * (1 - cos(ballAngle)) + right.x * sin(ballAngle),
+	right.z * right.z * (1 - cos(ballAngle)) + cos(ballAngle),
 	0,
 
 	0, 0, 0, 1

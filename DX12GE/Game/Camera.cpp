@@ -66,16 +66,17 @@ void Camera::OnUpdate(float deltaTime)
     ////////////////////////////////
     // œŒÀŒ∆≈Õ»≈  ¿Ã≈–€
 
-    Position = Vector3(
+    Vector3 pPosition(
         (*player).ball.Position + Vector3(
-            sin(angle_h) * ((*player).flyRadius + (*player).ballRadius), 
-            (*player).prince.Position.Y + 5,
-            cos(angle_h) * ((*player).flyRadius + (*player).ballRadius)
-        )).ToXMVector();
+            sin(angle_h) * ((*player).flyRadius + (*player).ballRadius),
+            (*player).prince.Position.y + 5,
+            cos(angle_h) * ((*player).flyRadius + (*player).ballRadius)));
+
+    Position = XMVectorSet(pPosition.x, pPosition.y, pPosition.z, 1.0);
     
     Vector3 razn = (*player).ball.Position - Vector3(XMVectorGetX(Position), XMVectorGetY(Position), XMVectorGetZ(Position));
     razn.Normalize();
-    Target = razn.ToXMVector();
+    Target = XMVectorSet(razn.x, razn.y, razn.z, 1.0);
 
     ////////////////////////////////////
     //// ¬–¿Ÿ≈Õ»≈ »√–Œ ¿
@@ -90,7 +91,7 @@ void Camera::OnUpdate(float deltaTime)
         rotY -= PI / 2;
     }
 
-    (*player).prince.SetRotation((*player).prince.Rotation.X, rotY, (*player).prince.Rotation.Z);
+    (*player).prince.SetRotation((*player).prince.Rotation.x, rotY, (*player).prince.Rotation.z);
 
     (*player).Direction = Vector3(Target.m128_f32[0], 0, Target.m128_f32[2]);
     (*player).Angle = angle_h;
@@ -99,9 +100,9 @@ void Camera::OnUpdate(float deltaTime)
     //// œ≈–≈Ã≈Ÿ≈Õ»≈ »√–Œ ¿
 
     Vector3 forward = (*player).ball.Position + (*player).Direction * speed * deltaTime;
-    bool canGoForward = forward.X < 70 && forward.X > -70 && forward.Z < 70 && forward.Z > -70;
+    bool canGoForward = forward.x < 70 && forward.x > -70 && forward.z < 70 && forward.z > -70;
     Vector3 back = (*player).ball.Position + (*player).Direction * (-speed) * deltaTime;
-    bool canGoBack = back.X < 70 && back.X > -70 && back.Z < 70 && back.Z > -70;
+    bool canGoBack = back.x < 70 && back.x > -70 && back.z < 70 && back.z > -70;
 
     if (monitor.W && canGoForward && !monitor.RBC)
     {
@@ -158,10 +159,6 @@ void Camera::OnMouseWheel(MouseWheelEventArgs& e)
     return;
 	Fov -= e.WheelDelta;
 	Fov = clamp(Fov, 12.0f, 90.0f);
-
-    //std::cout << Fov << std::endl;
-
-    //22
 }
 
 void Camera::OnMouseMoved(MouseMotionEventArgs& e)

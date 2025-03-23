@@ -14,11 +14,10 @@
 #define _128MB _MB(128)
 #define _256MB _MB(256)
 
-#include <wrl.h>
-#include "d3d12.h"
-
-#include <memory>
+#include "DX12LibPCH.h"
 #include <deque>
+
+using namespace std;
 
 class UploadBuffer
 {
@@ -57,6 +56,8 @@ public:
      */
     void Reset();
 
+    
+
 private:
     // A single page for the allocator.
     struct Page
@@ -69,7 +70,7 @@ private:
         bool HasSpace(size_t sizeInBytes, size_t alignment) const;
 
         // Allocate memory from the page.
-        // Throws std::bad_alloc if the the allocation size is larger
+        // Throws bad_alloc if the the allocation size is larger
         // that the page size or the size of the allocation exceeds the 
         // remaining space in the page.
         Allocation Allocate(size_t sizeInBytes, size_t alignment);
@@ -79,7 +80,7 @@ private:
 
     private:
 
-        Microsoft::WRL::ComPtr<ID3D12Resource> m_d3d12Resource;
+        ComPtr<ID3D12Resource> m_d3d12Resource;
 
         // Base pointer.
         void* m_CPUPtr;
@@ -92,18 +93,19 @@ private:
     };
 
     // A pool of memory pages.
-    using PagePool = std::deque< std::shared_ptr<Page> >;
+    using PagePool = deque< shared_ptr<Page> >;
 
     // Request a page from the pool of available pages
     // or create a new page if there are no available pages.
-    std::shared_ptr<Page> RequestPage();
+    shared_ptr<Page> RequestPage();
 
     PagePool m_PagePool;
     PagePool m_AvailablePages;
 
-    std::shared_ptr<Page> m_CurrentPage;
+    shared_ptr<Page> m_CurrentPage;
 
     // The size of each page of memory.
     size_t m_PageSize;
 
 };
+

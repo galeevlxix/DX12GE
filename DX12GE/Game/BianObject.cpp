@@ -96,6 +96,8 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
         for (unsigned int i = 0; i < meshesCount; i++)
         {
             m_Meshes.push_back(BaseObject());
+            m_MaterialIndices.push_back(0);
+
             const aiMesh* paiMesh = pScene->mMeshes[i];
 
             vector<VertexStruct> Vertices;
@@ -115,7 +117,7 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
                 Vertices.push_back(v);
             }
 
-            m_Meshes[i].MaterialIndex = paiMesh->mMaterialIndex;
+            m_MaterialIndices[i] = paiMesh->mMaterialIndex;
 
             for (unsigned int i = 0; i < paiMesh->mNumFaces; i++) 
             {
@@ -125,9 +127,8 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
                 Indices.push_back(Face.mIndices[1]);
                 Indices.push_back(Face.mIndices[2]);
             }
-
-            m_Meshes[i].CreateMesh(Vertices, Indices);
-            m_Meshes[i].OnLoad(commandList, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1));
+            
+            m_Meshes[i].OnLoad(commandList, Vertices, Indices);
         }
 
         Move(0, -yOffset, 0);
@@ -144,7 +145,7 @@ void BianObject::OnUpdate(double deltaTime )
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
-        m_Meshes[i].OnUpdate(deltaTime);
+        m_Meshes[i].OnUpdate();
     }
 }
 
@@ -152,7 +153,7 @@ void BianObject::OnUpdateRotMat(double deltaTime, XMMATRIX rotMat)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
-        m_Meshes[i].OnUpdateByRotMat(deltaTime, rotMat);
+        m_Meshes[i].OnUpdateByRotationMatrix(deltaTime, rotMat);
     }
 }
 
@@ -160,9 +161,9 @@ void BianObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
-        if (m_Materials[m_Meshes[i].MaterialIndex].CanDrawIt())
+        if (m_Materials[m_MaterialIndices[i]].CanDrawIt())
         {
-            m_Materials[m_Meshes[i].MaterialIndex].Render(commandList);
+            m_Materials[m_MaterialIndices[i]].Render(commandList);
             m_Meshes[i].OnRender(commandList, viewProjMatrix);
         }        
     }
@@ -355,7 +356,7 @@ void BianObject::SetRotationX(float value)
     {
         m_Meshes[i].SetRotationX(value);
     }
-    Rotation = Vector3(value, Rotation.Y, Rotation.Z);
+    Rotation = Vector3(value, Rotation.y, Rotation.z);
 }
 
 void BianObject::SetRotationY(float value)
@@ -364,7 +365,7 @@ void BianObject::SetRotationY(float value)
     {
         m_Meshes[i].SetRotationY(value);
     }
-    Rotation = Vector3(Rotation.X, value, Rotation.Z);
+    Rotation = Vector3(Rotation.x, value, Rotation.z);
 }
 
 void BianObject::SetRotationZ(float value)
@@ -373,7 +374,7 @@ void BianObject::SetRotationZ(float value)
     {
         m_Meshes[i].SetRotationZ(value);
     }
-    Rotation = Vector3(Rotation.X, Rotation.Y, value);
+    Rotation = Vector3(Rotation.x, Rotation.y, value);
 }
 
 void BianObject::Rotate(Vector3 RotateVector)

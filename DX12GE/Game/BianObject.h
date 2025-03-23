@@ -85,5 +85,6 @@ public:
     bool canEatIt = false;
 private:
 	vector<BaseObject> m_Meshes;
-    vector<Material> m_Materials;	
+    vector<Material> m_Materials;
+    vector<int> m_MaterialIndices;
 };

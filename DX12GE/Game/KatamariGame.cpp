@@ -18,8 +18,8 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		string name = "boot" + to_string(i);
 		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/low-poly-boot/model.fbx");
 		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.X, 0, randVector.Z);
-		m_objects[name].SetRotationY(randVector.Y);
+		m_objects[name].Move(randVector.x, 0, randVector.z);
+		m_objects[name].SetRotationY(randVector.y);
 		m_objects[name].SetScale(20, 20, 20);
 		m_objects[name].canEatIt = true;
 	}
@@ -29,8 +29,8 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		string name = "cup" + to_string(i);
 		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/low-poly-cup-with-lemon-tea/Cup.fbx");
 		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.X, 0, randVector.Z);
-		m_objects[name].SetRotationY(randVector.Y);
+		m_objects[name].Move(randVector.x, 0, randVector.z);
+		m_objects[name].SetRotationY(randVector.y);
 		m_objects[name].SetScale(0.3f, 0.3f, 0.3f);
 		m_objects[name].canEatIt = true;
 	}
@@ -40,8 +40,8 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		string name = "juice" + to_string(i);
 		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/low-poly-stylized-juice/model.dae");
 		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.X, 2, randVector.Z);
-		m_objects[name].SetRotationY(randVector.Y);
+		m_objects[name].Move(randVector.x, 2, randVector.z);
+		m_objects[name].SetRotationY(randVector.y);
 		m_objects[name].SetScale(150, 150, 150);
 		m_objects[name].canEatIt = true;
 	}
@@ -51,8 +51,8 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		string name = "chair" + to_string(i);
 		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/old-wooden-chair-low-poly/chair.fbx");
 		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.X, 0, randVector.Z);
-		m_objects[name].SetRotationY(randVector.Y);
+		m_objects[name].Move(randVector.x, 0, randVector.z);
+		m_objects[name].SetRotationY(randVector.y);
 		m_objects[name].SetScale(0.05, 0.05, 0.05);
 		m_objects[name].canEatIt = true;
 	}
@@ -62,8 +62,7 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		string name = "toothbrush" + to_string(i);
 		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/toothbrush/model.dae");
 		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.X, -98, randVector.Z);
-		//m_objects[name].SetRotationY(randVector.Y);
+		m_objects[name].Move(randVector.x, -98, randVector.z);
 		m_objects[name].SetScale(0.03, 0.03, 0.03);
 		m_objects[name].canEatIt = true;
 	}
@@ -79,8 +78,8 @@ void KatamariGame::CheckCollisions()
 		
 		Vector3 objPos = m_objects[name].Position;
 
-		float dx = abs(objPos.X - player.ball.Position.X);
-		float dz = abs(objPos.Z - player.ball.Position.Z);
+		float dx = abs(objPos.x - player.ball.Position.x);
+		float dz = abs(objPos.z - player.ball.Position.z);
 
 		if (dx * dx + dz * dz < player.ballRadius * player.ballRadius)
 		{
@@ -91,7 +90,7 @@ void KatamariGame::CheckCollisions()
 
 			player.ball.Expand(ratio);
 
-			player.ball.SetPosition(player.ball.Position.X, player.ballRadius, player.ball.Position.Z);
+			player.ball.SetPosition(player.ball.Position.x, player.ballRadius, player.ball.Position.z);
 			//player.flyRadius *= ratio;
 		}
 	}

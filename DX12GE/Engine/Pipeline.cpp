@@ -13,7 +13,14 @@ void Pipeline::Initialize(ComPtr<ID3D12Device2> device)
     CreateRootSignatureFlags();
     CreateRootSignatureBlob();
     CreateRootSignature(device);
+    CreateRasterizerDesc();
     CreatePipelineState(device);
+}
+
+void Pipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
+{
+    commandList->SetPipelineState(PipelineState.Get());
+    commandList->SetGraphicsRootSignature(RootSignature.Get());
 }
 
 // Load the vertex shader
@@ -31,7 +38,7 @@ void Pipeline::LoadPixelShader()
 }
 
 void Pipeline::CreateVertexInputLayout()
-{
+{   
     m_InputLayout[0] = { "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
     m_InputLayout[1] = { "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
     m_InputLayout[2] = { "TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0,  D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
@@ -88,6 +95,13 @@ void Pipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
         device->CreateRootSignature(0, m_RootSignatureBlob->GetBufferPointer(), m_RootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&RootSignature)));
 }
 
+void Pipeline::CreateRasterizerDesc()
+{
+    m_RasterizerDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    m_RasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+    m_RasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+}
+
 // Create the pipeline state
 void Pipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
 {
@@ -105,17 +119,14 @@ void Pipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
 
     D3D12_RT_FORMAT_ARRAY rtvFormats = {};
     rtvFormats.NumRenderTargets = 1;
-    rtvFormats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-    CD3DX12_RASTERIZER_DESC rasterizerDesc(D3D12_DEFAULT);
-    rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+    rtvFormats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;    
 
     pipelineStateStream.pRootSignature = RootSignature.Get();
     pipelineStateStream.InputLayout = { m_InputLayout, _countof(m_InputLayout) };
     pipelineStateStream.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     pipelineStateStream.VS = CD3DX12_SHADER_BYTECODE(m_VertexShaderBlob.Get());
     pipelineStateStream.PS = CD3DX12_SHADER_BYTECODE(m_PixelShaderBlob.Get());
-    pipelineStateStream.Rasterizer = rasterizerDesc;
+    pipelineStateStream.Rasterizer = m_RasterizerDesc;
     pipelineStateStream.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     pipelineStateStream.RTVFormats = rtvFormats;
 

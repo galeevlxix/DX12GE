@@ -32,30 +32,84 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
 }
 
 
-void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, Vector3 rotation, Vector3 scale)
+void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, vector<VertexStruct> vertices, vector<WORD> indices)
 {
-    radius *= max(scale.X, max(scale.Y, scale.Z));
+    indiciesCount = static_cast<UINT>(indices.size());
 
     // Загрузить данные вершинного буфера
-    UpdateBufferResource(commandList, &m_VertexBuffer, &intermediateVertexBuffer, m_Vertices.size(), sizeof(VertexStruct), m_Vertices.data());
+    UpdateBufferResource(commandList, &m_VertexBuffer, &IntermediateVertexBufferResource, vertices.size(), sizeof(VertexStruct), vertices.data());
 
     // Создать представление буфера вершин
     m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();
-    m_VertexBufferView.SizeInBytes = static_cast<UINT>(m_Vertices.size() * sizeof(VertexStruct));
+    m_VertexBufferView.SizeInBytes = static_cast<UINT>(vertices.size() * sizeof(VertexStruct));
     m_VertexBufferView.StrideInBytes = sizeof(VertexStruct);
 
     // Загрузить данные индексного буфера
-    UpdateBufferResource(commandList, &m_IndexBuffer, &intermediateIndexBuffer, m_Indices.size(), sizeof(WORD), m_Indices.data());
+    UpdateBufferResource(commandList, &m_IndexBuffer, &IntermediateIndexBufferResource, indices.size(), sizeof(WORD), indices.data());
 
     // Создать представление индексного буфера
     m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
     m_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
-    m_IndexBufferView.SizeInBytes = static_cast<UINT>(m_Indices.size() * sizeof(WORD));
+    m_IndexBufferView.SizeInBytes = static_cast<UINT>(indices.size() * sizeof(WORD));
 
-    SetPosition(position);
-    SetRotation(rotation);
-    SetScale(scale);
+    SetPosition(Vector3(0, 0, 0));
+    SetRotation(Vector3(0, 0, 0));
+    SetScale(Vector3(1, 1, 1));
 }
+
+void BaseObject::OnLoadPositionColor(ComPtr<ID3D12GraphicsCommandList2> commandList, vector<VertexPositionColor> vertices, vector<WORD> indices)
+{
+    indiciesCount = static_cast<UINT>(indices.size());
+
+    // Загрузить данные вершинного буфера
+    UpdateBufferResource(commandList, &m_VertexBuffer, &IntermediateVertexBufferResource, vertices.size(), sizeof(VertexPositionColor), vertices.data());
+    m_VertexBuffer->SetName(L"m_VertexBuffer");
+
+    // Создать представление буфера вершин
+    m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();
+    m_VertexBufferView.SizeInBytes = static_cast<UINT>(vertices.size() * sizeof(VertexPositionColor));
+    m_VertexBufferView.StrideInBytes = sizeof(VertexPositionColor);
+
+    // Загрузить данные индексного буфера
+    UpdateBufferResource(commandList, &m_IndexBuffer, &IntermediateIndexBufferResource, indices.size(), sizeof(WORD), indices.data());
+    m_IndexBuffer->SetName(L"m_IndexBuffer");
+
+    // Создать представление индексного буфера
+    m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
+    m_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
+    m_IndexBufferView.SizeInBytes = static_cast<UINT>(indices.size() * sizeof(WORD));
+
+
+    SetPosition(Vector3(0, 0, 0));
+    SetRotation(Vector3(0, 0, 0));
+    SetScale(Vector3(1, 1, 1));
+}
+
+void BaseObject::OnLoadPositionTextCoord(ComPtr<ID3D12GraphicsCommandList2> commandList, vector<VertexPositionTextCoord> vertices, vector<WORD> indices)
+{
+    indiciesCount = static_cast<UINT>(indices.size());
+
+    // Загрузить данные вершинного буфера
+    UpdateBufferResource(commandList, &m_VertexBuffer, &IntermediateVertexBufferResource, vertices.size(), sizeof(VertexPositionTextCoord), vertices.data());
+
+    // Создать представление буфера вершин
+    m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();
+    m_VertexBufferView.SizeInBytes = static_cast<UINT>(vertices.size() * sizeof(VertexPositionTextCoord));
+    m_VertexBufferView.StrideInBytes = sizeof(VertexPositionTextCoord);
+
+    // Загрузить данные индексного буфера
+    UpdateBufferResource(commandList, &m_IndexBuffer, &IntermediateIndexBufferResource, indices.size(), sizeof(WORD), indices.data());
+
+    // Создать представление индексного буфера
+    m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
+    m_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
+    m_IndexBufferView.SizeInBytes = static_cast<UINT>(indices.size() * sizeof(WORD));
+
+    SetPosition(Vector3(0, 0, 0));
+    SetRotation(Vector3(0, 0, 0));
+    SetScale(Vector3(1, 1, 1));
+}
+
 
 void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
@@ -67,31 +121,43 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
     XMMATRIX mvpMatrix = XMMatrixMultiply(m_ModelMatrix, viewProjMatrix);
     commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &m_ModelMatrix, 0);  
     commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvpMatrix, sizeof(XMMATRIX) / 4);
+    
+    commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
+}
+
+void BaseObject::OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
+{
+    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+    commandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
+    commandList->IASetIndexBuffer(&m_IndexBufferView);
+
+    XMMATRIX mvpMatrix = XMMatrixMultiply(m_ModelMatrix, viewProjMatrix);
+    commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvpMatrix, 0);
 
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
 }
 
-void BaseObject::OnUpdate(double deltaTime)
+void BaseObject::OnUpdate()
 {
     m_ModelMatrix =
-        XMMatrixScaling(m_Scale.X, m_Scale.Y, m_Scale.Z) *
-        XMMatrixRotationX(m_Rotation.X) *
-        XMMatrixRotationY(m_Rotation.Y) *
-        XMMatrixRotationZ(m_Rotation.Z) *
-        XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z);
+        XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
+        XMMatrixRotationX(m_Rotation.x) *
+        XMMatrixRotationY(m_Rotation.y) *
+        XMMatrixRotationZ(m_Rotation.z) *
+        XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
 }
 
-void BaseObject::OnUpdateByRotMat(double deltaTime, XMMATRIX rotMat)
+void BaseObject::OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat)
 {
     m_ModelMatrix = 
-        XMMatrixScaling(m_Scale.X, m_Scale.Y, m_Scale.Z) *
+        XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
         rotMat * 
-        XMMatrixTranslation(m_Position.X, m_Position.Y, m_Position.Z);
+        XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
 }
 
 void BaseObject::SetPosition(float x, float y, float z)
 {
-    m_Position.Set(x, y, z);
+    m_Position = Vector3(x, y, z);
 }
 
 void BaseObject::SetPosition(Vector3 Position)
@@ -101,7 +167,7 @@ void BaseObject::SetPosition(Vector3 Position)
 
 void BaseObject::Move(float dx, float dy, float dz)
 {
-    m_Position.Increase(dx, dy, dz);
+    m_Position += Vector3(dx, dy, dz);
 }
 
 void BaseObject::Move(Vector3 MoveVector)
@@ -123,17 +189,17 @@ void BaseObject::SetRotation(Vector3 RotationVector)
 
 void BaseObject::SetRotationX(float angleX)
 {
-    m_Rotation.X = angleX;
+    m_Rotation.x = angleX;
 }
 
 void BaseObject::SetRotationY(float angleY)
 {
-    m_Rotation.Y = angleY;
+    m_Rotation.y = angleY;
 }
 
 void BaseObject::SetRotationZ(float angleZ)
 {
-    m_Rotation.Z = angleZ;
+    m_Rotation.z = angleZ;
 }
 
 void BaseObject::Rotate(Vector3 RotateVector)
@@ -143,7 +209,7 @@ void BaseObject::Rotate(Vector3 RotateVector)
 
 void BaseObject::SetScale(float x, float y, float z)
 {
-    m_Scale.Set(x, y, z);
+    m_Scale = Vector3(x, y, z);
 }
 
 void BaseObject::SetScale(Vector3 ScaleVector)
@@ -169,13 +235,6 @@ Vector3 BaseObject::GetRotation()
 Vector3 BaseObject::GetScale()
 {
     return m_Scale;
-}
-
-void BaseObject::CreateMesh(vector<VertexStruct> vertices, vector<WORD> indices)
-{
-    m_Vertices = vertices;
-    m_Indices = indices;
-    indiciesCount = static_cast<UINT>(indices.size());
 }
 
 //void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)

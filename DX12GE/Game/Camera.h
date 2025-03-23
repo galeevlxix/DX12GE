@@ -1,5 +1,4 @@
 #pragma once
-#include "../Engine/Vector3.h"
 #include "DirectXMath.h"
 #include "../Engine/Events.h"
 

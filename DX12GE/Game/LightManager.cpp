@@ -22,7 +22,7 @@ void LightManager::Init(Player* player)
 
 	// DirectionalLight
 	m_DirectionalLight.BaseLightComponent.Color = COLOR_WHITE;
-	m_DirectionalLight.BaseLightComponent.Intensity = 0.2;
+	m_DirectionalLight.BaseLightComponent.Intensity = 0.7;
 	m_DirectionalLight.Direction = Vector3(1, -1, 1);
 
 	m_LightProperties.PointLightsCount = 14;
@@ -110,9 +110,4 @@ void LightManager::OnUpdate(float deltaTime)
 
 	m_SpotLights[1].PointLightComponent.Position = (*m_player).ball.Position;
 	m_SpotLights[1].Direction = (*m_player).Direction;
-}
-
-void LightManager::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
-{
-	
 }
