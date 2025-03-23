@@ -96,13 +96,13 @@
     <ClCompile Include="Engine\DepthBuffer.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Debug\SimplePipeline.cpp">
+    <ClCompile Include="Engine\DebugSystem\DebugRenderSystem.cpp">
       <Filter>Исходные файлы\Engine\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Debug\TexturedPipeline.cpp">
+    <ClCompile Include="Engine\DebugSystem\SimplePipeline.cpp">
       <Filter>Исходные файлы\Engine\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Debug\DebugRenderSystem.cpp">
+    <ClCompile Include="Engine\DebugSystem\TexturedPipeline.cpp">
       <Filter>Исходные файлы\Engine\Debug</Filter>
     </ClCompile>
   </ItemGroup>
@@ -170,13 +170,13 @@
     <ClInclude Include="Engine\DepthBuffer.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Debug\SimplePipeline.h">
+    <ClInclude Include="Engine\DebugSystem\DebugRenderSystem.h">
       <Filter>Файлы заголовков\Engine\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Debug\TexturedPipeline.h">
+    <ClInclude Include="Engine\DebugSystem\SimplePipeline.h">
       <Filter>Файлы заголовков\Engine\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Debug\DebugRenderSystem.h">
+    <ClInclude Include="Engine\DebugSystem\TexturedPipeline.h">
       <Filter>Файлы заголовков\Engine\Debug</Filter>
     </ClInclude>
   </ItemGroup>

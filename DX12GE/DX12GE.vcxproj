@@ -134,9 +134,9 @@
     <ClCompile Include="DX12GE.cpp" />
     <ClCompile Include="Engine\Application.cpp" />
     <ClCompile Include="Engine\CommandQueue.cpp" />
-    <ClCompile Include="Engine\Debug\DebugRenderSystem.cpp" />
-    <ClCompile Include="Engine\Debug\SimplePipeline.cpp" />
-    <ClCompile Include="Engine\Debug\TexturedPipeline.cpp" />
+    <ClCompile Include="Engine\DebugSystem\DebugRenderSystem.cpp" />
+    <ClCompile Include="Engine\DebugSystem\SimplePipeline.cpp" />
+    <ClCompile Include="Engine\DebugSystem\TexturedPipeline.cpp" />
     <ClCompile Include="Engine\DepthBuffer.cpp" />
     <ClCompile Include="Engine\DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Game.cpp" />
@@ -156,9 +156,9 @@
     <ClInclude Include="Engine\Application.h" />
     <ClInclude Include="Engine\CommandQueue.h" />
     <ClInclude Include="Engine\d3dx12.h" />
-    <ClInclude Include="Engine\Debug\DebugRenderSystem.h" />
-    <ClInclude Include="Engine\Debug\SimplePipeline.h" />
-    <ClInclude Include="Engine\Debug\TexturedPipeline.h" />
+    <ClInclude Include="Engine\DebugSystem\DebugRenderSystem.h" />
+    <ClInclude Include="Engine\DebugSystem\SimplePipeline.h" />
+    <ClInclude Include="Engine\DebugSystem\TexturedPipeline.h" />
     <ClInclude Include="Engine\DepthBuffer.h" />
     <ClInclude Include="Engine\DX12LibPCH.h" />
     <ClInclude Include="Engine\Events.h" />

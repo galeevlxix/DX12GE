@@ -5,7 +5,7 @@
 #include "../Engine/Pipeline.h"
 #include "../Engine/DepthBuffer.h"
 #include "../Engine/UploadBuffer.h"
-#include "../Engine/Debug/DebugRenderSystem.h"
+#include "../Engine/DebugSystem/DebugRenderSystem.h"
 
 #include "Camera.h" 
 #include "KatamariGame.h" 
