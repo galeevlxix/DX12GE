@@ -105,6 +105,9 @@
     <ClCompile Include="Engine\DebugSystem\TexturedPipeline.cpp">
       <Filter>Исходные файлы\Engine\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\ShadowMap.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\d3dx12.h">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="Engine\DebugSystem\TexturedPipeline.h">
       <Filter>Файлы заголовков\Engine\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ShadowMap.h">
+      <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

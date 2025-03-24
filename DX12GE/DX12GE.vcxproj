@@ -142,6 +142,7 @@
     <ClCompile Include="Engine\Game.cpp" />
     <ClCompile Include="Engine\HighResolutionClock.cpp" />
     <ClCompile Include="Engine\Pipeline.cpp" />
+    <ClCompile Include="Engine\ShadowMap.cpp" />
     <ClCompile Include="Engine\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="Game\BaseObject.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Engine\KeyCodes.h" />
     <ClInclude Include="Engine\Pipeline.h" />
     <ClInclude Include="Engine\resource.h" />
+    <ClInclude Include="Engine\ShadowMap.h" />
     <ClInclude Include="Engine\UploadBuffer.h" />
     <ClInclude Include="Engine\Window.h" />
     <ClInclude Include="Game\BaseObject.h" />
