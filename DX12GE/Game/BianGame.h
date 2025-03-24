@@ -49,6 +49,8 @@ private:
     template<typename T>
     void SetGraphicsConstants(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const T& bufferData);
 
+    void AddDebugObjects();
+
     uint64_t m_FenceValues[Window::BufferCount] = {};
 
     Pipeline m_Pipeline;
@@ -60,6 +62,7 @@ private:
     unique_ptr<UploadBuffer> m_UploadBuffer;
 
     DebugRenderSystem debug;
+    bool shouldAddDebugObjects = false;
 
     KatamariGame katamari;
     LightManager lights;

@@ -64,6 +64,22 @@ void BianGame::ClearRTV(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CP
     commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
 }
 
+void BianGame::AddDebugObjects()
+{
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+
+    static Vector3 prevPos(0, 2, 0);
+
+    debug.DrawPoint(katamari.player.prince.Position, 1);
+    debug.DrawLine(prevPos, katamari.player.prince.Position, Color(1, 1, 0));
+    debug.Update(commandList);
+    prevPos = katamari.player.prince.Position;
+
+    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+    commandQueue->WaitForFenceValue(fenceValue);
+}
+
 template<typename T>
 void BianGame::SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const vector<T>& bufferData)
 {
@@ -84,8 +100,14 @@ void BianGame::OnRender(RenderEventArgs& e)
 {
     super::OnRender(e);
 
-    auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    auto commandList = commandQueue->GetCommandList();
+    if (shouldAddDebugObjects)
+    {
+        AddDebugObjects();
+        shouldAddDebugObjects = false;
+    }
+
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
     UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
     auto backBuffer = m_pWindow->GetCurrentBackBuffer();
@@ -134,8 +156,6 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
     auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     auto commandList = commandQueue->GetCommandList();
 
-    static Vector3 prevPos(0, 2, 0);
-
     m_Camera.OnKeyPressed(e);
 
     switch (e.Key)
@@ -154,12 +174,7 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
         m_pWindow->ToggleVSync();
         break;
     case KeyCode::E:
-        debug.DrawPoint(katamari.player.prince.Position, 1);
-        debug.DrawLine(prevPos, katamari.player.prince.Position, Color(1, 1, 0));
-        debug.Update(commandList);
-        prevPos = katamari.player.prince.Position;
-        uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-        commandQueue->WaitForFenceValue(fenceValue);
+        shouldAddDebugObjects = true;
         break;
     }    
 }
