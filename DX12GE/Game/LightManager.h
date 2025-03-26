@@ -27,7 +27,7 @@ private:
 		float Exp;
 	};
 
-	Attenuation m_DefaultAttenuation = { 1, 0.09, 0.032 };
+	Attenuation m_DefaultAttenuation = { 1.0f, 0.09f, 0.032f };
 
 	struct LightProperties
 	{
@@ -49,13 +49,13 @@ private:
 		float Cutoff;
 	};	
 
-	float step = PI / 7.0;
-	float max_radius = 50;
-	float radius = 50;
-	float defaultIntensity = 1;
-	float defaultHeight = 8;
+	float step = PI / 7.0f;
+	float max_radius = 50.0f;
+	float radius = 50.0f;
+	float defaultIntensity = 1.0f;
+	float defaultHeight = 8.0f;
 
-	float speed = PI / 4;
+	float speed = PI / 4.0f;
 
 	Player* m_player;
 

@@ -23,24 +23,24 @@ struct PressedKeyMonitor
 	bool MBC = false;
 };
 
-const static float slowSpeed = 6;
-const static float normalSpeed = 12;
-const static float fastSpeed = 24;
+const static float slowSpeed = 6.0f;
+const static float normalSpeed = 12.0f;
+const static float fastSpeed = 24.0f;
 
 class Camera
 {
 private:
 	float speed = normalSpeed;
 
-	float sensitivity = 0.005;
-	float angle_h = 0.0;
-	float angle_v = 0.0;
-	float prevX;
-	float prevY;
-	float dx = 0.0;
-	float dy = 0.0;
+	float sensitivity = 0.0075f;
+	float angle_h = 0.0f;
+	float angle_v = 0.0f;
+	int prevX;
+	int prevY;
+	int dx = 0;
+	int dy = 0;
 
-	float flyRadius = 15.0;
+	float flyRadius = 15.0f;
 
 	PressedKeyMonitor monitor;
 public:
@@ -57,9 +57,9 @@ public:
 
 	void OnLoad(
 		Player* l_player, 
-		XMVECTOR position = XMVectorSet(0, 0, -5, 1), 
-		XMVECTOR target = XMVectorSet(0, 0, 1, 1), 
-		XMVECTOR up = XMVectorSet(0, 1, 0, 0), 
+		XMVECTOR position = XMVectorSet(0.0f, 0.0f, -5.0f, 1.0f),
+		XMVECTOR target = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f),
+		XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
 		float fov = 70.0f, 
 		float ratio = 1.0f, 
 		float zNear = 0.1f, 

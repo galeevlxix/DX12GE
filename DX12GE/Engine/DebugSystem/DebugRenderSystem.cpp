@@ -4,7 +4,6 @@
 void DebugRenderSystem::Init(Camera* camera, ComPtr<ID3D12Device2> device)
 {
 	m_SimplePipeline.Initialize(device);
-	//m_TexturedPipeline.Initialize(Application::Get().GetDevice());
 	m_Camera = camera;
 }
 
@@ -12,7 +11,7 @@ void DebugRenderSystem::Update(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	if (isLinesDirty)
 	{
-		m_Lines.OnLoadPositionColor(commandList, linesVertices, linesIndices);
+		m_Lines.OnLoad<VertexPositionColor>(commandList, linesVertices, linesIndices);
 		isLinesDirty = false;
 	}
 	m_Lines.OnUpdate();
@@ -70,8 +69,6 @@ void DebugRenderSystem::DrawBoundingBox(const BoundingBox& box)
 	CreateLine(corners[1], corners[5], Color(0.0f, 0.0f, 1.0f, 1.0f));
 	CreateLine(corners[2], corners[6], Color(0.0f, 0.0f, 1.0f, 1.0f));
 	CreateLine(corners[3], corners[7], Color(0.0f, 0.0f, 1.0f, 1.0f));
-
-	
 }
 
 void DebugRenderSystem::DrawBoundingBox(const BoundingBox& box, const Matrix& transform)

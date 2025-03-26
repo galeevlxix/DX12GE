@@ -45,51 +45,47 @@ void Camera::OnUpdate(float deltaTime)
 {
     ////////////////////////////////
     // ÊÀÌÅÐÀ
-    Vector3 playerPos = (*player).prince.Position + Vector3(0, 2, 0);
-    float xTar = cos(angle_h) * sin(PI / 2 - angle_v);
-    float yTar = cos(PI / 2 - angle_v);
-    float zTar = sin(angle_h) * sin(PI / 2 - angle_v);
+    Vector3 playerPos = (*player).prince.Position + Vector3(0.0f, 2.0f, 0.0f);
+    float xTar = cos(angle_h) * sin(PI / 2.0f - angle_v);
+    float yTar = cos(PI / 2.0f - angle_v);
+    float zTar = sin(angle_h) * sin(PI / 2.0f - angle_v);
     Vector3 pPosition(playerPos + Vector3(xTar, yTar, zTar) * flyRadius);
-    Position = XMVectorSet(pPosition.x, pPosition.y, pPosition.z, 1.0);
+    Position = XMVectorSet(pPosition.x, pPosition.y, pPosition.z, 1.0f);
     
     Vector3 razn = playerPos - pPosition;
     razn.Normalize();
-    Target = XMVectorSet(razn.x, razn.y, razn.z, 1.0);
+    Target = XMVectorSet(razn.x, razn.y, razn.z, 1.0f);
 
     ////////////////////////////////////
     //// ÈÃÐÎÊ
-    XMVECTOR left = XMVector3Cross(Vector3(Target.m128_f32[0], 0, Target.m128_f32[2]), Up);
+    XMVECTOR left = XMVector3Cross(Vector3(Target.m128_f32[0], 0.0f, Target.m128_f32[2]), Up);
     left = XMVector3Normalize(left);
 
-    XMVECTOR up = XMVectorSet(0, 1, 0, 1);
+    XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 
     if (monitor.W)
     {
-        (*player).Direction = Vector3(Target.m128_f32[0], 0, Target.m128_f32[2]);
+        (*player).Direction = Vector3(Target.m128_f32[0], 0.0f, Target.m128_f32[2]);
         (*player).Direction.Normalize();
-
         (*player).prince.Move((*player).Direction * speed * deltaTime);
-        (*player).prince.SetRotationY(-PI / 2 - angle_h);
+        (*player).prince.SetRotationY(-PI / 2.0f - angle_h);
     }
     if (monitor.S) 
     {
-        (*player).Direction = -Vector3(Target.m128_f32[0], 0, Target.m128_f32[2]);
+        (*player).Direction = -Vector3(Target.m128_f32[0], 0.0f, Target.m128_f32[2]);
         (*player).Direction.Normalize();
-
         (*player).prince.Move((*player).Direction * speed * deltaTime);
-        (*player).prince.SetRotationY(PI / 2 - angle_h);
+        (*player).prince.SetRotationY(PI / 2.0f - angle_h);
     }
     if (monitor.A)
     {
         (*player).Direction = left;
-
         (*player).prince.Move((*player).Direction * speed * deltaTime);
         (*player).prince.SetRotationY(-PI - angle_h);
     }
     if (monitor.D)
     {
         (*player).Direction = -left;
-
         (*player).prince.Move((*player).Direction * speed * deltaTime);
         (*player).prince.SetRotationY(-angle_h);
     }
@@ -117,7 +113,7 @@ void Camera::OnMouseMoved(MouseMotionEventArgs& e)
     dy = e.Y - prevY;
 
     angle_h -= dx * sensitivity;
-    if (angle_v + dy * sensitivity > - PI / 2 && angle_v + dy * sensitivity < PI / 2)
+    if (angle_v + dy * sensitivity > - PI / 2.0f && angle_v + dy * sensitivity < PI / 2.0f)
         angle_v += dy * sensitivity;
 
     prevX = e.X;

@@ -108,6 +108,12 @@
     <ClCompile Include="Engine\ShadowMap.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\AssimpModelLoader.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Material.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\d3dx12.h">
@@ -183,6 +189,15 @@
       <Filter>Файлы заголовков\Engine\Debug</Filter>
     </ClInclude>
     <ClInclude Include="Engine\ShadowMap.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\VertexStructures.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AssimpModelLoader.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Material.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>

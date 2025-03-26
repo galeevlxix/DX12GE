@@ -1,10 +1,11 @@
 #pragma once
 
 #include "SimplePipeline.h"
-//#include "TexturedPipeline.h"
 #include "../SimpleMath.h"
 #include "../../Game/Camera.h"
 #include <vector>
+
+#include "../VertexStructures.h"
 
 using namespace std;
 using namespace DirectX;
@@ -13,7 +14,6 @@ class DebugRenderSystem
 {
 private:
 	SimplePipeline m_SimplePipeline;
-	//TexturedPipeline m_TexturedPipeline;
 
 	BaseObject m_Lines;
 	BaseObject m_Quads;

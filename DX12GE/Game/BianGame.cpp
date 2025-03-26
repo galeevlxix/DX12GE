@@ -65,12 +65,12 @@ void BianGame::AddDebugObjects()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-    static Vector3 prevPos(0, 2, 0);
+    static Vector3 prevPos(0.0f, 2.0f, 0.0f);
 
-    Vector3 playerPosition = katamari.player.prince.Position + Vector3(0, 2, 0);
+    Vector3 playerPosition = katamari.player.prince.Position + Vector3(0.0f, 2.0f, 0.0f);
 
-    debug.DrawPoint(playerPosition, 1);
-    debug.DrawLine(prevPos, playerPosition, Color(1, 1, 0));
+    debug.DrawPoint(playerPosition, 1.0f);
+    debug.DrawLine(prevPos, playerPosition, Color(1.0f, 1.0f, 0.0f));
     debug.Update(commandList);
     prevPos = playerPosition;
 
@@ -90,7 +90,7 @@ void BianGame::SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandLi
 template<typename T>
 void BianGame::SetGraphicsConstants(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const T& bufferData)
 {
-    auto size = sizeof(T);
+    UINT size = sizeof(T);
     commandList->SetGraphicsRoot32BitConstants(slot, size / 4, &bufferData, 0);
 }
 

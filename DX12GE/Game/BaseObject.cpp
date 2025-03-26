@@ -10,11 +10,11 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
     auto heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
     auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize, flags);
 
-    // Create a committed resource for the GPU resource in a default heap.
+    // Create a committed resource for the GPU resource in a default heap
     ThrowIfFailed(
         device->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(pDestinationResource)));
 
-    // Create an committed resource for the upload.
+    // Create an committed resource for the upload
     if (bufferData)
     {
         auto r3 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -30,86 +30,6 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
         UpdateSubresources(commandList.Get(), *pDestinationResource, *pIntermediateResource, 0, 0, 1, &subresourceData);
     }
 }
-
-
-void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, vector<VertexStruct> vertices, vector<WORD> indices)
-{
-    indiciesCount = static_cast<UINT>(indices.size());
-
-    // Загрузить данные вершинного буфера
-    UpdateBufferResource(commandList, &m_VertexBuffer, &IntermediateVertexBufferResource, vertices.size(), sizeof(VertexStruct), vertices.data());
-
-    // Создать представление буфера вершин
-    m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();
-    m_VertexBufferView.SizeInBytes = static_cast<UINT>(vertices.size() * sizeof(VertexStruct));
-    m_VertexBufferView.StrideInBytes = sizeof(VertexStruct);
-
-    // Загрузить данные индексного буфера
-    UpdateBufferResource(commandList, &m_IndexBuffer, &IntermediateIndexBufferResource, indices.size(), sizeof(WORD), indices.data());
-
-    // Создать представление индексного буфера
-    m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
-    m_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
-    m_IndexBufferView.SizeInBytes = static_cast<UINT>(indices.size() * sizeof(WORD));
-
-    SetPosition(Vector3(0, 0, 0));
-    SetRotation(Vector3(0, 0, 0));
-    SetScale(Vector3(1, 1, 1));
-}
-
-void BaseObject::OnLoadPositionColor(ComPtr<ID3D12GraphicsCommandList2> commandList, vector<VertexPositionColor> vertices, vector<WORD> indices)
-{
-    indiciesCount = static_cast<UINT>(indices.size());
-
-    // Загрузить данные вершинного буфера
-    UpdateBufferResource(commandList, &m_VertexBuffer, &IntermediateVertexBufferResource, vertices.size(), sizeof(VertexPositionColor), vertices.data());
-    m_VertexBuffer->SetName(L"m_VertexBuffer");
-
-    // Создать представление буфера вершин
-    m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();
-    m_VertexBufferView.SizeInBytes = static_cast<UINT>(vertices.size() * sizeof(VertexPositionColor));
-    m_VertexBufferView.StrideInBytes = sizeof(VertexPositionColor);
-
-    // Загрузить данные индексного буфера
-    UpdateBufferResource(commandList, &m_IndexBuffer, &IntermediateIndexBufferResource, indices.size(), sizeof(WORD), indices.data());
-    m_IndexBuffer->SetName(L"m_IndexBuffer");
-
-    // Создать представление индексного буфера
-    m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
-    m_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
-    m_IndexBufferView.SizeInBytes = static_cast<UINT>(indices.size() * sizeof(WORD));
-
-
-    SetPosition(Vector3(0, 0, 0));
-    SetRotation(Vector3(0, 0, 0));
-    SetScale(Vector3(1, 1, 1));
-}
-
-void BaseObject::OnLoadPositionTextCoord(ComPtr<ID3D12GraphicsCommandList2> commandList, vector<VertexPositionTextCoord> vertices, vector<WORD> indices)
-{
-    indiciesCount = static_cast<UINT>(indices.size());
-
-    // Загрузить данные вершинного буфера
-    UpdateBufferResource(commandList, &m_VertexBuffer, &IntermediateVertexBufferResource, vertices.size(), sizeof(VertexPositionTextCoord), vertices.data());
-
-    // Создать представление буфера вершин
-    m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();
-    m_VertexBufferView.SizeInBytes = static_cast<UINT>(vertices.size() * sizeof(VertexPositionTextCoord));
-    m_VertexBufferView.StrideInBytes = sizeof(VertexPositionTextCoord);
-
-    // Загрузить данные индексного буфера
-    UpdateBufferResource(commandList, &m_IndexBuffer, &IntermediateIndexBufferResource, indices.size(), sizeof(WORD), indices.data());
-
-    // Создать представление индексного буфера
-    m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
-    m_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
-    m_IndexBufferView.SizeInBytes = static_cast<UINT>(indices.size() * sizeof(WORD));
-
-    SetPosition(Vector3(0, 0, 0));
-    SetRotation(Vector3(0, 0, 0));
-    SetScale(Vector3(1, 1, 1));
-}
-
 
 void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
@@ -153,6 +73,13 @@ void BaseObject::OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat)
         XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
         rotMat * 
         XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
+}
+
+void BaseObject::SetDefaultState()
+{
+    SetPosition(Vector3(0, 0, 0));
+    SetRotation(Vector3(0, 0, 0));
+    SetScale(Vector3(1, 1, 1));
 }
 
 void BaseObject::SetPosition(float x, float y, float z)
