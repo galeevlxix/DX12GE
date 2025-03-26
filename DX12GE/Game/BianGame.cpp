@@ -71,10 +71,12 @@ void BianGame::AddDebugObjects()
 
     static Vector3 prevPos(0, 2, 0);
 
-    debug.DrawPoint(katamari.player.prince.Position, 1);
-    debug.DrawLine(prevPos, katamari.player.prince.Position, Color(1, 1, 0));
+    Vector3 playerPosition = katamari.player.prince.Position + Vector3(0, 2, 0);
+
+    debug.DrawPoint(playerPosition, 1);
+    debug.DrawLine(prevPos, playerPosition, Color(1, 1, 0));
     debug.Update(commandList);
-    prevPos = katamari.player.prince.Position;
+    prevPos = playerPosition;
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
@@ -173,7 +175,7 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::V:
         m_pWindow->ToggleVSync();
         break;
-    case KeyCode::E:
+    case KeyCode::X:
         shouldAddDebugObjects = true;
         break;
     }    

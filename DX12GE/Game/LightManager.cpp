@@ -39,7 +39,7 @@ void LightManager::Init(Player* player)
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = 8;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*player).ball.Position;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*player).prince.Position;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
 	m_SpotLights[m_SpotLights.size() - 1].Direction = (*player).Direction;
 	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.65f;
@@ -99,7 +99,6 @@ void LightManager::OnUpdate(float deltaTime)
 
 	radius = max_radius * ((sin(path) + 1.0) / 2.0 + 0.3);
 
-
 	for (int i = 0; i < 2; i++)
 	{
 		for (int j = 0; j < 7; j++)
@@ -108,6 +107,6 @@ void LightManager::OnUpdate(float deltaTime)
 		}
 	}
 
-	m_SpotLights[1].PointLightComponent.Position = (*m_player).ball.Position;
+	m_SpotLights[1].PointLightComponent.Position = (*m_player).prince.Position + Vector3(0, 2, 0);
 	m_SpotLights[1].Direction = (*m_player).Direction;
 }

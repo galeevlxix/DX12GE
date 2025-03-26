@@ -68,39 +68,10 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	}
 }
 
-void KatamariGame::CheckCollisions()
-{
-	static float step = 0.5;
-
-	for (string name : m_names)
-	{
-		if (m_objects.find(name) == m_objects.end() || string::npos != name.find("field") || m_objects[name].eaten || !m_objects[name].canEatIt) { continue; }
-		
-		Vector3 objPos = m_objects[name].Position;
-
-		float dx = abs(objPos.x - player.ball.Position.x);
-		float dz = abs(objPos.z - player.ball.Position.z);
-
-		if (dx * dx + dz * dz < player.ballRadius * player.ballRadius)
-		{
-			m_objects[name].eaten = true;
-
-			player.ballRadius += step;
-			float ratio = player.ballRadius / (player.ballRadius - step);
-
-			player.ball.Expand(ratio);
-
-			player.ball.SetPosition(player.ball.Position.x, player.ballRadius, player.ball.Position.z);
-			//player.flyRadius *= ratio;
-		}
-	}
-}
 
 void KatamariGame::OnUpdate(float deltaTime)
 {
 	player.OnUpdate(deltaTime);
-
-	CheckCollisions();
 
 	for (string name : m_names)
 	{

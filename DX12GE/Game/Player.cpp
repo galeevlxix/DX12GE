@@ -4,47 +4,18 @@
 void Player::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	prince.OnLoad(commandList, "../../DX12GE/Resources/Katamari Objects/prince_katamari_damacy/scene.gltf");
-	//prince.SetRotationY(PI);
-	prince.Move(0, 2.2f, -3);
 
-	ball.OnLoad(commandList, "../../DX12GE/Resources/Katamari Objects/katamari_ball/core_03.obj");
-	ball.Move(0, ballRadius, 0);
-	ball.SetScale(100, 100, 100);
+	Direction = Vector3(0, 0, 1);
 }
 
 void Player::OnUpdate(double deltaTime)
 {
-	Direction.Normalize();
-	RotationAxis = Direction;
-	RotationAxis = RotationAxis.Cross(Vector3(0, 1, 0));
-	RotationAxis.Normalize();
-	RotationAxis = RotationAxis * -1;
-
-	//ballAngle = GetAngleOfMatrixAndAxis(RotationMatrix, RotationAxis);
-
-	if (canRotateForward)
-	{
-		ballAngle += PI * deltaTime;
-		if (ballAngle >= 2 * PI) ballAngle -= 2 * PI;
-		RotationMatrix = GetMatrixRotationAxis(RotationAxis, ballAngle);
-	}	
-	if (canRotateBack)
-	{
-		ballAngle -= PI * deltaTime;
-		if (ballAngle < 0) ballAngle += 2 * PI;
-		RotationMatrix = GetMatrixRotationAxis(RotationAxis, ballAngle);
-	}		
-
-	prince.SetPosition(sin(Angle) * ballRadius + ball.Position.x, prince.Position.y, cos(Angle) * ballRadius + ball.Position.z);
-
 	prince.OnUpdate(deltaTime);
-	ball.OnUpdateRotMat(deltaTime, RotationMatrix);
 }
 
 void Player::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
 	prince.OnRender(commandList, viewProjMatrix);  
-	ball.OnRender(commandList, viewProjMatrix);
 }
 
 XMMATRIX Player::GetMatrixRotationAxis(Vector3 axis, float angle)

@@ -23,29 +23,31 @@ struct PressedKeyMonitor
 	bool MBC = false;
 };
 
-const static float slowSpeed = 3;
-const static float normalSpeed = 6;
-const static float fastSpeed = 12;
+const static float slowSpeed = 6;
+const static float normalSpeed = 12;
+const static float fastSpeed = 24;
 
 class Camera
 {
 private:
 	float speed = normalSpeed;
-	
-	float sensitivity = 0.01;
+
+	float sensitivity = 0.005;
 	float angle_h = 0.0;
 	float angle_v = 0.0;
 	float prevX;
 	float prevY;
 	float dx = 0.0;
+	float dy = 0.0;
 	float startFov;
+
+	float flyRadius = 15.0;
 
 	PressedKeyMonitor monitor;
 public:
 	XMVECTOR Position = XMVectorSet(0, 0, -5, 1);
 	XMVECTOR Target = XMVectorSet(0, 0, 1, 1);  
 	XMVECTOR Up = XMVectorSet(0, 1, 0, 0);
-
 	
 	float Fov = 60.0f;
 	float Ratio = 1.0f;

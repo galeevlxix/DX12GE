@@ -23,8 +23,6 @@ public:
 
 	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
-	void CheckCollisions();
-
 	void OnUpdate(float deltaTime);
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 private:
