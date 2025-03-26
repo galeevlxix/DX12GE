@@ -39,24 +39,32 @@ private:
 	float prevY;
 	float dx = 0.0;
 	float dy = 0.0;
-	float startFov;
 
 	float flyRadius = 15.0;
 
 	PressedKeyMonitor monitor;
 public:
-	XMVECTOR Position = XMVectorSet(0, 0, -5, 1);
-	XMVECTOR Target = XMVectorSet(0, 0, 1, 1);  
-	XMVECTOR Up = XMVectorSet(0, 1, 0, 0);
+	XMVECTOR Position;
+	XMVECTOR Target;  
+	XMVECTOR Up;
 	
-	float Fov = 60.0f;
-	float Ratio = 1.0f;
-	float ZNear = 0.1f;
-	float ZFar = 300.0f;
+	float Fov;
+	float Ratio;
+	float ZNear;
+	float ZFar;
 
 	Player* player;
 
-	void OnLoad(XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, float ratio, float zNear, float zFar, Player* l_player);
+	void OnLoad(
+		Player* l_player, 
+		XMVECTOR position = XMVectorSet(0, 0, -5, 1), 
+		XMVECTOR target = XMVectorSet(0, 0, 1, 1), 
+		XMVECTOR up = XMVectorSet(0, 1, 0, 0), 
+		float fov = 70.0f, 
+		float ratio = 1.0f, 
+		float zNear = 0.1f, 
+		float zFar = 300.0f);
+
 	void OnUpdate(float deltaTime);
 	XMMATRIX GetViewProjMatrix();
 

@@ -19,12 +19,8 @@ bool BianGame::LoadContent()
     katamari.OnLoad(commandList);
     lights.Init(&(katamari.player));
 
-    m_Camera.OnLoad(
-        XMVectorSet(0, 3, -10, 1), // Position
-        XMVectorSet(0, 0, 1, 1),   // Target
-        XMVectorSet(0, 1, 0, 1),   // Up
-        80, static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight()), 0.1f, 300.0, &(katamari.player));
-    
+    m_Camera.OnLoad(&(katamari.player));
+    m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
 
     m_Pipeline.Initialize(device);
 

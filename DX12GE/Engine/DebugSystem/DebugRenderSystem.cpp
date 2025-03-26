@@ -114,40 +114,44 @@ void DebugRenderSystem::DrawArrow(const Vector3& p0, const Vector3& p1, const Co
 
 void DebugRenderSystem::DrawPoint(const Vector3& pos, const float& size)
 {
+	Vector3 red(1.0f, 0.0f, 0.0f);
+	Vector3 green(0.0f, 1.0f, 0.0f);
+	Vector3 blue(0.0f, 0.0f, 1.0f);
+
 	linesVertices.emplace_back(VertexPositionColor
 		{
 			Vector3(pos.x + size, pos.y, pos.z),
-			Vector3(1.0f, 0.0f, 0.0f)
+			red
 		});
 	linesIndices.emplace_back(linesVertices.size() - 1);
 	linesVertices.emplace_back(VertexPositionColor
 		{
 			Vector3(pos.x - size, pos.y, pos.z),
-			Vector3(1.0f, 0.0f, 0.0f)
+			red
 		});
 	linesIndices.emplace_back(linesVertices.size() - 1);
 	linesVertices.emplace_back(VertexPositionColor
 		{
 			Vector3(pos.x, pos.y + size, pos.z),
-			Vector3(0.0f, 1.0f, 0.0f)
+			green
 		});
 	linesIndices.emplace_back(linesVertices.size() - 1);
 	linesVertices.emplace_back(VertexPositionColor
 		{
 			Vector3(pos.x, pos.y - size, pos.z),
-			Vector3(0.0f, 1.0f, 0.0f)
+			green
 		});
 	linesIndices.emplace_back(linesVertices.size() - 1);
 	linesVertices.emplace_back(VertexPositionColor
 		{
 			Vector3(pos.x, pos.y, pos.z + size),
-			Vector3(0.0f, 0.0f, 1.0f)
+			blue
 		});
 	linesIndices.emplace_back(linesVertices.size() - 1);
 	linesVertices.emplace_back(VertexPositionColor
 		{
 			Vector3(pos.x, pos.y, pos.z - size),
-			Vector3(0.0f, 0.0f, 1.0f)
+			blue
 		});
 	linesIndices.emplace_back(linesVertices.size() - 1);
 

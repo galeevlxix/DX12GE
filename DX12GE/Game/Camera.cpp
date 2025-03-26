@@ -9,7 +9,7 @@ constexpr const T& clamp(const T& val, const T& min, const T& max)
     return val < min ? min : val > max ? max : val;
 }
 
-void Camera::OnLoad(XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, float ratio, float zNear, float zFar, Player* l_player)
+void Camera::OnLoad(Player* l_player, XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, float ratio, float zNear, float zFar)
 {
     player = l_player;
 
@@ -19,41 +19,21 @@ void Camera::OnLoad(XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, 
 	Up = up;
 	Up = XMVector3Normalize(Up);
 
-    startFov = fov;
 	Fov = fov;
 	Ratio = ratio;
 	ZNear = zNear;
 	ZFar = zFar;
 
-    XMVECTOR HTarget = XMVectorSet(XMVectorGetX(Target), 0, XMVectorGetZ(Target), 1);
-    HTarget = XMVector3Normalize(HTarget);
-
-    if (XMVectorGetZ(HTarget) >= 0.0f)
+    if (XMVectorGetZ(Target) >= 0.0f)
     {
-        if (XMVectorGetX(HTarget) >= 0.0f)
-        {
-            angle_h = 360.0f - XMConvertToDegrees(asin(XMVectorGetZ(HTarget)));
-        }
-        else
-        {
-            angle_h = 180.0f + XMConvertToDegrees(asin(XMVectorGetZ(HTarget)));
-        }
+        angle_h = (XMVectorGetX(Target) >= 0.0f) ? -asin(XMVectorGetZ(Target)) : PI + asin(XMVectorGetZ(Target));
     }
     else
     {
-        if (XMVectorGetX(HTarget) >= 0.0f)
-        {
-            angle_h = XMConvertToDegrees(asin(-XMVectorGetZ(HTarget)));
-        }
-        else
-        {
-            angle_h = 90.0f + XMConvertToDegrees(asin(-XMVectorGetZ(HTarget)));
-        }
+        angle_h = (XMVectorGetX(Target) >= 0.0f) ? asin(-XMVectorGetZ(Target)) : PI / 2 + asin(-XMVectorGetZ(Target));
     }
 
-    angle_h = 0;
-
-    angle_v = -XMConvertToDegrees(asin(XMVectorGetY(Target)));
+    angle_v = asin(XMVectorGetY(Target));
 }
 
 XMMATRIX Camera::GetViewProjMatrix()
