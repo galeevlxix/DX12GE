@@ -44,7 +44,9 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
 
     m_Camera.OnUpdate(e.ElapsedTime);
     katamari.OnUpdate(e.ElapsedTime);
+
     lights.OnUpdate(e.ElapsedTime);
+    lights.m_SpecularProperties.CameraPos = m_Camera.Position;
 }
 
 // Transition a resource
@@ -133,6 +135,7 @@ void BianGame::OnRender(RenderEventArgs& e)
     SetGraphicsConstants(commandList, 4, lights.m_LightProperties);
     SetGraphicsDynamicStructuredBuffer(commandList, 5, lights.m_PointLights);
     SetGraphicsDynamicStructuredBuffer(commandList, 6, lights.m_SpotLights);
+    SetGraphicsConstants(commandList, 7, lights.m_SpecularProperties);
 
     katamari.OnRender(commandList, m_Camera.GetViewProjMatrix());
 

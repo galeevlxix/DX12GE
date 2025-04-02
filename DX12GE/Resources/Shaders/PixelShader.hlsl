@@ -52,6 +52,13 @@ struct SpotLight
     float Cutoff;
 };
 
+struct SpecularLight
+{
+    float3 CameraPos;
+    float Intensity;
+    float MaterialPower;
+};
+
 struct LightProperties
 {
     uint PointLightsCount;
@@ -66,18 +73,37 @@ ConstantBuffer<LightProperties> LightPropertiesCB : register(b2);
 StructuredBuffer<PointLight> PointLightsCB : register(t1);
 StructuredBuffer<SpotLight> SpotLightsCB : register(t2);
 
-float4 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, float3 Normal)
+ConstantBuffer<SpecularLight> SpecularLightCB : register(b3);
+
+float4 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, float3 Normal, float3 WorldPos)
 {
     float3 LightDirection = normalize(pLightDirection);
     float DiffuseFactor = dot(Normal, -LightDirection);
-    return DiffuseFactor > 0 ? float4(Color, 1.0) * Intensity * DiffuseFactor : float4(0, 0, 0, 0);
+    
+    float4 DiffuseColor = float4(0.0, 0.0, 0.0, 0.0);
+    float4 SpecularColor = float4(0.0, 0.0, 0.0, 0.0);
+    
+    if (DiffuseFactor > 0)
+    {
+        DiffuseColor = float4(Color, 1.0) * Intensity * DiffuseFactor;
+        float3 VertexToEye = normalize(SpecularLightCB.CameraPos - WorldPos);
+        float3 LightReflect = normalize(reflect(pLightDirection, Normal));
+        float SpecularFactor = dot(VertexToEye, LightReflect);
+        SpecularFactor = pow(SpecularFactor, SpecularLightCB.MaterialPower);
+        if (SpecularFactor > 0)
+        {
+            SpecularColor = float4(Color, 1.0) * SpecularLightCB.Intensity * SpecularFactor;
+        }
+    }
+    
+    return DiffuseColor + SpecularColor;
 }
 
 float4 CalcPointLight(PointLight pLight, float3 normal, float3 worldPos)
 {
     float3 LightDirection = worldPos - pLight.Position;
     float Distance = length(LightDirection);
-    float4 Color = CalcLightInternal(pLight.Color, pLight.Intensity, LightDirection, normal);
+    float4 Color = CalcLightInternal(pLight.Color, pLight.Intensity, LightDirection, normal, worldPos);
     float Attenuation = pLight.AttenuationConstant + pLight.AttenuationLinear * Distance + pLight.AttenuationExp * Distance * Distance;
     return Color / Attenuation;
 }
@@ -111,7 +137,7 @@ float4 main(PixelShaderInput IN) : SV_Target
         discard;
     
     float4 AmbientColor = float4(AmbientLightCB.Color, 1.0) * AmbientLightCB.Intensity;
-    float4 DirectionalColor = CalcLightInternal(DirectionalLightCB.Color, DirectionalLightCB.Intensity, DirectionalLightCB.Direction, normalize(IN.Normal).xyz);
+    float4 DirectionalColor = CalcLightInternal(DirectionalLightCB.Color, DirectionalLightCB.Intensity, DirectionalLightCB.Direction, normalize(IN.Normal).xyz, IN.WorldPos);
     float3 ResultLightIntensity = AmbientColor + DirectionalColor;
     
     for (int i = 0; i < LightPropertiesCB.PointLightsCount; i++)

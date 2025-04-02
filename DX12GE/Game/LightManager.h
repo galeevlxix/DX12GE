@@ -49,6 +49,13 @@ private:
 		float Cutoff;
 	};	
 
+	struct SpecularLight
+	{
+		Vector3 CameraPos;
+		float SpecularIntensity;
+		float MaterialPower;
+	};
+
 	float step = PI / 7.0f;
 	float max_radius = 50.0f;
 	float radius = 50.0f;
@@ -68,6 +75,7 @@ public:
 	LightProperties m_LightProperties;
 	vector<PointLight> m_PointLights;
 	vector<SpotLight> m_SpotLights;
+	SpecularLight m_SpecularProperties;
 
 	vector<BianObject> m_lamps;
 
@@ -94,5 +102,10 @@ public:
 	static UINT SizeOfLightProperties()
 	{
 		return sizeof(LightProperties);
+	}
+
+	static UINT SizeOfSpecularLight()
+	{
+		return sizeof(SpecularLight);
 	}
 };

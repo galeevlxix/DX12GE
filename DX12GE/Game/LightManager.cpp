@@ -88,6 +88,9 @@ void LightManager::Init(Player* player)
 		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(6 * step + PI * i) * radius, defaultHeight, sin(6 * step + PI * i) * radius);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 	}
+
+	m_SpecularProperties.SpecularIntensity = 1.0f;
+	m_SpecularProperties.MaterialPower = 32.0;
 }
 
 void LightManager::OnUpdate(float deltaTime)
