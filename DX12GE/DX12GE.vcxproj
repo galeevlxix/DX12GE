@@ -139,6 +139,7 @@
     <ClCompile Include="Engine\DebugSystem\SimplePipeline.cpp" />
     <ClCompile Include="Engine\DebugSystem\TexturedPipeline.cpp" />
     <ClCompile Include="Engine\DepthBuffer.cpp" />
+    <ClCompile Include="Engine\DescriptorHeaps.cpp" />
     <ClCompile Include="Engine\DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Game.cpp" />
     <ClCompile Include="Engine\HighResolutionClock.cpp" />
@@ -146,7 +147,6 @@
     <ClCompile Include="Engine\Pipeline.cpp" />
     <ClCompile Include="Engine\Shadows\ShadowMap.cpp" />
     <ClCompile Include="Engine\Shadows\ShadowMapPipeline.cpp" />
-    <ClCompile Include="Engine\SRVHeap.cpp" />
     <ClCompile Include="Engine\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="Game\BaseObject.cpp" />
@@ -166,6 +166,7 @@
     <ClInclude Include="Engine\DebugSystem\SimplePipeline.h" />
     <ClInclude Include="Engine\DebugSystem\TexturedPipeline.h" />
     <ClInclude Include="Engine\DepthBuffer.h" />
+    <ClInclude Include="Engine\DescriptorHeaps.h" />
     <ClInclude Include="Engine\DX12LibPCH.h" />
     <ClInclude Include="Engine\Events.h" />
     <ClInclude Include="Engine\Game.h" />
@@ -177,7 +178,6 @@
     <ClInclude Include="Engine\resource.h" />
     <ClInclude Include="Engine\Shadows\ShadowMap.h" />
     <ClInclude Include="Engine\Shadows\ShadowMapPipeline.h" />
-    <ClInclude Include="Engine\SRVHeap.h" />
     <ClInclude Include="Engine\UploadBuffer.h" />
     <ClInclude Include="Engine\VertexStructures.h" />
     <ClInclude Include="Engine\Window.h" />

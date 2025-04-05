@@ -1,7 +1,7 @@
 #include "Material.h"
 #include "Application.h"
 #include <DirectXTex.h>
-#include "SRVHeap.h"
+#include "DescriptorHeaps.h"
 
 using namespace DirectX;
 
@@ -124,7 +124,14 @@ void Material::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
     device->CreateShaderResourceView(m_Texture.Get(), &srvDesc, handle);*/
 
-    SRVHeap::GetHeap()->AddResource(m_Texture, srvDesc);
+    static int index = 0;
+    m_SRVHeapIndex = index;
+    index++;
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handle(DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_SRVHeapIndex));
+    device->CreateShaderResourceView(m_Texture.Get(), &srvDesc, handle);
+
+    //SRVHeap::GetHeap()->AddResource(m_Texture, srvDesc);
 
     /*static int counter = 0;
     counter++;
@@ -133,7 +140,5 @@ void Material::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 void Material::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
-    commandList->SetDescriptorHeaps(1, m_SRVHeap.GetAddressOf());
-    commandList->SetGraphicsRootDescriptorTable(1, m_SRVHeap.Get()->GetGPUDescriptorHandleForHeapStart());
+    commandList->SetGraphicsRootDescriptorTable(1, DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_SRVHeapIndex));
 }

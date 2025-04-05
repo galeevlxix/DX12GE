@@ -2,6 +2,7 @@
 
 #include "../Engine/Application.h"
 #include "../Engine/CommandQueue.h"
+#include "../Engine/DescriptorHeaps.h"
 
 BianGame::BianGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
     , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
@@ -16,21 +17,25 @@ bool BianGame::LoadContent()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
+    DescriptorHeaps::OnInit(device);
+
+    // SHADOWS
     m_ShadowMap = make_unique<ShadowMap>(device, 2048, 2048);
     m_SceneBounds.Center = Vector3(0, 0, 0);
     float a = 20;
     m_SceneBounds.Radius = sqrtf(a * a * 2);
 
+    // 3D SCENE
     katamari.OnLoad(commandList);
     lights.Init(&(katamari.player));
-
     m_Camera.OnLoad(&(katamari.player));
     m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
 
+    // PIPELINE STATES
     m_Pipeline.Initialize(device);
     m_ShadowMapPipeline.Initialize(device);
+    debug.Initialize(&m_Camera, device);
 
-    debug.Init(&m_Camera, device);
 
     UpdateShadowTransform();
     UpdateShadowPassCB();
@@ -39,7 +44,6 @@ bool BianGame::LoadContent()
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
 
-    m_DepthBuffer.InitDSV();
     m_DepthBuffer.ResizeDepthBuffer(GetClientWidth(), GetClientHeight());
 
     return true;
@@ -231,7 +235,7 @@ void BianGame::OnRender(RenderEventArgs& e)
     UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
     auto backBuffer = m_pWindow->GetCurrentBackBuffer();
     auto rtv = m_pWindow->GetCurrentRenderTargetView();
-    auto dsv = m_DepthBuffer.DSVHeap->GetCPUDescriptorHandleForHeapStart();
+    auto dsv = DescriptorHeaps::GetDSVHeap()->GetCPUDescriptorHandleForHeapStart();
 
     // Clear the render targets.
     {
@@ -255,6 +259,8 @@ void BianGame::OnRender(RenderEventArgs& e)
     SetGraphicsDynamicStructuredBuffer(commandList, 5, lights.m_PointLights);
     SetGraphicsDynamicStructuredBuffer(commandList, 6, lights.m_SpotLights);
     SetGraphicsConstants(commandList, 7, lights.m_SpecularProperties);
+
+    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
 
     katamari.OnRender(commandList, m_Camera.GetViewProjMatrix());
 

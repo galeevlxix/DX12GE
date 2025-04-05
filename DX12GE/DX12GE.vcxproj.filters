@@ -126,7 +126,7 @@
     <ClCompile Include="Engine\Shadows\ShadowMapPipeline.cpp">
       <Filter>Исходные файлы\Engine\Shadows</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\SRVHeap.cpp">
+    <ClCompile Include="Engine\DescriptorHeaps.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -218,7 +218,7 @@
     <ClInclude Include="Engine\Shadows\ShadowMap.h">
       <Filter>Файлы заголовков\Engine\Shadows</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\SRVHeap.h">
+    <ClInclude Include="Engine\DescriptorHeaps.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>

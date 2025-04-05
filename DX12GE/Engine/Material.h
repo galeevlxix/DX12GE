@@ -49,8 +49,9 @@ public:
     bool CanDrawIt() { return DrawIt; }
 private:
     ComPtr<ID3D12Resource> m_Texture;
-    //ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
     ComPtr<ID3D12Resource> uploadBuffer;
+
+    int m_SRVHeapIndex;
 
     bool DrawIt = true;
 };

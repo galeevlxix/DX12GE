@@ -28,7 +28,7 @@ private:
 	void CreateLine(const Vector3& pos0, const Vector3& pos1, const Color& color);
 public:
 
-	void Init(Camera* camera, ComPtr<ID3D12Device2> device);
+	void Initialize(Camera* camera, ComPtr<ID3D12Device2> device);
 
 	void Update(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void Draw(ComPtr<ID3D12GraphicsCommandList2> commandList);

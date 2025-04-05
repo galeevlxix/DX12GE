@@ -1,5 +1,6 @@
 #include "DepthBuffer.h"
 #include "Application.h"
+#include "DescriptorHeaps.h"
 
 #if defined(min)
 #undef min
@@ -8,17 +9,6 @@
 #if defined(max)
 #undef max
 #endif
-
-// Create the descriptor heap for the depth-stencil view
-void DepthBuffer::InitDSV()
-{
-    D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-    dsvHeapDesc.NumDescriptors = 1;
-    dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-    dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-    ThrowIfFailed(
-        Application::Get().GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&DSVHeap)));
-}
 
 // Resize the depth buffer to match the size of the client area.
 void DepthBuffer::ResizeDepthBuffer(int width, int height)
@@ -49,10 +39,10 @@ void DepthBuffer::ResizeDepthBuffer(int width, int height)
     dsv.Texture2D.MipSlice = 0;
     dsv.Flags = D3D12_DSV_FLAG_NONE;
 
-    device->CreateDepthStencilView(DepthBuffer.Get(), &dsv, DSVHeap->GetCPUDescriptorHandleForHeapStart());
+    device->CreateDepthStencilView(DepthBuffer.Get(), &dsv, DescriptorHeaps::GetDSVHeap()->GetCPUDescriptorHandleForHeapStart());
 }
 
 void DepthBuffer::ClearDepth(ComPtr<ID3D12GraphicsCommandList2> commandList, FLOAT depth)
 {
-    commandList->ClearDepthStencilView(DSVHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, depth, 0, 0, nullptr);
+    commandList->ClearDepthStencilView(DescriptorHeaps::GetDSVHeap()->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, depth, 0, 0, nullptr);
 }

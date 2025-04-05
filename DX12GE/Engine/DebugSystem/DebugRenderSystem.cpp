@@ -1,7 +1,7 @@
 #include "DebugRenderSystem.h"
 #include "../Application.h"
 
-void DebugRenderSystem::Init(Camera* camera, ComPtr<ID3D12Device2> device)
+void DebugRenderSystem::Initialize(Camera* camera, ComPtr<ID3D12Device2> device)
 {
 	m_SimplePipeline.Initialize(device);
 	m_Camera = camera;

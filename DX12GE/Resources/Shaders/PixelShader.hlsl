@@ -7,7 +7,6 @@ struct PixelShaderInput
 };
 
 Texture2D text : register(t0, space0);
-Texture2D text2 : register(t0, space1);
 SamplerState samp : register(s0);
 
 struct AmbientLight
