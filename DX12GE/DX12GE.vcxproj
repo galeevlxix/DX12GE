@@ -144,7 +144,9 @@
     <ClCompile Include="Engine\HighResolutionClock.cpp" />
     <ClCompile Include="Engine\Material.cpp" />
     <ClCompile Include="Engine\Pipeline.cpp" />
-    <ClCompile Include="Engine\ShadowMap.cpp" />
+    <ClCompile Include="Engine\Shadows\ShadowMap.cpp" />
+    <ClCompile Include="Engine\Shadows\ShadowMapPipeline.cpp" />
+    <ClCompile Include="Engine\SRVHeap.cpp" />
     <ClCompile Include="Engine\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="Game\BaseObject.cpp" />
@@ -173,7 +175,9 @@
     <ClInclude Include="Engine\Material.h" />
     <ClInclude Include="Engine\Pipeline.h" />
     <ClInclude Include="Engine\resource.h" />
-    <ClInclude Include="Engine\ShadowMap.h" />
+    <ClInclude Include="Engine\Shadows\ShadowMap.h" />
+    <ClInclude Include="Engine\Shadows\ShadowMapPipeline.h" />
+    <ClInclude Include="Engine\SRVHeap.h" />
     <ClInclude Include="Engine\UploadBuffer.h" />
     <ClInclude Include="Engine\VertexStructures.h" />
     <ClInclude Include="Engine\Window.h" />
@@ -201,6 +205,16 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.1</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ShadowMapPixelShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ShadowMapVertexShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\SimplePixelShader.hlsl">
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>

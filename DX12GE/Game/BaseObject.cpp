@@ -31,16 +31,24 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
     }
 }
 
-void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
+void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing)
 {
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
     commandList->IASetIndexBuffer(&m_IndexBufferView);
 
     // Update the MVP matrix
-    XMMATRIX mvpMatrix = XMMatrixMultiply(m_ModelMatrix, viewProjMatrix);
-    commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &m_ModelMatrix, 0);  
-    commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvpMatrix, sizeof(XMMATRIX) / 4);
+    XMMATRIX wvpMatrix = XMMatrixMultiply(m_ModelMatrix, viewProjMatrix);
+    
+    if (!ShadowMapDrawing)
+    {
+        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &m_ModelMatrix, 0);
+        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &wvpMatrix, sizeof(XMMATRIX) / 4);
+    }
+    else
+    {
+        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &wvpMatrix, 0);
+    }    
     
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
 }

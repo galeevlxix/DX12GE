@@ -22,15 +22,17 @@ void LightManager::Init(Player* player)
 
 	// DirectionalLight
 	m_DirectionalLight.BaseLightComponent.Color = COLOR_WHITE;
-	m_DirectionalLight.BaseLightComponent.Intensity = 0.7;
-	m_DirectionalLight.Direction = Vector3(1, -1, 1);
+	m_DirectionalLight.BaseLightComponent.Intensity = 0.9;
+	m_DirectionalLight.Direction = Vector3(1, -1, -1);
 
 	m_LightProperties.PointLightsCount = 14;
 	m_LightProperties.SpotlightsCount = 2;
 
+	defaultIntensity = 0;
+
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = 4;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = Vector3(0, 10, 0);
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
 	m_SpotLights[m_SpotLights.size() - 1].Direction = Vector3(0, -1, 0);
@@ -38,7 +40,7 @@ void LightManager::Init(Player* player)
 
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = 4;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*player).prince.Position;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
 	m_SpotLights[m_SpotLights.size() - 1].Direction = (*player).Direction;
@@ -89,7 +91,7 @@ void LightManager::Init(Player* player)
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 	}
 
-	m_SpecularProperties.SpecularIntensity = 1.0f;
+	m_SpecularProperties.SpecularIntensity = 0.0f;
 	m_SpecularProperties.MaterialPower = 32.0;
 }
 

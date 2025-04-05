@@ -218,3 +218,53 @@ void DebugRenderSystem::DrawPlane(const Vector4& p, const Color& color, float si
 	DrawPoint(pos, 0.5f);
 	DrawArrow(pos, pos + dir * sizeNormal, color, right);
 }
+
+Vector3 ToVec3(Vector4 vec)
+{
+	return Vector3(vec.x, vec.y, vec.z);
+}
+
+vector<Vector4> GetFrustumCornersWorldSpace(const Matrix& view, const Matrix& proj)
+{
+	const auto viewProj = view * proj;
+	const auto inv = viewProj.Invert();
+
+	vector<Vector4> frustumCorners;
+	frustumCorners.reserve(8);
+	for (unsigned int x = 0; x < 2; ++x)
+	{
+		for (unsigned int y = 0; y < 2; ++y)
+		{
+			for (unsigned int z = 0; z < 2; ++z)
+			{
+				const Vector4 pt = Vector4::Transform(Vector4(2.0f * x - 1.0f, 2.0f * y - 1.0f, z, 1.0f), inv);
+				frustumCorners.push_back(pt / pt.w);
+			}
+		}
+	}
+
+	return frustumCorners;
+}
+
+void DebugRenderSystem::DrawFrustrum(const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
+{
+	const vector<Vector4> corners = GetFrustumCornersWorldSpace(view, proj);
+
+	auto invView = view.Invert();
+	DrawPoint(invView.Translation(), 1.0f);
+
+	DrawLine(ToVec3(corners[0]), ToVec3(corners[1]), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+	DrawLine(ToVec3(corners[2]), ToVec3(corners[3]), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+	DrawLine(ToVec3(corners[4]), ToVec3(corners[5]), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+	DrawLine(ToVec3(corners[6]), ToVec3(corners[7]), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+
+	DrawLine(ToVec3(corners[0]), ToVec3(corners[2]), Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+	DrawLine(ToVec3(corners[1]), ToVec3(corners[3]), Vector4(0.0f, 0.5f, 0.0f, 1.0f));
+	DrawLine(ToVec3(corners[4]), ToVec3(corners[6]), Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+	DrawLine(ToVec3(corners[5]), ToVec3(corners[7]), Vector4(0.0f, 0.5f, 0.0f, 1.0f));
+
+	DrawLine(ToVec3(corners[0]), ToVec3(corners[4]), Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+	DrawLine(ToVec3(corners[1]), ToVec3(corners[5]), Vector4(0.5f, 0.0f, 0.0f, 1.0f));
+	DrawLine(ToVec3(corners[2]), ToVec3(corners[6]), Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+	DrawLine(ToVec3(corners[3]), ToVec3(corners[7]), Vector4(0.5f, 0.0f, 0.0f, 1.0f));
+}

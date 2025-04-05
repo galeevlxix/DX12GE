@@ -6,6 +6,8 @@
 #include "../Engine/DepthBuffer.h"
 #include "../Engine/UploadBuffer.h"
 #include "../Engine/DebugSystem/DebugRenderSystem.h"
+#include "../Engine/Shadows/ShadowMap.h"
+#include "../Engine/Shadows/ShadowMapPipeline.h"
 
 #include "Camera.h" 
 #include "KatamariGame.h" 
@@ -54,6 +56,7 @@ private:
     uint64_t m_FenceValues[Window::BufferCount] = {};
 
     Pipeline m_Pipeline;
+    ShadowMapPipeline m_ShadowMapPipeline;
     DepthBuffer m_DepthBuffer;
 
     D3D12_VIEWPORT m_Viewport;
@@ -66,5 +69,19 @@ private:
 
     KatamariGame katamari;
     LightManager lights;
+
+    unique_ptr<ShadowMap> m_ShadowMap;
+    DirectX::BoundingSphere m_SceneBounds;
+    Vector3 mLightPosW;
+    float mLightNearZ;
+    float mLightFarZ;
+
+    Matrix mLightView;
+    Matrix mLightProj;
+    Matrix mShadowTransform;
+
+    void UpdateShadowTransform();
+    void UpdateShadowPassCB();
+    void DrawSceneToShadowMap();
 };
 

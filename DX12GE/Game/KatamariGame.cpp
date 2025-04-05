@@ -9,7 +9,7 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	player.OnLoad(commandList);
 
-	CreateField(commandList);		
+	CreateField(commandList);
 
 	srand(time(0));
 
@@ -80,13 +80,13 @@ void KatamariGame::OnUpdate(float deltaTime)
 	}
 }
 
-void KatamariGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
+void KatamariGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing)
 {
-	player.OnRender(commandList, viewProjMatrix);
+	player.OnRender(commandList, viewProjMatrix, ShadowMapDrawing);
 	for (string name : m_names)
 	{
 		if (m_objects.find(name) == m_objects.end() || m_objects[name].eaten) { continue; }
-		m_objects[name].OnRender(commandList, viewProjMatrix);
+		m_objects[name].OnRender(commandList, viewProjMatrix, ShadowMapDrawing);
 	}
 }
 

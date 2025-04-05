@@ -18,7 +18,7 @@ public:
 
     void OnUpdate();
     void OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
+    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing);
     void OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
     void SetDefaultState();

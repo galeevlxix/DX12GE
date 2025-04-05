@@ -1,10 +1,10 @@
-#include "Pipeline.h"
+#include "ShadowMapPipeline.h"
 #include "DirectXMath.h"
-#include "../Game/LightManager.h"
+#include "../../Game/LightManager.h"
 
 using namespace DirectX;
 
-void Pipeline::Initialize(ComPtr<ID3D12Device2> device)
+void ShadowMapPipeline::Initialize(ComPtr<ID3D12Device2> device)
 {
     LoadVertexShader();
     LoadPixelShader();
@@ -17,34 +17,32 @@ void Pipeline::Initialize(ComPtr<ID3D12Device2> device)
     CreatePipelineState(device);
 }
 
-void Pipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void ShadowMapPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
     commandList->SetPipelineState(PipelineState.Get());
     commandList->SetGraphicsRootSignature(RootSignature.Get());
 }
 
 // Load the vertex shader
-void Pipeline::LoadVertexShader()
+void ShadowMapPipeline::LoadVertexShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"VertexShader.cso", &m_VertexShaderBlob));
+        D3DReadFileToBlob(L"ShadowMapVertexShader.cso", &m_VertexShaderBlob));
 }
 
 // Load the pixel shader
-void Pipeline::LoadPixelShader()
+void ShadowMapPipeline::LoadPixelShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"PixelShader.cso", &m_PixelShaderBlob));
+        D3DReadFileToBlob(L"ShadowMapPixelShader.cso", &m_PixelShaderBlob));
 }
 
-void Pipeline::CreateVertexInputLayout()
-{   
+void ShadowMapPipeline::CreateVertexInputLayout()
+{
     m_InputLayout[0] = { "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-    m_InputLayout[1] = { "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-    m_InputLayout[2] = { "TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0,  D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 }
 
-void Pipeline::CreateRootSignatureFeatureData(ComPtr<ID3D12Device2> device)
+void ShadowMapPipeline::CreateRootSignatureFeatureData(ComPtr<ID3D12Device2> device)
 {
     m_RootSignatureFeatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
     if (FAILED(device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &m_RootSignatureFeatureData, sizeof(m_RootSignatureFeatureData))))
@@ -53,8 +51,8 @@ void Pipeline::CreateRootSignatureFeatureData(ComPtr<ID3D12Device2> device)
     }
 }
 
-// Allow input layout and deny unnecessary access to certain pipeline stages
-void Pipeline::CreateRootSignatureFlags()
+// Allow input layout and deny unnecessary access to certain ShadowMapPipeline stages
+void ShadowMapPipeline::CreateRootSignatureFlags()
 {
     m_RootSignatureFlags =
         D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -66,50 +64,35 @@ void Pipeline::CreateRootSignatureFlags()
 }
 
 // Init root parameters that are used by shaders
-void Pipeline::CreateRootSignatureBlob()
+void ShadowMapPipeline::CreateRootSignatureBlob()
 {
-    CD3DX12_ROOT_PARAMETER1 rootParameters[9];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[1];
+    rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
-    rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 2, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
-
-    const CD3DX12_DESCRIPTOR_RANGE1 descRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
-    rootParameters[1].InitAsDescriptorTable(1, &descRange, D3D12_SHADER_VISIBILITY_PIXEL);    
-
-    rootParameters[2].InitAsConstants(LightManager::SizeOfAmbientLight() / 4, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL);
-    rootParameters[3].InitAsConstants(LightManager::SizeOfDirectionalLight() / 4, 1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-    rootParameters[4].InitAsConstants(LightManager::SizeOfLightProperties() / 4, 2, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-    rootParameters[5].InitAsShaderResourceView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);
-    rootParameters[6].InitAsShaderResourceView(2, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);
-    rootParameters[7].InitAsConstants(LightManager::SizeOfSpecularLight() / 4, 3, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-
-    const CD3DX12_DESCRIPTOR_RANGE1 descRange2(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 1);
-    rootParameters[8].InitAsDescriptorTable(1, &descRange2, D3D12_SHADER_VISIBILITY_PIXEL);
-
-    const CD3DX12_STATIC_SAMPLER_DESC staticSampler(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR);
+    m_RootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, m_RootSignatureFlags);
     
-    m_RootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1, &staticSampler, m_RootSignatureFlags);
-
     ComPtr<ID3DBlob> errorBlob;
     ThrowIfFailed(
         D3DX12SerializeVersionedRootSignature(&m_RootSignatureDescription, m_RootSignatureFeatureData.HighestVersion, &m_RootSignatureBlob, &errorBlob));
 }
 
 // Create the root signature
-void Pipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
+void ShadowMapPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
 {
     ThrowIfFailed(
         device->CreateRootSignature(0, m_RootSignatureBlob->GetBufferPointer(), m_RootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&RootSignature)));
 }
 
-void Pipeline::CreateRasterizerDesc()
+void ShadowMapPipeline::CreateRasterizerDesc()
 {
     m_RasterizerDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-    m_RasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
-    m_RasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+    m_RasterizerDesc.DepthBias = 100000;
+    m_RasterizerDesc.DepthBiasClamp = 0.0f;
+    m_RasterizerDesc.SlopeScaledDepthBias = 1.0f;
 }
 
-// Create the pipeline state
-void Pipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
+// Create the ShadowMapPipeline state
+void ShadowMapPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
 {
     struct PipelineStateStream
     {
@@ -121,11 +104,13 @@ void Pipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
         CD3DX12_PIPELINE_STATE_STREAM_RASTERIZER Rasterizer;
         CD3DX12_PIPELINE_STATE_STREAM_DEPTH_STENCIL_FORMAT DSVFormat;
         CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS RTVFormats;
+
     } pipelineStateStream;
 
+    // Shadow map pass does not have a render target.
     D3D12_RT_FORMAT_ARRAY rtvFormats = {};
-    rtvFormats.NumRenderTargets = 1;
-    rtvFormats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;    
+    rtvFormats.NumRenderTargets = 0;
+    rtvFormats.RTFormats[0] = DXGI_FORMAT_UNKNOWN;
 
     pipelineStateStream.pRootSignature = RootSignature.Get();
     pipelineStateStream.InputLayout = { m_InputLayout, _countof(m_InputLayout) };
@@ -133,7 +118,7 @@ void Pipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
     pipelineStateStream.VS = CD3DX12_SHADER_BYTECODE(m_VertexShaderBlob.Get());
     pipelineStateStream.PS = CD3DX12_SHADER_BYTECODE(m_PixelShaderBlob.Get());
     pipelineStateStream.Rasterizer = m_RasterizerDesc;
-    pipelineStateStream.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+    pipelineStateStream.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
     pipelineStateStream.RTVFormats = rtvFormats;
 
     D3D12_PIPELINE_STATE_STREAM_DESC pipelineStateStreamDesc =

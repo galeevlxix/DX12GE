@@ -16,6 +16,11 @@ bool BianGame::LoadContent()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
+    m_ShadowMap = make_unique<ShadowMap>(device, 2048, 2048);
+    m_SceneBounds.Center = Vector3(0, 0, 0);
+    float a = 20;
+    m_SceneBounds.Radius = sqrtf(a * a * 2);
+
     katamari.OnLoad(commandList);
     lights.Init(&(katamari.player));
 
@@ -23,15 +28,20 @@ bool BianGame::LoadContent()
     m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
 
     m_Pipeline.Initialize(device);
+    m_ShadowMapPipeline.Initialize(device);
 
     debug.Init(&m_Camera, device);
+
+    UpdateShadowTransform();
+    UpdateShadowPassCB();
+    debug.Update(commandList);
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
 
     m_DepthBuffer.InitDSV();
     m_DepthBuffer.ResizeDepthBuffer(GetClientWidth(), GetClientHeight());
-    
+
     return true;
 }
 
@@ -80,6 +90,86 @@ void BianGame::AddDebugObjects()
     commandQueue->WaitForFenceValue(fenceValue);
 }
 
+void BianGame::UpdateShadowTransform()
+{
+    Vector3 lightDir = lights.m_DirectionalLight.Direction;
+    mLightPosW = -2.0f * m_SceneBounds.Radius * lightDir;
+    Vector3 targetPos = Vector3(m_SceneBounds.Center);
+    Vector3 lightUp = Vector3(0.0f, 1.0f, 0.0f);
+    mLightView = XMMatrixLookAtLH(mLightPosW, targetPos, lightUp);
+
+    // Transform bounding sphere to light space.
+    Vector3 sphereCenterLS = XMVector3TransformCoord(targetPos, mLightView);
+
+    // Ortho frustum in light space encloses scene.
+    float l = sphereCenterLS.x - m_SceneBounds.Radius;
+    float b = sphereCenterLS.y - m_SceneBounds.Radius;
+    float n = sphereCenterLS.z - m_SceneBounds.Radius;
+    float r = sphereCenterLS.x + m_SceneBounds.Radius;
+    float t = sphereCenterLS.y + m_SceneBounds.Radius;
+    float f = sphereCenterLS.z + m_SceneBounds.Radius;
+
+    mLightNearZ = n;
+    mLightFarZ = f;
+
+    mLightProj = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
+
+    // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+    Matrix T(
+        0.5f,   0.0f,   0.0f,   0.0f,
+        0.0f,   -0.5f,  0.0f,   0.0f,
+        0.0f,   0.0f,   1.0f,   0.0f,
+        0.5f,   0.5f,   0.0f,   1.0f);
+
+    mShadowTransform = mLightView * mLightProj;// * T;
+
+    debug.DrawFrustrum(mLightView, mLightProj);
+}
+
+void BianGame::UpdateShadowPassCB()
+{
+    Matrix viewProj = mLightView * mLightProj;
+    XMVECTOR detView = XMMatrixDeterminant(mLightView);
+    Matrix invView = XMMatrixInverse(&detView, mLightView);
+    XMVECTOR detProj = XMMatrixDeterminant(mLightProj);
+    Matrix invProj = XMMatrixInverse(&detProj, mLightProj);
+    XMVECTOR detViewProj = XMMatrixDeterminant(viewProj);
+    Matrix invViewProj = XMMatrixInverse(&detViewProj, viewProj);
+
+    UINT w = m_ShadowMap->Width();
+    UINT h = m_ShadowMap->Height();
+
+    struct PassConstants
+    {
+        Matrix View;
+        Matrix InvView;
+        Matrix Proj;
+        Matrix InvProj;
+        Matrix ViewProj;
+        Matrix InvViewProj;
+        Matrix ShadowTransform;
+
+        Vector3 EyePosW = { 0.0f, 0.0f, 0.0f };
+        float cbPerObjectPad1 = 0.0f;
+        Vector2 RenderTargetSize = { 0.0f, 0.0f };
+        Vector2 InvRenderTargetSize = { 0.0f, 0.0f };
+        float NearZ = 0.0f;
+        float FarZ = 0.0f;
+    } mShadowPassCB;
+
+    mShadowPassCB.View = mLightView;
+    mShadowPassCB.InvView = invView;
+    mShadowPassCB.Proj = XMMatrixTranspose(mLightProj);
+    mShadowPassCB.InvProj = XMMatrixTranspose(invProj);
+    mShadowPassCB.ViewProj = XMMatrixTranspose(viewProj);
+    mShadowPassCB.InvViewProj = XMMatrixTranspose(invViewProj);
+    mShadowPassCB.EyePosW = mLightPosW;
+    mShadowPassCB.RenderTargetSize = XMFLOAT2((float)w, (float)h);
+    mShadowPassCB.InvRenderTargetSize = XMFLOAT2(1.0f / w, 1.0f / h);
+    mShadowPassCB.NearZ = mLightNearZ;
+    mShadowPassCB.FarZ = mLightFarZ;
+}
+
 template<typename T>
 void BianGame::SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const vector<T>& bufferData)
 {
@@ -96,6 +186,33 @@ void BianGame::SetGraphicsConstants(ComPtr<ID3D12GraphicsCommandList2> commandLi
     commandList->SetGraphicsRoot32BitConstants(slot, size / 4, &bufferData, 0);
 }
 
+void BianGame::DrawSceneToShadowMap()
+{
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+
+    auto vp = m_ShadowMap->Viewport();
+    auto sr = m_ShadowMap->ScissorRect();
+
+    commandList->RSSetViewports(1, &vp);
+    commandList->RSSetScissorRects(1, &sr);
+    TransitionResource(commandList, m_ShadowMap->Resource(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+
+    m_ShadowMapPipeline.Set(commandList);
+
+    commandList->ClearDepthStencilView(m_ShadowMap->Dsv(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+    auto dsv = m_ShadowMap->Dsv();
+    commandList->OMSetRenderTargets(0, nullptr, false, &dsv);
+
+    katamari.OnRender(commandList, mShadowTransform, true);
+
+    TransitionResource(commandList, m_ShadowMap->Resource(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+    commandQueue->WaitForFenceValue(fenceValue);
+}
+
 void BianGame::OnRender(RenderEventArgs& e)
 {
     super::OnRender(e);
@@ -105,6 +222,8 @@ void BianGame::OnRender(RenderEventArgs& e)
         AddDebugObjects();
         shouldAddDebugObjects = false;
     }
+
+    DrawSceneToShadowMap();
 
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();

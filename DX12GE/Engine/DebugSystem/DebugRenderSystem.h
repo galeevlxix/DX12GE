@@ -42,4 +42,5 @@ public:
 	void DrawCircle(const double& radius, const Color& color, const Matrix& transform, int density);
 	void DrawSphere(const double& radius, const Color& color, const Matrix& transform, int density);
 	void DrawPlane(const Vector4& p, const Color& color, float sizeWidth, float sizeNormal, bool drawCenterCross);
+	void DrawFrustrum(const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj);
 };

@@ -43,6 +43,15 @@
     <Filter Include="Файлы заголовков\Engine\Debug">
       <UniqueIdentifier>{35a56de1-4cb4-4491-a3f7-3e5224538b4c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Engine\Shadows">
+      <UniqueIdentifier>{6a8631e4-5993-4913-b804-93d9744b9768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Shadows">
+      <UniqueIdentifier>{80fede8c-637c-478d-9750-3636f3654af3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы ресурсов\Shaders\Shadow">
+      <UniqueIdentifier>{8bfede72-e102-4603-8587-1a23a66a2242}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Application.cpp">
@@ -105,13 +114,19 @@
     <ClCompile Include="Engine\DebugSystem\TexturedPipeline.cpp">
       <Filter>Исходные файлы\Engine\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\ShadowMap.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\AssimpModelLoader.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Material.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Shadows\ShadowMap.cpp">
+      <Filter>Исходные файлы\Engine\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Shadows\ShadowMapPipeline.cpp">
+      <Filter>Исходные файлы\Engine\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\SRVHeap.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,9 +203,6 @@
     <ClInclude Include="Engine\DebugSystem\TexturedPipeline.h">
       <Filter>Файлы заголовков\Engine\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\ShadowMap.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\VertexStructures.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
@@ -198,6 +210,15 @@
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Material.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Shadows\ShadowMapPipeline.h">
+      <Filter>Файлы заголовков\Engine\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Shadows\ShadowMap.h">
+      <Filter>Файлы заголовков\Engine\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SRVHeap.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>
@@ -235,6 +256,12 @@
     </FxCompile>
     <FxCompile Include="Resources\Shaders\TexturedVertexShader.hlsl">
       <Filter>Файлы ресурсов\Shaders\Textured</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ShadowMapPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ShadowMapVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Shadow</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
