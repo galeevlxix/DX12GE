@@ -1,10 +1,13 @@
 #include "DX12LibPCH.h"
+#include "Texture.h"
 
 class DepthBuffer
 {
 private:
     // Depth buffer.
-    ComPtr<ID3D12Resource> DepthBuffer;
+    //ComPtr<ID3D12Resource> DepthBuffer;
+    Texture DepthBufferTexture;
+    UINT dsvCpuHandleIndex = 1;
 public:
     // Descriptor heap for depth buffer.
     void ResizeDepthBuffer(int width, int height);

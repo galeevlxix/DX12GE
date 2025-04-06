@@ -11,6 +11,10 @@ void DebugRenderSystem::Update(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	if (isLinesDirty)
 	{
+		if (m_Lines.IsInitialized())
+		{
+			m_Lines.Release();
+		}
 		m_Lines.OnLoad<VertexPositionColor>(commandList, linesVertices, linesIndices);
 		isLinesDirty = false;
 	}

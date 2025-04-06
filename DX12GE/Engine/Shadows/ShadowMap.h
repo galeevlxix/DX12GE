@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../DX12LibPCH.h"
+#include "../Texture.h"
 
 class ShadowMap
 {
@@ -23,7 +24,8 @@ public:
 
 	void OnResize(UINT newWidth, UINT newHeight);
 
-	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void SetToWrite(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 private:
 	void BuildDescriptors();
@@ -37,12 +39,15 @@ private:
 	UINT mWidth = 0;
 	UINT mHeight = 0;
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE mhCpuSrv;
-	CD3DX12_GPU_DESCRIPTOR_HANDLE mhGpuSrv;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE mhCpuDsv;
+	UINT dsvCpuHandleIndex = 0;
 
-	ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
-	ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE mhCpuSrv;
+	D3D12_GPU_DESCRIPTOR_HANDLE mhGpuSrv;
+	D3D12_CPU_DESCRIPTOR_HANDLE mhCpuDsv;
 
-	ComPtr<ID3D12Resource> mShadowMap = nullptr;
+	//ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
+	//ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
+
+	Texture mTexture;
+	//ComPtr<ID3D12Resource> mShadowMap = nullptr;
 };

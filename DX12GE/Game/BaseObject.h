@@ -15,11 +15,15 @@ class BaseObject
 public:
     template<typename T>
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const vector<T> vertices, const vector<WORD> indices);
+    void Release();
 
     void OnUpdate();
     void OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat);
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing);
     void OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
+
+    static void SetSMMatrix(Matrix m);
+    static void DebugMatrix();
 
     void SetDefaultState();
     void SetPosition(float x, float y, float z);
@@ -58,7 +62,12 @@ private:
 
     UINT indiciesCount;
 
+    bool Initialized = false;
+
     void UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE);
+
+public:
+    bool IsInitialized() { return Initialized; }
 };
 
 template<typename T>
@@ -83,4 +92,6 @@ void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const ve
     m_IndexBufferView.SizeInBytes = static_cast<UINT>(indices.size() * sizeof(WORD));
 
     SetDefaultState();
+
+    Initialized = true;
 }

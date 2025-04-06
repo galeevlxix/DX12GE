@@ -36,7 +36,7 @@ void DescriptorHeaps::LoadDSV(ComPtr<ID3D12Device2> device)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
 		D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
-		1,
+		MAXDESCRIPTORS,
 		D3D12_DESCRIPTOR_HEAP_FLAG_NONE
 	};
 	device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&pSingle->m_dsvHeap));

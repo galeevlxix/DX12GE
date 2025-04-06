@@ -1,4 +1,5 @@
 #include "ShadowMap.h"
+#include "../DescriptorHeaps.h"
 
 ShadowMap::ShadowMap(ComPtr<ID3D12Device2> device, UINT width, UINT height)
 {
@@ -25,17 +26,17 @@ UINT ShadowMap::Height() const
 
 ID3D12Resource* ShadowMap::Resource()
 {
-    return mShadowMap.Get();
+    return mTexture.m_Resource.Get();
 }
 
 CD3DX12_GPU_DESCRIPTOR_HANDLE ShadowMap::Srv() const
 {
-    return mhGpuSrv;
+    return CD3DX12_GPU_DESCRIPTOR_HANDLE(mhGpuSrv);
 }
 
 CD3DX12_CPU_DESCRIPTOR_HANDLE ShadowMap::Dsv() const
 {
-    return mhCpuDsv;
+    return CD3DX12_CPU_DESCRIPTOR_HANDLE(mhCpuDsv);
 }
 
 D3D12_VIEWPORT ShadowMap::Viewport() const
@@ -60,36 +61,19 @@ void ShadowMap::OnResize(UINT newWidth, UINT newHeight)
     }    
 }
 
-void ShadowMap::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void ShadowMap::SetToWrite(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    commandList->SetDescriptorHeaps(1, m_SRVHeap.GetAddressOf());
-    commandList->SetGraphicsRootDescriptorTable(1, m_SRVHeap.Get()->GetGPUDescriptorHandleForHeapStart());
+    //commandList->SetDescriptorHeaps(1, m_SRVHeap.GetAddressOf());
+    commandList->SetGraphicsRootDescriptorTable(1, mhGpuSrv);
+}
+
+void ShadowMap::SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList)
+{
+    commandList->SetGraphicsRootDescriptorTable(1, mhGpuSrv);
 }
 
 void ShadowMap::BuildDescriptors()
 {
-    // DESCRIPTOR HEAP FOR SHADER RESOURCE VIEW
-    D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-    srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    srvHeapDesc.NumDescriptors = 1;
-    srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    ThrowIfFailed(
-        md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_SRVHeap)));
-
-    CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(m_SRVHeap.Get()->GetCPUDescriptorHandleForHeapStart());
-
-    // Descriptor heap for depth buffer
-    D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-    dsvHeapDesc.NumDescriptors = 1;
-    dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-    dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-    ThrowIfFailed(
-        md3dDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
-
-    mhCpuSrv = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_SRVHeap->GetCPUDescriptorHandleForHeapStart());
-    mhGpuSrv = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_SRVHeap->GetGPUDescriptorHandleForHeapStart());
-    mhCpuDsv = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_DSVHeap->GetCPUDescriptorHandleForHeapStart());
-
     // Create SRV to resource so we can sample the shadow map in a shader program.
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -99,7 +83,9 @@ void ShadowMap::BuildDescriptors()
     srvDesc.Texture2D.MipLevels = 1;
     srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
     srvDesc.Texture2D.PlaneSlice = 0;
-    md3dDevice->CreateShaderResourceView(mShadowMap.Get(), &srvDesc, mhCpuSrv);
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 0));
+    md3dDevice->CreateShaderResourceView(mTexture.m_Resource.Get(), &srvDesc, srvHandle);
 
     // Create DSV to resource so we can render to the shadow map.
     D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc;
@@ -107,7 +93,13 @@ void ShadowMap::BuildDescriptors()
     dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
     dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     dsvDesc.Texture2D.MipSlice = 0;
-    md3dDevice->CreateDepthStencilView(mShadowMap.Get(), &dsvDesc, mhCpuDsv);
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 0));
+    md3dDevice->CreateDepthStencilView(mTexture.m_Resource.Get(), &dsvDesc, dsvHandle);
+
+    mhCpuSrv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 0);
+    mhGpuSrv = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 0);
+    mhCpuDsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 0);
 }
 
 void ShadowMap::BuildResource()
@@ -140,7 +132,7 @@ void ShadowMap::BuildResource()
             &texDesc,
             D3D12_RESOURCE_STATE_GENERIC_READ,
             &optClear,
-            IID_PPV_ARGS(&mShadowMap)
+            IID_PPV_ARGS(&(mTexture.m_Resource))
         )
     );
 }

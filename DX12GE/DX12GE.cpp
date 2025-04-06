@@ -35,6 +35,7 @@ int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine,
         //std::shared_ptr<BianGame> demo = std::make_shared<BianGame>(L"Bian Game", 1920, 1080, false);
         retCode = Application::Get().Run(demo);
     }
+
     Application::Destroy();
 
     atexit(&ReportLiveObjects);

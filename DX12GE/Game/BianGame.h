@@ -23,6 +23,7 @@ public:
     using super = Game;
     
     BianGame(const wstring& name, int width, int height, bool vSync = false);
+    ~BianGame();
 
     virtual bool LoadContent() override;
     virtual void UnloadContent() override {};
@@ -73,11 +74,10 @@ private:
     unique_ptr<ShadowMap> m_ShadowMap;
     DirectX::BoundingSphere m_SceneBounds;
     Vector3 mLightPosW;
-    float mLightNearZ;
-    float mLightFarZ;
 
     Matrix mLightView;
     Matrix mLightProj;
+
     Matrix mShadowTransform;
 
     void UpdateShadowTransform();

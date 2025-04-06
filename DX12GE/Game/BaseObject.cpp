@@ -1,6 +1,9 @@
 #include "BaseObject.h"
 #include "../Engine/Application.h"
 
+Matrix BaseObjectShadowMapView;
+bool debugMatrix = false;
+
 void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
 {
     auto device = Application::Get().GetDevice();
@@ -33,17 +36,51 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
 
 void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing)
 {
+    if (!IsInitialized()) return;
+
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
     commandList->IASetIndexBuffer(&m_IndexBufferView);
 
     // Update the MVP matrix
     XMMATRIX wvpMatrix = XMMatrixMultiply(m_ModelMatrix, viewProjMatrix);
-    
+    XMMATRIX shadowWvp = XMMatrixMultiply(m_ModelMatrix, BaseObjectShadowMapView);
+
     if (!ShadowMapDrawing)
     {
+        if (debugMatrix)
+        {
+            system("cls");
+            printf("Camera View Matrix:\n");
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    float a = viewProjMatrix.r[i].m128_f32[j];
+                    printf("%f      ", a);
+                }
+                printf("\n");
+            }
+
+            printf("Shadow View Matrix:\n");
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    float a = BaseObjectShadowMapView.m[i][j];
+                    printf("%f      ", a);
+                }
+                printf("\n");
+            }
+
+            debugMatrix = false;
+        }        
+
         commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &m_ModelMatrix, 0);
         commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &wvpMatrix, sizeof(XMMATRIX) / 4);
+        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &shadowWvp, sizeof(XMMATRIX) / 2);
     }
     else
     {
@@ -55,6 +92,8 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
 
 void BaseObject::OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
+    if (!IsInitialized()) return;
+
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
     commandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
     commandList->IASetIndexBuffer(&m_IndexBufferView);
@@ -65,8 +104,33 @@ void BaseObject::OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
 }
 
+void BaseObject::SetSMMatrix(Matrix m)
+{
+    BaseObjectShadowMapView = m;
+}
+
+void BaseObject::DebugMatrix()
+{
+    debugMatrix = true;
+}
+
+void BaseObject::Release()
+{
+    Initialized = false;
+    m_VertexBuffer->Release();
+    m_VertexBuffer = nullptr;
+    IntermediateVertexBufferResource->Release();
+    IntermediateVertexBufferResource = nullptr;
+    m_IndexBuffer->Release();
+    m_IndexBuffer = nullptr;
+    IntermediateIndexBufferResource->Release();
+    IntermediateIndexBufferResource = nullptr;
+}
+
 void BaseObject::OnUpdate()
 {
+    if (!IsInitialized()) return;
+
     m_ModelMatrix =
         XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
         XMMatrixRotationX(m_Rotation.x) *
@@ -77,6 +141,8 @@ void BaseObject::OnUpdate()
 
 void BaseObject::OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat)
 {
+    if (!IsInitialized()) return;
+
     m_ModelMatrix = 
         XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
         rotMat * 
@@ -171,94 +237,3 @@ Vector3 BaseObject::GetScale()
 {
     return m_Scale;
 }
-
-//void BaseObject::CreateSphereGeometry(int gx_segments, int gy_segments)
-//{
-//    //float minY = D3D12_FLOAT32_MAX;
-//    //int gx_segments = 32;
-//    //int gy_segments = 32;
-//
-//    XMFLOAT3 colors[8] =
-//    {
-//         XMFLOAT3(0.5f, 0.5f, 0.5f),
-//         XMFLOAT3(1.0f, 0.0f, 0.0f),
-//         XMFLOAT3(0.0f, 1.0f, 0.0f),
-//         XMFLOAT3(0.0f, 0.0f, 1.0f),
-//         XMFLOAT3(1.0f, 1.0f, 0.0f),
-//         XMFLOAT3(0.0f, 1.0f, 1.0f),
-//         XMFLOAT3(1.0f, 0.0f, 1.0f),
-//         XMFLOAT3(1.0f, 1.0f, 1.0f),
-//    };
-//
-//    vector<VertexStruct> vertices;
-//    int colorIndex = 0;
-//
-//    for (int y = 0; y <= gy_segments; y++)
-//    {
-//        for (int x = 0; x <= gx_segments; x++)
-//        {
-//            double xSegment = (double)x / (double)gx_segments;
-//            double ySegment = (double)y / (double)gy_segments;
-//            double xPos = cos(xSegment * 2.0f * PI) * sin(ySegment * PI);
-//            double yPos = cos(ySegment * PI);
-//            double zPos = sin(xSegment * 2.0f * PI) * sin(ySegment * PI);
-//            vertices.push_back({ XMFLOAT3(xPos, yPos, zPos), colors[colorIndex]});
-//            colorIndex++;
-//            colorIndex = colorIndex % 8;
-//        }
-//    }
-//    m_Vertices = vertices;
-//
-//    radius = Vector3(vertices[0].Position.x, vertices[0].Position.y, vertices[0].Position.z).Length();
-//    
-//    vector<WORD> indices;
-//    for (int i = 0; i < gy_segments; i++)
-//    {
-//        for (int j = 0; j < gx_segments; j++)
-//        {
-//            indices.push_back((i + 1) * (gx_segments + 1) + j + 1);
-//            indices.push_back((i + 1) * (gx_segments + 1) + j);
-//            indices.push_back(i * (gx_segments + 1) + j);
-//
-//            indices.push_back(i * (gx_segments + 1) + j);
-//            indices.push_back(i * (gx_segments + 1) + j + 1);
-//            indices.push_back((i + 1) * (gx_segments + 1) + j + 1);
-//        }
-//    }
-//    m_Indices = indices;
-//    indiciesCount = indices.size();
-//}
-//
-//void BaseObject::CreateCubeGeometry()
-//{
-//    float minY = D3D12_FLOAT32_MAX;
-//
-//    vector<VertexStruct> vertices =
-//    {
-//        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) },  // 0
-//        { XMFLOAT3(-1.0f,  1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },  // 1
-//        { XMFLOAT3(1.0f,  1.0f, -1.0f), XMFLOAT3(1.0f, 1.0f, 0.0f) },   // 2
-//        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },   // 3
-//        { XMFLOAT3(-1.0f, -1.0f,  1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },  // 4
-//        { XMFLOAT3(-1.0f,  1.0f,  1.0f), XMFLOAT3(0.0f, 1.0f, 1.0f) },  // 5
-//        { XMFLOAT3(1.0f,  1.0f,  1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) },   // 6
-//        { XMFLOAT3(1.0f, -1.0f,  1.0f), XMFLOAT3(1.0f, 0.0f, 1.0f) }    // 7
-//    };
-//    m_Vertices = vertices;
-//    //lowerPoint = XMVectorSet(-1.0f, -1.0f, -1.0f, 1);
-//    radius = 1;
-//
-//    vector<WORD> indices =
-//    {
-//        0, 1, 2, 0, 2, 3,
-//        4, 6, 5, 4, 7, 6,
-//        4, 5, 1, 4, 1, 0,
-//        3, 2, 6, 3, 6, 7,
-//        1, 5, 6, 1, 6, 2,
-//        4, 0, 3, 4, 3, 7
-//    };
-//    m_Indices = indices;
-//    indiciesCount = indices.size();
-//}
-
-

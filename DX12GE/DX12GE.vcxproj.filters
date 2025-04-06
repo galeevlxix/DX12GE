@@ -129,6 +129,9 @@
     <ClCompile Include="Engine\DescriptorHeaps.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Texture.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\d3dx12.h">
@@ -219,6 +222,9 @@
       <Filter>Файлы заголовков\Engine\Shadows</Filter>
     </ClInclude>
     <ClInclude Include="Engine\DescriptorHeaps.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Texture.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>
