@@ -6,7 +6,7 @@
 #include "../Engine/DepthBuffer.h"
 #include "../Engine/UploadBuffer.h"
 #include "../Engine/DebugSystem/DebugRenderSystem.h"
-#include "../Engine/Shadows/ShadowMap.h"
+#include "../Engine/Shadows/CascadedShadowMap.h"
 #include "../Engine/Shadows/ShadowMapPipeline.h"
 
 #include "Camera.h" 
@@ -48,7 +48,7 @@ private:
 
     template<typename T>
     void SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const vector<T>& bufferData);
-
+    
     template<typename T>
     void SetGraphicsConstants(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const T& bufferData);
 
@@ -63,25 +63,26 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    unique_ptr<UploadBuffer> m_UploadBuffer;
+    //unique_ptr<UploadBuffer> m_UploadBuffer;
 
     DebugRenderSystem debug;
     bool shouldAddDebugObjects = false;
 
-    KatamariGame katamari;
+    KatamariGame katamari;  
+
     LightManager lights;
 
-    unique_ptr<ShadowMap> m_ShadowMap;
-    DirectX::BoundingSphere m_SceneBounds;
-    Vector3 mLightPosW;
+    //unique_ptr<ShadowMap> m_ShadowMap;
+    //BoundingSphere m_SceneBounds;
+    //Vector3 mLightPosW;
 
-    Matrix mLightView;
-    Matrix mLightProj;
+    CascadedShadowMap m_CascadedShadowMap;
 
-    Matrix mShadowTransform;
+    //Matrix mLightView;
+    //Matrix mLightProj;
 
-    void UpdateShadowTransform();
-    void UpdateShadowPassCB();
+    //Matrix mShadowTransform;
+
     void DrawSceneToShadowMap();
 };
 

@@ -22,8 +22,8 @@ public:
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing);
     void OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
-    static void SetSMMatrix(Matrix m);
-    static void DebugMatrix();
+    static void SetSMMatrices(Matrix m[]);
+    static void DebugMatrices();
 
     void SetDefaultState();
     void SetPosition(float x, float y, float z);
@@ -45,7 +45,7 @@ public:
     Vector3 GetScale();
 
 private:
-    XMMATRIX m_ModelMatrix;
+    XMMATRIX m_WorldMatrix;
     Vector3 m_Position;
     Vector3 m_Rotation;
     Vector3 m_Scale;

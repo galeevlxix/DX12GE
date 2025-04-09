@@ -34,7 +34,7 @@ public:
      */
     explicit UploadBuffer(size_t pageSize = _2MB);
 
-    virtual ~UploadBuffer();
+    ~UploadBuffer();
 
     /**
      * The maximum size of an allocation is the size of a single page.

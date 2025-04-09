@@ -1,34 +1,32 @@
 #include "LightManager.h"
 
-#define COLOR_WHITE Vector3(1, 1, 1)
-#define COLOR_BLACK Vector3(0, 0, 0)
-#define COLOR_GRAY Vector3(0.5, 0.5, 0.5)
+#define COLOR_WHITE		Vector3(1, 1, 1)
+#define COLOR_BLACK		Vector3(0, 0, 0)
+#define COLOR_GRAY		Vector3(0.5, 0.5, 0.5)
 
-#define COLOR_RED Vector3(1, 0, 0)
-#define COLOR_ORANGE Vector3(1, 0.5, 0)
-#define COLOR_YELLOW Vector3(1, 1, 0)
-#define COLOR_GREEN Vector3(0, 1, 0)
-#define COLOR_CYAN Vector3(0, 0.5, 1)
-#define COLOR_BLUE Vector3(0, 0, 1)
-#define COLOR_PURPLE Vector3(0.5, 0, 1)
+#define COLOR_RED		Vector3(1, 0, 0)
+#define COLOR_ORANGE	Vector3(1, 0.5, 0)
+#define COLOR_YELLOW	Vector3(1, 1, 0)
+#define COLOR_GREEN		Vector3(0, 1, 0)
+#define COLOR_CYAN		Vector3(0, 0.5, 1)
+#define COLOR_BLUE		Vector3(0, 0, 1)
+#define COLOR_PURPLE	Vector3(0.5, 0, 1)
 
 void LightManager::Init(Player* player)
 {
 	m_player = player;
 
 	// AmbientLight
-	m_AmbientLight.Color = COLOR_WHITE;
-	m_AmbientLight.Intensity = 0.2;
+	ShaderResourceBuffers::GetWorldCB()->AmbientLight.Color = COLOR_WHITE;
+	ShaderResourceBuffers::GetWorldCB()->AmbientLight.Intensity = 0.2;
 
 	// DirectionalLight
-	m_DirectionalLight.BaseLightComponent.Color = COLOR_WHITE;
-	m_DirectionalLight.BaseLightComponent.Intensity = 0.9;
-	m_DirectionalLight.Direction = Vector3(1, -1, -1);
+	ShaderResourceBuffers::GetWorldCB()->DirLight.BaseLightComponent.Color = COLOR_WHITE;
+	ShaderResourceBuffers::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.5;
+	ShaderResourceBuffers::GetWorldCB()->DirLight.Direction = Vector4(1, -1, -1, 1);
 
-	m_LightProperties.PointLightsCount = 14;
-	m_LightProperties.SpotlightsCount = 2;
-
-	defaultIntensity = 0;
+	ShaderResourceBuffers::GetWorldCB()->LightProps.PointLightsCount = 14;
+	ShaderResourceBuffers::GetWorldCB()->LightProps.SpotlightsCount = 2;
 
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
@@ -91,8 +89,8 @@ void LightManager::Init(Player* player)
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 	}
 
-	m_SpecularProperties.SpecularIntensity = 0.0f;
-	m_SpecularProperties.MaterialPower = 32.0;
+	ShaderResourceBuffers::GetWorldCB()->LightProps.SpecularIntensity = 0.3f;
+	ShaderResourceBuffers::GetWorldCB()->LightProps.MaterialPower = 128.0;
 }
 
 void LightManager::OnUpdate(float deltaTime)

@@ -145,6 +145,8 @@
     <ClCompile Include="Engine\HighResolutionClock.cpp" />
     <ClCompile Include="Engine\Material.cpp" />
     <ClCompile Include="Engine\Pipeline.cpp" />
+    <ClCompile Include="Engine\ShaderResources.cpp" />
+    <ClCompile Include="Engine\Shadows\CascadedShadowMap.cpp" />
     <ClCompile Include="Engine\Shadows\ShadowMap.cpp" />
     <ClCompile Include="Engine\Shadows\ShadowMapPipeline.cpp" />
     <ClCompile Include="Engine\Texture.cpp" />
@@ -177,6 +179,8 @@
     <ClInclude Include="Engine\Material.h" />
     <ClInclude Include="Engine\Pipeline.h" />
     <ClInclude Include="Engine\resource.h" />
+    <ClInclude Include="Engine\ShaderResources.h" />
+    <ClInclude Include="Engine\Shadows\CascadedShadowMap.h" />
     <ClInclude Include="Engine\Shadows\ShadowMap.h" />
     <ClInclude Include="Engine\Shadows\ShadowMapPipeline.h" />
     <ClInclude Include="Engine\Texture.h" />

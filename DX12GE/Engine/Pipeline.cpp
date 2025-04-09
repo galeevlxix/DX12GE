@@ -68,27 +68,46 @@ void Pipeline::CreateRootSignatureFlags()
 // Init root parameters that are used by shaders
 void Pipeline::CreateRootSignatureBlob()
 {
-    CD3DX12_ROOT_PARAMETER1 rootParameters[5];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[9];
 
-    rootParameters[0].InitAsConstants(3 * sizeof(XMMATRIX) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);  //objConst
+    rootParameters[1].InitAsConstantBufferView(2, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //worldConst
+    
+    rootParameters[2].InitAsShaderResourceView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //pointLights
+    rootParameters[3].InitAsShaderResourceView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //spotLights
 
-    const CD3DX12_DESCRIPTOR_RANGE1 descRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-    rootParameters[1].InitAsDescriptorTable(1, &descRange, D3D12_SHADER_VISIBILITY_PIXEL);  
+    const CD3DX12_DESCRIPTOR_RANGE1 diffuseTexDescRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
+    rootParameters[4].InitAsDescriptorTable(1, &diffuseTexDescRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-    rootParameters[2].InitAsConstants(LightManager::SizeOfAmbientLight() / 4, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL);
-    rootParameters[3].InitAsConstants(LightManager::SizeOfDirectionalLight() / 4, 1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-    //rootParameters[4].InitAsConstants(LightManager::SizeOfLightProperties() / 4, 2, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-    //rootParameters[5].InitAsShaderResourceView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);
-    //rootParameters[6].InitAsShaderResourceView(2, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);
-    //rootParameters[7].InitAsConstants(LightManager::SizeOfSpecularLight() / 4, 3, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+    const CD3DX12_DESCRIPTOR_RANGE1 smDescTable1(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
+    rootParameters[5].InitAsDescriptorTable(1, &smDescTable1, D3D12_SHADER_VISIBILITY_PIXEL);
 
-    const CD3DX12_DESCRIPTOR_RANGE1 descRange2(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
-    rootParameters[4].InitAsDescriptorTable(1, &descRange2, D3D12_SHADER_VISIBILITY_PIXEL);
+    const CD3DX12_DESCRIPTOR_RANGE1 smDescTable2(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4);
+    rootParameters[6].InitAsDescriptorTable(1, &smDescTable2, D3D12_SHADER_VISIBILITY_PIXEL);
 
-    const CD3DX12_STATIC_SAMPLER_DESC staticSampler(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR);
+    const CD3DX12_DESCRIPTOR_RANGE1 smDescTable3(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5);
+    rootParameters[7].InitAsDescriptorTable(1, &smDescTable3, D3D12_SHADER_VISIBILITY_PIXEL);
 
-    const CD3DX12_STATIC_SAMPLER_DESC shadowSampler(
-        1, // shaderRegister
+    rootParameters[8].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);  //shadowTrans
+
+    const CD3DX12_STATIC_SAMPLER_DESC samplers[2] =
+    {
+        // textureSampler
+        CD3DX12_STATIC_SAMPLER_DESC (
+        0,
+        D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+        D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+        D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+        D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+        0.0f,
+        16,
+        D3D12_COMPARISON_FUNC_EQUAL,
+        D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE
+        ), 
+
+        // shadowSampler
+        CD3DX12_STATIC_SAMPLER_DESC (
+        1,
         D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT, // filter
         D3D12_TEXTURE_ADDRESS_MODE_BORDER,  // addressU
         D3D12_TEXTURE_ADDRESS_MODE_BORDER,  // addressV
@@ -96,12 +115,9 @@ void Pipeline::CreateRootSignatureBlob()
         0.0f,                               // mipLODBias
         16,                                 // maxAnisotropy
         D3D12_COMPARISON_FUNC_LESS_EQUAL,
-        D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK);
+        D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK)
+    };
 
-    const CD3DX12_STATIC_SAMPLER_DESC samplers[2] = { staticSampler , shadowSampler };
-
-    //rootParameters[5].InitAsConstants(sizeof(XMMATRIX) / 4, 4, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-    
     m_RootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 2, samplers, m_RootSignatureFlags);
 
     ComPtr<ID3DBlob> errorBlob;

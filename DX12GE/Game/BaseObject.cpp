@@ -1,7 +1,8 @@
 #include "BaseObject.h"
 #include "../Engine/Application.h"
+#include "../Engine/ShaderResources.h"
 
-Matrix BaseObjectShadowMapView;
+Matrix BaseObjectShadowMapView[CASCADES_COUNT];
 bool debugMatrix = false;
 
 void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
@@ -43,48 +44,30 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
     commandList->IASetIndexBuffer(&m_IndexBufferView);
 
     // Update the MVP matrix
-    XMMATRIX wvpMatrix = XMMatrixMultiply(m_ModelMatrix, viewProjMatrix);
-    XMMATRIX shadowWvp = XMMatrixMultiply(m_ModelMatrix, BaseObjectShadowMapView);
+    XMMATRIX mvp = XMMatrixMultiply(m_WorldMatrix, viewProjMatrix);
+
+    XMMATRIX shadowWvps[CASCADES_COUNT];
+    for (size_t i = 0; i < CASCADES_COUNT; i++)
+    {
+        shadowWvps[i] = XMMatrixMultiply(m_WorldMatrix, BaseObjectShadowMapView[i]);
+    }
 
     if (!ShadowMapDrawing)
-    {
-        if (debugMatrix)
+    {  
+        ShaderResourceBuffers::GetObjectCB()->WorldViewProjection = m_WorldMatrix;
+        ShaderResourceBuffers::GetObjectCB()->ModelViewProjection = mvp;
+
+        for (size_t i = 0; i < CASCADES_COUNT; i++)
         {
-            system("cls");
-            printf("Camera View Matrix:\n");
+            ShaderResourceBuffers::GetShadowCB()->ShadowTransforms[i] = shadowWvps[i];
+        }
 
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    float a = viewProjMatrix.r[i].m128_f32[j];
-                    printf("%f      ", a);
-                }
-                printf("\n");
-            }
-
-            printf("Shadow View Matrix:\n");
-
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    float a = BaseObjectShadowMapView.m[i][j];
-                    printf("%f      ", a);
-                }
-                printf("\n");
-            }
-
-            debugMatrix = false;
-        }        
-
-        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &m_ModelMatrix, 0);
-        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &wvpMatrix, sizeof(XMMATRIX) / 4);
-        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &shadowWvp, sizeof(XMMATRIX) / 2);
+        ShaderResourceBuffers::SetGraphicsObjectCB(commandList, 0);
+        ShaderResourceBuffers::SetGraphicsShadowCB(commandList, 8);
     }
     else
     {
-        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &wvpMatrix, 0);
+        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvp, 0);
     }    
     
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
@@ -98,18 +81,21 @@ void BaseObject::OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList
     commandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
     commandList->IASetIndexBuffer(&m_IndexBufferView);
 
-    XMMATRIX mvpMatrix = XMMatrixMultiply(m_ModelMatrix, viewProjMatrix);
+    XMMATRIX mvpMatrix = XMMatrixMultiply(m_WorldMatrix, viewProjMatrix);
     commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvpMatrix, 0);
 
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
 }
 
-void BaseObject::SetSMMatrix(Matrix m)
+void BaseObject::SetSMMatrices(Matrix m[])
 {
-    BaseObjectShadowMapView = m;
+    for (int i = 0; i < CASCADES_COUNT; i++)
+    {
+        BaseObjectShadowMapView[i] = m[i];
+    }
 }
 
-void BaseObject::DebugMatrix()
+void BaseObject::DebugMatrices()
 {
     debugMatrix = true;
 }
@@ -131,7 +117,7 @@ void BaseObject::OnUpdate()
 {
     if (!IsInitialized()) return;
 
-    m_ModelMatrix =
+    m_WorldMatrix =
         XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
         XMMatrixRotationX(m_Rotation.x) *
         XMMatrixRotationY(m_Rotation.y) *
@@ -143,7 +129,7 @@ void BaseObject::OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat)
 {
     if (!IsInitialized()) return;
 
-    m_ModelMatrix = 
+    m_WorldMatrix = 
         XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
         rotMat * 
         XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);

@@ -6,7 +6,7 @@
 class ShadowMap
 {
 public:
-	ShadowMap(ComPtr<ID3D12Device2> device, UINT width, UINT height);
+	ShadowMap(ComPtr<ID3D12Device2> device, UINT width, UINT height, int index);
 	ShadowMap(const ShadowMap& rhs) = delete;
 	ShadowMap& operator=(const ShadowMap& rhs) = delete;
 	~ShadowMap() = default;
@@ -36,18 +36,14 @@ private:
 	D3D12_VIEWPORT mViewport;
 	D3D12_RECT mScissorRect;
 
-	UINT mWidth = 0;
-	UINT mHeight = 0;
+	UINT m_Width = 0;
+	UINT m_Height = 0;
 
-	UINT dsvCpuHandleIndex = 0;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_CpuSrvHadle;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_GpuSrvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_CpuDsvHandle;
 
-	D3D12_CPU_DESCRIPTOR_HANDLE mhCpuSrv;
-	D3D12_GPU_DESCRIPTOR_HANDLE mhGpuSrv;
-	D3D12_CPU_DESCRIPTOR_HANDLE mhCpuDsv;
+	int m_Index;
 
-	//ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
-	//ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
-
-	Texture mTexture;
-	//ComPtr<ID3D12Resource> mShadowMap = nullptr;
+	Texture m_Texture;
 };

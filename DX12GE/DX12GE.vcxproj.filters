@@ -132,6 +132,12 @@
     <ClCompile Include="Engine\Texture.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Shadows\CascadedShadowMap.cpp">
+      <Filter>Исходные файлы\Engine\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ShaderResources.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\d3dx12.h">
@@ -225,6 +231,12 @@
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Texture.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Shadows\CascadedShadowMap.h">
+      <Filter>Файлы заголовков\Engine\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ShaderResources.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>

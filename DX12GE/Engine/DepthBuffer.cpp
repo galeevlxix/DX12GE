@@ -1,6 +1,7 @@
 #include "DepthBuffer.h"
 #include "Application.h"
 #include "DescriptorHeaps.h"
+#include "Shadows/CascadedShadowMap.h"
 
 #if defined(min)
 #undef min
@@ -13,6 +14,8 @@
 // Resize the depth buffer to match the size of the client area.
 void DepthBuffer::ResizeDepthBuffer(int width, int height)
 {
+    dsvCpuHandleIndex = CASCADES_COUNT;
+
     // Flush any GPU commands that might be referencing the depth buffer
     Application::Get().Flush();
 

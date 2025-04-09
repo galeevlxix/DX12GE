@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include <DirectXTex.h>
 #include "DescriptorHeaps.h"
+#include "ShaderResources.h"
 
 using namespace DirectX;
 
@@ -106,7 +107,7 @@ void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
 {
     auto device = Application::Get().GetDevice();
 
-    static int index = 1;
+    static int index = CASCADES_COUNT;
     m_SRVHeapIndex = index;
     index++;
 
@@ -122,7 +123,7 @@ void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
 void Texture::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
     commandList->SetGraphicsRootDescriptorTable(
-        1, 
+        4, 
         DescriptorHeaps::GetGPUHandle(
             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 
             m_SRVHeapIndex)

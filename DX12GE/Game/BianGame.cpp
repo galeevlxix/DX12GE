@@ -4,17 +4,24 @@
 #include "../Engine/CommandQueue.h"
 #include "../Engine/DescriptorHeaps.h"
 
+#include "../Engine/ShaderResources.h"
+
 BianGame::BianGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
     , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
     , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)))
 {
-    m_UploadBuffer = make_unique<UploadBuffer>();
+    //m_UploadBuffer = make_unique<UploadBuffer>();
 }
 
 BianGame::~BianGame()
 {
     DescriptorHeaps::GetDSVHeap()->Release();
     DescriptorHeaps::GetCBVHeap()->Release();
+
+    for (int i = 0; i < CASCADES_COUNT; i++)
+    {
+        m_CascadedShadowMap.GetShadowMap(i)->Resource()->Release();
+    }
 }
 
 bool BianGame::LoadContent()
@@ -23,20 +30,17 @@ bool BianGame::LoadContent()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
+    ShaderResourceBuffers::Create();
     DescriptorHeaps::OnInit(device);
-
-    // SHADOWS
-    m_ShadowMap = make_unique<ShadowMap>(device, 2048, 2048);
-    m_SceneBounds.Center = Vector3(0, 0, 0);
-    //float a = 75;
-    float a = 75;
-    m_SceneBounds.Radius = sqrtf(a * a * 2);
 
     // 3D SCENE
     katamari.OnLoad(commandList);
     lights.Init(&(katamari.player));
     m_Camera.OnLoad(&(katamari.player));
     m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
+
+    // SHADOWS
+    m_CascadedShadowMap.Create();
 
     // PIPELINE STATES
     m_Pipeline.Initialize(device);
@@ -62,17 +66,14 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     katamari.OnUpdate(e.ElapsedTime);
 
     lights.OnUpdate(e.ElapsedTime);
-    lights.m_SpecularProperties.CameraPos = m_Camera.Position;
+    ShaderResourceBuffers::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
 
     static float counter = 0;
     if (counter >= 2 * PI) counter = 0;
-
-    lights.m_DirectionalLight.Direction = Vector3(cos(counter), -1, sin(counter));
-
+    ShaderResourceBuffers::GetWorldCB()->DirLight.Direction = Vector4(cos(counter), -0.5, sin(counter), 1);
     counter += PI / 4 * e.ElapsedTime;
 
-    UpdateShadowTransform();
-    UpdateShadowPassCB();
+    m_CascadedShadowMap.Update(katamari.player.prince.Position, ShaderResourceBuffers::GetWorldCB()->DirLight.Direction);
 }
 
 // Transition a resource
@@ -107,51 +108,12 @@ void BianGame::AddDebugObjects()
     commandQueue->WaitForFenceValue(fenceValue);
 }
 
-void BianGame::UpdateShadowTransform()
-{
-    lights.m_DirectionalLight.Direction.Normalize();
-
-    mLightPosW = -2.0f * m_SceneBounds.Radius * lights.m_DirectionalLight.Direction;
-    Vector3 targetPos = Vector3(m_SceneBounds.Center);
-    mLightView = XMMatrixLookAtLH(mLightPosW, targetPos, Vector3(0.0f, 1.0f, 0.0f));
-
-    // Transform bounding sphere to light space.
-    Vector3 sphereCenterLS = XMVector3TransformCoord(targetPos, mLightView);
-
-    // Ortho frustum in light space encloses scene.
-    float l = sphereCenterLS.x - m_SceneBounds.Radius;
-    float b = sphereCenterLS.y - m_SceneBounds.Radius;
-    float n = sphereCenterLS.z - m_SceneBounds.Radius;
-    float r = sphereCenterLS.x + m_SceneBounds.Radius;
-    float t = sphereCenterLS.y + m_SceneBounds.Radius;
-    float f = sphereCenterLS.z + m_SceneBounds.Radius;
-
-    mLightProj = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
-
-    mShadowTransform = XMMatrixMultiply(mLightView, mLightProj);
-    
-    BaseObject::SetSMMatrix(mShadowTransform);
-}
-
-void BianGame::UpdateShadowPassCB()
-{
-    Matrix viewProj = mLightView * mLightProj;
-    XMVECTOR detView = XMMatrixDeterminant(mLightView);
-    Matrix invView = XMMatrixInverse(&detView, mLightView);
-    XMVECTOR detProj = XMMatrixDeterminant(mLightProj);
-    Matrix invProj = XMMatrixInverse(&detProj, mLightProj);
-    XMVECTOR detViewProj = XMMatrixDeterminant(viewProj);
-    Matrix invViewProj = XMMatrixInverse(&detViewProj, viewProj);
-
-    UINT w = m_ShadowMap->Width();
-    UINT h = m_ShadowMap->Height();
-}
-
 template<typename T>
 void BianGame::SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const vector<T>& bufferData)
 {
     size_t bufferSize = bufferData.size() * sizeof(T);
-    auto heapAllocation = m_UploadBuffer->Allocate(bufferSize, sizeof(T));
+    size_t size = sizeof(T);
+    auto heapAllocation = ShaderResourceBuffers::GetUploadBuffer()->Allocate(bufferSize, size);
     memcpy(heapAllocation.CPU, bufferData.data(), bufferSize);
     commandList->SetGraphicsRootShaderResourceView(slot, heapAllocation.GPU);
 }
@@ -165,29 +127,34 @@ void BianGame::SetGraphicsConstants(ComPtr<ID3D12GraphicsCommandList2> commandLi
 
 void BianGame::DrawSceneToShadowMap()
 {
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+    for (int i = 0; i < CASCADES_COUNT; i++)
+    {
+        shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+        ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-    auto vp = m_ShadowMap->Viewport();
-    auto sr = m_ShadowMap->ScissorRect();
+        ShadowMap* shadowMap = m_CascadedShadowMap.GetShadowMap(i);
 
-    commandList->RSSetViewports(1, &vp);
-    commandList->RSSetScissorRects(1, &sr);
-    TransitionResource(commandList, m_ShadowMap->Resource(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+        D3D12_VIEWPORT viewport = shadowMap->Viewport();
+        D3D12_RECT rect = shadowMap->ScissorRect();
 
-    m_ShadowMapPipeline.Set(commandList);
+        commandList->RSSetViewports(1, &viewport);
+        commandList->RSSetScissorRects(1, &rect);
+        TransitionResource(commandList, shadowMap->Resource(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
-    commandList->ClearDepthStencilView(m_ShadowMap->Dsv(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+        m_ShadowMapPipeline.Set(commandList);
 
-    auto dsv = m_ShadowMap->Dsv();
-    commandList->OMSetRenderTargets(0, nullptr, false, &dsv);
+        commandList->ClearDepthStencilView(shadowMap->Dsv(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-    katamari.OnRender(commandList, mShadowTransform, true);
+        auto dsv = shadowMap->Dsv();
+        commandList->OMSetRenderTargets(0, nullptr, false, &dsv);
 
-    TransitionResource(commandList, m_ShadowMap->Resource(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+        katamari.OnRender(commandList, m_CascadedShadowMap.GetShadowViewProj(i), true);
 
-    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);
+        TransitionResource(commandList, shadowMap->Resource(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+        uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+        commandQueue->WaitForFenceValue(fenceValue);
+    }
 }
 
 void BianGame::OnRender(RenderEventArgs& e)
@@ -208,7 +175,7 @@ void BianGame::OnRender(RenderEventArgs& e)
     UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
     auto backBuffer = m_pWindow->GetCurrentBackBuffer();
     auto rtv = m_pWindow->GetCurrentRenderTargetView();
-    auto dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1);
+    auto dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
 
     // Clear the render targets.
     {
@@ -226,22 +193,18 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     m_Pipeline.Set(commandList);
 
+    ShaderResourceBuffers::SetGraphicsWorldCB(commandList, 1);
+
+    SetGraphicsDynamicStructuredBuffer(commandList, 2, lights.m_PointLights);
+    SetGraphicsDynamicStructuredBuffer(commandList, 3, lights.m_SpotLights);
+
     commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
 
-    SetGraphicsConstants(commandList, 2, lights.m_AmbientLight);
-    SetGraphicsConstants(commandList, 3, lights.m_DirectionalLight);
-    //SetGraphicsConstants(commandList, 4, lights.m_LightProperties);
-    //SetGraphicsDynamicStructuredBuffer(commandList, 5, lights.m_PointLights);
-    //SetGraphicsDynamicStructuredBuffer(commandList, 6, lights.m_SpotLights);
-    //SetGraphicsConstants(commandList, 7, lights.m_SpecularProperties);
-
-    commandList->SetGraphicsRootDescriptorTable(4, DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 0));
-
-    //commandList->SetGraphicsRoot32BitConstants(9, sizeof(XMMATRIX) / 4, &mShadowTransform, 0);
+    m_CascadedShadowMap.SetGraphicsRootDescriptorTables(5, commandList);
 
     katamari.OnRender(commandList, m_Camera.GetViewProjMatrix());
 
-    debug.Draw(commandList);
+    //debug.Draw(commandList);
 
     // Present
     {
@@ -280,7 +243,7 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
         shouldAddDebugObjects = true;
         break;
     case KeyCode::Z:
-        BaseObject::DebugMatrix();
+        BaseObject::DebugMatrices();
         break;
     }    
 }
