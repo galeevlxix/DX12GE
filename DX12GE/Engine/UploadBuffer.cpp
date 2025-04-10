@@ -9,7 +9,6 @@ UploadBuffer::UploadBuffer(size_t pageSize)
 
 UploadBuffer::~UploadBuffer()
 {
-    
 }
 
 UploadBuffer::Allocation UploadBuffer::Allocate(size_t sizeInBytes, size_t alignment)

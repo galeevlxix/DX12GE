@@ -6,14 +6,15 @@ void CascadedShadowMap::Create()
 {
 	ComPtr<ID3D12Device2> device = Application::Get().GetDevice();
 
-	const float splits[CASCADES_COUNT] = { 0.1f, 0.4f, 1.0f };
+	const float splits[CASCADES_COUNT] = { 0.15f, 0.3f, 0.6f, 1.0f };
 	//const float splits[CASCADES_COUNT] = { 0.27f, 0.6f, 1.0f };
 
 	LPCWSTR names[] =
 	{
 		L"Shadow Map 0",
 		L"Shadow Map 1",
-		L"Shadow Map 2"
+		L"Shadow Map 2",
+		L"Shadow Map 3"
 	};
 
 	for (int i = 0; i < CASCADES_COUNT; i++)
@@ -50,7 +51,7 @@ void CascadedShadowMap::Update(Vector3 centerPosition, Vector4 dirLightDirection
 
 void CascadedShadowMap::SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	// 5..7
+	// 5..8
 	for (int i = 0; i < CASCADES_COUNT; i++)
 	{
 		commandList->SetGraphicsRootDescriptorTable(

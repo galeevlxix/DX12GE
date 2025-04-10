@@ -10,18 +10,20 @@ BianGame::BianGame(const wstring& name, int width, int height, bool vSync) : sup
     , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
     , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)))
 {
-    //m_UploadBuffer = make_unique<UploadBuffer>();
 }
 
 BianGame::~BianGame()
 {
     DescriptorHeaps::GetDSVHeap()->Release();
     DescriptorHeaps::GetCBVHeap()->Release();
+    //comptr на статический объект
 
+    /*
     for (int i = 0; i < CASCADES_COUNT; i++)
     {
         m_CascadedShadowMap.GetShadowMap(i)->Resource()->Release();
     }
+    */
 }
 
 bool BianGame::LoadContent()
@@ -73,7 +75,7 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     ShaderResourceBuffers::GetWorldCB()->DirLight.Direction = Vector4(cos(counter), -0.5, sin(counter), 1);
     counter += PI / 4 * e.ElapsedTime;
 
-    m_CascadedShadowMap.Update(katamari.player.prince.Position, ShaderResourceBuffers::GetWorldCB()->DirLight.Direction);
+    m_CascadedShadowMap.Update(m_Camera.Position, ShaderResourceBuffers::GetWorldCB()->DirLight.Direction);
 }
 
 // Transition a resource

@@ -6,6 +6,7 @@ struct PixelShaderInput
     float4 ShadowPos0 : POSITION0;
     float4 ShadowPos1 : POSITION1;
     float4 ShadowPos2 : POSITION2;
+    float4 ShadowPos3 : POSITION3;
     float4 WorldPos : POSITION4;
 };
 
@@ -67,9 +68,13 @@ Texture2D DiffuseTextureSB : register(t2);
 Texture2D ShadowMapSB0 : register(t3);
 Texture2D ShadowMapSB1 : register(t4);
 Texture2D ShadowMapSB2 : register(t5);
+Texture2D ShadowMapSB3 : register(t6);
 
 SamplerState StaticSampler : register(s0);
 SamplerState ShadowSampler : register(s1);
+
+// 0.15f, 0.3f, 0.6f, 1.0f
+static float splitDistances[3] = { 37.5, 75, 140 };
 
 float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
 {
@@ -110,6 +115,34 @@ float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
     
     return shadow / 9.0f;
 };
+
+float CalcShadowCascade(PixelShaderInput IN)
+{
+    float Distance = length(IN.WorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
+    
+    if (Distance < splitDistances[0])
+        return CalcShadowFactor(IN.ShadowPos0, ShadowMapSB0);
+    else if (Distance < splitDistances[1])
+        return CalcShadowFactor(IN.ShadowPos1, ShadowMapSB1);
+    else if (Distance < splitDistances[2])
+        return CalcShadowFactor(IN.ShadowPos2, ShadowMapSB2);
+    else
+        return CalcShadowFactor(IN.ShadowPos3, ShadowMapSB3);
+}
+
+float4 DebugShadowCascade(float3 WorldPos)
+{
+    float Distance = length(WorldPos - LightPropertiesCB.CameraPos.xyz);
+    
+    if (Distance < splitDistances[0])
+        return float4(1.5f, 1, 1, 1);
+    else if (Distance < splitDistances[1])
+        return float4(1, 1.5f, 1, 1);
+    else if (Distance < splitDistances[2])
+        return float4(1, 1, 1.5f, 1);
+    else
+        return float4(1, 1.5f, 1.5f, 1);
+}
 
 float4 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, float3 Normal, float3 WorldPos)
 {
@@ -175,27 +208,15 @@ float4 main(PixelShaderInput IN) : SV_Target
     
     float4 AmbientColor = float4(AmbientLightCB.Color, 1.0) * AmbientLightCB.Intensity;
     
-    float shadowFactor = 0.0;
-    float Distance = length(IN.WorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
     
-    //int s = LightPropertiesCB.PointLightsCount + LightPropertiesCB.SpotLightsCount;
-    
-    if (Distance < 20)
-        shadowFactor = CalcShadowFactor(IN.ShadowPos0, ShadowMapSB0);
-    else if (Distance < 40)
-        shadowFactor = CalcShadowFactor(IN.ShadowPos1, ShadowMapSB1);
-    else 
-        shadowFactor = CalcShadowFactor(IN.ShadowPos2, ShadowMapSB2);
-    
-    
-    float4 DirectionalColor = 
+    float4 DirectionalColor =
         CalcLightInternal(
-            DirectionalLightCB.Color, 
-            DirectionalLightCB.Intensity, 
+            DirectionalLightCB.Color,
+            DirectionalLightCB.Intensity,
             normalize(DirectionalLightCB.Direction.xyz),
-            IN.Normal.xyz, 
-            IN.WorldPos.xyz) 
-        * shadowFactor;
+            IN.Normal.xyz,
+            IN.WorldPos.xyz)
+        * CalcShadowCascade(IN);// * DebugShadowCascade(IN.WorldPos.xyz);
     
     float3 ResultLightIntensity = AmbientColor + DirectionalColor;  
     

@@ -138,6 +138,9 @@
     <ClCompile Include="Engine\ShaderResources.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\CacheHeap.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\d3dx12.h">
@@ -237,6 +240,9 @@
       <Filter>Файлы заголовков\Engine\Shadows</Filter>
     </ClInclude>
     <ClInclude Include="Engine\ShaderResources.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CacheHeap.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>

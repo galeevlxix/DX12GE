@@ -63,7 +63,7 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
         }
 
         ShaderResourceBuffers::SetGraphicsObjectCB(commandList, 0);
-        ShaderResourceBuffers::SetGraphicsShadowCB(commandList, 8);
+        ShaderResourceBuffers::SetGraphicsShadowCB(commandList, 9);
     }
     else
     {

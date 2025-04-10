@@ -134,6 +134,7 @@
     <ClCompile Include="DX12GE.cpp" />
     <ClCompile Include="Engine\Application.cpp" />
     <ClCompile Include="Engine\AssimpModelLoader.cpp" />
+    <ClCompile Include="Engine\CacheHeap.cpp" />
     <ClCompile Include="Engine\CommandQueue.cpp" />
     <ClCompile Include="Engine\DebugSystem\DebugRenderSystem.cpp" />
     <ClCompile Include="Engine\DebugSystem\SimplePipeline.cpp" />
@@ -163,6 +164,7 @@
   <ItemGroup>
     <ClInclude Include="Engine\Application.h" />
     <ClInclude Include="Engine\AssimpModelLoader.h" />
+    <ClInclude Include="Engine\CacheHeap.h" />
     <ClInclude Include="Engine\CommandQueue.h" />
     <ClInclude Include="Engine\d3dx12.h" />
     <ClInclude Include="Engine\DebugSystem\DebugRenderSystem.h" />

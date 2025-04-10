@@ -7,7 +7,7 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-const int CASCADES_COUNT = 3;
+const int CASCADES_COUNT = 4;
 
 // LIGHTS
 
@@ -81,6 +81,7 @@ public:
 	static ShadowConstantBuffer* GetShadowCB();
 	static WorldConstantBuffer* GetWorldCB();
 	static UploadBuffer* GetUploadBuffer();
+	static void OnDelete();
 
 	static void SetGraphicsObjectCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetGraphicsShadowCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
