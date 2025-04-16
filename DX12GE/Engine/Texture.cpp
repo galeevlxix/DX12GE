@@ -3,6 +3,8 @@
 #include <DirectXTex.h>
 #include "DescriptorHeaps.h"
 #include "ShaderResources.h"
+#include "GBuffer.h"
+#include "../Game/BaseObject.h"
 
 using namespace DirectX;
 
@@ -108,7 +110,7 @@ void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
 {
     auto device = Application::Get().GetDevice();
 
-    static int index = CASCADES_COUNT;
+    static int index = CASCADES_COUNT + GBuffer::GBUFFER_COUNT;
     m_SRVHeapIndex = index;
     index++;
 
@@ -123,8 +125,9 @@ void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
 
 void Texture::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
+    int slot = BaseObject::GetGeometryPass() ? 1 : 4;
     commandList->SetGraphicsRootDescriptorTable(
-        4, 
+        slot,
         DescriptorHeaps::GetGPUHandle(
             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 
             m_SRVHeapIndex)

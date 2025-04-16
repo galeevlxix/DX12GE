@@ -7,9 +7,8 @@ void CascadedShadowMap::Create()
 	ComPtr<ID3D12Device2> device = Application::Get().GetDevice();
 
 	const float splits[CASCADES_COUNT] = { 0.15f, 0.3f, 0.6f, 1.0f };
-	//const float splits[CASCADES_COUNT] = { 0.27f, 0.6f, 1.0f };
 
-	LPCWSTR names[] =
+	LPCWSTR names[] =	//for debug
 	{
 		L"Shadow Map 0",
 		L"Shadow Map 1",

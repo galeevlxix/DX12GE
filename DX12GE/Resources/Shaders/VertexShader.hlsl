@@ -12,14 +12,14 @@ cbuffer SCB : register(b1)
     matrix ShadowMapTransform3;
 };
 
-struct VertexPosColor
+struct VSInput
 {
     float3 Position     : POSITION;
     float3 Normal       : NORMAL;
     float2 TextCoord    : TEXCOORD;
 };
 
-struct VertexShaderOutput
+struct VSOutput
 {
     float4 Position     : SV_Position;
     float4 Normal       : NORMAL;
@@ -31,9 +31,9 @@ struct VertexShaderOutput
     float4 WorldPos     : POSITION4;
 };
 
-VertexShaderOutput main(VertexPosColor IN)
+VSOutput main(VSInput IN)
 {
-    VertexShaderOutput OUT;
+    VSOutput OUT;
 
     OUT.Position = mul(MVP, float4(IN.Position, 1.0f));
     OUT.Normal = normalize(mul(WVP, float4(IN.Normal, 0.0f)));

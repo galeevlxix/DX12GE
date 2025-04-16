@@ -143,9 +143,12 @@
     <ClCompile Include="Engine\DescriptorHeaps.cpp" />
     <ClCompile Include="Engine\DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Game.cpp" />
+    <ClCompile Include="Engine\GBuffer.cpp" />
+    <ClCompile Include="Engine\GeometryPassPipeline.cpp" />
     <ClCompile Include="Engine\HighResolutionClock.cpp" />
     <ClCompile Include="Engine\Material.cpp" />
     <ClCompile Include="Engine\Pipeline.cpp" />
+    <ClCompile Include="Engine\RenderingSystem.cpp" />
     <ClCompile Include="Engine\ShaderResources.cpp" />
     <ClCompile Include="Engine\Shadows\CascadedShadowMap.cpp" />
     <ClCompile Include="Engine\Shadows\ShadowMap.cpp" />
@@ -175,11 +178,14 @@
     <ClInclude Include="Engine\DX12LibPCH.h" />
     <ClInclude Include="Engine\Events.h" />
     <ClInclude Include="Engine\Game.h" />
+    <ClInclude Include="Engine\GBuffer.h" />
+    <ClInclude Include="Engine\GeometryPassPipeline.h" />
     <ClInclude Include="Engine\Helpers.h" />
     <ClInclude Include="Engine\HighResolutionClock.h" />
     <ClInclude Include="Engine\KeyCodes.h" />
     <ClInclude Include="Engine\Material.h" />
     <ClInclude Include="Engine\Pipeline.h" />
+    <ClInclude Include="Engine\RenderingSystem.h" />
     <ClInclude Include="Engine\resource.h" />
     <ClInclude Include="Engine\ShaderResources.h" />
     <ClInclude Include="Engine\Shadows\CascadedShadowMap.h" />
@@ -206,6 +212,16 @@
     <Image Include="Resources\BE_ICON2.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Resources\Shaders\GeometryPassPixelShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\GeometryPassVertexShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Resources\Shaders\PixelShader.hlsl">
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
       <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>

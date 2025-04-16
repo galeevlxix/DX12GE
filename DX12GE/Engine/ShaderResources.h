@@ -3,7 +3,9 @@
 #include "DX12LibPCH.h"
 #include "SimpleMath.h"
 #include "UploadBuffer.h"
+#include <vector>
 
+using namespace std;
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
@@ -73,7 +75,7 @@ struct WorldConstantBuffer
 	LightProperties LightProps;
 };
 
-class ShaderResourceBuffers
+class ShaderResources
 {
 public:
 	static void Create();
@@ -81,9 +83,35 @@ public:
 	static ShadowConstantBuffer* GetShadowCB();
 	static WorldConstantBuffer* GetWorldCB();
 	static UploadBuffer* GetUploadBuffer();
+	
 	static void OnDelete();
 
 	static void SetGraphicsObjectCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetGraphicsShadowCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetGraphicsWorldCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 };
+
+template<typename T>
+static void SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const vector<T>& bufferData)
+{
+	size_t bufferSize = bufferData.size() * sizeof(T);
+	size_t size = sizeof(T);
+	auto heapAllocation = ShaderResources::GetUploadBuffer()->Allocate(bufferSize, size);
+	memcpy(heapAllocation.CPU, bufferData.data(), bufferSize);
+	commandList->SetGraphicsRootShaderResourceView(slot, heapAllocation.GPU);
+}
+
+// Set buffer data of floats
+template<typename T>
+static void SetGraphicsConstants(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const T& bufferData)
+{
+	UINT size = sizeof(T);
+	commandList->SetGraphicsRoot32BitConstants(slot, size / 4, &bufferData, 0);
+}
+
+// Transition a resource
+static void TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
+{
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource.Get(), beforeState, afterState);
+	commandList->ResourceBarrier(1, &barrier);
+}

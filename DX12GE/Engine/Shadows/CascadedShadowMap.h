@@ -20,14 +20,13 @@ struct Cascade
 class CascadedShadowMap
 {
 private:
+	Cascade m_Cascades[CASCADES_COUNT];
+	
 	const float maxRadius = 200.0;
 	const UINT width = 2048;
 	const UINT height = 2048;
 
-	Cascade m_Cascades[3];
-
 	void ApplyShadowTransforms();
-	
 
 public:
 	void Create();

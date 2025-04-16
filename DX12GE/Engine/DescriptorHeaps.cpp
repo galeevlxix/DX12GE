@@ -53,8 +53,10 @@ void DescriptorHeaps::OnInit(ComPtr<ID3D12Device2> device)
 	pSingle->m_incrementSize[1] = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 	pSingle->m_incrementSize[2] = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	pSingle->m_incrementSize[3] = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
 	LoadCBV(device);
 	LoadDSV(device);
+	LoadRTV(device);
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT index) 
@@ -108,6 +110,5 @@ ComPtr<ID3D12DescriptorHeap> DescriptorHeaps::GetDSVHeap() { return pSingle->m_d
 
 HandlePair DescriptorHeaps::BatchHandles(D3D12_DESCRIPTOR_HEAP_TYPE type) 
 {
-	//printf("%d %d\n", type, m_usedSize[type]);
 	return { GetCPUHandle(type, pSingle->m_usedSize[type]), GetGPUHandle(type, pSingle->m_usedSize[type]++) };
 }

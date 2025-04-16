@@ -24,7 +24,7 @@ public:
 	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 	void OnUpdate(float deltaTime);
-	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing = false);
+	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 private:
 	void CreateField(ComPtr<ID3D12GraphicsCommandList2> commandList);
 

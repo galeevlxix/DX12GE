@@ -13,9 +13,9 @@ void Player::OnUpdate(double deltaTime)
 	prince.OnUpdate(deltaTime);
 }
 
-void Player::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing)
+void Player::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
-	prince.OnRender(commandList, viewProjMatrix, ShadowMapDrawing);
+	prince.OnRender(commandList, viewProjMatrix);
 }
 
 XMMATRIX Player::GetMatrixRotationAxis(Vector3 axis, float angle)

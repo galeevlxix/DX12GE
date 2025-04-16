@@ -19,11 +19,15 @@ public:
 
     void OnUpdate();
     void OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing);
+    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
     void OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
     static void SetSMMatrices(Matrix m[]);
     static void DebugMatrices();
+    static void SetShadowPass(bool isShadowPass);
+    static bool GetShadowPass();
+    static void SetGeometryPass(bool isGeometryPass);
+    static bool GetGeometryPass();
 
     void SetDefaultState();
     void SetPosition(float x, float y, float z);
@@ -68,6 +72,8 @@ private:
 
 public:
     bool IsInitialized() { return Initialized; }
+
+    
 };
 
 template<typename T>

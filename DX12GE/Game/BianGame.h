@@ -4,10 +4,11 @@
 #include "../Engine/Window.h"
 #include "../Engine/Pipeline.h"
 #include "../Engine/DepthBuffer.h"
-#include "../Engine/UploadBuffer.h"
 #include "../Engine/DebugSystem/DebugRenderSystem.h"
 #include "../Engine/Shadows/CascadedShadowMap.h"
 #include "../Engine/Shadows/ShadowMapPipeline.h"
+#include "../Engine/GBuffer.h"
+#include "../Engine/GeometryPassPipeline.h"
 
 #include "Camera.h" 
 #include "KatamariGame.h" 
@@ -42,17 +43,9 @@ protected:
     virtual void OnResize(ResizeEventArgs& e) override;
 
 private:
-    void TransitionResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState);
-    
-    void ClearRTV(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE rtv, FLOAT* clearColor);
-
-    template<typename T>
-    void SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const vector<T>& bufferData);
-    
-    template<typename T>
-    void SetGraphicsConstants(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const T& bufferData);
-
     void AddDebugObjects();
+    void DrawSceneToShadowMaps();
+    void DrawSceneToGBuffer();
 
     uint64_t m_FenceValues[Window::BufferCount] = {};
 
@@ -63,26 +56,16 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    //unique_ptr<UploadBuffer> m_UploadBuffer;
-
     DebugRenderSystem debug;
     bool shouldAddDebugObjects = false;
 
-    KatamariGame katamari;  
+    KatamariGame katamariScene;  
 
     LightManager lights;
 
-    //unique_ptr<ShadowMap> m_ShadowMap;
-    //BoundingSphere m_SceneBounds;
-    //Vector3 mLightPosW;
-
     CascadedShadowMap m_CascadedShadowMap;
 
-    //Matrix mLightView;
-    //Matrix mLightProj;
-
-    //Matrix mShadowTransform;
-
-    void DrawSceneToShadowMap();
+    GBuffer m_GBuffer;
+    GeometryPassPipeline m_GeometryPassPipeline;
 };
 

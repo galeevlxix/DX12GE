@@ -32,14 +32,14 @@ void BianObject::OnUpdateRotMat(double deltaTime, XMMATRIX rotMat)
     }
 }
 
-void BianObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing)
+void BianObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
         if (m_Materials[m_MaterialIndices[i]].CanDrawIt())
         {
-            if (!ShadowMapDrawing) m_Materials[m_MaterialIndices[i]].Render(commandList);
-            m_Meshes[i].OnRender(commandList, viewProjMatrix, ShadowMapDrawing);
+            if (!BaseObject::GetShadowPass()) m_Materials[m_MaterialIndices[i]].Render(commandList);
+            m_Meshes[i].OnRender(commandList, viewProjMatrix);
         }        
     }
 }

@@ -13,7 +13,7 @@ static const UINT OcbSize = sizeof(ObjectConstantBuffer);
 static const UINT ScbSize = sizeof(ShadowConstantBuffer);
 static const UINT WcbSize = sizeof(WorldConstantBuffer);
 
-void ShaderResourceBuffers::Create()
+void ShaderResources::Create()
 {
 	if (!mUploadBuffer)
 	{
@@ -36,27 +36,27 @@ void ShaderResourceBuffers::Create()
 	}
 }
 
-ObjectConstantBuffer* ShaderResourceBuffers::GetObjectCB()
+ObjectConstantBuffer* ShaderResources::GetObjectCB()
 {
 	return ObjectCB;
 }
 
-ShadowConstantBuffer* ShaderResourceBuffers::GetShadowCB()
+ShadowConstantBuffer* ShaderResources::GetShadowCB()
 {
 	return ShadowCB;
 }
 
-WorldConstantBuffer* ShaderResourceBuffers::GetWorldCB()
+WorldConstantBuffer* ShaderResources::GetWorldCB()
 {
 	return WorldCB;
 }
 
-UploadBuffer* ShaderResourceBuffers::GetUploadBuffer()
+UploadBuffer* ShaderResources::GetUploadBuffer()
 {
 	return mUploadBuffer;
 }
 
-void ShaderResourceBuffers::OnDelete()
+void ShaderResources::OnDelete()
 {
 	mUploadBuffer->Reset();
 	mUploadBuffer = nullptr;
@@ -64,21 +64,21 @@ void ShaderResourceBuffers::OnDelete()
 
 // поменять на автоматическое определение размера
 
-void ShaderResourceBuffers::SetGraphicsObjectCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
+void ShaderResources::SetGraphicsObjectCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
 	OcbAllocation = mUploadBuffer->Allocate(OcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(OcbAllocation.CPU, ObjectCB, OcbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, OcbAllocation.GPU);
 }
 
-void ShaderResourceBuffers::SetGraphicsShadowCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
+void ShaderResources::SetGraphicsShadowCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
 	ScbAllocation = mUploadBuffer->Allocate(ScbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(ScbAllocation.CPU, ShadowCB, ScbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, ScbAllocation.GPU);
 }
 
-void ShaderResourceBuffers::SetGraphicsWorldCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
+void ShaderResources::SetGraphicsWorldCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
 	WcbAllocation = mUploadBuffer->Allocate(WcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(WcbAllocation.CPU, WorldCB, WcbSize);

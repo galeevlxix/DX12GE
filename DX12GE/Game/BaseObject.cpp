@@ -5,6 +5,9 @@
 Matrix BaseObjectShadowMapView[CASCADES_COUNT];
 bool debugMatrix = false;
 
+bool g_IsShadowPass = false;
+bool g_IsGeometryPass;
+
 void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
 {
     auto device = Application::Get().GetDevice();
@@ -35,7 +38,7 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
     }
 }
 
-void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, bool ShadowMapDrawing)
+void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     if (!IsInitialized()) return;
 
@@ -52,22 +55,28 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
         shadowWvps[i] = XMMatrixMultiply(m_WorldMatrix, BaseObjectShadowMapView[i]);
     }
 
-    if (!ShadowMapDrawing)
+    if (g_IsShadowPass)
     {  
-        ShaderResourceBuffers::GetObjectCB()->WorldViewProjection = m_WorldMatrix;
-        ShaderResourceBuffers::GetObjectCB()->ModelViewProjection = mvp;
-
-        for (size_t i = 0; i < CASCADES_COUNT; i++)
-        {
-            ShaderResourceBuffers::GetShadowCB()->ShadowTransforms[i] = shadowWvps[i];
-        }
-
-        ShaderResourceBuffers::SetGraphicsObjectCB(commandList, 0);
-        ShaderResourceBuffers::SetGraphicsShadowCB(commandList, 9);
+        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvp, 0);
+    }
+    else if (g_IsGeometryPass)
+    {
+        ShaderResources::GetObjectCB()->WorldViewProjection = m_WorldMatrix;
+        ShaderResources::GetObjectCB()->ModelViewProjection = mvp;
+        ShaderResources::SetGraphicsObjectCB(commandList, 0);
     }
     else
     {
-        commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvp, 0);
+        ShaderResources::GetObjectCB()->WorldViewProjection = m_WorldMatrix;
+        ShaderResources::GetObjectCB()->ModelViewProjection = mvp;
+
+        for (size_t i = 0; i < CASCADES_COUNT; i++)
+        {
+            ShaderResources::GetShadowCB()->ShadowTransforms[i] = shadowWvps[i];
+        }
+
+        ShaderResources::SetGraphicsObjectCB(commandList, 0);
+        ShaderResources::SetGraphicsShadowCB(commandList, 9);
     }    
     
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
@@ -98,6 +107,26 @@ void BaseObject::SetSMMatrices(Matrix m[])
 void BaseObject::DebugMatrices()
 {
     debugMatrix = true;
+}
+
+void BaseObject::SetShadowPass(bool isShadowPass)
+{
+    g_IsShadowPass = isShadowPass;
+}
+
+bool BaseObject::GetShadowPass()
+{
+    return g_IsShadowPass;
+}
+
+void BaseObject::SetGeometryPass(bool isGeometryPass)
+{
+    g_IsGeometryPass = isGeometryPass;
+}
+
+bool BaseObject::GetGeometryPass()
+{
+    return g_IsGeometryPass;
 }
 
 void BaseObject::Release()

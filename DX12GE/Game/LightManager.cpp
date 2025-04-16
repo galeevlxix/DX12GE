@@ -17,16 +17,16 @@ void LightManager::Init(Player* player)
 	m_player = player;
 
 	// AmbientLight
-	ShaderResourceBuffers::GetWorldCB()->AmbientLight.Color = COLOR_WHITE;
-	ShaderResourceBuffers::GetWorldCB()->AmbientLight.Intensity = 0.2;
+	ShaderResources::GetWorldCB()->AmbientLight.Color = COLOR_WHITE;
+	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.2;
 
 	// DirectionalLight
-	ShaderResourceBuffers::GetWorldCB()->DirLight.BaseLightComponent.Color = COLOR_WHITE;
-	ShaderResourceBuffers::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.5;
-	ShaderResourceBuffers::GetWorldCB()->DirLight.Direction = Vector4(1, -1, -1, 1);
+	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Color = COLOR_WHITE;
+	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.5;
+	ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(1, -1, -1, 1);
 
-	ShaderResourceBuffers::GetWorldCB()->LightProps.PointLightsCount = 14;
-	ShaderResourceBuffers::GetWorldCB()->LightProps.SpotlightsCount = 2;
+	ShaderResources::GetWorldCB()->LightProps.PointLightsCount = 14;
+	ShaderResources::GetWorldCB()->LightProps.SpotlightsCount = 2;
 
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
@@ -89,8 +89,8 @@ void LightManager::Init(Player* player)
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 	}
 
-	ShaderResourceBuffers::GetWorldCB()->LightProps.SpecularIntensity = 0.3f;
-	ShaderResourceBuffers::GetWorldCB()->LightProps.MaterialPower = 128.0;
+	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 0.3f;
+	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 128.0;
 }
 
 void LightManager::OnUpdate(float deltaTime)
