@@ -65,8 +65,17 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
         ShaderResources::GetObjectCB()->WorldViewProjection = m_WorldMatrix;
         ShaderResources::GetObjectCB()->ModelViewProjection = mvp;
         ShaderResources::SetGraphicsObjectCB(commandList, 0);
+
+        for (size_t i = 0; i < CASCADES_COUNT; i++)
+        {
+            ShaderResources::GetShadowCB()->ShadowTransforms[i] = BaseObjectShadowMapView[i];
+        }
     }
-    else if (g_IsLightPass) { }
+    else if (g_IsLightPass) 
+    {
+        
+        ShaderResources::SetGraphicsShadowCB(commandList, 1);
+    }
     else
     {
         ShaderResources::GetObjectCB()->WorldViewProjection = m_WorldMatrix;

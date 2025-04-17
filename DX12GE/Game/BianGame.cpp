@@ -197,17 +197,21 @@ void BianGame::LightPassRender(RenderEventArgs& e)
 
     ShaderResources::SetGraphicsWorldCB(commandList, 0);
 
+    ShaderResources::SetGraphicsShadowCB(commandList, 6);
+
     SetGraphicsDynamicStructuredBuffer(commandList, 4, lights.m_PointLights);
     SetGraphicsDynamicStructuredBuffer(commandList, 5, lights.m_SpotLights);
 
     commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
     m_GBuffer.SetGraphicsRootDescriptorTables(1, commandList);
 
+    m_CascadedShadowMap.SetGraphicsRootDescriptorTables(7, commandList);
+
     // Нет вершинных буферов — используем fullscreen triangle
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0); // один треугольник
 
-    //debug.Draw(commandList);
+    debug.Draw(commandList);
 
     // Present
     {
@@ -240,6 +244,8 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
 void BianGame::OnRender(RenderEventArgs& e)
 {
     super::OnRender(e);
+
+    DrawSceneToShadowMaps();
 
     DrawSceneToGBuffer();
 

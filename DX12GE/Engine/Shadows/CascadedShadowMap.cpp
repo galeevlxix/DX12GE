@@ -50,7 +50,6 @@ void CascadedShadowMap::Update(Vector3 centerPosition, Vector4 dirLightDirection
 
 void CascadedShadowMap::SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	// 5..8
 	for (int i = 0; i < CASCADES_COUNT; i++)
 	{
 		commandList->SetGraphicsRootDescriptorTable(

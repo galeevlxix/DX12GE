@@ -52,7 +52,7 @@ void LightPassPipeline::CreateRootSignatureFlags()
 
 void LightPassPipeline::CreateRootSignatureBlob()
 {
-    CD3DX12_ROOT_PARAMETER1 rootParameters[6];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[11];
 
     rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //worldConst
 
@@ -68,7 +68,21 @@ void LightPassPipeline::CreateRootSignatureBlob()
     rootParameters[4].InitAsShaderResourceView(3, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //pointLights
     rootParameters[5].InitAsShaderResourceView(4, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //spotLights
 
-    const CD3DX12_STATIC_SAMPLER_DESC samplers[1] =
+    rootParameters[6].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //shadowConst
+
+    const CD3DX12_DESCRIPTOR_RANGE1 smDescTable1(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5);
+    rootParameters[7].InitAsDescriptorTable(1, &smDescTable1, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_DESCRIPTOR_RANGE1 smDescTable2(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 6);
+    rootParameters[8].InitAsDescriptorTable(1, &smDescTable2, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_DESCRIPTOR_RANGE1 smDescTable3(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 7);
+    rootParameters[9].InitAsDescriptorTable(1, &smDescTable3, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_DESCRIPTOR_RANGE1 smDescTable4(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 8);
+    rootParameters[10].InitAsDescriptorTable(1, &smDescTable4, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_STATIC_SAMPLER_DESC samplers[2] =
     {
         // textureSampler
         CD3DX12_STATIC_SAMPLER_DESC(
@@ -82,9 +96,21 @@ void LightPassPipeline::CreateRootSignatureBlob()
         D3D12_COMPARISON_FUNC_EQUAL,
         D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE
         ),
+
+        // shadowSampler
+        CD3DX12_STATIC_SAMPLER_DESC(
+        1,
+        D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT, // filter
+        D3D12_TEXTURE_ADDRESS_MODE_BORDER,  // addressU
+        D3D12_TEXTURE_ADDRESS_MODE_BORDER,  // addressV
+        D3D12_TEXTURE_ADDRESS_MODE_BORDER,  // addressW
+        0.0f,                               // mipLODBias
+        16,                                 // maxAnisotropy
+        D3D12_COMPARISON_FUNC_LESS_EQUAL,
+        D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK)
     };
 
-    m_RootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1, samplers, m_RootSignatureFlags);
+    m_RootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 2, samplers, m_RootSignatureFlags);
 
     ComPtr<ID3DBlob> errorBlob;
     ThrowIfFailed(
