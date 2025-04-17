@@ -31,5 +31,6 @@ VSOutput main(uint id : SV_VertexID)
          |  \
          |   \
 (-1,-1)+------+(3,-1)  --> X
+
 fullscreentriangle (покрывает весьэкран)
 */

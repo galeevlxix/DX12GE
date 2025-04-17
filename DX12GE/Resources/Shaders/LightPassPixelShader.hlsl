@@ -34,6 +34,7 @@ struct PointLight
     float AttenuationConstant;
     float AttenuationLinear;
     float AttenuationExp;
+    float MaxRadius;
 };
 
 struct SpotLight
@@ -205,17 +206,57 @@ float4 CalcSpotLight(SpotLight sLight, float3 normal, float3 worldPos)
     return float4(0, 0, 0, 0);
 }
 
+bool More(float2 v1, float2 v2)
+{
+    return v1.x > v2.x && v1.y > v2.y;
+
+}
+
 float4 main(PSInput input) : SV_Target
 {
     float2 uv = input.TexCoord;
-
-    float4 wpTexel = gPosition.Sample(gSampler, uv);
-    if (wpTexel.a == 0.0)
-        discard;
-    float3 worldPos = wpTexel.xyz;
     
+    float4 wpTexel = gPosition.Sample(gSampler, uv);
+    float3 worldPos = wpTexel.xyz;
     float3 normal = normalize(gNormal.Sample(gSampler, uv).xyz);
     float3 albedo = gDiffuse.Sample(gSampler, uv).rgb;
+    
+    /*
+    
+    -y
+    |
+    |
+    |
+    |
+    ---------->x
+    
+    */
+    
+    
+    float2 wp_start = float2(0.0, -0.25);
+    float2 wp_end = float2(0.25, 0);
+    
+    float2 norm_start = float2(0.0, -0.55);
+    float2 norm_end = float2(0.25, -0.3);
+    
+    float2 albedo_start = float2(0.0, -0.85);
+    float2 albedo_end = float2(0.25, -0.6);
+    
+    if (More(uv, wp_start) && More(wp_end, uv))
+    {
+        return gPosition.Sample(gSampler, uv * 4);
+    }
+    else if (More(uv, norm_start) && More(norm_end, uv))
+    {
+        return gNormal.Sample(gSampler, (uv - norm_start) * 4);
+    }
+    else if (More(uv, albedo_start) && More(albedo_end, uv))
+    {
+        return gDiffuse.Sample(gSampler, (uv - albedo_start) * 4);
+    }
+    
+    if (wpTexel.a == 0.0)
+        discard;
 
     // Ambient
     float3 ambient = AmbientLightCB.Color * AmbientLightCB.Intensity;
@@ -229,12 +270,15 @@ float4 main(PSInput input) : SV_Target
             normal,
             worldPos);
 
-    float3 result = ambient + diffuse * CalcShadowCascade(worldPos);// * DebugShadowCascade(worldPos).xyz;
+    float3 result = ambient + diffuse * CalcShadowCascade(worldPos); // * DebugShadowCascade(worldPos).xyz;
     
     for (int i = 0; i < LightPropertiesCB.PointLightsCount; i++)
     {
-        result += CalcPointLight(PointLightsSB[i], normal, worldPos);
-    }
+        if (length(worldPos - PointLightsSB[i].Position) < PointLightsSB[i].MaxRadius)
+        {
+            result += CalcPointLight(PointLightsSB[i], normal, worldPos);
+        }
+    }   
     
     for (int i = 0; i < LightPropertiesCB.SpotLightsCount; i++)
     {

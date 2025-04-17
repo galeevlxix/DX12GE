@@ -18,15 +18,15 @@ void LightManager::Init(Player* player)
 
 	// AmbientLight
 	ShaderResources::GetWorldCB()->AmbientLight.Color = COLOR_WHITE;
-	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.2;
+	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.1;
 
 	// Specular
 	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 0.3f;
-	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 128.0;
+	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 64;
 
 	// DirectionalLight
 	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Color = COLOR_WHITE;
-	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.5;
+	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.3;
 	ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(1, -1, -1, 1);
 
 	ShaderResources::GetWorldCB()->LightProps.PointLightsCount = 14;
@@ -95,7 +95,18 @@ void LightManager::Init(Player* player)
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 	}
 
-	
+	for (size_t i = 0; i < m_PointLights.size(); i++)
+	{
+		auto pLight = m_PointLights[i];
+		pLight.BaseLightComponent.Color.Normalize();
+		auto col = max({ pLight.BaseLightComponent.Color.x, pLight.BaseLightComponent.Color.y, pLight.BaseLightComponent.Color.z });
+		float a = pLight.AttenuationComponent.Exp;
+		float b = pLight.AttenuationComponent.Linear;
+		float c = pLight.AttenuationComponent.Constant - col * pLight.BaseLightComponent.Intensity * 128;
+		float desc = b * b - 4 * a * c;
+		float rad = (-b + sqrtf(desc)) / (2 * a);
+		m_PointLights[i].MaxRadius = rad;
+	}
 }
 
 void LightManager::OnUpdate(float deltaTime)

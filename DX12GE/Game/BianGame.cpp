@@ -53,7 +53,7 @@ bool BianGame::LoadContent()
         auto col = max({ pLight.BaseLightComponent.Color.x, pLight.BaseLightComponent.Color.y, pLight.BaseLightComponent.Color.z });
         float a = pLight.AttenuationComponent.Exp;
         float b = pLight.AttenuationComponent.Linear;
-        float c = pLight.AttenuationComponent.Constant - col * pLight.BaseLightComponent.Intensity * 256;
+        float c = pLight.AttenuationComponent.Constant - col * pLight.BaseLightComponent.Intensity * 64;
         float desc = b * b - 4 * a * c;
         float rad = (-b + sqrtf(desc)) / (2 * a);
         debug.DrawSphere(rad, Color(pLight.BaseLightComponent.Color), Matrix::CreateTranslation(pLight.Position), 24);
@@ -72,7 +72,7 @@ bool BianGame::LoadContent()
 
         float a = sLight.PointLightComponent.AttenuationComponent.Exp;
         float b = sLight.PointLightComponent.AttenuationComponent.Linear;
-        float c = sLight.PointLightComponent.AttenuationComponent.Constant - col * sLight.PointLightComponent.BaseLightComponent.Intensity * 256;
+        float c = sLight.PointLightComponent.AttenuationComponent.Constant - col * sLight.PointLightComponent.BaseLightComponent.Intensity * 64;
         float desc = b * b - 4 * a * c;
         float rad = (-b + sqrtf(desc)) / (2 * a);
 
