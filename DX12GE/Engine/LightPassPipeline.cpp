@@ -52,7 +52,7 @@ void LightPassPipeline::CreateRootSignatureFlags()
 
 void LightPassPipeline::CreateRootSignatureBlob()
 {
-    CD3DX12_ROOT_PARAMETER1 rootParameters[4];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[6];
 
     rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //worldConst
 
@@ -64,6 +64,9 @@ void LightPassPipeline::CreateRootSignatureBlob()
 
     const CD3DX12_DESCRIPTOR_RANGE1 diffTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
     rootParameters[3].InitAsDescriptorTable(1, &diffTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    rootParameters[4].InitAsShaderResourceView(3, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //pointLights
+    rootParameters[5].InitAsShaderResourceView(4, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //spotLights
 
     const CD3DX12_STATIC_SAMPLER_DESC samplers[1] =
     {

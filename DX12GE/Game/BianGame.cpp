@@ -197,6 +197,9 @@ void BianGame::LightPassRender(RenderEventArgs& e)
 
     ShaderResources::SetGraphicsWorldCB(commandList, 0);
 
+    SetGraphicsDynamicStructuredBuffer(commandList, 4, lights.m_PointLights);
+    SetGraphicsDynamicStructuredBuffer(commandList, 5, lights.m_SpotLights);
+
     commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
     m_GBuffer.SetGraphicsRootDescriptorTables(1, commandList);
 
