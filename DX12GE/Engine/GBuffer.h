@@ -33,6 +33,7 @@ public:
 
 	void SetToWriteAndClear(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 private:
 	UINT m_Width = 0;

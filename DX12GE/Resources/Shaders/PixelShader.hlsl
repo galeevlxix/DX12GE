@@ -1,13 +1,13 @@
 struct PixelShaderInput
 {
-    float4 Position : SV_Position;
-    float4 Normal : NORMAL;
-    float2 TextCoord : TEXCOORD;
-    float4 ShadowPos0 : POSITION0;
-    float4 ShadowPos1 : POSITION1;
-    float4 ShadowPos2 : POSITION2;
-    float4 ShadowPos3 : POSITION3;
-    float4 WorldPos : POSITION4;
+    float4 Position     : SV_Position;
+    float4 Normal       : NORMAL;
+    float2 TextCoord    : TEXCOORD;
+    float4 ShadowPos0   : POSITION0;
+    float4 ShadowPos1   : POSITION1;
+    float4 ShadowPos2   : POSITION2;
+    float4 ShadowPos3   : POSITION3;
+    float4 WorldPos     : POSITION4;
 };
 
 struct AmbientLight
@@ -154,14 +154,14 @@ float4 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, 
     
     if (DiffuseFactor > 0)
     {
-        DiffuseColor = float4(Color, 1.0) * Intensity * DiffuseFactor;
+        DiffuseColor = float4(normalize(Color), 1.0) * Intensity * DiffuseFactor;
         float3 VertexToEye = normalize(LightPropertiesCB.CameraPos.xyz - WorldPos);
         float3 LightReflect = normalize(reflect(pLightDirection, Normal));
         float SpecularFactor = dot(VertexToEye, LightReflect);
         SpecularFactor = pow(SpecularFactor, LightPropertiesCB.MaterialPower);
         if (SpecularFactor > 0)
         {
-            SpecularColor = float4(Color, 1.0) * LightPropertiesCB.Intensity * SpecularFactor;
+            SpecularColor = float4(Color, 1.0) * Intensity * SpecularFactor;
         }
     }
     
@@ -220,6 +220,7 @@ float4 main(PixelShaderInput IN) : SV_Target
     
     float3 ResultLightIntensity = AmbientColor + DirectionalColor;  
     
+    
     for (int i = 0; i < LightPropertiesCB.PointLightsCount; i++)
     {
         ResultLightIntensity += CalcPointLight(PointLightsSB[i], IN.Normal.xyz, IN.WorldPos.xyz);
@@ -229,6 +230,7 @@ float4 main(PixelShaderInput IN) : SV_Target
     {
         ResultLightIntensity += CalcSpotLight(SpotLightsSB[i], IN.Normal.xyz, IN.WorldPos.xyz);
     }
+    
     
     return texel * float4(ResultLightIntensity, 1.0);
     

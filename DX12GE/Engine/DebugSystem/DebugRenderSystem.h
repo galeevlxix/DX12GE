@@ -22,11 +22,12 @@ private:
 	vector<VertexPositionColor> linesVertices;
 	vector<WORD> linesIndices;
 	bool isLinesDirty = true;
-
+	
 	Camera* m_Camera;
 
 	void CreateLine(const Vector3& pos0, const Vector3& pos1, const Color& color);
 public:
+	bool canDraw = true;
 
 	void Initialize(Camera* camera, ComPtr<ID3D12Device2> device);
 

@@ -55,6 +55,9 @@
     <Filter Include="Файлы ресурсов\Shaders\GeometryPass">
       <UniqueIdentifier>{e7f0272f-bba0-418b-8a50-359e7cd0b01d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\Shaders\LightPass">
+      <UniqueIdentifier>{ec19b5b5-2a98-4929-920d-9f7ea95478d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Application.cpp">
@@ -151,6 +154,9 @@
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Engine\GeometryPassPipeline.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\LightPassPipeline.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -266,6 +272,9 @@
     <ClInclude Include="Engine\GeometryPassPipeline.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\LightPassPipeline.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc">
@@ -313,6 +322,12 @@
     </FxCompile>
     <FxCompile Include="Resources\Shaders\GeometryPassVertexShader.hlsl">
       <Filter>Файлы ресурсов\Shaders\GeometryPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\LightPassPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\LightPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\LightPassVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\LightPass</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

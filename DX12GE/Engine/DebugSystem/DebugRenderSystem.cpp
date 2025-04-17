@@ -11,10 +11,6 @@ void DebugRenderSystem::Update(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	if (isLinesDirty)
 	{
-		if (m_Lines.IsInitialized())
-		{
-			m_Lines.Release();
-		}
 		m_Lines.OnLoad<VertexPositionColor>(commandList, linesVertices, linesIndices);
 		isLinesDirty = false;
 	}
@@ -23,7 +19,7 @@ void DebugRenderSystem::Update(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 void DebugRenderSystem::Draw(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	if (m_Camera == nullptr || isLinesDirty) return;
+	if (m_Camera == nullptr || isLinesDirty || !canDraw) return;
 	m_SimplePipeline.Set(commandList);
 	m_Lines.OnRenderLineList(commandList, m_Camera->GetViewProjMatrix());
 }
@@ -32,6 +28,7 @@ void DebugRenderSystem::Clear()
 {
 	linesVertices.clear();
 	linesIndices.clear();
+	m_Lines.Release();
 }
 
 void DebugRenderSystem::CreateLine(const Vector3& pos0, const Vector3& pos1, const Color& color)

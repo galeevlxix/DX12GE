@@ -30,6 +30,7 @@ bool BianGame::LoadContent()
 
     m_GBuffer.Init(device, GetClientWidth(), GetClientHeight());
     m_GeometryPassPipeline.Initialize(device);
+    m_LightPassPipeline.Initialize(device);
 
     // 3D SCENE
     katamariScene.OnLoad(commandList);
@@ -45,6 +46,42 @@ bool BianGame::LoadContent()
     m_ShadowMapPipeline.Initialize(device);
     debug.Initialize(&m_Camera, device);
 
+    for (size_t i = 0; i < lights.m_PointLights.size(); i++)
+    {
+        auto pLight = lights.m_PointLights[i];
+        pLight.BaseLightComponent.Color.Normalize();
+        auto col = max({ pLight.BaseLightComponent.Color.x, pLight.BaseLightComponent.Color.y, pLight.BaseLightComponent.Color.z });
+        float a = pLight.AttenuationComponent.Exp;
+        float b = pLight.AttenuationComponent.Linear;
+        float c = pLight.AttenuationComponent.Constant - col * pLight.BaseLightComponent.Intensity * 256;
+        float desc = b * b - 4 * a * c;
+        float rad = (-b + sqrtf(desc)) / (2 * a);
+        debug.DrawSphere(rad, Color(pLight.BaseLightComponent.Color), Matrix::CreateTranslation(pLight.Position), 24);
+    }
+
+    for (size_t i = 0; i < lights.m_SpotLights.size(); i++)
+    {
+        auto sLight = lights.m_SpotLights[i];
+        auto color = sLight.PointLightComponent.BaseLightComponent.Color;
+        color.Normalize();
+        float col = max({ color.x, color.y, color.z });
+        
+        auto dir = sLight.Direction;
+        dir.Normalize();
+        float fov = acosf(sLight.Cutoff);
+
+        float a = sLight.PointLightComponent.AttenuationComponent.Exp;
+        float b = sLight.PointLightComponent.AttenuationComponent.Linear;
+        float c = sLight.PointLightComponent.AttenuationComponent.Constant - col * sLight.PointLightComponent.BaseLightComponent.Intensity * 256;
+        float desc = b * b - 4 * a * c;
+        float rad = (-b + sqrtf(desc)) / (2 * a);
+
+        debug.DrawFrustrum(Matrix::CreateLookAt(sLight.PointLightComponent.Position, sLight.PointLightComponent.Position + dir, Vector3(0, 1, 0)), Matrix::CreatePerspectiveFieldOfView(fov * 2, 1, 0.01, rad));
+    }
+
+    debug.canDraw = false;
+    debug.Update(commandList);
+
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
 
@@ -58,14 +95,6 @@ void BianGame::AddDebugObjects()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-    static Vector3 prevPos(0.0f, 2.0f, 0.0f);
-
-    Vector3 playerPosition = katamariScene.player.prince.Position + Vector3(0.0f, 2.0f, 0.0f);
-
-    debug.DrawPoint(playerPosition, 1.0f);
-    debug.DrawLine(prevPos, playerPosition, Color(1.0f, 1.0f, 0.0f));
-    debug.Update(commandList);
-    prevPos = playerPosition;
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
@@ -138,17 +167,63 @@ void BianGame::DrawSceneToGBuffer()
     BaseObject::SetGeometryPass(false);
 }
 
+void BianGame::LightPassRender(RenderEventArgs& e)
+{
+    BaseObject::SetLightPass(true);
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+
+    UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
+    ComPtr<ID3D12Resource> backBuffer = m_pWindow->GetCurrentBackBuffer();
+    D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetView();
+    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
+
+    // Clear the render targets.
+    {
+        TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+        FLOAT clearColor[] = { 0.8f, 0.5f, 0.5f, 1.0f };
+
+        commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+        m_DepthBuffer.ClearDepth(commandList);
+    }
+
+    commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+
+    commandList->RSSetViewports(1, &m_Viewport);
+    commandList->RSSetScissorRects(1, &m_ScissorRect);
+
+    m_LightPassPipeline.Set(commandList);
+
+    ShaderResources::SetGraphicsWorldCB(commandList, 0);
+
+    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
+    m_GBuffer.SetGraphicsRootDescriptorTables(1, commandList);
+
+    // Нет вершинных буферов — используем fullscreen triangle
+    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commandList->DrawInstanced(3, 1, 0, 0); // один треугольник
+
+    //debug.Draw(commandList);
+
+    // Present
+    {
+        TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+        m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
+        currentBackBufferIndex = m_pWindow->Present();
+        commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
+    }
+    BaseObject::SetLightPass(false);
+}
+
 void BianGame::OnUpdate(UpdateEventArgs& e)
 {
     super::OnUpdate(e);
 
-    auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    auto commandList = commandQueue->GetCommandList();
-
     m_Camera.OnUpdate(e.ElapsedTime);
     katamariScene.OnUpdate(e.ElapsedTime);
 
-    lights.OnUpdate(e.ElapsedTime);
+    //lights.OnUpdate(e.ElapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
 
     static float counter = 0;
@@ -165,9 +240,12 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     DrawSceneToGBuffer();
 
-    if (shouldAddDebugObjects)
+    LightPassRender(e);
+    return;
+
+    if (shouldAddDebugObjects && false)
     {
-        AddDebugObjects();
+        //AddDebugObjects();
         shouldAddDebugObjects = false;
     }
 
@@ -244,6 +322,7 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
         m_pWindow->ToggleVSync();
         break;
     case KeyCode::X:
+        debug.canDraw = !debug.canDraw;
         shouldAddDebugObjects = true;
         break;
     case KeyCode::Z:

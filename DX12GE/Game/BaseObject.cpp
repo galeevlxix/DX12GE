@@ -6,7 +6,8 @@ Matrix BaseObjectShadowMapView[CASCADES_COUNT];
 bool debugMatrix = false;
 
 bool g_IsShadowPass = false;
-bool g_IsGeometryPass;
+bool g_IsGeometryPass = false;
+bool g_IsLightPass = false;
 
 void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
 {
@@ -65,6 +66,7 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
         ShaderResources::GetObjectCB()->ModelViewProjection = mvp;
         ShaderResources::SetGraphicsObjectCB(commandList, 0);
     }
+    else if (g_IsLightPass) { }
     else
     {
         ShaderResources::GetObjectCB()->WorldViewProjection = m_WorldMatrix;
@@ -129,8 +131,19 @@ bool BaseObject::GetGeometryPass()
     return g_IsGeometryPass;
 }
 
+void BaseObject::SetLightPass(bool isLightPass)
+{
+    g_IsLightPass = isLightPass;
+}
+
+bool BaseObject::GetLightPass()
+{
+    return g_IsLightPass;
+}
+
 void BaseObject::Release()
 {
+    if (!Initialized) return;
     Initialized = false;
     m_VertexBuffer->Release();
     m_VertexBuffer = nullptr;

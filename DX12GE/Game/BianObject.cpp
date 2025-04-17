@@ -38,7 +38,7 @@ void BianObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
     {
         if (m_Materials[m_MaterialIndices[i]].CanDrawIt())
         {
-            if (!BaseObject::GetShadowPass()) m_Materials[m_MaterialIndices[i]].Render(commandList);
+            if (!BaseObject::GetShadowPass() && !BaseObject::GetLightPass()) m_Materials[m_MaterialIndices[i]].Render(commandList);
             m_Meshes[i].OnRender(commandList, viewProjMatrix);
         }        
     }

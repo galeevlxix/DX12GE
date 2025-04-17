@@ -20,29 +20,35 @@ void LightManager::Init(Player* player)
 	ShaderResources::GetWorldCB()->AmbientLight.Color = COLOR_WHITE;
 	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.2;
 
+	// Specular
+	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 0.3f;
+	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 128.0;
+
 	// DirectionalLight
 	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Color = COLOR_WHITE;
 	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.5;
 	ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(1, -1, -1, 1);
 
 	ShaderResources::GetWorldCB()->LightProps.PointLightsCount = 14;
-	ShaderResources::GetWorldCB()->LightProps.SpotlightsCount = 2;
+	ShaderResources::GetWorldCB()->LightProps.SpotlightsCount = 1;
 
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = Vector3(0, 10, 0);
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity * 2;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = Vector3(0, 15, 0);
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
-	m_SpotLights[m_SpotLights.size() - 1].Direction = Vector3(0, -1, 0);
+	m_SpotLights[m_SpotLights.size() - 1].Direction = Vector3(0, -1, 0.001);
 	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.7f;
 
-	m_SpotLights.push_back(SpotLight());
+	/*m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*player).prince.Position;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
 	m_SpotLights[m_SpotLights.size() - 1].Direction = (*player).Direction;
-	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.65f;
+	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.65f;*/
+
+
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -89,8 +95,7 @@ void LightManager::Init(Player* player)
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 	}
 
-	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 0.3f;
-	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 128.0;
+	
 }
 
 void LightManager::OnUpdate(float deltaTime)
@@ -110,6 +115,6 @@ void LightManager::OnUpdate(float deltaTime)
 		}
 	}
 
-	m_SpotLights[1].PointLightComponent.Position = (*m_player).prince.Position + Vector3(0, 2, 0);
-	m_SpotLights[1].Direction = (*m_player).Direction;
+	/*m_SpotLights[1].PointLightComponent.Position = (*m_player).prince.Position + Vector3(0, 2, 0);
+	m_SpotLights[1].Direction = (*m_player).Direction;*/
 }

@@ -146,6 +146,7 @@
     <ClCompile Include="Engine\GBuffer.cpp" />
     <ClCompile Include="Engine\GeometryPassPipeline.cpp" />
     <ClCompile Include="Engine\HighResolutionClock.cpp" />
+    <ClCompile Include="Engine\LightPassPipeline.cpp" />
     <ClCompile Include="Engine\Material.cpp" />
     <ClCompile Include="Engine\Pipeline.cpp" />
     <ClCompile Include="Engine\RenderingSystem.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="Engine\Helpers.h" />
     <ClInclude Include="Engine\HighResolutionClock.h" />
     <ClInclude Include="Engine\KeyCodes.h" />
+    <ClInclude Include="Engine\LightPassPipeline.h" />
     <ClInclude Include="Engine\Material.h" />
     <ClInclude Include="Engine\Pipeline.h" />
     <ClInclude Include="Engine\RenderingSystem.h" />
@@ -218,6 +220,16 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\GeometryPassVertexShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\LightPassPixelShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\LightPassVertexShader.hlsl">
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>

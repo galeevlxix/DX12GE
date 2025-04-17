@@ -28,6 +28,8 @@ public:
     static bool GetShadowPass();
     static void SetGeometryPass(bool isGeometryPass);
     static bool GetGeometryPass();
+    static void SetLightPass(bool isLightPass);
+    static bool GetLightPass();
 
     void SetDefaultState();
     void SetPosition(float x, float y, float z);

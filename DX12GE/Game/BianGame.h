@@ -9,6 +9,7 @@
 #include "../Engine/Shadows/ShadowMapPipeline.h"
 #include "../Engine/GBuffer.h"
 #include "../Engine/GeometryPassPipeline.h"
+#include "../Engine/LightPassPipeline.h"
 
 #include "Camera.h" 
 #include "KatamariGame.h" 
@@ -46,6 +47,7 @@ private:
     void AddDebugObjects();
     void DrawSceneToShadowMaps();
     void DrawSceneToGBuffer();
+    void LightPassRender(RenderEventArgs& e);
 
     uint64_t m_FenceValues[Window::BufferCount] = {};
 
@@ -67,5 +69,6 @@ private:
 
     GBuffer m_GBuffer;
     GeometryPassPipeline m_GeometryPassPipeline;
+    LightPassPipeline m_LightPassPipeline;
 };
 
