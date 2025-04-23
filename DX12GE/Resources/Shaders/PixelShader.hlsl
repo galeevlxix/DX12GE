@@ -229,8 +229,7 @@ float4 main(PixelShaderInput IN) : SV_Target
     for (int i = 0; i < LightPropertiesCB.SpotLightsCount; i++)
     {
         ResultLightIntensity += CalcSpotLight(SpotLightsSB[i], IN.Normal.xyz, IN.WorldPos.xyz);
-    }
-    
+    }    
     
     return texel * float4(ResultLightIntensity, 1.0);
     

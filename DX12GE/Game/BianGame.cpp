@@ -46,42 +46,6 @@ bool BianGame::LoadContent()
     m_ShadowMapPipeline.Initialize(device);
     debug.Initialize(&m_Camera, device);
 
-    for (size_t i = 0; i < lights.m_PointLights.size(); i++)
-    {
-        auto pLight = lights.m_PointLights[i];
-        pLight.BaseLightComponent.Color.Normalize();
-        auto col = max({ pLight.BaseLightComponent.Color.x, pLight.BaseLightComponent.Color.y, pLight.BaseLightComponent.Color.z });
-        float a = pLight.AttenuationComponent.Exp;
-        float b = pLight.AttenuationComponent.Linear;
-        float c = pLight.AttenuationComponent.Constant - col * pLight.BaseLightComponent.Intensity * 64;
-        float desc = b * b - 4 * a * c;
-        float rad = (-b + sqrtf(desc)) / (2 * a);
-        debug.DrawSphere(rad, Color(pLight.BaseLightComponent.Color), Matrix::CreateTranslation(pLight.Position), 24);
-    }
-
-    for (size_t i = 0; i < lights.m_SpotLights.size(); i++)
-    {
-        auto sLight = lights.m_SpotLights[i];
-        auto color = sLight.PointLightComponent.BaseLightComponent.Color;
-        color.Normalize();
-        float col = max({ color.x, color.y, color.z });
-        
-        auto dir = sLight.Direction;
-        dir.Normalize();
-        float fov = acosf(sLight.Cutoff);
-
-        float a = sLight.PointLightComponent.AttenuationComponent.Exp;
-        float b = sLight.PointLightComponent.AttenuationComponent.Linear;
-        float c = sLight.PointLightComponent.AttenuationComponent.Constant - col * sLight.PointLightComponent.BaseLightComponent.Intensity * 64;
-        float desc = b * b - 4 * a * c;
-        float rad = (-b + sqrtf(desc)) / (2 * a);
-
-        debug.DrawFrustrum(Matrix::CreateLookAt(sLight.PointLightComponent.Position, sLight.PointLightComponent.Position + dir, Vector3(0, 1, 0)), Matrix::CreatePerspectiveFieldOfView(fov * 2, 1, 0.01, rad));
-    }
-
-    debug.canDraw = false;
-    debug.Update(commandList);
-
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
 
@@ -95,9 +59,26 @@ void BianGame::AddDebugObjects()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
+}
+
+void BianGame::OnUpdate(UpdateEventArgs& e)
+{
+    super::OnUpdate(e);
+
+    m_Camera.OnUpdate(e.ElapsedTime);
+    katamariScene.OnUpdate(e.ElapsedTime);
+
+    lights.OnUpdate(e.ElapsedTime);
+    ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
+
+    static float counter = 0;
+    if (counter >= 2 * PI) counter = 0;
+    ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(cos(counter), -0.5, sin(counter), 1);
+    counter += PI / 4 * e.ElapsedTime;
+
+    m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
 }
 
 void BianGame::DrawSceneToShadowMaps()
@@ -223,87 +204,13 @@ void BianGame::LightPassRender(RenderEventArgs& e)
     BaseObject::SetLightPass(false);
 }
 
-void BianGame::OnUpdate(UpdateEventArgs& e)
-{
-    super::OnUpdate(e);
-
-    m_Camera.OnUpdate(e.ElapsedTime);
-    katamariScene.OnUpdate(e.ElapsedTime);
-
-    //lights.OnUpdate(e.ElapsedTime);
-    ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
-
-    static float counter = 0;
-    if (counter >= 2 * PI) counter = 0;
-    ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(cos(counter), -0.5, sin(counter), 1);
-    counter += PI / 4 * e.ElapsedTime;
-
-    m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
-}
-
 void BianGame::OnRender(RenderEventArgs& e)
 {
     super::OnRender(e);
 
     DrawSceneToShadowMaps();
-
     DrawSceneToGBuffer();
-
     LightPassRender(e);
-    return;
-
-    if (shouldAddDebugObjects && false)
-    {
-        //AddDebugObjects();
-        shouldAddDebugObjects = false;
-    }
-
-    DrawSceneToShadowMaps();
-
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-
-    UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
-    ComPtr<ID3D12Resource> backBuffer = m_pWindow->GetCurrentBackBuffer();
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetView();
-    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
-
-    // Clear the render targets.
-    {
-        TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-        FLOAT clearColor[] = { 0.8f, 0.5f, 0.5f, 1.0f };
-
-        commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-        m_DepthBuffer.ClearDepth(commandList);
-    }
-    commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
-
-    commandList->RSSetViewports(1, &m_Viewport);
-    commandList->RSSetScissorRects(1, &m_ScissorRect);
-
-    m_Pipeline.Set(commandList);
-
-    ShaderResources::SetGraphicsWorldCB(commandList, 1);
-
-    SetGraphicsDynamicStructuredBuffer(commandList, 2, lights.m_PointLights);
-    SetGraphicsDynamicStructuredBuffer(commandList, 3, lights.m_SpotLights);
-
-    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
-
-    m_CascadedShadowMap.SetGraphicsRootDescriptorTables(5, commandList);
-
-    katamariScene.OnRender(commandList, m_Camera.GetViewProjMatrix());
-
-    debug.Draw(commandList);
-
-    // Present
-    {
-        TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-        m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
-        currentBackBufferIndex = m_pWindow->Present();
-        commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
-    }
 }
 
 void BianGame::OnKeyPressed(KeyEventArgs& e)

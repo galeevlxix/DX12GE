@@ -86,7 +86,7 @@ void ShadowMapPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
 void ShadowMapPipeline::CreateRasterizerDesc()
 {
     m_RasterizerDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-    m_RasterizerDesc.DepthBias = 100000;
+    m_RasterizerDesc.DepthBias = 10000;
     m_RasterizerDesc.DepthBiasClamp = 0.0f;
     m_RasterizerDesc.SlopeScaledDepthBias = 1.0f;
 }

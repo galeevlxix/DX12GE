@@ -63,7 +63,7 @@ public:
 		float fov = 70.0f, 
 		float ratio = 1.0f, 
 		float zNear = 0.1f, 
-		float zFar = 300.0f);
+		float zFar = 150.0f);
 
 	void OnUpdate(float deltaTime);
 	XMMATRIX GetViewProjMatrix();

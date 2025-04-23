@@ -45,6 +45,7 @@ struct SpotLight
     float AttenuationConstant;
     float AttenuationLinear;
     float AttenuationExp;
+    float MaxRadius;
     float3 Direction;
     float Cutoff;
 };
@@ -82,6 +83,10 @@ SamplerState ShadowSampler : register(s1);
 
 // 0.15f, 0.3f, 0.6f, 1.0f
 static float splitDistances[3] = { 37.5, 75, 140 };
+static bool drawGBuffer = false;
+
+static float fogEnd = 150.0f;
+static float fogDistance = 135.0f; //fogEnd - fogStart
 
 float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
 {
@@ -123,10 +128,8 @@ float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
     return shadow / 9.0f;
 };
 
-float CalcShadowCascade(float3 worldPos)
+float CalcShadowCascade(float3 worldPos, float Distance)
 {
-    float Distance = length(worldPos - LightPropertiesCB.CameraPos.xyz);
-    
     if (Distance < splitDistances[0])
         return CalcShadowFactor(mul(ShadowMapTransform0, float4(worldPos, 1.0)), ShadowMapSB0);
     else if (Distance < splitDistances[1])
@@ -137,10 +140,8 @@ float CalcShadowCascade(float3 worldPos)
         return CalcShadowFactor(mul(ShadowMapTransform3, float4(worldPos, 1.0)), ShadowMapSB3);
 }
 
-float4 DebugShadowCascade(float3 WorldPos)
+float4 DebugShadowCascade(float3 WorldPos, float Distance)
 {
-    float Distance = length(WorldPos - LightPropertiesCB.CameraPos.xyz);
-    
     if (Distance < splitDistances[0])
         return float4(1.5f, 1, 1, 1);
     else if (Distance < splitDistances[1])
@@ -209,51 +210,40 @@ float4 CalcSpotLight(SpotLight sLight, float3 normal, float3 worldPos)
 bool More(float2 v1, float2 v2)
 {
     return v1.x > v2.x && v1.y > v2.y;
-
 }
 
 float4 main(PSInput input) : SV_Target
 {
     float2 uv = input.TexCoord;
-    
     float4 wpTexel = gPosition.Sample(gSampler, uv);
     float3 worldPos = wpTexel.xyz;
     float3 normal = normalize(gNormal.Sample(gSampler, uv).xyz);
     float3 albedo = gDiffuse.Sample(gSampler, uv).rgb;
     
-    /*
-    
-    -y
-    |
-    |
-    |
-    |
-    ---------->x
-    
-    */
-    
-    
-    float2 wp_start = float2(0.0, -0.25);
-    float2 wp_end = float2(0.25, 0);
-    
-    float2 norm_start = float2(0.0, -0.55);
-    float2 norm_end = float2(0.25, -0.3);
-    
-    float2 albedo_start = float2(0.0, -0.85);
-    float2 albedo_end = float2(0.25, -0.6);
-    
-    if (More(uv, wp_start) && More(wp_end, uv))
+    if (drawGBuffer)
     {
-        return gPosition.Sample(gSampler, uv * 4);
-    }
-    else if (More(uv, norm_start) && More(norm_end, uv))
-    {
-        return gNormal.Sample(gSampler, (uv - norm_start) * 4);
-    }
-    else if (More(uv, albedo_start) && More(albedo_end, uv))
-    {
-        return gDiffuse.Sample(gSampler, (uv - albedo_start) * 4);
-    }
+        float2 wp_start = float2(0.0, -0.25);
+        float2 wp_end = float2(0.25, 0);
+    
+        float2 norm_start = float2(0.0, -0.55);
+        float2 norm_end = float2(0.25, -0.3);
+    
+        float2 albedo_start = float2(0.0, -0.85);
+        float2 albedo_end = float2(0.25, -0.6);
+    
+        if (More(uv, wp_start) && More(wp_end, uv))
+        {
+            return gPosition.Sample(gSampler, uv * 4);
+        }
+        else if (More(uv, norm_start) && More(norm_end, uv))
+        {
+            return gNormal.Sample(gSampler, (uv - norm_start) * 4);
+        }
+        else if (More(uv, albedo_start) && More(albedo_end, uv))
+        {
+            return gDiffuse.Sample(gSampler, (uv - albedo_start) * 4);
+        }
+    }    
     
     if (wpTexel.a == 0.0)
         discard;
@@ -269,9 +259,12 @@ float4 main(PSInput input) : SV_Target
             normalize(DirectionalLightCB.Direction.xyz),
             normal,
             worldPos);
-
-    float3 result = ambient + diffuse * CalcShadowCascade(worldPos); // * DebugShadowCascade(worldPos).xyz;
     
+    
+    float CameraPixelDistance = length(worldPos - LightPropertiesCB.CameraPos.xyz);
+    float3 result = ambient + diffuse * CalcShadowCascade(worldPos, CameraPixelDistance); // * DebugShadowCascade(worldPos).xyz;
+    
+    // Pointlights
     for (int i = 0; i < LightPropertiesCB.PointLightsCount; i++)
     {
         if (length(worldPos - PointLightsSB[i].Position) < PointLightsSB[i].MaxRadius)
@@ -280,10 +273,20 @@ float4 main(PSInput input) : SV_Target
         }
     }   
     
+    // Spotlights
     for (int i = 0; i < LightPropertiesCB.SpotLightsCount; i++)
     {
-        result += CalcSpotLight(SpotLightsSB[i], normal, worldPos);
+        if (length(worldPos - SpotLightsSB[i].Position) < SpotLightsSB[i].MaxRadius)
+        {
+            result += CalcSpotLight(SpotLightsSB[i], normal, worldPos);
+        }        
     }
-
-    return float4(albedo * result, 1.0);
+    
+    // Fog
+    float fogFactor = (fogEnd - CameraPixelDistance) / fogDistance;
+    fogFactor = clamp(fogFactor, 0.0f, 1.0f);
+    float4 fogColor = float4(0.8f, 0.5f, 0.5f, 1.0f);
+    
+    // Result
+    return fogFactor * float4(albedo * result, 1.0) + (1.0 - fogFactor) * fogColor;
 }
