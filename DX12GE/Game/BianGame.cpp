@@ -81,8 +81,10 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
 
     static float counter = 0;
     if (counter >= 2 * PI) counter = 0;
-    ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(cos(counter), -0.5, sin(counter), 1);
+    //ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(cos(counter), -0.5, sin(counter), 1);
     counter += PI / 4 * e.ElapsedTime;
+
+    particles.OnUpdate(e.ElapsedTime);
 
     m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
 }
@@ -249,9 +251,6 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
 {
     super::OnKeyPressed(e);
     
-    auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    auto commandList = commandQueue->GetCommandList();
-
     m_Camera.OnKeyPressed(e);
 
     switch (e.Key)
@@ -275,6 +274,13 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
         break;
     case KeyCode::Z:
         BaseObject::DebugMatrices();
+        break;
+    case KeyCode::R:
+        auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+        auto commandList = commandQueue->GetCommandList();
+        particles.SpawnParticleGroup(commandList, katamariScene.player.prince.Position + Vector3(0, 3, 0), 7, 2);
+        uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+        commandQueue->WaitForFenceValue(fenceValue);
         break;
     }    
 }

@@ -79,7 +79,8 @@ struct WorldConstantBuffer
 struct ParticleConstantBuffer
 {
 	Matrix ViewProjection;
-	Vector4 CameraPosition;
+	Vector3 CameraPosition;
+	float Age;
 };
 
 class ShaderResources

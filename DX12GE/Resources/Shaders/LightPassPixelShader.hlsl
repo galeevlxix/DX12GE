@@ -265,7 +265,7 @@ float4 main(PSInput input) : SV_Target
         {
             worldPos = pPixelWorldPos.xyz;
             normal = normalize(particleNormal.Sample(gSampler, uv).xyz);
-            albedo = particleDiffuse.Sample(gSampler, uv).rgb;
+            albedo = 2 * particleDiffuse.Sample(gSampler, uv).rgb;
             CameraPixelDistance = pDist;
         }
         else
@@ -289,7 +289,7 @@ float4 main(PSInput input) : SV_Target
         {
             worldPos = pPixelWorldPos.xyz;
             normal = normalize(particleNormal.Sample(gSampler, uv).xyz);
-            albedo = particleDiffuse.Sample(gSampler, uv).rgb;
+            albedo = 2 * particleDiffuse.Sample(gSampler, uv).rgb;
             CameraPixelDistance = pDist;
         }
     }
@@ -310,7 +310,7 @@ float4 main(PSInput input) : SV_Target
             normal,
             worldPos);
     
-    float shadowFactor = CalcShadowCascade(worldPos, CameraPixelDistance);    
+    float shadowFactor = CalcShadowCascade(worldPos, CameraPixelDistance);
     float3 lightingResult = ambient + diffuse * shadowFactor; // * DebugShadowCascade(worldPos).xyz;
     
     // Pointlights

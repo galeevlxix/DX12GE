@@ -9,13 +9,29 @@
 using namespace DirectX::SimpleMath;
 using namespace std;
 
+struct ParticleGroup
+{
+	vector<VertexParticle> Vertices;
+	vector<WORD> Indices;
+	BaseObject Mesh;
+	Vector3 Position;
+	float Age;
+	float LifeTime;
+};
+
 class ParticleSystem
 {
 public:
 	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void OnUpdate(float deltaTime);
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, Vector3 CameraPos);
 
+	void SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, float speed, float lifeTime);
 private:
 	Texture m_Texture;
-	BaseObject m_Mesh;
+
+	ParticleGroup m_ParticleGroupPrototype;
+	vector<ParticleGroup> m_Particles;
+
+	void CreateParticleGroupPrototype(int count);
 };

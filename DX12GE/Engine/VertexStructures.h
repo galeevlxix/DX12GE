@@ -22,12 +22,14 @@ struct VertexPositionTextCoord
     XMFLOAT2 TextCoord;
 };
 
-struct VertexPosition
+struct VertexParticle
 {
     XMFLOAT3 Position;
+    XMFLOAT3 Velocity;
 
-    VertexPosition(XMFLOAT3 pos)
+    VertexParticle(XMFLOAT3 pos, XMFLOAT3 velocity)
     {
         Position = pos;
+        Velocity = velocity;
     }
 };

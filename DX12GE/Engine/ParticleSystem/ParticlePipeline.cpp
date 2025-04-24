@@ -41,6 +41,7 @@ void ParticlePipeline::LoadPixelShader()
 void ParticlePipeline::CreateVertexInputLayout()
 {
     m_InputLayout[0] = { "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+    m_InputLayout[1] = { "VELOCITY",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 }
 
 void ParticlePipeline::CreateRootSignatureFeatureData(ComPtr<ID3D12Device2> device)

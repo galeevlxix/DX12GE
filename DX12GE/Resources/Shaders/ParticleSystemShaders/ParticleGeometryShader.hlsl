@@ -1,12 +1,14 @@
 cbuffer OCB : register(b0)
 {
     matrix ViewProjM;
-    float4 CameraPos;
+    float3 CameraPos;
+    float Age;
 };
 
 struct VSOutput
 {
     float4 Position : SV_Position;
+    float4 Velocity : VELOCITY;
 };
 
 struct GSOutput
@@ -21,17 +23,25 @@ struct GSOutput
 void main(point VSOutput gsIn[1], uint primId : SV_PrimitiveID, inout TriangleStream<GSOutput> triStream)
 {
     float3 pos = gsIn[0].Position.xyz;
-    float3 toCamera = CameraPos.xyz - pos;
-    toCamera.y = 0;
+    float3 velocity = gsIn[0].Velocity.xyz;
+    
+    float3 toCamera = CameraPos - pos;
     toCamera = normalize(toCamera);
     float3 up = float3(0.0, 1.0, 0.0);
+    
     float3 right = cross(toCamera, up);
+    right = normalize(right);
+    float3 top = cross(right, toCamera);
+    top = normalize(top);
+    
+    float g = 9.8f;
+    float3 moving = velocity * Age - up * g * Age * Age / 2.0f;
     
     float4 v[4];
-    v[0] = float4(pos + 0.5f * right - 0.5f * up, 1.0f);
-    v[1] = float4(pos + 0.5f * right + 0.5f * up, 1.0f);
-    v[2] = float4(pos - 0.5f * right - 0.5f * up, 1.0f);
-    v[3] = float4(pos - 0.5f * right + 0.5f * up, 1.0f);
+    v[0] = float4(pos + 0.5f * right - 0.5f * top + moving, 1.0f);
+    v[1] = float4(pos + 0.5f * right + 0.5f * top + moving, 1.0f);
+    v[2] = float4(pos - 0.5f * right - 0.5f * top + moving, 1.0f);
+    v[3] = float4(pos - 0.5f * right + 0.5f * top + moving, 1.0f);
     
     float2 texC[4] =
     {

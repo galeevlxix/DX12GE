@@ -6,7 +6,7 @@ using namespace std;
 class ParticlePipeline
 {
 private:
-    const static int InputLayoutCount = 1;
+    const static int InputLayoutCount = 2;
 public:
     ComPtr<ID3D12RootSignature> RootSignature;
     ComPtr<ID3D12PipelineState> PipelineState;
