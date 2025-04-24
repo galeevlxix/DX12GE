@@ -67,6 +67,7 @@ public:
 
 	void OnUpdate(float deltaTime);
 	XMMATRIX GetViewProjMatrix();
+	XMMATRIX GetProjMatrix();
 
 	void OnMouseWheel(MouseWheelEventArgs& e);
 	void OnMouseMoved(MouseMotionEventArgs& e);

@@ -21,3 +21,13 @@ struct VertexPositionTextCoord
     XMFLOAT3 Position;
     XMFLOAT2 TextCoord;
 };
+
+struct VertexPosition
+{
+    XMFLOAT3 Position;
+
+    VertexPosition(XMFLOAT3 pos)
+    {
+        Position = pos;
+    }
+};

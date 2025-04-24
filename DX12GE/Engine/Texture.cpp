@@ -110,7 +110,7 @@ void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
 {
     auto device = Application::Get().GetDevice();
 
-    static int index = CASCADES_COUNT + GBuffer::GBUFFER_COUNT;
+    static int index = CASCADES_COUNT + GBuffer::GBUFFER_COUNT * 2;
     m_SRVHeapIndex = index;
     index++;
 

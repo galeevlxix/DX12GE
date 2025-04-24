@@ -11,7 +11,6 @@ struct PSOutput
     float4 Position :   SV_Target0;
     float4 Normal :     SV_Target1;
     float4 Diffuse :    SV_Target2;
-    float4 ORM :        SV_Target3;
 };
 
 Texture2D DiffuseTextureSB : register(t0);
@@ -24,7 +23,6 @@ PSOutput main(PSInput IN)
     OUT.Position = IN.WorldPos;
     OUT.Normal = IN.Normal;
     OUT.Diffuse = DiffuseTextureSB.Sample(StaticSampler, IN.TextCoord);
-    OUT.ORM = float4(1, 0, 0, 1);
     
     return OUT;
 }

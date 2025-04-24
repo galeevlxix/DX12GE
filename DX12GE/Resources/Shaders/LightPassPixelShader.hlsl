@@ -78,15 +78,20 @@ Texture2D ShadowMapSB1 : register(t6);
 Texture2D ShadowMapSB2 : register(t7);
 Texture2D ShadowMapSB3 : register(t8);
 
+Texture2D particlePosition : register(t9);
+Texture2D particleNormal : register(t10);
+Texture2D particleDiffuse : register(t11);
+
 SamplerState gSampler : register(s0);
 SamplerState ShadowSampler : register(s1);
 
 // 0.15f, 0.3f, 0.6f, 1.0f
 static float splitDistances[3] = { 37.5, 75, 140 };
-static bool drawGBuffer = false;
+static bool drawGBuffer = true;
 
-static float fogEnd = 150.0f;
-static float fogDistance = 135.0f; //fogEnd - fogStart
+static bool fogEnable = true;
+static float fogStart = 35;
+static float fogDistance = 115; //fogEnd - fogStart
 
 float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
 {
@@ -215,11 +220,37 @@ bool More(float2 v1, float2 v2)
 float4 main(PSInput input) : SV_Target
 {
     float2 uv = input.TexCoord;
-    float4 wpTexel = gPosition.Sample(gSampler, uv);
-    float3 worldPos = wpTexel.xyz;
-    float3 normal = normalize(gNormal.Sample(gSampler, uv).xyz);
-    float3 albedo = gDiffuse.Sample(gSampler, uv).rgb;
     
+    float4 posPixel;
+    float3 worldPos;
+    float3 normal;
+    float3 albedo;
+    
+    float4 oPixelWorldPos = gPosition.Sample(gSampler, uv);
+    float4 pPixelWorldPos = particlePosition.Sample(gSampler, uv);
+    
+    float oDist = length(oPixelWorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
+    float pDist = length(pPixelWorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
+    
+    bool isParticle = false;
+    
+    if (oDist < pDist || pPixelWorldPos.a == 0)
+    {
+        posPixel = oPixelWorldPos;
+        worldPos = oPixelWorldPos.xyz;
+        normal = normalize(gNormal.Sample(gSampler, uv).xyz);
+        albedo = gDiffuse.Sample(gSampler, uv).rgb;
+    }
+    else 
+    {
+        posPixel = pPixelWorldPos;
+        worldPos = pPixelWorldPos.xyz;
+        normal = normalize(particleNormal.Sample(gSampler, uv).xyz);
+        albedo = particleDiffuse.Sample(gSampler, uv).rgb;
+        isParticle = true;
+    }
+
+        
     if (drawGBuffer)
     {
         float2 wp_start = float2(0.0, -0.25);
@@ -245,7 +276,7 @@ float4 main(PSInput input) : SV_Target
         }
     }    
     
-    if (wpTexel.a == 0.0)
+    if (posPixel.a == 0.0)
         discard;
 
     // Ambient
@@ -260,16 +291,16 @@ float4 main(PSInput input) : SV_Target
             normal,
             worldPos);
     
-    
     float CameraPixelDistance = length(worldPos - LightPropertiesCB.CameraPos.xyz);
-    float3 result = ambient + diffuse * CalcShadowCascade(worldPos, CameraPixelDistance); // * DebugShadowCascade(worldPos).xyz;
+    float shadowFactor = CalcShadowCascade(worldPos, CameraPixelDistance);    
+    float3 lightingResult = ambient + diffuse * shadowFactor; // * DebugShadowCascade(worldPos).xyz;
     
     // Pointlights
     for (int i = 0; i < LightPropertiesCB.PointLightsCount; i++)
     {
         if (length(worldPos - PointLightsSB[i].Position) < PointLightsSB[i].MaxRadius)
         {
-            result += CalcPointLight(PointLightsSB[i], normal, worldPos);
+            lightingResult += CalcPointLight(PointLightsSB[i], normal, worldPos);
         }
     }   
     
@@ -278,15 +309,21 @@ float4 main(PSInput input) : SV_Target
     {
         if (length(worldPos - SpotLightsSB[i].Position) < SpotLightsSB[i].MaxRadius)
         {
-            result += CalcSpotLight(SpotLightsSB[i], normal, worldPos);
+            lightingResult += CalcSpotLight(SpotLightsSB[i], normal, worldPos);
         }        
     }
     
+    float4 outputPixelColor = float4(albedo * lightingResult, 1.0);
+    
     // Fog
-    float fogFactor = (fogEnd - CameraPixelDistance) / fogDistance;
-    fogFactor = clamp(fogFactor, 0.0f, 1.0f);
-    float4 fogColor = float4(0.8f, 0.5f, 0.5f, 1.0f);
+    if (fogEnable)
+    {
+        float fogFactor = 1.0f - (CameraPixelDistance - fogStart) / fogDistance;
+        fogFactor = clamp(fogFactor, 0.0f, 1.0f);
+        float4 fogColor = float4(0.8f, 0.5f, 0.5f, 1.0f);
+        outputPixelColor = fogFactor * outputPixelColor + (1.0 - fogFactor) * fogColor;
+    }
     
     // Result
-    return fogFactor * float4(albedo * result, 1.0) + (1.0 - fogFactor) * fogColor;
+    return outputPixelColor;
 }

@@ -118,11 +118,11 @@ void GeometryPassPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
     } pipelineStateStream;
 
     D3D12_RT_FORMAT_ARRAY rtvFormats = {};
-    rtvFormats.NumRenderTargets = 4;
+    rtvFormats.NumRenderTargets = 3;
     rtvFormats.RTFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;   // Position
     rtvFormats.RTFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;   // Normal
     rtvFormats.RTFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;       // Diffuse
-    rtvFormats.RTFormats[3] = DXGI_FORMAT_R8G8B8A8_UNORM;       // ORM
+    //rtvFormats.RTFormats[3] = DXGI_FORMAT_R8G8B8A8_UNORM;       // ORM
 
     pipelineStateStream.pRootSignature = RootSignature.Get();
     pipelineStateStream.InputLayout = { m_InputLayout, _countof(m_InputLayout) };

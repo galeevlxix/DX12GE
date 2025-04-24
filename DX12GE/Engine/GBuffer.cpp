@@ -2,11 +2,12 @@
 #include "DescriptorHeaps.h"
 #include "ShaderResources.h"
 
-void GBuffer::Init(ComPtr<ID3D12Device2> device, UINT width, UINT height)
+void GBuffer::Init(ComPtr<ID3D12Device2> device, UINT width, UINT height, int handleOffset)
 {
 	m_Device = device;
 	m_Width = width;
 	m_Height = height;
+    HandleOffset = handleOffset;
 
     BuildResources();
     BuildDescriptors();
@@ -26,7 +27,7 @@ void GBuffer::Resize(UINT width, UINT height)
         return;
 
     Release();
-    Init(m_Device, width, height);
+    Init(m_Device, width, height, HandleOffset);
 }
 
 void GBuffer::BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle)
@@ -36,7 +37,7 @@ void GBuffer::BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, 
         m_Targets[0].CpuRtvHandle,
         m_Targets[1].CpuRtvHandle,
         m_Targets[2].CpuRtvHandle,
-        m_Targets[3].CpuRtvHandle,
+        //m_Targets[3].CpuRtvHandle,
     };
 
     commandList->OMSetRenderTargets(GBUFFER_COUNT, rtvs, FALSE, &dsvHandle);
@@ -73,11 +74,11 @@ void GBuffer::SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 void GBuffer::SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    for (int i = 0; i < GBUFFER_COUNT - 1; i++) //áåç ORM, ÈÑÏÐÀÂÈÒÜ Â ÁÓÄÓÙÅÌ
+    for (int i = 0; i < GBUFFER_COUNT; i++) //áåç ORM, ÈÑÏÐÀÂÈÒÜ Â ÁÓÄÓÙÅÌ
     {
         commandList->SetGraphicsRootDescriptorTable(
             fromSlot + i,
-            DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, CASCADES_COUNT + i));
+            DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, HandleOffset + i));
     }
 }
 
@@ -88,7 +89,7 @@ void GBuffer::BuildResources()
         DXGI_FORMAT_R32G32B32A32_FLOAT, // Position
         DXGI_FORMAT_R16G16B16A16_FLOAT, // Normal
         DXGI_FORMAT_R8G8B8A8_UNORM,     // Diffuse
-        DXGI_FORMAT_R8G8B8A8_UNORM      // ORM
+        //DXGI_FORMAT_R8G8B8A8_UNORM      // ORM
     };
 
     for (size_t i = 0; i < GBUFFER_COUNT; i++)
@@ -124,9 +125,9 @@ void GBuffer::BuildDescriptors()
 {
     for (size_t i = 0; i < GBUFFER_COUNT; i++)
     {
-        m_Targets[i].CpuRtvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, CASCADES_COUNT + i);
-        m_Targets[i].CpuSrvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, CASCADES_COUNT + i);
-        m_Targets[i].GpuSrvHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, CASCADES_COUNT + i);
+        m_Targets[i].CpuRtvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, HandleOffset + i);
+        m_Targets[i].CpuSrvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, HandleOffset + i);
+        m_Targets[i].GpuSrvHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, HandleOffset + i);
 
         m_Device->CreateRenderTargetView(m_Targets[i].Texture.Get(), nullptr, m_Targets[i].CpuRtvHandle);
 

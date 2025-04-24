@@ -28,15 +28,21 @@ bool BianGame::LoadContent()
     ShaderResources::Create();
     DescriptorHeaps::OnInit(device);
 
-    m_GBuffer.Init(device, GetClientWidth(), GetClientHeight());
+    m_GBuffer.Init(device, GetClientWidth(), GetClientHeight(), CASCADES_COUNT);
     m_GeometryPassPipeline.Initialize(device);
     m_LightPassPipeline.Initialize(device);
+
+    m_ParticleGBuffer.Init(device, GetClientWidth(), GetClientHeight(), CASCADES_COUNT + GBuffer::GBUFFER_COUNT);
+    m_ParticlePipeline.Initialize(device);
 
     // 3D SCENE
     katamariScene.OnLoad(commandList);
     lights.Init(&(katamariScene.player));
     m_Camera.OnLoad(&(katamariScene.player));
     m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
+
+    // particles
+    particles.OnLoad(commandList);
 
     // SHADOWS
     m_CascadedShadowMap.Create();
@@ -148,6 +154,30 @@ void BianGame::DrawSceneToGBuffer()
     BaseObject::SetGeometryPass(false);
 }
 
+void BianGame::DrawParticlesToGBuffer()
+{
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+
+    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
+
+    m_ParticleGBuffer.SetToWriteAndClear(commandList);
+    m_DepthBuffer.ClearDepth(commandList);
+    m_ParticleGBuffer.BindRenderTargets(commandList, dsv);
+
+    commandList->RSSetViewports(1, &m_Viewport);
+    commandList->RSSetScissorRects(1, &m_ScissorRect);
+
+    m_ParticlePipeline.Set(commandList);
+    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
+
+    particles.OnRender(commandList, m_Camera.GetViewProjMatrix(), m_Camera.Position);
+    m_ParticleGBuffer.SetToRead(commandList);
+
+    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+    commandQueue->WaitForFenceValue(fenceValue);
+}
+
 void BianGame::LightPassRender(RenderEventArgs& e)
 {
     BaseObject::SetLightPass(true);
@@ -185,6 +215,7 @@ void BianGame::LightPassRender(RenderEventArgs& e)
 
     commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
     m_GBuffer.SetGraphicsRootDescriptorTables(1, commandList);
+    m_ParticleGBuffer.SetGraphicsRootDescriptorTables(11, commandList);
 
     m_CascadedShadowMap.SetGraphicsRootDescriptorTables(7, commandList);
 
@@ -210,6 +241,7 @@ void BianGame::OnRender(RenderEventArgs& e)
 
     DrawSceneToShadowMaps();
     DrawSceneToGBuffer();
+    DrawParticlesToGBuffer();
     LightPassRender(e);
 }
 
@@ -280,6 +312,7 @@ void BianGame::OnResize(ResizeEventArgs& e)
         m_Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(e.Width), static_cast<float>(e.Height));
         m_DepthBuffer.ResizeDepthBuffer(e.Width, e.Height);
         m_GBuffer.Resize(GetClientWidth(), GetClientHeight());
+        m_ParticleGBuffer.Resize(GetClientWidth(), GetClientHeight());
     }
 
     m_Camera.Ratio = static_cast<float>(e.Width) / static_cast<float>(e.Height);

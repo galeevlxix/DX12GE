@@ -3,15 +3,18 @@
 static ObjectConstantBuffer* ObjectCB = nullptr;
 static ShadowConstantBuffer* ShadowCB = nullptr;
 static WorldConstantBuffer* WorldCB = nullptr;
+static ParticleConstantBuffer* ParticleCB = nullptr;
 static UploadBuffer* mUploadBuffer = nullptr;
 
 static UploadBuffer::Allocation OcbAllocation;
 static UploadBuffer::Allocation WcbAllocation;
 static UploadBuffer::Allocation ScbAllocation;
+static UploadBuffer::Allocation PcbAllocation;
 
 static const UINT OcbSize = sizeof(ObjectConstantBuffer);
 static const UINT ScbSize = sizeof(ShadowConstantBuffer);
 static const UINT WcbSize = sizeof(WorldConstantBuffer);
+static const UINT PcbSize = sizeof(ParticleConstantBuffer);
 
 void ShaderResources::Create()
 {
@@ -34,6 +37,11 @@ void ShaderResources::Create()
 	{
 		WorldCB = new WorldConstantBuffer();
 	}
+
+	if (!ParticleCB)
+	{
+		ParticleCB = new ParticleConstantBuffer();
+	}
 }
 
 ObjectConstantBuffer* ShaderResources::GetObjectCB()
@@ -49,6 +57,11 @@ ShadowConstantBuffer* ShaderResources::GetShadowCB()
 WorldConstantBuffer* ShaderResources::GetWorldCB()
 {
 	return WorldCB;
+}
+
+ParticleConstantBuffer* ShaderResources::GetParticleCB()
+{
+	return ParticleCB;
 }
 
 UploadBuffer* ShaderResources::GetUploadBuffer()
@@ -84,3 +97,11 @@ void ShaderResources::SetGraphicsWorldCB(ComPtr<ID3D12GraphicsCommandList2> comm
 	memcpy(WcbAllocation.CPU, WorldCB, WcbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, WcbAllocation.GPU);
 }
+
+void ShaderResources::SetGraphicsParticleCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
+{
+	PcbAllocation = mUploadBuffer->Allocate(PcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	memcpy(PcbAllocation.CPU, ParticleCB, PcbSize);
+	commandList->SetGraphicsRootConstantBufferView(slot, PcbAllocation.GPU);
+}
+

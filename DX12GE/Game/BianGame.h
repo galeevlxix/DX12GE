@@ -9,11 +9,13 @@
 #include "../Engine/Shadows/ShadowMapPipeline.h"
 #include "../Engine/GBuffer.h"
 #include "../Engine/GeometryPassPipeline.h"
+#include "../Engine/ParticleSystem/ParticlePipeline.h"
 #include "../Engine/LightPassPipeline.h"
 
 #include "Camera.h" 
 #include "KatamariGame.h" 
 #include "LightManager.h"
+#include "../Engine/ParticleSystem/ParticleSystem.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -47,6 +49,7 @@ private:
     void AddDebugObjects();
     void DrawSceneToShadowMaps();
     void DrawSceneToGBuffer();
+    void DrawParticlesToGBuffer();
     void LightPassRender(RenderEventArgs& e);
 
     uint64_t m_FenceValues[Window::BufferCount] = {};
@@ -62,10 +65,13 @@ private:
     bool shouldAddDebugObjects = false;
 
     KatamariGame katamariScene;  
-
+    ParticleSystem particles;
     LightManager lights;
 
     CascadedShadowMap m_CascadedShadowMap;
+
+    GBuffer m_ParticleGBuffer;
+    ParticlePipeline m_ParticlePipeline;
 
     GBuffer m_GBuffer;
     GeometryPassPipeline m_GeometryPassPipeline;

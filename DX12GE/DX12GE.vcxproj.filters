@@ -58,6 +58,15 @@
     <Filter Include="Файлы ресурсов\Shaders\LightPass">
       <UniqueIdentifier>{ec19b5b5-2a98-4929-920d-9f7ea95478d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\Shaders\ParticleSystem">
+      <UniqueIdentifier>{444e92ce-a4cf-47b9-b45e-5c11cf553b75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\ParticleSystem">
+      <UniqueIdentifier>{9f3343d7-32c7-4018-b2e0-5d524e59be52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\ParticleSystem">
+      <UniqueIdentifier>{4c48fbcf-d272-42e8-854a-495d76b987f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Application.cpp">
@@ -158,6 +167,12 @@
     </ClCompile>
     <ClCompile Include="Engine\LightPassPipeline.cpp">
       <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ParticleSystem\ParticlePipeline.cpp">
+      <Filter>Исходные файлы\Engine\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ParticleSystem\ParticleSystem.cpp">
+      <Filter>Исходные файлы\Engine\ParticleSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -275,6 +290,12 @@
     <ClInclude Include="Engine\LightPassPipeline.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\ParticleSystem\ParticlePipeline.h">
+      <Filter>Файлы заголовков\Engine\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleSystem\ParticleSystem.h">
+      <Filter>Файлы заголовков\Engine\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc">
@@ -328,6 +349,15 @@
     </FxCompile>
     <FxCompile Include="Resources\Shaders\LightPassVertexShader.hlsl">
       <Filter>Файлы ресурсов\Shaders\LightPass</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticleVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticlePixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticleGeometryShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

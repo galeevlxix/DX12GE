@@ -41,9 +41,10 @@ class Texture
 {
 public:
     ComPtr<ID3D12Resource> m_Resource;
+    int m_SRVHeapIndex;
+
 private:
     ComPtr<ID3D12Resource> m_UploadBuffer;
-    int m_SRVHeapIndex;
 
 public:
     void Load(ComPtr<ID3D12GraphicsCommandList2> commandList, string path);

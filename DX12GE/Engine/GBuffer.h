@@ -13,17 +13,16 @@ struct Target
 class GBuffer
 {
 public:
-	static const UINT GBUFFER_COUNT = 4;
+	static const UINT GBUFFER_COUNT = 3;
 
 	enum TargetType
 	{
 		POSITION = 0,
 		NORMAL = 1,
 		DIFFUSE = 2,
-		ORM = 3
 	};
 
-	void Init(ComPtr<ID3D12Device2> device, UINT width, UINT height);
+	void Init(ComPtr<ID3D12Device2> device, UINT width, UINT height, int cpuDescHandleOffset);
 	void Release();
 	void Resize(UINT width, UINT height);
 	void BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle);
@@ -39,6 +38,7 @@ private:
 	UINT m_Width = 0;
 	UINT m_Height = 0;
 	ComPtr<ID3D12Device2> m_Device;
+	UINT HandleOffset;
 
 	Target m_Targets[GBUFFER_COUNT];
 

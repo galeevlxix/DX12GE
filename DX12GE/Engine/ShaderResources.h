@@ -76,6 +76,12 @@ struct WorldConstantBuffer
 	LightProperties LightProps;
 };
 
+struct ParticleConstantBuffer
+{
+	Matrix ViewProjection;
+	Vector4 CameraPosition;
+};
+
 class ShaderResources
 {
 public:
@@ -83,6 +89,8 @@ public:
 	static ObjectConstantBuffer* GetObjectCB();
 	static ShadowConstantBuffer* GetShadowCB();
 	static WorldConstantBuffer* GetWorldCB();
+	static ParticleConstantBuffer* GetParticleCB();
+
 	static UploadBuffer* GetUploadBuffer();
 	
 	static void OnDelete();
@@ -90,6 +98,7 @@ public:
 	static void SetGraphicsObjectCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetGraphicsShadowCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetGraphicsWorldCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
+	static void SetGraphicsParticleCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 };
 
 template<typename T>

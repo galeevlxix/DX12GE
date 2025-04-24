@@ -41,6 +41,11 @@ XMMATRIX Camera::GetViewProjMatrix()
 	return XMMatrixMultiply(XMMatrixLookAtLH(Position, Position + Target, Up), XMMatrixPerspectiveFovLH(XMConvertToRadians(Fov), Ratio, ZNear, ZFar));
 }
 
+XMMATRIX Camera::GetProjMatrix()
+{
+    return XMMatrixMultiply(XMMatrixLookAtLH(Position, Position + XMVectorSet(0, 0, -1, 0), Up), XMMatrixPerspectiveFovLH(XMConvertToRadians(Fov), Ratio, ZNear, ZFar));
+}
+
 void Camera::OnUpdate(float deltaTime)
 {
     ////////////////////////////////

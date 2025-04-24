@@ -52,9 +52,10 @@ void LightPassPipeline::CreateRootSignatureFlags()
 
 void LightPassPipeline::CreateRootSignatureBlob()
 {
-    CD3DX12_ROOT_PARAMETER1 rootParameters[11];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[14];
 
     rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //worldConst
+
 
     const CD3DX12_DESCRIPTOR_RANGE1 posTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
     rootParameters[1].InitAsDescriptorTable(1, &posTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
@@ -65,10 +66,12 @@ void LightPassPipeline::CreateRootSignatureBlob()
     const CD3DX12_DESCRIPTOR_RANGE1 diffTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
     rootParameters[3].InitAsDescriptorTable(1, &diffTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
 
+
     rootParameters[4].InitAsShaderResourceView(3, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //pointLights
     rootParameters[5].InitAsShaderResourceView(4, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //spotLights
 
     rootParameters[6].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //shadowConst
+
 
     const CD3DX12_DESCRIPTOR_RANGE1 smDescTable1(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5);
     rootParameters[7].InitAsDescriptorTable(1, &smDescTable1, D3D12_SHADER_VISIBILITY_PIXEL);
@@ -81,6 +84,17 @@ void LightPassPipeline::CreateRootSignatureBlob()
 
     const CD3DX12_DESCRIPTOR_RANGE1 smDescTable4(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 8);
     rootParameters[10].InitAsDescriptorTable(1, &smDescTable4, D3D12_SHADER_VISIBILITY_PIXEL);
+
+
+    const CD3DX12_DESCRIPTOR_RANGE1 posParticleTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 9);
+    rootParameters[11].InitAsDescriptorTable(1, &posParticleTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_DESCRIPTOR_RANGE1 normParticleTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 10);
+    rootParameters[12].InitAsDescriptorTable(1, &normParticleTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_DESCRIPTOR_RANGE1 diffParticleTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 11);
+    rootParameters[13].InitAsDescriptorTable(1, &diffParticleTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+
 
     const CD3DX12_STATIC_SAMPLER_DESC samplers[2] =
     {

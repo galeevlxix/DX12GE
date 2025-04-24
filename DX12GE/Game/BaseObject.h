@@ -21,6 +21,7 @@ public:
     void OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat);
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
     void OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
+    void OnRenderPointList(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
     static void SetSMMatrices(Matrix m[]);
     static void DebugMatrices();

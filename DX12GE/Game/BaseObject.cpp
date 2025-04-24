@@ -107,6 +107,17 @@ void BaseObject::OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
 }
 
+void BaseObject::OnRenderPointList(ComPtr<ID3D12GraphicsCommandList2> commandList)
+{
+    if (!IsInitialized()) return;
+
+    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+    commandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
+    commandList->IASetIndexBuffer(&m_IndexBufferView);
+
+    commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
+}
+
 void BaseObject::SetSMMatrices(Matrix m[])
 {
     for (int i = 0; i < CASCADES_COUNT; i++)
