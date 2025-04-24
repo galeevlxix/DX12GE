@@ -221,36 +221,7 @@ float4 main(PSInput input) : SV_Target
 {
     float2 uv = input.TexCoord;
     
-    float4 posPixel;
-    float3 worldPos;
-    float3 normal;
-    float3 albedo;
-    
-    float4 oPixelWorldPos = gPosition.Sample(gSampler, uv);
-    float4 pPixelWorldPos = particlePosition.Sample(gSampler, uv);
-    
-    float oDist = length(oPixelWorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
-    float pDist = length(pPixelWorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
-    
-    bool isParticle = false;
-    
-    if (oDist < pDist || pPixelWorldPos.a == 0)
-    {
-        posPixel = oPixelWorldPos;
-        worldPos = oPixelWorldPos.xyz;
-        normal = normalize(gNormal.Sample(gSampler, uv).xyz);
-        albedo = gDiffuse.Sample(gSampler, uv).rgb;
-    }
-    else 
-    {
-        posPixel = pPixelWorldPos;
-        worldPos = pPixelWorldPos.xyz;
-        normal = normalize(particleNormal.Sample(gSampler, uv).xyz);
-        albedo = particleDiffuse.Sample(gSampler, uv).rgb;
-        isParticle = true;
-    }
-
-        
+    // draw gbuffer
     if (drawGBuffer)
     {
         float2 wp_start = float2(0.0, -0.25);
@@ -274,10 +245,58 @@ float4 main(PSInput input) : SV_Target
         {
             return gDiffuse.Sample(gSampler, (uv - albedo_start) * 4);
         }
-    }    
+    }
     
-    if (posPixel.a == 0.0)
+    // choose pixel: object or particle
+    float3 worldPos;
+    float3 normal;
+    float3 albedo;
+    float CameraPixelDistance;
+    
+    float4 oPixelWorldPos = gPosition.Sample(gSampler, uv);
+    float4 pPixelWorldPos = particlePosition.Sample(gSampler, uv);
+    
+    float oDist = length(oPixelWorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
+    float pDist = length(pPixelWorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
+    
+    if (oPixelWorldPos.a != 0)
+    {
+        if (pDist < oDist && pPixelWorldPos.a != 0)
+        {
+            worldPos = pPixelWorldPos.xyz;
+            normal = normalize(particleNormal.Sample(gSampler, uv).xyz);
+            albedo = particleDiffuse.Sample(gSampler, uv).rgb;
+            CameraPixelDistance = pDist;
+        }
+        else
+        {
+            worldPos = oPixelWorldPos.xyz;
+            normal = normalize(gNormal.Sample(gSampler, uv).xyz);
+            albedo = gDiffuse.Sample(gSampler, uv).rgb;
+            CameraPixelDistance = oDist;
+        }
+    }
+    else if (pPixelWorldPos.a != 0)
+    {
+        if (oDist < pDist && oPixelWorldPos.a != 0)
+        {
+            worldPos = oPixelWorldPos.xyz;
+            normal = normalize(gNormal.Sample(gSampler, uv).xyz);
+            albedo = gDiffuse.Sample(gSampler, uv).rgb;
+            CameraPixelDistance = oDist;
+        }
+        else
+        {
+            worldPos = pPixelWorldPos.xyz;
+            normal = normalize(particleNormal.Sample(gSampler, uv).xyz);
+            albedo = particleDiffuse.Sample(gSampler, uv).rgb;
+            CameraPixelDistance = pDist;
+        }
+    }
+    else
+    {
         discard;
+    }
 
     // Ambient
     float3 ambient = AmbientLightCB.Color * AmbientLightCB.Intensity;
@@ -291,7 +310,6 @@ float4 main(PSInput input) : SV_Target
             normal,
             worldPos);
     
-    float CameraPixelDistance = length(worldPos - LightPropertiesCB.CameraPos.xyz);
     float shadowFactor = CalcShadowCascade(worldPos, CameraPixelDistance);    
     float3 lightingResult = ambient + diffuse * shadowFactor; // * DebugShadowCascade(worldPos).xyz;
     
