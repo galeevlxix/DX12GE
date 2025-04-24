@@ -46,7 +46,7 @@ protected:
     virtual void OnResize(ResizeEventArgs& e) override;
 
 private:
-    void AddDebugObjects();
+    void DrawDebugObjects();
     void DrawSceneToShadowMaps();
     void DrawSceneToGBuffer();
     void DrawParticlesToGBuffer();

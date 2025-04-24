@@ -22,6 +22,7 @@ void LightManager::Init(Player* player)
 
 	// Specular
 	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 0.3f;
+
 	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 64;
 
 	// DirectionalLight

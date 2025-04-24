@@ -19,6 +19,7 @@ BianGame::~BianGame()
     // todo: удалить все comptr на статические объекты
 }
 
+
 bool BianGame::LoadContent()
 {
     ComPtr<ID3D12Device2> device = Application::Get().GetDevice();
@@ -28,29 +29,32 @@ bool BianGame::LoadContent()
     ShaderResources::Create();
     DescriptorHeaps::OnInit(device);
 
-    m_GBuffer.Init(device, GetClientWidth(), GetClientHeight(), CASCADES_COUNT);
-    m_GeometryPassPipeline.Initialize(device);
-    m_LightPassPipeline.Initialize(device);
+    //m_GBuffer.Init(device, GetClientWidth(), GetClientHeight(), CASCADES_COUNT);
+    //m_GeometryPassPipeline.Initialize(device);
+    //m_LightPassPipeline.Initialize(device);
 
-    m_ParticleGBuffer.Init(device, GetClientWidth(), GetClientHeight(), CASCADES_COUNT + GBuffer::GBUFFER_COUNT);
-    m_ParticlePipeline.Initialize(device);
+    //m_ParticleGBuffer.Init(device, GetClientWidth(), GetClientHeight(), CASCADES_COUNT + GBuffer::GBUFFER_COUNT);
+    //m_ParticlePipeline.Initialize(device);
 
     // 3D SCENE
-    katamariScene.OnLoad(commandList);
-    lights.Init(&(katamariScene.player));
+    //katamariScene.OnLoad(commandList);
+    //lights.Init(&(katamariScene.player));
     m_Camera.OnLoad(&(katamariScene.player));
     m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
 
     // particles
-    particles.OnLoad(commandList);
+    //particles.OnLoad(commandList);
 
     // SHADOWS
-    m_CascadedShadowMap.Create();
+    //m_CascadedShadowMap.Create();
 
     // PIPELINE STATES
     m_Pipeline.Initialize(device);
-    m_ShadowMapPipeline.Initialize(device);
+    //m_ShadowMapPipeline.Initialize(device);
     debug.Initialize(&m_Camera, device);
+
+    BoundingBox box(Vector3(0, 0, 0), Vector3(10, 10, 10));
+    debug.DrawBoundingBox(box);
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
@@ -60,10 +64,12 @@ bool BianGame::LoadContent()
     return true;
 }
 
-void BianGame::AddDebugObjects()
+void BianGame::DrawDebugObjects()
 {
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+
+    debug.Draw(commandList);
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
@@ -74,6 +80,8 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     super::OnUpdate(e);
 
     m_Camera.OnUpdate(e.ElapsedTime);
+
+    /*
     katamariScene.OnUpdate(e.ElapsedTime);
 
     lights.OnUpdate(e.ElapsedTime);
@@ -87,6 +95,7 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     particles.OnUpdate(e.ElapsedTime);
 
     m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
+    */
 }
 
 void BianGame::DrawSceneToShadowMaps()
@@ -240,11 +249,27 @@ void BianGame::LightPassRender(RenderEventArgs& e)
 void BianGame::OnRender(RenderEventArgs& e)
 {
     super::OnRender(e);
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-    DrawSceneToShadowMaps();
-    DrawSceneToGBuffer();
-    DrawParticlesToGBuffer();
-    LightPassRender(e);
+    UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
+    ComPtr<ID3D12Resource> backBuffer = m_pWindow->GetCurrentBackBuffer();
+    D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetView();
+    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
+
+
+
+    {
+        TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+        m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
+        currentBackBufferIndex = m_pWindow->Present();
+        commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
+    }
+
+    //DrawSceneToShadowMaps();
+    //DrawSceneToGBuffer();
+    //DrawParticlesToGBuffer();
+    //LightPassRender(e);
 }
 
 void BianGame::OnKeyPressed(KeyEventArgs& e)
