@@ -157,6 +157,7 @@
     <ClCompile Include="Engine\Shadows\ShadowMap.cpp" />
     <ClCompile Include="Engine\Shadows\ShadowMapPipeline.cpp" />
     <ClCompile Include="Engine\Texture.cpp" />
+    <ClCompile Include="Engine\Texture3D.cpp" />
     <ClCompile Include="Engine\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Window.cpp" />
     <ClCompile Include="Game\BaseObject.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="Engine\Material.h" />
     <ClInclude Include="Engine\ParticleSystem\ParticlePipeline.h" />
     <ClInclude Include="Engine\ParticleSystem\ParticleSystem.h" />
+    <ClInclude Include="Engine\PerlinNoise.h" />
     <ClInclude Include="Engine\Pipeline.h" />
     <ClInclude Include="Engine\RenderingSystem.h" />
     <ClInclude Include="Engine\resource.h" />
@@ -198,6 +200,7 @@
     <ClInclude Include="Engine\Shadows\ShadowMap.h" />
     <ClInclude Include="Engine\Shadows\ShadowMapPipeline.h" />
     <ClInclude Include="Engine\Texture.h" />
+    <ClInclude Include="Engine\Texture3D.h" />
     <ClInclude Include="Engine\UploadBuffer.h" />
     <ClInclude Include="Engine\VertexStructures.h" />
     <ClInclude Include="Engine\Window.h" />

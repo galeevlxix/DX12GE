@@ -50,12 +50,6 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
     // Update the MVP matrix
     XMMATRIX mvp = XMMatrixMultiply(m_WorldMatrix, viewProjMatrix);
 
-    XMMATRIX shadowWvps[CASCADES_COUNT];
-    for (size_t i = 0; i < CASCADES_COUNT; i++)
-    {
-        shadowWvps[i] = XMMatrixMultiply(m_WorldMatrix, BaseObjectShadowMapView[i]);
-    }
-
     if (g_IsShadowPass)
     {  
         commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvp, 0);
@@ -73,21 +67,11 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
     }
     else if (g_IsLightPass) 
     {
-        
         ShaderResources::SetGraphicsShadowCB(commandList, 1);
     }
     else
     {
-        ShaderResources::GetObjectCB()->WorldViewProjection = m_WorldMatrix;
-        ShaderResources::GetObjectCB()->ModelViewProjection = mvp;
-
-        for (size_t i = 0; i < CASCADES_COUNT; i++)
-        {
-            ShaderResources::GetShadowCB()->ShadowTransforms[i] = shadowWvps[i];
-        }
-
-        ShaderResources::SetGraphicsObjectCB(commandList, 0);
-        ShaderResources::SetGraphicsShadowCB(commandList, 9);
+        
     }    
     
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);

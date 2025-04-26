@@ -15,7 +15,7 @@ void Texture::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, string path)
     ScratchImage image;
     TexMetadata metadata;
     //../../DX12GE/Resources/Katamari Objects/prince_katamari_damacy/Material_baseColor.png
-
+    
     ThrowIfFailed(
         LoadFromWICFile(
             (wstring(path.begin(), path.end())).c_str(),

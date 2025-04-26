@@ -16,6 +16,7 @@
 #include "KatamariGame.h" 
 #include "LightManager.h"
 #include "../Engine/ParticleSystem/ParticleSystem.h"
+#include "../Engine/Texture3D.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -72,6 +73,8 @@ private:
 
     GBuffer m_ParticleGBuffer;
     ParticlePipeline m_ParticlePipeline;
+    
+    Texture3D tex3d;
 
     GBuffer m_GBuffer;
     GeometryPassPipeline m_GeometryPassPipeline;

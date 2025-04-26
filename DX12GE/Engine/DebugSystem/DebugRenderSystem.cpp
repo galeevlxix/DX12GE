@@ -21,7 +21,9 @@ void DebugRenderSystem::Draw(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	if (m_Camera == nullptr || isLinesDirty || !canDraw) return;
 	m_SimplePipeline.Set(commandList);
+	BaseObject::SetShadowPass(true);
 	m_Lines.OnRenderLineList(commandList, m_Camera->GetViewProjMatrix());
+	BaseObject::SetShadowPass(false);
 }
 
 void DebugRenderSystem::Clear()

@@ -53,8 +53,18 @@ bool BianGame::LoadContent()
     //m_ShadowMapPipeline.Initialize(device);
     debug.Initialize(&m_Camera, device);
 
-    BoundingBox box(Vector3(0, 0, 0), Vector3(10, 10, 10));
+
+    // DRAW THE CUBE
+    Vector3 boxSize(20.0);
+    Vector3 boxPosition(-boxSize * 0.5);
+    BoundingBox box(Vector3(0, 0, 0), boxSize * 0.5);
     debug.DrawBoundingBox(box);
+    debug.DrawPoint(Vector3(0, 0, 0), 2);
+    debug.DrawPoint(boxPosition, 2);
+    debug.Update(commandList);
+
+    // CREATE TEXTURE3D
+    tex3d.Load(commandList, 20, 20, 20);
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
@@ -234,8 +244,6 @@ void BianGame::LightPassRender(RenderEventArgs& e)
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0); // один треугольник
 
-    debug.Draw(commandList);
-
     // Present
     {
         TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -257,7 +265,22 @@ void BianGame::OnRender(RenderEventArgs& e)
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetView();
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
 
+    // Clear the render targets.
+    {
+        TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
+        FLOAT clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+        commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+        m_DepthBuffer.ClearDepth(commandList);
+    }
+
+    commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+
+    commandList->RSSetViewports(1, &m_Viewport);
+    commandList->RSSetScissorRects(1, &m_ScissorRect);
+
+    debug.Draw(commandList);
 
     {
         TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -294,8 +317,8 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
         m_pWindow->ToggleVSync();
         break;
     case KeyCode::X:
-        debug.canDraw = !debug.canDraw;
-        shouldAddDebugObjects = true;
+        //debug.canDraw = !debug.canDraw;
+        //shouldAddDebugObjects = true;
         break;
     case KeyCode::Z:
         BaseObject::DebugMatrices();
@@ -303,7 +326,7 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::R:
         auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         auto commandList = commandQueue->GetCommandList();
-        particles.SpawnParticleGroup(commandList, katamariScene.player.prince.Position + Vector3(0, 3, 0), 7, 2);
+        //particles.SpawnParticleGroup(commandList, katamariScene.player.prince.Position + Vector3(0, 3, 0), 7, 2);
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
         commandQueue->WaitForFenceValue(fenceValue);
         break;
@@ -342,8 +365,8 @@ void BianGame::OnResize(ResizeEventArgs& e)
         super::OnResize(e);
         m_Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(e.Width), static_cast<float>(e.Height));
         m_DepthBuffer.ResizeDepthBuffer(e.Width, e.Height);
-        m_GBuffer.Resize(GetClientWidth(), GetClientHeight());
-        m_ParticleGBuffer.Resize(GetClientWidth(), GetClientHeight());
+        //m_GBuffer.Resize(GetClientWidth(), GetClientHeight());
+        //m_ParticleGBuffer.Resize(GetClientWidth(), GetClientHeight());
     }
 
     m_Camera.Ratio = static_cast<float>(e.Width) / static_cast<float>(e.Height);
