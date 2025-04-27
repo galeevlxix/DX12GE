@@ -1,8 +1,7 @@
 cbuffer OCB : register(b0)
 {
     matrix ViewProjM;
-    float3 CameraPos;
-    float Age;
+    float4 CameraPos;
 };
 
 struct VSOutput
@@ -18,14 +17,16 @@ struct GSOutput
     float2 TextCoord : TEXCOORD;
     float4 WorldPos : POSITION;
 };
+
+Texture3D VelocityTexture3D : register(t1);
+SamplerState StaticSampler : register(s0);
     
 [maxvertexcount(4)]
 void main(point VSOutput gsIn[1], uint primId : SV_PrimitiveID, inout TriangleStream<GSOutput> triStream)
 {
     float3 pos = gsIn[0].Position.xyz;
-    float3 velocity = gsIn[0].Velocity.xyz;
     
-    float3 toCamera = CameraPos - pos;
+    float3 toCamera = CameraPos.xyz - pos;
     toCamera = normalize(toCamera);
     float3 up = float3(0.0, 1.0, 0.0);
     
@@ -34,14 +35,11 @@ void main(point VSOutput gsIn[1], uint primId : SV_PrimitiveID, inout TriangleSt
     float3 top = cross(right, toCamera);
     top = normalize(top);
     
-    float g = 9.8f;
-    float3 moving = velocity * Age - up * g * Age * Age / 2.0f;
-    
     float4 v[4];
-    v[0] = float4(pos + 0.5f * right - 0.5f * top + moving, 1.0f);
-    v[1] = float4(pos + 0.5f * right + 0.5f * top + moving, 1.0f);
-    v[2] = float4(pos - 0.5f * right - 0.5f * top + moving, 1.0f);
-    v[3] = float4(pos - 0.5f * right + 0.5f * top + moving, 1.0f);
+    v[0] = float4(pos + 0.5f * right - 0.5f * top, 1.0f);
+    v[1] = float4(pos + 0.5f * right + 0.5f * top, 1.0f);
+    v[2] = float4(pos - 0.5f * right - 0.5f * top, 1.0f);
+    v[3] = float4(pos - 0.5f * right + 0.5f * top, 1.0f);
     
     float2 texC[4] =
     {

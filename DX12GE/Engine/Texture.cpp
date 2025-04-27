@@ -114,6 +114,8 @@ void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
     m_SRVHeapIndex = index;
     index++;
 
+    m_SRVHeapIndex = 1;
+
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(
         DescriptorHeaps::GetCPUHandle(
             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
@@ -143,3 +145,5 @@ D3D12_GPU_DESCRIPTOR_HANDLE Texture::GetGpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE
 {
     return DescriptorHeaps::GetGPUHandle(heapType, m_SRVHeapIndex);
 }
+
+//zaprogramirui mne pojaluista sistemu chastiz v korobke 

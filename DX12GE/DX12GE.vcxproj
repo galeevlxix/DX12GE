@@ -148,6 +148,7 @@
     <ClCompile Include="Engine\HighResolutionClock.cpp" />
     <ClCompile Include="Engine\LightPassPipeline.cpp" />
     <ClCompile Include="Engine\Material.cpp" />
+    <ClCompile Include="Engine\ParticleSystem\ParticleComputePipeline.cpp" />
     <ClCompile Include="Engine\ParticleSystem\ParticlePipeline.cpp" />
     <ClCompile Include="Engine\ParticleSystem\ParticleSystem.cpp" />
     <ClCompile Include="Engine\Pipeline.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="Engine\KeyCodes.h" />
     <ClInclude Include="Engine\LightPassPipeline.h" />
     <ClInclude Include="Engine\Material.h" />
+    <ClInclude Include="Engine\ParticleSystem\ParticleComputePipeline.h" />
     <ClInclude Include="Engine\ParticleSystem\ParticlePipeline.h" />
     <ClInclude Include="Engine\ParticleSystem\ParticleSystem.h" />
     <ClInclude Include="Engine\PerlinNoise.h" />
@@ -239,6 +241,11 @@
     <FxCompile Include="Resources\Shaders\LightPassVertexShader.hlsl">
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticleComputeShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticleGeometryShader.hlsl">

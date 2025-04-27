@@ -79,8 +79,15 @@ struct WorldConstantBuffer
 struct ParticleConstantBuffer
 {
 	Matrix ViewProjection;
-	Vector3 CameraPosition;
-	float Age;
+	Vector4 CameraPosition;
+};
+
+struct ParticleComputeConstantBuffer
+{
+	Vector3 BoxPosition;
+	float DeltaTime;
+	Vector3 BoxSize;
+	float ParticleCount;
 };
 
 class ShaderResources
@@ -91,6 +98,7 @@ public:
 	static ShadowConstantBuffer* GetShadowCB();
 	static WorldConstantBuffer* GetWorldCB();
 	static ParticleConstantBuffer* GetParticleCB();
+	static ParticleComputeConstantBuffer* GetParticleComputeCB();
 
 	static UploadBuffer* GetUploadBuffer();
 	
@@ -100,6 +108,7 @@ public:
 	static void SetGraphicsShadowCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetGraphicsWorldCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetGraphicsParticleCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
+	static void SetParticleComputeCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 };
 
 template<typename T>

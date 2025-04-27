@@ -26,45 +26,31 @@ bool BianGame::LoadContent()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
+    // INITIALIZE
     ShaderResources::Create();
     DescriptorHeaps::OnInit(device);
 
-    //m_GBuffer.Init(device, GetClientWidth(), GetClientHeight(), CASCADES_COUNT);
-    //m_GeometryPassPipeline.Initialize(device);
-    //m_LightPassPipeline.Initialize(device);
+    m_ParticlePipeline.Initialize(device);
+    m_ParticleComputePipeline.Initialize(device);
 
-    //m_ParticleGBuffer.Init(device, GetClientWidth(), GetClientHeight(), CASCADES_COUNT + GBuffer::GBUFFER_COUNT);
-    //m_ParticlePipeline.Initialize(device);
-
-    // 3D SCENE
-    //katamariScene.OnLoad(commandList);
-    //lights.Init(&(katamariScene.player));
     m_Camera.OnLoad(&(katamariScene.player));
     m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
 
-    // particles
-    //particles.OnLoad(commandList);
-
-    // SHADOWS
-    //m_CascadedShadowMap.Create();
-
-    // PIPELINE STATES
-    m_Pipeline.Initialize(device);
-    //m_ShadowMapPipeline.Initialize(device);
+    particles.OnLoad(commandList);
     debug.Initialize(&m_Camera, device);
 
-
     // DRAW THE CUBE
-    Vector3 boxSize(20.0);
-    Vector3 boxPosition(-boxSize * 0.5);
-    BoundingBox box(Vector3(0, 0, 0), boxSize * 0.5);
-    debug.DrawBoundingBox(box);
-    debug.DrawPoint(Vector3(0, 0, 0), 2);
     debug.DrawPoint(boxPosition, 2);
+
+    BoundingBox box(boxPosition + boxSize * 0.5, boxSize * 0.5);
+    debug.DrawBoundingBox(box);
     debug.Update(commandList);
 
+    ShaderResources::GetParticleComputeCB()->BoxPosition = boxPosition;
+    ShaderResources::GetParticleComputeCB()->BoxSize = Vector3(boxSize);
+
     // CREATE TEXTURE3D
-    tex3d.Load(commandList, 20, 20, 20);
+    tex3d.Load(commandList, boxSize.x, boxSize.y, boxSize.z);
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
@@ -91,21 +77,8 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
 
     m_Camera.OnUpdate(e.ElapsedTime);
 
-    /*
-    katamariScene.OnUpdate(e.ElapsedTime);
-
-    lights.OnUpdate(e.ElapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
-
-    static float counter = 0;
-    if (counter >= 2 * PI) counter = 0;
-    //ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(cos(counter), -0.5, sin(counter), 1);
-    counter += PI / 4 * e.ElapsedTime;
-
-    particles.OnUpdate(e.ElapsedTime);
-
-    m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
-    */
+    particles.OnUpdate(e.ElapsedTime, stopParticles);
 }
 
 void BianGame::DrawSceneToShadowMaps()
@@ -269,7 +242,7 @@ void BianGame::OnRender(RenderEventArgs& e)
     {
         TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-        FLOAT clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+        FLOAT clearColor[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
         commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
         m_DepthBuffer.ClearDepth(commandList);
@@ -281,6 +254,15 @@ void BianGame::OnRender(RenderEventArgs& e)
     commandList->RSSetScissorRects(1, &m_ScissorRect);
 
     debug.Draw(commandList);
+    
+    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
+
+    m_ParticleComputePipeline.Set(commandList);
+    tex3d.Render(commandList);
+    particles.OnComputeRender(commandList);
+
+    m_ParticlePipeline.Set(commandList);
+    particles.OnRender(commandList, m_Camera.GetViewProjMatrix(), m_Camera.Position);
 
     {
         TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -288,11 +270,6 @@ void BianGame::OnRender(RenderEventArgs& e)
         currentBackBufferIndex = m_pWindow->Present();
         commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
     }
-
-    //DrawSceneToShadowMaps();
-    //DrawSceneToGBuffer();
-    //DrawParticlesToGBuffer();
-    //LightPassRender(e);
 }
 
 void BianGame::OnKeyPressed(KeyEventArgs& e)
@@ -323,10 +300,13 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::Z:
         BaseObject::DebugMatrices();
         break;
+    case KeyCode::P:
+        stopParticles = !stopParticles;
+        break;
     case KeyCode::R:
         auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         auto commandList = commandQueue->GetCommandList();
-        //particles.SpawnParticleGroup(commandList, katamariScene.player.prince.Position + Vector3(0, 3, 0), 7, 2);
+        particles.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5, 7, 1000);
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
         commandQueue->WaitForFenceValue(fenceValue);
         break;

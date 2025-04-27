@@ -6,26 +6,18 @@ struct PSInput
     float4 WorldPos : POSITION;
 };
 
-struct PSOutput
-{
-    float4 Position : SV_Target0;
-    float4 Normal : SV_Target1;
-    float4 Diffuse : SV_Target2;
-};
-
 Texture2D DiffuseTextureSB : register(t0);
 SamplerState StaticSampler : register(s0);
 
-PSOutput main(PSInput IN)
+float4 main(PSInput IN) : SV_Target
 {
-    PSOutput OUT;
+    float4 color = DiffuseTextureSB.Sample(StaticSampler, IN.TextCoord);
     
-    OUT.Position = IN.WorldPos;
-    OUT.Normal = IN.Normal;
-    OUT.Diffuse = DiffuseTextureSB.Sample(StaticSampler, IN.TextCoord);
-    
-    if (OUT.Diffuse.a == 0)
+    if (color.a < 0.1)
         discard;
     
-    return OUT;
+    if (color.r < 0.1 && color.g < 0.1 && color.b < 0.1)
+        discard;
+    
+    return color;
 }

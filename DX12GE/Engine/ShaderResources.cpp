@@ -4,17 +4,20 @@ static ObjectConstantBuffer* ObjectCB = nullptr;
 static ShadowConstantBuffer* ShadowCB = nullptr;
 static WorldConstantBuffer* WorldCB = nullptr;
 static ParticleConstantBuffer* ParticleCB = nullptr;
+static ParticleComputeConstantBuffer* ComputeConstantCB = nullptr;
 static UploadBuffer* mUploadBuffer = nullptr;
 
 static UploadBuffer::Allocation OcbAllocation;
 static UploadBuffer::Allocation WcbAllocation;
 static UploadBuffer::Allocation ScbAllocation;
 static UploadBuffer::Allocation PcbAllocation;
+static UploadBuffer::Allocation CcbAllocation;
 
 static const UINT OcbSize = sizeof(ObjectConstantBuffer);
 static const UINT ScbSize = sizeof(ShadowConstantBuffer);
 static const UINT WcbSize = sizeof(WorldConstantBuffer);
 static const UINT PcbSize = sizeof(ParticleConstantBuffer);
+static const UINT CcbSize = sizeof(ParticleComputeConstantBuffer);
 
 void ShaderResources::Create()
 {
@@ -42,6 +45,11 @@ void ShaderResources::Create()
 	{
 		ParticleCB = new ParticleConstantBuffer();
 	}
+
+	if (!ComputeConstantCB)
+	{
+		ComputeConstantCB = new ParticleComputeConstantBuffer();
+	}
 }
 
 ObjectConstantBuffer* ShaderResources::GetObjectCB()
@@ -62,6 +70,11 @@ WorldConstantBuffer* ShaderResources::GetWorldCB()
 ParticleConstantBuffer* ShaderResources::GetParticleCB()
 {
 	return ParticleCB;
+}
+
+ParticleComputeConstantBuffer* ShaderResources::GetParticleComputeCB()
+{
+	return ComputeConstantCB;
 }
 
 UploadBuffer* ShaderResources::GetUploadBuffer()
@@ -103,5 +116,12 @@ void ShaderResources::SetGraphicsParticleCB(ComPtr<ID3D12GraphicsCommandList2> c
 	PcbAllocation = mUploadBuffer->Allocate(PcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(PcbAllocation.CPU, ParticleCB, PcbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, PcbAllocation.GPU);
+}
+
+void ShaderResources::SetParticleComputeCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
+{
+	CcbAllocation = mUploadBuffer->Allocate(CcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	memcpy(CcbAllocation.CPU, ComputeConstantCB, CcbSize);
+	commandList->SetComputeRootConstantBufferView(slot, CcbAllocation.GPU);
 }
 

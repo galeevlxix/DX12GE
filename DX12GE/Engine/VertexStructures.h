@@ -25,11 +25,17 @@ struct VertexPositionTextCoord
 struct VertexParticle
 {
     XMFLOAT3 Position;
-    XMFLOAT3 Velocity;
+    XMFLOAT3 Speed;
+
+    VertexParticle()
+    {
+        Position = XMFLOAT3(0, 0, 0);
+        Speed = XMFLOAT3(0, 0, 0);
+    }
 
     VertexParticle(XMFLOAT3 pos, XMFLOAT3 velocity)
     {
         Position = pos;
-        Velocity = velocity;
+        Speed = velocity;
     }
 };

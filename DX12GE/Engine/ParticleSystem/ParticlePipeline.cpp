@@ -61,12 +61,15 @@ void ParticlePipeline::CreateRootSignatureFlags()
 
 void ParticlePipeline::CreateRootSignatureBlob()
 {
-    CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[3];
 
     rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_GEOMETRY);  //objConst
     
     const CD3DX12_DESCRIPTOR_RANGE1 diffuseTexDescRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
     rootParameters[1].InitAsDescriptorTable(1, &diffuseTexDescRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_DESCRIPTOR_RANGE1 tex3DescRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
+    rootParameters[2].InitAsDescriptorTable(1, &tex3DescRange, D3D12_SHADER_VISIBILITY_GEOMETRY);
 
     const CD3DX12_STATIC_SAMPLER_DESC samplers[1] =
     {
@@ -120,10 +123,8 @@ void ParticlePipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
     } pipelineStateStream;
 
     D3D12_RT_FORMAT_ARRAY rtvFormats = {};
-    rtvFormats.NumRenderTargets = 3;
-    rtvFormats.RTFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;   // Position
-    rtvFormats.RTFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;   // Normal
-    rtvFormats.RTFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;       // Diffuse
+    rtvFormats.NumRenderTargets = 1;
+    rtvFormats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;       // Diffuse
 
     pipelineStateStream.pRootSignature = RootSignature.Get();
     pipelineStateStream.InputLayout = { m_InputLayout, _countof(m_InputLayout) };

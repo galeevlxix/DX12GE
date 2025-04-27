@@ -177,6 +177,9 @@
     <ClCompile Include="Engine\Texture3D.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\ParticleSystem\ParticleComputePipeline.cpp">
+      <Filter>Исходные файлы\Engine\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\d3dx12.h">
@@ -305,6 +308,9 @@
     <ClInclude Include="Engine\PerlinNoise.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\ParticleSystem\ParticleComputePipeline.h">
+      <Filter>Файлы заголовков\Engine\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc">
@@ -366,6 +372,9 @@
       <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticleGeometryShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticleComputeShader.hlsl">
       <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
     </FxCompile>
   </ItemGroup>

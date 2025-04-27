@@ -10,6 +10,7 @@
 #include "../Engine/GBuffer.h"
 #include "../Engine/GeometryPassPipeline.h"
 #include "../Engine/ParticleSystem/ParticlePipeline.h"
+#include "../Engine/ParticleSystem/ParticleComputePipeline.h"
 #include "../Engine/LightPassPipeline.h"
 
 #include "Camera.h" 
@@ -66,15 +67,19 @@ private:
     bool shouldAddDebugObjects = false;
 
     KatamariGame katamariScene;  
-    ParticleSystem particles;
     LightManager lights;
 
     CascadedShadowMap m_CascadedShadowMap;
 
     GBuffer m_ParticleGBuffer;
     ParticlePipeline m_ParticlePipeline;
+    ParticleComputePipeline m_ParticleComputePipeline;
     
+    ParticleSystem particles;
     Texture3D tex3d;
+    bool stopParticles = false;
+    Vector3 boxPosition = Vector3(0, 0, 0);
+    Vector3 boxSize = Vector3(30, 30, 30);
 
     GBuffer m_GBuffer;
     GeometryPassPipeline m_GeometryPassPipeline;
