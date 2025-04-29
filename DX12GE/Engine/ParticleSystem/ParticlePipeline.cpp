@@ -117,6 +117,7 @@ void ParticlePipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
         CD3DX12_PIPELINE_STATE_STREAM_VS VS;
         CD3DX12_PIPELINE_STATE_STREAM_GS GS;
         CD3DX12_PIPELINE_STATE_STREAM_PS PS;
+        CD3DX12_PIPELINE_STATE_STREAM_BLEND_DESC BlendDesc;
         CD3DX12_PIPELINE_STATE_STREAM_RASTERIZER Rasterizer;
         CD3DX12_PIPELINE_STATE_STREAM_DEPTH_STENCIL_FORMAT DSVFormat;
         CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS RTVFormats;
@@ -135,6 +136,21 @@ void ParticlePipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
     pipelineStateStream.Rasterizer = m_RasterizerDesc;
     pipelineStateStream.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     pipelineStateStream.RTVFormats = rtvFormats;
+
+    CD3DX12_BLEND_DESC blendDesc = {};
+    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.IndependentBlendEnable = FALSE;
+    blendDesc.RenderTarget[0].BlendEnable = TRUE;
+    blendDesc.RenderTarget[0].LogicOpEnable = FALSE;
+    blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+    pipelineStateStream.BlendDesc = blendDesc;
 
     D3D12_PIPELINE_STATE_STREAM_DESC pipelineStateStreamDesc =
     {

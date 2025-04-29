@@ -16,8 +16,12 @@ float4 main(PSInput IN) : SV_Target
     if (color.a < 0.1)
         discard;
     
-    if (color.r < 0.1 && color.g < 0.1 && color.b < 0.1)
+    float aver = (color.r + color.g + color.b) / 3.0;
+    
+    if (aver < 0.1)
         discard;
+    
+    color.a = aver;
     
     return color;
 }

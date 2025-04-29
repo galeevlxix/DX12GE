@@ -78,7 +78,7 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     m_Camera.OnUpdate(e.ElapsedTime);
 
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
-    particles.OnUpdate(e.ElapsedTime, stopParticles);
+    particles.OnUpdate(e.ElapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
 }
 
 void BianGame::DrawSceneToShadowMaps()
@@ -165,7 +165,7 @@ void BianGame::DrawParticlesToGBuffer()
     m_ParticlePipeline.Set(commandList);
     commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
 
-    particles.OnRender(commandList, m_Camera.GetViewProjMatrix(), m_Camera.Position);
+    //particles.OnRender(commandList, m_Camera.GetViewProjMatrix(), m_Camera.Position);
     m_ParticleGBuffer.SetToRead(commandList);
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
@@ -262,7 +262,7 @@ void BianGame::OnRender(RenderEventArgs& e)
     particles.OnComputeRender(commandList);
 
     m_ParticlePipeline.Set(commandList);
-    particles.OnRender(commandList, m_Camera.GetViewProjMatrix(), m_Camera.Position);
+    particles.OnRender(commandList);
 
     {
         TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

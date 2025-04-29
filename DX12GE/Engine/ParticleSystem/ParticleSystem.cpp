@@ -6,14 +6,18 @@
 void ParticleSystem::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	m_Texture.Load(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png");
-	CreateParticleGroupPrototype(1000);
+	CreateParticleGroupPrototype(10000);
 
 	m_Device = Application::Get().GetDevice();
 }
 
-void ParticleSystem::OnUpdate(float deltaTime, bool stop)
+void ParticleSystem::OnUpdate(float deltaTime, bool stop, XMMATRIX projMatrix, Vector3 CameraPos)
 {
-	ShaderResources::GetParticleComputeCB()->DeltaTime = deltaTime;
+	ShaderResources::GetParticleComputeCB()->DeltaTime = !stop ? deltaTime : 0;
+	ShaderResources::GetParticleComputeCB()->CameraPos = CameraPos;
+	ShaderResources::GetParticleCB()->ViewProjection = projMatrix;
+	ShaderResources::GetParticleCB()->CameraPosition = Vector4(CameraPos.x, CameraPos.y, CameraPos.z, 1);
+
 	for (int i = 0; i < m_Particles.size(); i++)
 	{
 		if (!stop) m_Particles[i].Age += deltaTime;
@@ -25,7 +29,7 @@ void ParticleSystem::OnUpdate(float deltaTime, bool stop)
 	}
 }
 
-void ParticleSystem::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX projMatrix, Vector3 CameraPos)
+void ParticleSystem::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	static bool firstRender = true;
 	if (firstRender)
@@ -40,16 +44,13 @@ void ParticleSystem::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XM
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 			m_Texture.m_SRVHeapIndex));
 
-	ShaderResources::GetParticleCB()->ViewProjection = projMatrix;
-	ShaderResources::GetParticleCB()->CameraPosition = Vector4(CameraPos.x, CameraPos.y, CameraPos.z, 1);
+	
 	ShaderResources::SetGraphicsParticleCB(commandList, 0);
 
 	for (int i = 0; i < m_Particles.size(); i++)
 	{
 		if (m_Particles[i].dead != true)
 		{
-			//m_Particles[i].Mesh.OnRenderPointList(commandList);
-
 			TransitionResource(commandList, m_Particles[i].Resource, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
 			D3D12_VERTEX_BUFFER_VIEW particleVBView = {};
@@ -69,46 +70,25 @@ void ParticleSystem::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XM
 
 void ParticleSystem::OnComputeRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	static const int numOfThreads = 64;
+	static const int numOfThreads = 256;
 
 	for (int i = 0; i < m_Particles.size(); i++)
 	{
 		if (m_Particles[i].dead != true)
 		{
 			ShaderResources::GetParticleComputeCB()->ParticleCount = m_Particles[i].Vertices.size();
+			ShaderResources::GetParticleComputeCB()->Mode = 0;
 			ShaderResources::SetParticleComputeCB(commandList, 0);
 			commandList->SetComputeRootDescriptorTable(1, m_Particles[i].uavGPUDescHandle);
 			int dispatchX = (m_Particles[i].Vertices.size() + numOfThreads - 1) / numOfThreads;
 			commandList->Dispatch(dispatchX, 1, 1);
-
-
-
-			/*TransitionResource(commandList, m_Particles[i].Resource, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE);
-
-			commandList->CopyResource(m_Particles[i].ReadbackBuffer.Get(), m_Particles[i].Resource.Get());
-
-			commandList->CopyBufferRegion(
-				m_Particles[i].ReadbackBuffer.Get(), 0,
-				m_Particles[i].Resource.Get(), 0,
-				sizeof(VertexParticle) * m_Particles[i].Vertices.size()
-			);*/
 		}
 	}
 }
 
 void ParticleSystem::ReadDataFromCS()
 {
-	for (int i = 0; i < m_Particles.size(); i++)
-	{
-		if (m_Particles[i].dead != true)
-		{
-			//void* mappedData = nullptr;
-			//CD3DX12_RANGE readRange(0, sizeof(VertexParticle) * m_Particles[i].Vertices.size()); // Мы читаем весь буфер
-			//ThrowIfFailed(m_Particles[i].ReadbackBuffer->Map(0, &readRange, &mappedData));
-			//memcpy(m_Particles[i].Vertices.data(), mappedData, sizeof(VertexParticle) * m_Particles[i].Vertices.size());
-			//m_Particles[i].ReadbackBuffer->Unmap(0, nullptr);
-		}
-	}	
+	
 }
 
 void ParticleSystem::SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, float speed, float lifeTime)
@@ -123,9 +103,6 @@ void ParticleSystem::SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> comma
 		group.Vertices[i].Speed = group.Vertices[i].Speed * speed;
 	}
 
-	group.Mesh.OnLoad(commandList, group.Vertices, group.Indices);
-	
-
 	// CREATE BUFFER
 
 	D3D12_RESOURCE_DESC bufferDesc = {};
@@ -139,7 +116,6 @@ void ParticleSystem::SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> comma
 	bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	bufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS; // обязательно для UAV!
 
-	
 	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
 	ThrowIfFailed(
 		m_Device->CreateCommittedResource(
@@ -196,18 +172,6 @@ void ParticleSystem::SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> comma
 	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
 
 	m_Device->CreateUnorderedAccessView(group.Resource.Get(), nullptr, &uavDesc, group.uavCPUDescHandle);
-	
-	/*D3D12_RESOURCE_DESC readbackDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(VertexParticle) * group.Vertices.size());
-	CD3DX12_HEAP_PROPERTIES ReadbackHeapProps(D3D12_HEAP_TYPE_READBACK);
-	ThrowIfFailed(
-		m_Device->CreateCommittedResource(
-			&ReadbackHeapProps,
-			D3D12_HEAP_FLAG_NONE,
-			&readbackDesc,
-			D3D12_RESOURCE_STATE_COPY_DEST, 
-			nullptr,
-			IID_PPV_ARGS(&group.ReadbackBuffer)));*/
-
 	m_Particles.push_back(group);
 }
 

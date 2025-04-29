@@ -32,6 +32,7 @@ Vector3 GetVectorValue(int x, int y, int z, int width, int height, int depth)
 {
 	Vector3 force = Vector3(RandomFloat(), RandomFloat(), RandomFloat());
 	force.Normalize();
+	force *= 1.5f;
 
 	force.x = GetFloatValue(x, width, force.x);
 	force.y = GetFloatValue(y, height, force.y);

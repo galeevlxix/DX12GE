@@ -13,14 +13,13 @@ struct ParticleGroup
 {
 	vector<VertexParticle> Vertices;
 	vector<WORD> Indices;
-	BaseObject Mesh;
+	
 	Vector3 Position;
 	float Age;
 	float LifeTime;
 	bool dead;
 
 	ComPtr<ID3D12Resource> Resource;
-	//ComPtr<ID3D12Resource> ReadbackBuffer;
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE uavCPUDescHandle;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE uavGPUDescHandle;
@@ -30,8 +29,8 @@ class ParticleSystem
 {
 public:
 	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
-	void OnUpdate(float deltaTime, bool stop);
-	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix, Vector3 CameraPos);
+	void OnUpdate(float deltaTime, bool stop, XMMATRIX viewProjMatrix, Vector3 CameraPos);
+	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void OnComputeRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 	void ReadDataFromCS();

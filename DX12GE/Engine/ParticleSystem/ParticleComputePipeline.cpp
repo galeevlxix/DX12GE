@@ -2,7 +2,7 @@
 
 void ParticleComputePipeline::Initialize(ComPtr<ID3D12Device2> device)
 {
-    LoadComputeShader();
+    LoadShaders();
     CreateRootSignatureFeatureData(device);
     CreateRootSignature(device);
     CreatePipelineState(device);
@@ -14,10 +14,10 @@ void ParticleComputePipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList
     commandList->SetComputeRootSignature(RootSignature.Get());
 }
 
-void ParticleComputePipeline::LoadComputeShader()
+void ParticleComputePipeline::LoadShaders()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"ParticleComputeShader.cso", &m_ComputeShaderBlob));
+        D3DReadFileToBlob(L"ParticleComputeShader.cso", &m_UpdateShaderBlob));
 }
 
 void ParticleComputePipeline::CreateRootSignatureFeatureData(ComPtr<ID3D12Device2> device)
@@ -78,7 +78,7 @@ void ParticleComputePipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
     } pipelineStateStream;
 
     pipelineStateStream.pRootSignature = RootSignature.Get();
-    pipelineStateStream.CS = CD3DX12_SHADER_BYTECODE(m_ComputeShaderBlob.Get());
+    pipelineStateStream.CS = CD3DX12_SHADER_BYTECODE(m_UpdateShaderBlob.Get());
 
     D3D12_PIPELINE_STATE_STREAM_DESC pipelineStateStreamDesc =
     {

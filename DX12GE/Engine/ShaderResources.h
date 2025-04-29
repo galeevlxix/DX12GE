@@ -88,6 +88,8 @@ struct ParticleComputeConstantBuffer
 	float DeltaTime;
 	Vector3 BoxSize;
 	float ParticleCount;
+	Vector3 CameraPos;
+	float Mode;
 };
 
 class ShaderResources
