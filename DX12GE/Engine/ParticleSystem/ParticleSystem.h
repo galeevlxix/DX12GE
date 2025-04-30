@@ -31,9 +31,8 @@ public:
 	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void OnUpdate(float deltaTime, bool stop, XMMATRIX viewProjMatrix, Vector3 CameraPos);
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
-	void OnComputeRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
-
-	void ReadDataFromCS();
+	void OnUpdateComputeRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void OnSortComputeRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 	void SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, float speed, float lifeTime);
 private:
@@ -45,6 +44,8 @@ private:
 	ComPtr<ID3D12Device2> m_Device;
 	ComPtr<ID3D12Resource> m_UploadBuffer;
 	
+	bool stopUpdate = false;
+	bool stopSort = false;
 
 	void CreateParticleGroupPrototype(int count);
 };

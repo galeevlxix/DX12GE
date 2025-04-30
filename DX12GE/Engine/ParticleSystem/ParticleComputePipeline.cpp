@@ -8,9 +8,15 @@ void ParticleComputePipeline::Initialize(ComPtr<ID3D12Device2> device)
     CreatePipelineState(device);
 }
 
-void ParticleComputePipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void ParticleComputePipeline::SetUpdatePSO(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    commandList->SetPipelineState(PipelineState.Get());
+    commandList->SetPipelineState(UpdatePipelineState.Get());
+    commandList->SetComputeRootSignature(RootSignature.Get());
+}
+
+void ParticleComputePipeline::SetSortPSO(ComPtr<ID3D12GraphicsCommandList2> commandList)
+{
+    commandList->SetPipelineState(SortPipelineState.Get());
     commandList->SetComputeRootSignature(RootSignature.Get());
 }
 
@@ -18,6 +24,8 @@ void ParticleComputePipeline::LoadShaders()
 {
     ThrowIfFailed(
         D3DReadFileToBlob(L"ParticleComputeShader.cso", &m_UpdateShaderBlob));
+    ThrowIfFailed(
+        D3DReadFileToBlob(L"SortParticleComputeShader.cso", &m_SortShaderBlob));
 }
 
 void ParticleComputePipeline::CreateRootSignatureFeatureData(ComPtr<ID3D12Device2> device)
@@ -84,7 +92,14 @@ void ParticleComputePipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
     {
         sizeof(ComputePipelineStateStream), &pipelineStateStream
     };
-
     ThrowIfFailed(
-        device->CreatePipelineState(&pipelineStateStreamDesc, IID_PPV_ARGS(&PipelineState)));
+        device->CreatePipelineState(&pipelineStateStreamDesc, IID_PPV_ARGS(&UpdatePipelineState)));
+
+    pipelineStateStream.CS = CD3DX12_SHADER_BYTECODE(m_SortShaderBlob.Get());
+    pipelineStateStreamDesc =
+    {
+        sizeof(ComputePipelineStateStream), &pipelineStateStream
+    };
+    ThrowIfFailed(
+        device->CreatePipelineState(&pipelineStateStreamDesc, IID_PPV_ARGS(&SortPipelineState)));
 }

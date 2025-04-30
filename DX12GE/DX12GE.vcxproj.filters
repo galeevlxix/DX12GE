@@ -377,6 +377,9 @@
     <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticleComputeShader.hlsl">
       <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\SortParticleComputeShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

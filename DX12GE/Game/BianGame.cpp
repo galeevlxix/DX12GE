@@ -257,9 +257,12 @@ void BianGame::OnRender(RenderEventArgs& e)
     
     commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
 
-    m_ParticleComputePipeline.Set(commandList);
+    m_ParticleComputePipeline.SetUpdatePSO(commandList);
     tex3d.Render(commandList);
-    particles.OnComputeRender(commandList);
+    particles.OnUpdateComputeRender(commandList);
+
+    m_ParticleComputePipeline.SetSortPSO(commandList);
+    particles.OnSortComputeRender(commandList);
 
     m_ParticlePipeline.Set(commandList);
     particles.OnRender(commandList);

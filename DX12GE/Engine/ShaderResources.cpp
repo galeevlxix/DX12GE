@@ -5,6 +5,7 @@ static ShadowConstantBuffer* ShadowCB = nullptr;
 static WorldConstantBuffer* WorldCB = nullptr;
 static ParticleConstantBuffer* ParticleCB = nullptr;
 static ParticleComputeConstantBuffer* ComputeConstantCB = nullptr;
+static BitonicSortConstantBuffer* BitonicCB = nullptr;
 static UploadBuffer* mUploadBuffer = nullptr;
 
 static UploadBuffer::Allocation OcbAllocation;
@@ -12,12 +13,14 @@ static UploadBuffer::Allocation WcbAllocation;
 static UploadBuffer::Allocation ScbAllocation;
 static UploadBuffer::Allocation PcbAllocation;
 static UploadBuffer::Allocation CcbAllocation;
+static UploadBuffer::Allocation BcbAllocation;
 
 static const UINT OcbSize = sizeof(ObjectConstantBuffer);
 static const UINT ScbSize = sizeof(ShadowConstantBuffer);
 static const UINT WcbSize = sizeof(WorldConstantBuffer);
 static const UINT PcbSize = sizeof(ParticleConstantBuffer);
 static const UINT CcbSize = sizeof(ParticleComputeConstantBuffer);
+static const UINT BcbSize = sizeof(BitonicSortConstantBuffer);
 
 void ShaderResources::Create()
 {
@@ -50,6 +53,11 @@ void ShaderResources::Create()
 	{
 		ComputeConstantCB = new ParticleComputeConstantBuffer();
 	}
+
+	if (!BitonicCB)
+	{
+		BitonicCB = new BitonicSortConstantBuffer();
+	}
 }
 
 ObjectConstantBuffer* ShaderResources::GetObjectCB()
@@ -75,6 +83,11 @@ ParticleConstantBuffer* ShaderResources::GetParticleCB()
 ParticleComputeConstantBuffer* ShaderResources::GetParticleComputeCB()
 {
 	return ComputeConstantCB;
+}
+
+BitonicSortConstantBuffer* ShaderResources::GetBitonicSortCB()
+{
+	return BitonicCB;
 }
 
 UploadBuffer* ShaderResources::GetUploadBuffer()
@@ -123,5 +136,12 @@ void ShaderResources::SetParticleComputeCB(ComPtr<ID3D12GraphicsCommandList2> co
 	CcbAllocation = mUploadBuffer->Allocate(CcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(CcbAllocation.CPU, ComputeConstantCB, CcbSize);
 	commandList->SetComputeRootConstantBufferView(slot, CcbAllocation.GPU);
+}
+
+void ShaderResources::SetBitonicSortCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
+{
+	BcbAllocation = mUploadBuffer->Allocate(BcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	memcpy(BcbAllocation.CPU, BitonicCB, BcbSize);
+	commandList->SetComputeRootConstantBufferView(slot, BcbAllocation.GPU);
 }
 

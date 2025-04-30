@@ -13,12 +13,12 @@ float4 main(PSInput IN) : SV_Target
 {
     float4 color = DiffuseTextureSB.Sample(StaticSampler, IN.TextCoord);
     
-    if (color.a < 0.1)
+    if (color.a < 0.01)
         discard;
     
     float aver = (color.r + color.g + color.b) / 3.0;
     
-    if (aver < 0.1)
+    if (aver < 0.01)
         discard;
     
     color.a = aver;

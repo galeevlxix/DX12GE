@@ -7,11 +7,13 @@ class ParticleComputePipeline
 {
 public:
     ComPtr<ID3D12RootSignature> RootSignature;
-    ComPtr<ID3D12PipelineState> PipelineState;
+
+    ComPtr<ID3D12PipelineState> UpdatePipelineState;
+    ComPtr<ID3D12PipelineState> SortPipelineState;
 
     void Initialize(ComPtr<ID3D12Device2> device);
-    void Set(ComPtr<ID3D12GraphicsCommandList2> commandList);
-
+    void SetUpdatePSO(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void SetSortPSO(ComPtr<ID3D12GraphicsCommandList2> commandList);
 protected:
     ComPtr<ID3DBlob> m_UpdateShaderBlob;
     ComPtr<ID3DBlob> m_SortShaderBlob;

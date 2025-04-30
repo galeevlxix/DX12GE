@@ -88,8 +88,15 @@ struct ParticleComputeConstantBuffer
 	float DeltaTime;
 	Vector3 BoxSize;
 	float ParticleCount;
-	Vector3 CameraPos;
-	float Mode;
+};
+
+struct BitonicSortConstantBuffer
+{
+	UINT Level;
+	UINT LevelMask;
+	UINT ParticleCount;
+	UINT Pad;
+	Vector4 CameraPos;
 };
 
 class ShaderResources
@@ -101,6 +108,7 @@ public:
 	static WorldConstantBuffer* GetWorldCB();
 	static ParticleConstantBuffer* GetParticleCB();
 	static ParticleComputeConstantBuffer* GetParticleComputeCB();
+	static BitonicSortConstantBuffer* GetBitonicSortCB();
 
 	static UploadBuffer* GetUploadBuffer();
 	
@@ -111,6 +119,7 @@ public:
 	static void SetGraphicsWorldCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetGraphicsParticleCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetParticleComputeCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
+	static void SetBitonicSortCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 };
 
 template<typename T>

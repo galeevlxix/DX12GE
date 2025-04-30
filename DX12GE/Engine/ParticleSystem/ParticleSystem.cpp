@@ -6,18 +6,25 @@
 void ParticleSystem::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	m_Texture.Load(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png");
-	CreateParticleGroupPrototype(10000);
+	CreateParticleGroupPrototype(pow(2, 13));
 
 	m_Device = Application::Get().GetDevice();
 }
 
 void ParticleSystem::OnUpdate(float deltaTime, bool stop, XMMATRIX projMatrix, Vector3 CameraPos)
 {
-	ShaderResources::GetParticleComputeCB()->DeltaTime = !stop ? deltaTime : 0;
-	ShaderResources::GetParticleComputeCB()->CameraPos = CameraPos;
-	ShaderResources::GetParticleCB()->ViewProjection = projMatrix;
-	ShaderResources::GetParticleCB()->CameraPosition = Vector4(CameraPos.x, CameraPos.y, CameraPos.z, 1);
+	Vector4 cam = Vector4(CameraPos.x, CameraPos.y, CameraPos.z, 1);
 
+	stopUpdate = stop;
+	stopSort = (ShaderResources::GetBitonicSortCB()->CameraPos == cam) && stopUpdate;
+
+	ShaderResources::GetParticleCB()->ViewProjection = projMatrix;
+	ShaderResources::GetParticleCB()->CameraPosition = cam;
+
+	ShaderResources::GetParticleComputeCB()->DeltaTime = !stop ? deltaTime : 0;
+
+	ShaderResources::GetBitonicSortCB()->CameraPos = cam;	
+	
 	for (int i = 0; i < m_Particles.size(); i++)
 	{
 		if (!stop) m_Particles[i].Age += deltaTime;
@@ -68,31 +75,75 @@ void ParticleSystem::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	}
 }
 
-void ParticleSystem::OnComputeRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void ParticleSystem::OnUpdateComputeRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	static const int numOfThreads = 256;
+
+	if (stopUpdate) return;
 
 	for (int i = 0; i < m_Particles.size(); i++)
 	{
 		if (m_Particles[i].dead != true)
 		{
 			ShaderResources::GetParticleComputeCB()->ParticleCount = m_Particles[i].Vertices.size();
-			ShaderResources::GetParticleComputeCB()->Mode = 0;
 			ShaderResources::SetParticleComputeCB(commandList, 0);
 			commandList->SetComputeRootDescriptorTable(1, m_Particles[i].uavGPUDescHandle);
 			int dispatchX = (m_Particles[i].Vertices.size() + numOfThreads - 1) / numOfThreads;
 			commandList->Dispatch(dispatchX, 1, 1);
+
+			// после каждого Dispatch:
+			D3D12_RESOURCE_BARRIER barrier = {};
+			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+			barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+			barrier.UAV.pResource = m_Particles[i].Resource.Get();
+			commandList->ResourceBarrier(1, &barrier);
 		}
 	}
 }
 
-void ParticleSystem::ReadDataFromCS()
+void ParticleSystem::OnSortComputeRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	
+	if (stopSort) return;
+
+	for (int i = 0; i < m_Particles.size(); i++)
+	{
+		if (m_Particles[i].dead != true)
+		{
+			static const int numOfThreads = 256;
+			UINT numGroups = (m_Particles[i].Vertices.size() + numOfThreads - 1) / numOfThreads;
+
+			ShaderResources::GetBitonicSortCB()->ParticleCount = m_Particles[i].Vertices.size();
+			ShaderResources::GetBitonicSortCB()->Pad = 0;
+			commandList->SetComputeRootDescriptorTable(1, m_Particles[i].uavGPUDescHandle);
+
+			for (UINT k = 2; k <= m_Particles[i].Vertices.size(); k <<= 1)
+			{
+				for (UINT j = k >> 1; j > 0; j >>= 1) 
+				{
+					// Fill constant buffer
+					ShaderResources::GetBitonicSortCB()->Level = k;
+					ShaderResources::GetBitonicSortCB()->LevelMask = j;
+					ShaderResources::SetBitonicSortCB(commandList, 0);					
+
+					commandList->Dispatch(numGroups, 1, 1);
+
+					// после каждого Dispatch:
+					D3D12_RESOURCE_BARRIER barrier = {};
+					barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+					barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+					barrier.UAV.pResource = m_Particles[i].Resource.Get();
+					commandList->ResourceBarrier(1, &barrier);
+				}
+			}
+		}
+
+	}
 }
 
 void ParticleSystem::SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, float speed, float lifeTime)
 {
+	if (m_Particles.size() > 0) return;
+
 	ParticleGroup group = m_ParticleGroupPrototype;
 	group.Position = position;
 	group.LifeTime = lifeTime;
