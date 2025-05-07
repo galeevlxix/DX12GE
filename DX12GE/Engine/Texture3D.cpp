@@ -38,6 +38,8 @@ Vector3 GetVectorValue(int x, int y, int z, int width, int height, int depth)
 	force.y = GetFloatValue(y, height, force.y);
 	force.z = GetFloatValue(z, depth, force.z);
 
+	if ((y < width / 2 && force.y < 0) || (y > width / 2 && force.y > 0)) force.y *= -1;
+
 	return force;
 }
 
