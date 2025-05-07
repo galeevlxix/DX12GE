@@ -85,6 +85,7 @@ public:
      */
     Microsoft::WRL::ComPtr<ID3D12Resource> GetCurrentBackBuffer() const;
 
+    void UpdateWindowText(std::wstring newText);
 
 protected:
     // The Window procedure needs to call protected methods of this class.
@@ -129,6 +130,8 @@ protected:
 
     // Update the render target views for the swapchain back buffers.
     void UpdateRenderTargetViews();
+
+    
 
 private:
     // Windows should not be copied.

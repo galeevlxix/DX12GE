@@ -338,6 +338,11 @@ void Window::UpdateRenderTargetViews()
     }
 }
 
+void Window::UpdateWindowText(std::wstring newText)
+{
+    SetWindowTextW(m_hWnd, newText.c_str());
+}
+
 D3D12_CPU_DESCRIPTOR_HANDLE Window::GetCurrentRenderTargetView() const
 {
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_d3d12RTVDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),

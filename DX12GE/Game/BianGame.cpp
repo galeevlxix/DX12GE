@@ -1,5 +1,9 @@
 #include "BianGame.h"
 
+#include <sstream>
+#include <iomanip>
+#include <string>
+
 #include "../Engine/Application.h"
 #include "../Engine/CommandQueue.h"
 #include "../Engine/DescriptorHeaps.h"
@@ -79,6 +83,10 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
 
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
     particles.OnUpdate(e.ElapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
+    
+    m_pWindow->GetWindowName();
+
+    RefreshTitle(e);
 }
 
 void BianGame::DrawSceneToShadowMaps()
@@ -353,4 +361,54 @@ void BianGame::OnResize(ResizeEventArgs& e)
     }
 
     m_Camera.Ratio = static_cast<float>(e.Width) / static_cast<float>(e.Height);
+}
+
+std::wstring rStr(double value, int signCount)
+{
+    std::wstringstream wss;
+    wss << std::fixed << std::setprecision(signCount) << value;
+    return wss.str();
+}
+
+std::wstring Align(std::wstring s, int cnt)
+{
+    std::wstring out = s; 
+    while (out.length() < cnt) out += L" ";
+    return out;
+}
+
+void BianGame::RefreshTitle(UpdateEventArgs& e)
+{
+    static unsigned long frameCounter = 0;
+    static double timer = 0.0;
+
+    static const std::wstring winName = L"BianGame";
+
+    if (timer >= 1.0)
+    {
+        std::wstring fps = L"Fps " + std::to_wstring(frameCounter);
+        fps = Align(fps, 10);
+
+        std::wstring cPos = L"Pos " +
+            rStr(m_Camera.Position.m128_f32[0], 1) + L"; " +
+            rStr(m_Camera.Position.m128_f32[1], 1) + L"; " +
+            rStr(m_Camera.Position.m128_f32[2], 1);
+        cPos = Align(cPos, 21);
+
+        std::wstring cTar = L"Tar " +
+            rStr(m_Camera.Target.m128_f32[0], 1) + L"; " +
+            rStr(m_Camera.Target.m128_f32[1], 1) + L"; " +
+            rStr(m_Camera.Target.m128_f32[2], 1);
+        cTar = Align(cTar, 21);
+
+        m_pWindow->UpdateWindowText(winName + L" | " + fps + L" | " + cPos + L" | " + cTar + L" | ");
+
+        timer = 0.0;
+        frameCounter = 0;
+    }
+    else
+    {
+        frameCounter++;
+        timer += e.ElapsedTime;
+    }
 }

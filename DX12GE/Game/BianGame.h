@@ -53,6 +53,7 @@ private:
     void DrawSceneToGBuffer();
     void DrawParticlesToGBuffer();
     void LightPassRender(RenderEventArgs& e);
+    void RefreshTitle(UpdateEventArgs& e);
 
     uint64_t m_FenceValues[Window::BufferCount] = {};
 

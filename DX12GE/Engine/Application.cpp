@@ -360,7 +360,6 @@ UINT Application::GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE ty
     return m_d3d12Device->GetDescriptorHandleIncrementSize(type);
 }
 
-
 // Remove a window from our window lists.
 static void RemoveWindow(HWND hWnd)
 {
@@ -426,6 +425,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
             UpdateEventArgs updateEventArgs(0.0f, 0.0f);
             pWindow->OnUpdate(updateEventArgs);
             RenderEventArgs renderEventArgs(0.0f, 0.0f);
+            
             // Delta time will be filled in by the Window.
             pWindow->OnRender(renderEventArgs);
         }
@@ -563,6 +563,8 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         {
             int width = ((int)(short)LOWORD(lParam));
             int height = ((int)(short)HIWORD(lParam));
+
+            
 
             ResizeEventArgs resizeEventArgs(width, height);
             pWindow->OnResize(resizeEventArgs);
