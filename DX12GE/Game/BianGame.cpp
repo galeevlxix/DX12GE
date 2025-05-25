@@ -34,13 +34,22 @@ bool BianGame::LoadContent()
     ShaderResources::Create();
     DescriptorHeaps::OnInit(device);
 
+    // PIPELINES
+    m_GeometryPassPipeline.Initialize(device);
+    m_LightPassPipeline.Initialize(device);
     m_ParticlePipeline.Initialize(device);
     m_ParticleComputePipeline.Initialize(device);
+    m_SimplePipeline.Initialize(device);
+    m_ShadowMapPipeline.Initialize(device);
 
+    // 3D SCENE
+    m_CascadedShadowMap.Create();
+    m_GBuffer.Init(device, GetClientWidth(), GetClientHeight(), CASCADES_COUNT);
+    particles.OnLoad(commandList);
+    katamariScene.OnLoad(commandList);
+    lights.Init(&(katamariScene.player));
     m_Camera.OnLoad(&(katamariScene.player));
     m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
-
-    particles.OnLoad(commandList);
     debug.Initialize(&m_Camera, device);
 
     // DRAW THE CUBE
@@ -64,29 +73,22 @@ bool BianGame::LoadContent()
     return true;
 }
 
-void BianGame::DrawDebugObjects()
+void BianGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-
+    m_SimplePipeline.Set(commandList);
     debug.Draw(commandList);
-
-    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);
 }
 
 void BianGame::OnUpdate(UpdateEventArgs& e)
 {
     super::OnUpdate(e);
-
     m_Camera.OnUpdate(e.ElapsedTime);
-
+    katamariScene.OnUpdate(e.ElapsedTime);
+    lights.OnUpdate(e.ElapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
     particles.OnUpdate(e.ElapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
-    
-    m_pWindow->GetWindowName();
-
     RefreshTitle(e);
+    m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
 }
 
 void BianGame::DrawSceneToShadowMaps()
@@ -155,31 +157,7 @@ void BianGame::DrawSceneToGBuffer()
 
     BaseObject::SetGeometryPass(false);
 }
-
-void BianGame::DrawParticlesToGBuffer()
-{
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-
-    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
-
-    m_ParticleGBuffer.SetToWriteAndClear(commandList);
-    m_DepthBuffer.ClearDepth(commandList);
-    m_ParticleGBuffer.BindRenderTargets(commandList, dsv);
-
-    commandList->RSSetViewports(1, &m_Viewport);
-    commandList->RSSetScissorRects(1, &m_ScissorRect);
-
-    m_ParticlePipeline.Set(commandList);
-    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
-
-    //particles.OnRender(commandList, m_Camera.GetViewProjMatrix(), m_Camera.Position);
-    m_ParticleGBuffer.SetToRead(commandList);
-
-    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);
-}
-
+ 
 void BianGame::LightPassRender(RenderEventArgs& e)
 {
     BaseObject::SetLightPass(true);
@@ -190,40 +168,28 @@ void BianGame::LightPassRender(RenderEventArgs& e)
     ComPtr<ID3D12Resource> backBuffer = m_pWindow->GetCurrentBackBuffer();
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetView();
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
-
-    // Clear the render targets.
-    {
-        TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-        FLOAT clearColor[] = { 0.8f, 0.5f, 0.5f, 1.0f };
-
-        commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-        m_DepthBuffer.ClearDepth(commandList);
-    }
-
-    commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
-
+    TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    FLOAT clearColor[] = { 0.8f, 0.5f, 0.5f, 1.0f };
+    commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+    //m_DepthBuffer.ClearDepth(commandList);
+    commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
     commandList->RSSetViewports(1, &m_Viewport);
     commandList->RSSetScissorRects(1, &m_ScissorRect);
 
+    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
+
     m_LightPassPipeline.Set(commandList);
-
     ShaderResources::SetGraphicsWorldCB(commandList, 0);
-
     ShaderResources::SetGraphicsShadowCB(commandList, 6);
-
     SetGraphicsDynamicStructuredBuffer(commandList, 4, lights.m_PointLights);
     SetGraphicsDynamicStructuredBuffer(commandList, 5, lights.m_SpotLights);
-
-    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
     m_GBuffer.SetGraphicsRootDescriptorTables(1, commandList);
-    m_ParticleGBuffer.SetGraphicsRootDescriptorTables(11, commandList);
-
     m_CascadedShadowMap.SetGraphicsRootDescriptorTables(7, commandList);
-
-    // Нет вершинных буферов — используем fullscreen triangle
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandList->DrawInstanced(3, 1, 0, 0); // один треугольник
+    commandList->DrawInstanced(3, 1, 0, 0);
+
+    DrawDebugObjects(commandList);
+    DrawParticlesForward(commandList);
 
     // Present
     {
@@ -235,36 +201,8 @@ void BianGame::LightPassRender(RenderEventArgs& e)
     BaseObject::SetLightPass(false);
 }
 
-void BianGame::OnRender(RenderEventArgs& e)
+void BianGame::DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    super::OnRender(e);
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-
-    UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
-    ComPtr<ID3D12Resource> backBuffer = m_pWindow->GetCurrentBackBuffer();
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetView();
-    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
-
-    // Clear the render targets.
-    {
-        TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-        FLOAT clearColor[] = { 0.2f, 0.2f, 0.2f, 1.0f };
-
-        commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-        m_DepthBuffer.ClearDepth(commandList);
-    }
-
-    commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
-
-    commandList->RSSetViewports(1, &m_Viewport);
-    commandList->RSSetScissorRects(1, &m_ScissorRect);
-
-    debug.Draw(commandList);
-    
-    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
-
     m_ParticleComputePipeline.SetUpdatePSO(commandList);
     tex3d.Render(commandList);
     particles.OnUpdateComputeRender(commandList);
@@ -273,14 +211,16 @@ void BianGame::OnRender(RenderEventArgs& e)
     particles.OnSortComputeRender(commandList);
 
     m_ParticlePipeline.Set(commandList);
+    ShaderResources::SetGraphicsWorldCB(commandList, 2);
     particles.OnRender(commandList);
+}
 
-    {
-        TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-        m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
-        currentBackBufferIndex = m_pWindow->Present();
-        commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
-    }
+void BianGame::OnRender(RenderEventArgs& e)
+{
+    super::OnRender(e);
+    DrawSceneToShadowMaps();
+    DrawSceneToGBuffer();
+    LightPassRender(e);
 }
 
 void BianGame::OnKeyPressed(KeyEventArgs& e)
@@ -305,8 +245,8 @@ void BianGame::OnKeyPressed(KeyEventArgs& e)
         m_pWindow->ToggleVSync();
         break;
     case KeyCode::X:
-        //debug.canDraw = !debug.canDraw;
-        //shouldAddDebugObjects = true;
+        debug.canDraw = !debug.canDraw;
+        shouldAddDebugObjects = true;
         break;
     case KeyCode::Z:
         BaseObject::DebugMatrices();
@@ -356,8 +296,7 @@ void BianGame::OnResize(ResizeEventArgs& e)
         super::OnResize(e);
         m_Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(e.Width), static_cast<float>(e.Height));
         m_DepthBuffer.ResizeDepthBuffer(e.Width, e.Height);
-        //m_GBuffer.Resize(GetClientWidth(), GetClientHeight());
-        //m_ParticleGBuffer.Resize(GetClientWidth(), GetClientHeight());
+        m_GBuffer.Resize(GetClientWidth(), GetClientHeight());
     }
 
     m_Camera.Ratio = static_cast<float>(e.Width) / static_cast<float>(e.Height);

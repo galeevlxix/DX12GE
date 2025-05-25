@@ -11,6 +11,9 @@ void GeometryPassPipeline::Initialize(ComPtr<ID3D12Device2> device)
     CreateRootSignature(device);
     CreateRasterizerDesc();
     CreatePipelineState(device);
+
+    PipelineState.Get()->SetName(L"Geometry Pass Pipeline State");
+    RootSignature.Get()->SetName(L"Geometry Pass Root Signature");
 }
 
 void GeometryPassPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -113,6 +116,7 @@ void GeometryPassPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
         CD3DX12_PIPELINE_STATE_STREAM_VS VS;
         CD3DX12_PIPELINE_STATE_STREAM_PS PS;
         CD3DX12_PIPELINE_STATE_STREAM_RASTERIZER Rasterizer;
+        CD3DX12_PIPELINE_STATE_STREAM_DEPTH_STENCIL DepthStencilDesc;
         CD3DX12_PIPELINE_STATE_STREAM_DEPTH_STENCIL_FORMAT DSVFormat;
         CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS RTVFormats;
     } pipelineStateStream;
@@ -132,6 +136,15 @@ void GeometryPassPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
     pipelineStateStream.Rasterizer = m_RasterizerDesc;
     pipelineStateStream.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     pipelineStateStream.RTVFormats = rtvFormats;
+
+    D3D12_DEPTH_STENCIL_DESC dsDesc = {};
+    dsDesc.DepthEnable = TRUE;                             
+    dsDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;    
+    dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+    dsDesc.StencilEnable = FALSE;
+    dsDesc.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK;
+    dsDesc.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
+    pipelineStateStream.DepthStencilDesc = CD3DX12_DEPTH_STENCIL_DESC(dsDesc);
 
     D3D12_PIPELINE_STATE_STREAM_DESC pipelineStateStreamDesc =
     {

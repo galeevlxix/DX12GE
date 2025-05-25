@@ -1,9 +1,9 @@
 struct ConstantData
 {
-    matrix WVP;
+    matrix MVP;
 };
 
-ConstantBuffer<ConstantData> WorldViewProjectionCB : register(b0);
+ConstantBuffer<ConstantData> ModelViewProjectionCB : register(b0);
 
 struct VertexPosColor
 {
@@ -18,6 +18,6 @@ struct VertexShaderOutput
 VertexShaderOutput main(VertexPosColor IN)
 {
     VertexShaderOutput OUT;
-    OUT.Position = mul(WorldViewProjectionCB.WVP, float4(IN.Position, 1.0f));
+    OUT.Position = mul(ModelViewProjectionCB.MVP, float4(IN.Position, 1.0f));
     return OUT;
 }

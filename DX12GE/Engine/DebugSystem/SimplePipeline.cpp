@@ -14,6 +14,9 @@ void SimplePipeline::Initialize(ComPtr<ID3D12Device2> device)
     CreateRootSignature(device);
     CreateRasterizerDesc();
     CreatePipelineState(device);
+
+    PipelineState.Get()->SetName(L"Debug Pipeline State");
+    RootSignature.Get()->SetName(L"Debug Root Signature");
 }
 
 void SimplePipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)

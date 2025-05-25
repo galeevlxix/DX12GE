@@ -22,7 +22,7 @@ protected:
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC m_RootSignatureDescription;
     CD3DX12_RASTERIZER_DESC m_RasterizerDesc;
     ComPtr<ID3DBlob> m_RootSignatureBlob;
-    D3D12_INPUT_ELEMENT_DESC m_InputLayout[InputLayoutCount];
+    D3D12_INPUT_ELEMENT_DESC m_InputLayout[3];
 
     virtual void LoadVertexShader();
     virtual void LoadPixelShader();

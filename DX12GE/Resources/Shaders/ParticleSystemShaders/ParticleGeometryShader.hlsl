@@ -1,4 +1,4 @@
-cbuffer OCB : register(b0)
+cbuffer PCB : register(b0)
 {
     matrix ViewProjM;
     float4 CameraPos;
@@ -18,9 +18,6 @@ struct GSOutput
     float4 WorldPos : POSITION;
 };
 
-Texture3D VelocityTexture3D : register(t1);
-SamplerState StaticSampler : register(s0);
-    
 [maxvertexcount(4)]
 void main(point VSOutput gsIn[1], uint primId : SV_PrimitiveID, inout TriangleStream<GSOutput> triStream)
 {

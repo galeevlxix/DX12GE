@@ -13,6 +13,9 @@ void LightPassPipeline::Initialize(ComPtr<ID3D12Device2> device)
     CreateRootSignature(device);
     CreateRasterizerDesc();
     CreatePipelineState(device);
+
+    PipelineState.Get()->SetName(L"Light Pass Pipeline State");
+    RootSignature.Get()->SetName(L"Light Pass Root Signature");
 }
 
 void LightPassPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -52,7 +55,7 @@ void LightPassPipeline::CreateRootSignatureFlags()
 
 void LightPassPipeline::CreateRootSignatureBlob()
 {
-    CD3DX12_ROOT_PARAMETER1 rootParameters[14];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[11];
 
     rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   //worldConst
 
@@ -84,16 +87,6 @@ void LightPassPipeline::CreateRootSignatureBlob()
 
     const CD3DX12_DESCRIPTOR_RANGE1 smDescTable4(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 8);
     rootParameters[10].InitAsDescriptorTable(1, &smDescTable4, D3D12_SHADER_VISIBILITY_PIXEL);
-
-
-    const CD3DX12_DESCRIPTOR_RANGE1 posParticleTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 9);
-    rootParameters[11].InitAsDescriptorTable(1, &posParticleTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
-
-    const CD3DX12_DESCRIPTOR_RANGE1 normParticleTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 10);
-    rootParameters[12].InitAsDescriptorTable(1, &normParticleTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
-
-    const CD3DX12_DESCRIPTOR_RANGE1 diffParticleTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 11);
-    rootParameters[13].InitAsDescriptorTable(1, &diffParticleTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
 
 
     const CD3DX12_STATIC_SAMPLER_DESC samplers[2] =
@@ -154,6 +147,7 @@ void LightPassPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
         CD3DX12_PIPELINE_STATE_STREAM_VS VS;
         CD3DX12_PIPELINE_STATE_STREAM_PS PS;
         CD3DX12_PIPELINE_STATE_STREAM_RASTERIZER Rasterizer;
+        CD3DX12_PIPELINE_STATE_STREAM_DEPTH_STENCIL DepthStencilDesc;
         CD3DX12_PIPELINE_STATE_STREAM_DEPTH_STENCIL_FORMAT DSVFormat;
         CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS RTVFormats;
     } pipelineStateStream;
@@ -161,6 +155,11 @@ void LightPassPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
     D3D12_RT_FORMAT_ARRAY rtvFormats = {};
     rtvFormats.NumRenderTargets = 1;
     rtvFormats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+    D3D12_DEPTH_STENCIL_DESC dsDesc = {};
+    dsDesc.DepthEnable = TRUE;                              // тест глубины включён
+    dsDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;    // но не пишем в Z
+    dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
     pipelineStateStream.pRootSignature = RootSignature.Get();
     pipelineStateStream.InputLayout = { nullptr, 0 };
@@ -170,6 +169,7 @@ void LightPassPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
     pipelineStateStream.Rasterizer = m_RasterizerDesc;
     pipelineStateStream.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     pipelineStateStream.RTVFormats = rtvFormats;
+    pipelineStateStream.DepthStencilDesc = CD3DX12_DEPTH_STENCIL_DESC(dsDesc);
 
     D3D12_PIPELINE_STATE_STREAM_DESC pipelineStateStreamDesc =
     {

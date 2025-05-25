@@ -8,6 +8,7 @@
 #include "DescriptorHeaps.h"
 #include "ShaderResources.h"
 
+
 using namespace std;
 using namespace DirectX::SimpleMath;
 
@@ -38,7 +39,7 @@ Vector3 GetVectorValue(int x, int y, int z, int width, int height, int depth)
 	force.y = GetFloatValue(y, height, force.y);
 	force.z = GetFloatValue(z, depth, force.z);
 
-	if ((y < width / 2 && force.y < 0) || (y > width / 2 && force.y > 0)) force.y *= -1;
+	//if ((y < width / 2 && force.y < 0) || (y > width / 2 && force.y > 0)) force.y *= -1;
 
 	return force;
 }
@@ -127,7 +128,7 @@ void Texture3D::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, int width, 
 	srvDesc.Texture3D.MostDetailedMip = 0;
 	srvDesc.Texture3D.ResourceMinLODClamp = 0.0f;
 
-	m_SRVHeapIndex = 0;
+	m_SRVHeapIndex = CASCADES_COUNT + GBUFFER_COUNT;
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(
 		DescriptorHeaps::GetCPUHandle(

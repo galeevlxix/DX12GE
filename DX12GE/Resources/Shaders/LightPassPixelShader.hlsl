@@ -78,16 +78,11 @@ Texture2D ShadowMapSB1 : register(t6);
 Texture2D ShadowMapSB2 : register(t7);
 Texture2D ShadowMapSB3 : register(t8);
 
-Texture2D particlePosition : register(t9);
-Texture2D particleNormal : register(t10);
-Texture2D particleDiffuse : register(t11);
-
 SamplerState gSampler : register(s0);
 SamplerState ShadowSampler : register(s1);
 
 // 0.15f, 0.3f, 0.6f, 1.0f
 static float splitDistances[3] = { 37.5, 75, 140 };
-static bool drawGBuffer = true;
 
 static bool fogEnable = true;
 static float fogStart = 35;
@@ -108,26 +103,17 @@ float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
 
     const float2 offsets[9] =
     {
-        float2(-dx, -dx), float2(0.0f, -dx), float2(dx, -dx),
-        float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
-        float2(-dx, +dx), float2(0.0f, +dx), float2(dx, +dx)
+        float2(-dx, -dx),   float2(0.0f, -dx),  float2(dx, -dx),
+        float2(-dx, 0.0f),  float2(0.0f, 0.0f), float2(dx, 0.0f),
+        float2(-dx, +dx),   float2(0.0f, +dx),  float2(dx, +dx)
     };
     
     float shadow = 0.0;
-
     [unroll]
     for (int i = 0; i < 9; ++i)
     {
         float depth = ShadowMapSB.Sample(ShadowSampler, ProjCoords.xy + offsets[i]).r;
-        
-        if (depth + 0.0001 < ProjCoords.z)
-        {
-            shadow += 0.0;
-        }
-        else
-        {
-            shadow += 1.0;
-        }
+        shadow += (depth + 0.0001 < ProjCoords.z) ? 0.0 : 1.0;
     }
     
     return shadow / 9.0f;
@@ -219,85 +205,14 @@ bool More(float2 v1, float2 v2)
 
 float4 main(PSInput input) : SV_Target
 {
-    float2 uv = input.TexCoord;
-    
-    // draw gbuffer
-    if (drawGBuffer)
-    {
-        float2 wp_start = float2(0.0, -0.25);
-        float2 wp_end = float2(0.25, 0);
-    
-        float2 norm_start = float2(0.0, -0.55);
-        float2 norm_end = float2(0.25, -0.3);
-    
-        float2 albedo_start = float2(0.0, -0.85);
-        float2 albedo_end = float2(0.25, -0.6);
-    
-        if (More(uv, wp_start) && More(wp_end, uv))
-        {
-            return gPosition.Sample(gSampler, uv * 4);
-        }
-        else if (More(uv, norm_start) && More(norm_end, uv))
-        {
-            return gNormal.Sample(gSampler, (uv - norm_start) * 4);
-        }
-        else if (More(uv, albedo_start) && More(albedo_end, uv))
-        {
-            return gDiffuse.Sample(gSampler, (uv - albedo_start) * 4);
-        }
-    }
-    
-    // choose pixel: object or particle
-    float3 worldPos;
-    float3 normal;
-    float3 albedo;
-    float CameraPixelDistance;
-    
-    float4 oPixelWorldPos = gPosition.Sample(gSampler, uv);
-    float4 pPixelWorldPos = particlePosition.Sample(gSampler, uv);
-    
-    float oDist = length(oPixelWorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
-    float pDist = length(pPixelWorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
-    
-    if (oPixelWorldPos.a != 0)
-    {
-        if (pDist < oDist && pPixelWorldPos.a != 0)
-        {
-            worldPos = pPixelWorldPos.xyz;
-            normal = normalize(particleNormal.Sample(gSampler, uv).xyz);
-            albedo = 2 * particleDiffuse.Sample(gSampler, uv).rgb;
-            CameraPixelDistance = pDist;
-        }
-        else
-        {
-            worldPos = oPixelWorldPos.xyz;
-            normal = normalize(gNormal.Sample(gSampler, uv).xyz);
-            albedo = gDiffuse.Sample(gSampler, uv).rgb;
-            CameraPixelDistance = oDist;
-        }
-    }
-    else if (pPixelWorldPos.a != 0)
-    {
-        if (oDist < pDist && oPixelWorldPos.a != 0)
-        {
-            worldPos = oPixelWorldPos.xyz;
-            normal = normalize(gNormal.Sample(gSampler, uv).xyz);
-            albedo = gDiffuse.Sample(gSampler, uv).rgb;
-            CameraPixelDistance = oDist;
-        }
-        else
-        {
-            worldPos = pPixelWorldPos.xyz;
-            normal = normalize(particleNormal.Sample(gSampler, uv).xyz);
-            albedo = 2 * particleDiffuse.Sample(gSampler, uv).rgb;
-            CameraPixelDistance = pDist;
-        }
-    }
-    else
-    {
+    float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
+    float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
+    float4 albedo = gDiffuse.Sample(gSampler, input.TexCoord);
+    if (albedo.a == 0)
         discard;
-    }
-
+    albedo = pow(albedo, 2.2f);
+    float cameraPixelDistance = length(worldPos.xyz - LightPropertiesCB.CameraPos.xyz);
+    
     // Ambient
     float3 ambient = AmbientLightCB.Color * AmbientLightCB.Intensity;
 
@@ -306,11 +221,11 @@ float4 main(PSInput input) : SV_Target
         CalcLightInternal(
             DirectionalLightCB.Color,
             DirectionalLightCB.Intensity,
-            normalize(DirectionalLightCB.Direction.xyz),
+            DirectionalLightCB.Direction.xyz,
             normal,
             worldPos);
     
-    float shadowFactor = CalcShadowCascade(worldPos, CameraPixelDistance);
+    float shadowFactor = CalcShadowCascade(worldPos, cameraPixelDistance);
     float3 lightingResult = ambient + diffuse * shadowFactor; // * DebugShadowCascade(worldPos).xyz;
     
     // Pointlights
@@ -320,7 +235,7 @@ float4 main(PSInput input) : SV_Target
         {
             lightingResult += CalcPointLight(PointLightsSB[i], normal, worldPos);
         }
-    }   
+    }
     
     // Spotlights
     for (int i = 0; i < LightPropertiesCB.SpotLightsCount; i++)
@@ -328,15 +243,17 @@ float4 main(PSInput input) : SV_Target
         if (length(worldPos - SpotLightsSB[i].Position) < SpotLightsSB[i].MaxRadius)
         {
             lightingResult += CalcSpotLight(SpotLightsSB[i], normal, worldPos);
-        }        
+        }
     }
     
-    float4 outputPixelColor = float4(albedo * lightingResult, 1.0);
+    float4 outputPixelColor = float4(albedo.xyz * lightingResult, 1.0);
+    
+    outputPixelColor = pow(outputPixelColor, 1.0f / 2.2f);
     
     // Fog
     if (fogEnable)
     {
-        float fogFactor = 1.0f - (CameraPixelDistance - fogStart) / fogDistance;
+        float fogFactor = 1.0f - (cameraPixelDistance - fogStart) / fogDistance;
         fogFactor = clamp(fogFactor, 0.0f, 1.0f);
         float4 fogColor = float4(0.8f, 0.5f, 0.5f, 1.0f);
         outputPixelColor = fogFactor * outputPixelColor + (1.0 - fogFactor) * fogColor;

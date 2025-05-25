@@ -6,6 +6,10 @@ void ParticleComputePipeline::Initialize(ComPtr<ID3D12Device2> device)
     CreateRootSignatureFeatureData(device);
     CreateRootSignature(device);
     CreatePipelineState(device);
+
+    UpdatePipelineState.Get()->SetName(L"Update Particles Compute Pipeline State");
+    SortPipelineState.Get()->SetName(L"Sort Particles Compute Pipeline State");
+    RootSignature.Get()->SetName(L"Compute Root Signature");
 }
 
 void ParticleComputePipeline::SetUpdatePSO(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -53,7 +57,7 @@ void ParticleComputePipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
     rootParameters[2].InitAsDescriptorTable(1, &tex3DescRange, D3D12_SHADER_VISIBILITY_ALL);
 
     // s0
-    CD3DX12_STATIC_SAMPLER_DESC staticSampler(
+    CD3DX12_STATIC_SAMPLER_DESC staticSampler (
         0, 
         D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT,
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP,

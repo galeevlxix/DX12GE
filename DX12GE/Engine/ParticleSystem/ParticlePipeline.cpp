@@ -12,6 +12,9 @@ void ParticlePipeline::Initialize(ComPtr<ID3D12Device2> device)
     CreateRootSignature(device);
     CreateRasterizerDesc();
     CreatePipelineState(device);
+
+    PipelineState.Get()->SetName(L"Draw Particle Pipeline State");
+    RootSignature.Get()->SetName(L"Draw Particle Root Signature");
 }
 
 void ParticlePipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -63,13 +66,12 @@ void ParticlePipeline::CreateRootSignatureBlob()
 {
     CD3DX12_ROOT_PARAMETER1 rootParameters[3];
 
-    rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_GEOMETRY);  //objConst
+    rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_GEOMETRY);  //particle const buffer
     
     const CD3DX12_DESCRIPTOR_RANGE1 diffuseTexDescRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
     rootParameters[1].InitAsDescriptorTable(1, &diffuseTexDescRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-    const CD3DX12_DESCRIPTOR_RANGE1 tex3DescRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
-    rootParameters[2].InitAsDescriptorTable(1, &tex3DescRange, D3D12_SHADER_VISIBILITY_GEOMETRY);
+    rootParameters[2].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);  //world const buffer
 
     const CD3DX12_STATIC_SAMPLER_DESC samplers[1] =
     {

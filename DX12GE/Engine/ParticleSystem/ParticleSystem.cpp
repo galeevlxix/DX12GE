@@ -6,7 +6,7 @@
 void ParticleSystem::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	m_Texture.Load(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png");
-	CreateParticleGroupPrototype(pow(2, 10));
+	CreateParticleGroupPrototype(pow(2, 13));
 
 	m_Device = Application::Get().GetDevice();
 }
@@ -23,7 +23,7 @@ void ParticleSystem::OnUpdate(float deltaTime, bool stop, XMMATRIX projMatrix, V
 
 	ShaderResources::GetParticleComputeCB()->DeltaTime = !stop ? deltaTime : 0;
 
-	ShaderResources::GetBitonicSortCB()->CameraPos = cam;	
+	ShaderResources::GetBitonicSortCB()->CameraPos = cam;
 	
 	for (int i = 0; i < m_Particles.size(); i++)
 	{
@@ -123,7 +123,7 @@ void ParticleSystem::OnSortComputeRender(ComPtr<ID3D12GraphicsCommandList2> comm
 					// Fill constant buffer
 					ShaderResources::GetBitonicSortCB()->Level = k;
 					ShaderResources::GetBitonicSortCB()->LevelMask = j;
-					ShaderResources::SetBitonicSortCB(commandList, 0);					
+					ShaderResources::SetBitonicSortCB(commandList, 0);
 
 					commandList->Dispatch(numGroups, 1, 1);
 
@@ -209,7 +209,7 @@ void ParticleSystem::SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> comma
 
 	// CREATE UAV
 
-	static int indexInHeap = 2;
+	static int indexInHeap = 8;
 	group.uavCPUDescHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, indexInHeap);
 	group.uavGPUDescHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, indexInHeap);
 	indexInHeap++;

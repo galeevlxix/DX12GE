@@ -110,11 +110,9 @@ void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
 {
     auto device = Application::Get().GetDevice();
 
-    static int index = CASCADES_COUNT + GBuffer::GBUFFER_COUNT * 2;
+    static int index = CASCADES_COUNT + GBUFFER_COUNT + 2;
     m_SRVHeapIndex = index;
     index++;
-
-    m_SRVHeapIndex = 1;
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(
         DescriptorHeaps::GetCPUHandle(
@@ -127,9 +125,8 @@ void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
 
 void Texture::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    int slot = BaseObject::GetGeometryPass() ? 1 : 4;
     commandList->SetGraphicsRootDescriptorTable(
-        slot,
+        1,
         DescriptorHeaps::GetGPUHandle(
             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 
             m_SRVHeapIndex)

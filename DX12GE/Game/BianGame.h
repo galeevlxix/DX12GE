@@ -48,21 +48,22 @@ protected:
     virtual void OnResize(ResizeEventArgs& e) override;
 
 private:
-    void DrawDebugObjects();
+    void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSceneToShadowMaps();
     void DrawSceneToGBuffer();
-    void DrawParticlesToGBuffer();
     void LightPassRender(RenderEventArgs& e);
     void RefreshTitle(UpdateEventArgs& e);
+    void DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
     uint64_t m_FenceValues[Window::BufferCount] = {};
-
-    Pipeline m_Pipeline;
-    ShadowMapPipeline m_ShadowMapPipeline;
-    DepthBuffer m_DepthBuffer;
-
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
+
+    // SCENE
+
+    GBuffer m_GBuffer;
+
+    DepthBuffer m_DepthBuffer;
 
     DebugRenderSystem debug;
     bool shouldAddDebugObjects = false;
@@ -70,19 +71,24 @@ private:
     KatamariGame katamariScene;  
     LightManager lights;
 
+    // SHADOWS
+
     CascadedShadowMap m_CascadedShadowMap;
 
-    GBuffer m_ParticleGBuffer;
-    ParticlePipeline m_ParticlePipeline;
-    ParticleComputePipeline m_ParticleComputePipeline;
-    
+    // PARTICLES
+
     ParticleSystem particles;
     Texture3D tex3d;
     bool stopParticles = false;
     Vector3 boxPosition = Vector3(0, 0, 0);
     Vector3 boxSize = Vector3(30, 30, 30);
 
-    GBuffer m_GBuffer;
+    // PIPELINE
+
+    ParticlePipeline m_ParticlePipeline;
+    ParticleComputePipeline m_ParticleComputePipeline;
+    SimplePipeline m_SimplePipeline;
+    ShadowMapPipeline m_ShadowMapPipeline;
     GeometryPassPipeline m_GeometryPassPipeline;
     LightPassPipeline m_LightPassPipeline;
 };

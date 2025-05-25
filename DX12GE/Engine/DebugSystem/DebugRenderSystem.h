@@ -13,8 +13,7 @@ using namespace DirectX;
 class DebugRenderSystem
 {
 private:
-	SimplePipeline m_SimplePipeline;
-
+	
 	BaseObject m_Lines;
 	BaseObject m_Quads;
 	BaseObject m_Meshes;

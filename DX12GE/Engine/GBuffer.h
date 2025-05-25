@@ -1,5 +1,6 @@
 #pragma once
 #include "DX12LibPCH.h"
+#include "ShaderResources.h"
 
 struct Target
 {
@@ -13,8 +14,6 @@ struct Target
 class GBuffer
 {
 public:
-	static const UINT GBUFFER_COUNT = 3;
-
 	enum TargetType
 	{
 		POSITION = 0,
