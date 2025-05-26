@@ -86,6 +86,8 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     katamariScene.OnUpdate(e.ElapsedTime);
     lights.OnUpdate(e.ElapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
+    ShaderResources::GetWorldCB()->ViewProjection = m_Camera.GetViewProjMatrix();
+    ShaderResources::GetWorldCB()->IsMirror = Vector4(0, 0, 0, 0);
     particles.OnUpdate(e.ElapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
     RefreshTitle(e);
     m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);

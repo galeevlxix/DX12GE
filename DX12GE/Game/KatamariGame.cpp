@@ -1,4 +1,5 @@
 #include "KatamariGame.h"
+#include "../Engine/ShaderResources.h"
 
 int GetRandomNumber(int start, int end)
 {
@@ -82,7 +83,10 @@ void KatamariGame::OnUpdate(float deltaTime)
 
 void KatamariGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
+	ShaderResources::GetWorldCB()->IsMirror = Vector4(1, 0, 0, 0);
 	player.OnRender(commandList, viewProjMatrix);
+	ShaderResources::GetWorldCB()->IsMirror = Vector4(0, 0, 0, 0);
+
 	for (string name : m_names)
 	{
 		if (m_objects.find(name) == m_objects.end() || m_objects[name].eaten) { continue; }

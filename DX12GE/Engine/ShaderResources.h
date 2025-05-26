@@ -75,6 +75,9 @@ struct WorldConstantBuffer
 	BaseLight AmbientLight;
 	DirectionalLight DirLight;
 	LightProperties LightProps;
+
+	Matrix ViewProjection;
+	Vector4 IsMirror;
 };
 
 struct ParticleConstantBuffer

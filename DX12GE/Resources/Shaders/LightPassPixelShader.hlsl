@@ -55,6 +55,9 @@ cbuffer WCB : register(b0)
     AmbientLight AmbientLightCB;
     DirectionalLight DirectionalLightCB;
     LightProperties LightPropertiesCB;
+    
+    matrix ViewProjection;
+    float4 IsMirror;
 };
 
 cbuffer SCB : register(b1)
@@ -88,6 +91,47 @@ static bool fogEnable = true;
 static float fogStart = 35;
 static float fogDistance = 115; //fogEnd - fogStart
 
+static float RayStep = 0.01;             // Шаг трассировки луча
+static int MaxSteps = 128;               // Макс. число шагов
+static float MaxDistance = 100.0;       // Макс. дистанция трассировки
+static float Thickness = 0.01;           // Толщина проверки пересечений
+static float ReflectionIntensity = 0.5; // Интенсивность отражений 
+
+float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
+{
+    // Инициализация параметров трассировки
+    float3 currentPos = worldPos;
+    float3 rayStep = reflectionDir * RayStep;
+    float3 reflectionColor = float4(0, 0, 0, 0);
+    
+    [unroll(MaxSteps)]
+    for (int i = 0; i < MaxSteps; ++i)
+    {
+        currentPos += rayStep;
+        
+        // Преобразуем мировую позицию в UV-координаты
+        float4 clipPos = mul(ViewProjection, float4(currentPos, 1.0));
+        clipPos.xyz /= clipPos.w;
+        float2 uv = clipPos.xy * 0.5 + 0.5;
+        
+        // Проверка выхода за пределы экрана
+        if (any(uv < 0) || any(uv > 1))
+            break;        
+        
+        // Сравнение глубины
+        float3 gBufferWorldPos = gPosition.SampleLevel(gSampler, uv, 0).xyz;
+        float depthDiff = currentPos.z - gBufferWorldPos.z;
+        
+        // Проверка пересечения
+        if (depthDiff > 0 && depthDiff < Thickness)
+        {
+            reflectionColor = gDiffuse.Sample(gSampler, uv).rgb;
+            break;
+        }
+    }
+    
+    return reflectionColor;
+}
 float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
 {
     // Complete projection by doing division by w.
@@ -198,11 +242,6 @@ float4 CalcSpotLight(SpotLight sLight, float3 normal, float3 worldPos)
     return float4(0, 0, 0, 0);
 }
 
-bool More(float2 v1, float2 v2)
-{
-    return v1.x > v2.x && v1.y > v2.y;
-}
-
 float4 main(PSInput input) : SV_Target
 {
     float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
@@ -211,7 +250,8 @@ float4 main(PSInput input) : SV_Target
     if (albedo.a == 0)
         discard;
     albedo = pow(albedo, 2.2f);
-    float cameraPixelDistance = length(worldPos.xyz - LightPropertiesCB.CameraPos.xyz);
+    float3 cameraPixelVector = worldPos.xyz - LightPropertiesCB.CameraPos.xyz;
+    float cameraPixelDistance = length(cameraPixelVector);
     
     // Ambient
     float3 ambient = AmbientLightCB.Color * AmbientLightCB.Intensity;
@@ -246,7 +286,13 @@ float4 main(PSInput input) : SV_Target
         }
     }
     
-    float4 outputPixelColor = float4(albedo.xyz * lightingResult, 1.0);
+    float3 reflectionColor = float3(0, 0, 0);
+    if (normal.y > 0.5)
+    {
+        reflectionColor = TraceScreenSpaceReflection(worldPos, normalize(reflect(normalize(worldPos - LightPropertiesCB.CameraPos.xyz), normal))) * ReflectionIntensity;
+    }
+    
+    float4 outputPixelColor = float4(albedo.xyz * lightingResult + reflectionColor, 1.0);
     
     outputPixelColor = pow(outputPixelColor, 1.0f / 2.2f);
     
