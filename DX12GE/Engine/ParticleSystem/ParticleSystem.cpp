@@ -209,10 +209,9 @@ void ParticleSystem::SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> comma
 
 	// CREATE UAV
 
-	static int indexInHeap = 8;
+	int indexInHeap = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	group.uavCPUDescHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, indexInHeap);
 	group.uavGPUDescHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, indexInHeap);
-	indexInHeap++;
 
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;

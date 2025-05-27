@@ -11,11 +11,7 @@ using namespace std;
 class AssimpModelLoader
 {
 public:
-	bool LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, vector<BaseObject> *Meshes, vector<Material> *Materials, vector<int> *MaterialIndices, float* OutYOffset);
+	bool LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, vector<BaseObject*>& Meshes, vector<Material*>& Materials, vector<int>& MaterialIndices, float& OutYOffset);
 
 private:
-	int meshesCount;
-	int materialsCount;
-
-	string directory;
 };

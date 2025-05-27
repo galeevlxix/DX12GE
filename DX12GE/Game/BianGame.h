@@ -80,7 +80,7 @@ private:
     ParticleSystem particles;
     Texture3D tex3d;
     bool stopParticles = false;
-    Vector3 boxPosition = Vector3(0, 0, 0);
+    Vector3 boxPosition = Vector3(50, 0, -15);
     Vector3 boxSize = Vector3(30, 30, 30);
 
     // PIPELINE

@@ -128,7 +128,7 @@ void Texture3D::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, int width, 
 	srvDesc.Texture3D.MostDetailedMip = 0;
 	srvDesc.Texture3D.ResourceMinLODClamp = 0.0f;
 
-	m_SRVHeapIndex = CASCADES_COUNT + GBUFFER_COUNT;
+	m_SRVHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(
 		DescriptorHeaps::GetCPUHandle(

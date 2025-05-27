@@ -112,3 +112,38 @@ HandlePair DescriptorHeaps::BatchHandles(D3D12_DESCRIPTOR_HEAP_TYPE type)
 {
 	return { GetCPUHandle(type, pSingle->m_usedSize[type]), GetGPUHandle(type, pSingle->m_usedSize[type]++) };
 }
+
+int DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE type)
+{
+	switch (type)
+	{
+	case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
+		return GetNextFreeCBVIndex();
+	case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
+		return GetNextFreeRTVIndex();
+	case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
+		return GetNextFreeDSVIndex();
+	default:
+		break;
+	}
+
+	return -1;
+}
+
+int DescriptorHeaps::GetNextFreeCBVIndex()
+{
+	static int CBVindex = 0;
+	return CBVindex++;
+}
+
+int DescriptorHeaps::GetNextFreeRTVIndex()
+{
+	static int RTVindex = 0;
+	return RTVindex++;
+}
+
+int DescriptorHeaps::GetNextFreeDSVIndex()
+{
+	static int DSVindex = 0;
+	return DSVindex++;
+}

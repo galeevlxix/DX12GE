@@ -11,11 +11,14 @@
 #undef max
 #endif
 
+void DepthBuffer::Init()
+{
+    dsvCpuHandleIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+}
+
 // Resize the depth buffer to match the size of the client area.
 void DepthBuffer::ResizeDepthBuffer(int width, int height)
 {
-    dsvCpuHandleIndex = CASCADES_COUNT;
-
     // Flush any GPU commands that might be referencing the depth buffer
     Application::Get().Flush();
 

@@ -2,12 +2,11 @@
 #include "DescriptorHeaps.h"
 #include "ShaderResources.h"
 
-void GBuffer::Init(ComPtr<ID3D12Device2> device, UINT width, UINT height, int handleOffset)
+void GBuffer::Init(ComPtr<ID3D12Device2> device, UINT width, UINT height)
 {
 	m_Device = device;
 	m_Width = width;
 	m_Height = height;
-    HandleOffset = handleOffset;
 
     BuildResources();
     BuildDescriptors();
@@ -27,7 +26,7 @@ void GBuffer::Resize(UINT width, UINT height)
         return;
 
     Release();
-    Init(m_Device, width, height, HandleOffset);
+    Init(m_Device, width, height);
 }
 
 void GBuffer::BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle)
@@ -78,7 +77,7 @@ void GBuffer::SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3D12Graphic
     {
         commandList->SetGraphicsRootDescriptorTable(
             fromSlot + i,
-            DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, HandleOffset + i));
+            DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_Targets[i].SrvHeapIndex));
     }
 }
 
@@ -125,9 +124,12 @@ void GBuffer::BuildDescriptors()
 {
     for (size_t i = 0; i < GBUFFER_COUNT; i++)
     {
-        m_Targets[i].CpuRtvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, HandleOffset + i);
-        m_Targets[i].CpuSrvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, HandleOffset + i);
-        m_Targets[i].GpuSrvHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, HandleOffset + i);
+        m_Targets[i].SrvHeapIndex = m_Targets[i].SrvHeapIndex == -1 ? DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) : m_Targets[i].SrvHeapIndex;
+        m_Targets[i].RtvHeapIndex = m_Targets[i].RtvHeapIndex == -1 ? DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_RTV) : m_Targets[i].RtvHeapIndex;
+
+        m_Targets[i].CpuRtvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_Targets[i].RtvHeapIndex);
+        m_Targets[i].CpuSrvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_Targets[i].SrvHeapIndex);
+        m_Targets[i].GpuSrvHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_Targets[i].SrvHeapIndex);
 
         m_Device->CreateRenderTargetView(m_Targets[i].Texture.Get(), nullptr, m_Targets[i].CpuRtvHandle);
 

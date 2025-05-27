@@ -6,6 +6,8 @@ static WorldConstantBuffer* WorldCB = nullptr;
 static ParticleConstantBuffer* ParticleCB = nullptr;
 static ParticleComputeConstantBuffer* ComputeConstantCB = nullptr;
 static BitonicSortConstantBuffer* BitonicCB = nullptr;
+static MaterialConstantBuffer* MaterialCB = nullptr;
+
 static UploadBuffer* mUploadBuffer = nullptr;
 
 static UploadBuffer::Allocation OcbAllocation;
@@ -14,6 +16,7 @@ static UploadBuffer::Allocation ScbAllocation;
 static UploadBuffer::Allocation PcbAllocation;
 static UploadBuffer::Allocation CcbAllocation;
 static UploadBuffer::Allocation BcbAllocation;
+static UploadBuffer::Allocation McbAllocation;
 
 static const UINT OcbSize = sizeof(ObjectConstantBuffer);
 static const UINT ScbSize = sizeof(ShadowConstantBuffer);
@@ -21,6 +24,7 @@ static const UINT WcbSize = sizeof(WorldConstantBuffer);
 static const UINT PcbSize = sizeof(ParticleConstantBuffer);
 static const UINT CcbSize = sizeof(ParticleComputeConstantBuffer);
 static const UINT BcbSize = sizeof(BitonicSortConstantBuffer);
+static const UINT McbSize = sizeof(MaterialConstantBuffer);
 
 void ShaderResources::Create()
 {
@@ -58,6 +62,11 @@ void ShaderResources::Create()
 	{
 		BitonicCB = new BitonicSortConstantBuffer();
 	}
+
+	if (!MaterialCB)
+	{
+		MaterialCB = new MaterialConstantBuffer();
+	}
 }
 
 ObjectConstantBuffer* ShaderResources::GetObjectCB()
@@ -90,6 +99,11 @@ BitonicSortConstantBuffer* ShaderResources::GetBitonicSortCB()
 	return BitonicCB;
 }
 
+MaterialConstantBuffer* ShaderResources::GetMaterialCB()
+{
+	return MaterialCB;
+}
+
 UploadBuffer* ShaderResources::GetUploadBuffer()
 {
 	return mUploadBuffer;
@@ -100,8 +114,6 @@ void ShaderResources::OnDelete()
 	mUploadBuffer->Reset();
 	mUploadBuffer = nullptr;
 }
-
-// поменять на автоматическое определение размера
 
 void ShaderResources::SetGraphicsObjectCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
@@ -143,5 +155,12 @@ void ShaderResources::SetBitonicSortCB(ComPtr<ID3D12GraphicsCommandList2> comman
 	BcbAllocation = mUploadBuffer->Allocate(BcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(BcbAllocation.CPU, BitonicCB, BcbSize);
 	commandList->SetComputeRootConstantBufferView(slot, BcbAllocation.GPU);
+}
+
+void ShaderResources::SetMaterialCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
+{
+	McbAllocation = mUploadBuffer->Allocate(McbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	memcpy(McbAllocation.CPU, MaterialCB, McbSize);
+	commandList->SetGraphicsRootConstantBufferView(slot, McbAllocation.GPU);
 }
 

@@ -57,7 +57,6 @@ cbuffer WCB : register(b0)
     LightProperties LightPropertiesCB;
     
     matrix ViewProjection;
-    float4 IsMirror;
 };
 
 cbuffer SCB : register(b1)
@@ -91,46 +90,40 @@ static bool fogEnable = true;
 static float fogStart = 35;
 static float fogDistance = 115; //fogEnd - fogStart
 
-static float RayStep = 0.01;             // Шаг трассировки луча
-static int MaxSteps = 128;               // Макс. число шагов
-static float MaxDistance = 100.0;       // Макс. дистанция трассировки
-static float Thickness = 0.01;           // Толщина проверки пересечений
-static float ReflectionIntensity = 0.5; // Интенсивность отражений 
+static float RayStep = 0.025;            // Шаг трассировки луча
+static int MaxSteps = 256;               // Макс. число шагов
+static float MaxDistance = 32.0;         // Макс. дистанция трассировки
+static float Thickness = 0.0125;           // Толщина проверки пересечений
+static float ReflectionIntensity = 1.0f; // Интенсивность отражений 
 
 float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
 {
-    // Инициализация параметров трассировки
-    float3 currentPos = worldPos;
     float3 rayStep = reflectionDir * RayStep;
-    float3 reflectionColor = float4(0, 0, 0, 0);
+    float3 currentPos = worldPos;
     
-    [unroll(MaxSteps)]
-    for (int i = 0; i < MaxSteps; ++i)
+    [loop]
+    while (length(worldPos - currentPos) < MaxDistance)
     {
         currentPos += rayStep;
         
-        // Преобразуем мировую позицию в UV-координаты
         float4 clipPos = mul(ViewProjection, float4(currentPos, 1.0));
         clipPos.xyz /= clipPos.w;
+        clipPos.y = -clipPos.y;
         float2 uv = clipPos.xy * 0.5 + 0.5;
         
-        // Проверка выхода за пределы экрана
-        if (any(uv < 0) || any(uv > 1))
-            break;        
+        if (uv.x < 0 || uv.y < 0 || uv.x > 1 || uv.y > 1)
+            return float3(0, 0, 0);
         
-        // Сравнение глубины
         float3 gBufferWorldPos = gPosition.SampleLevel(gSampler, uv, 0).xyz;
-        float depthDiff = currentPos.z - gBufferWorldPos.z;
+        float depthDiff = length(currentPos - gBufferWorldPos);
         
-        // Проверка пересечения
-        if (depthDiff > 0 && depthDiff < Thickness)
+        if (depthDiff > 0 && depthDiff <= Thickness)
         {
-            reflectionColor = gDiffuse.Sample(gSampler, uv).rgb;
-            break;
+            return gDiffuse.Sample(gSampler, uv).rgb;
         }
     }
     
-    return reflectionColor;
+    return float3(0, 0, 0);
 }
 float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
 {
@@ -242,15 +235,49 @@ float4 CalcSpotLight(SpotLight sLight, float3 normal, float3 worldPos)
     return float4(0, 0, 0, 0);
 }
 
+bool More(float2 v1, float2 v2)
+{
+    return v1.x > v2.x && v1.y > v2.y;
+}
+
 float4 main(PSInput input) : SV_Target
 {
+    /*
+    {
+        float2 wp_start = float2(0.0, -0.25);
+        float2 wp_end = float2(0.25, 0);
+    
+        float2 norm_start = float2(0.0, -0.55);
+        float2 norm_end = float2(0.25, -0.3);
+    
+        float2 albedo_start = float2(0.0, -0.85);
+        float2 albedo_end = float2(0.25, -0.6);
+    
+        if (More(input.TexCoord, wp_start) && More(wp_end, input.TexCoord))
+        {
+            return gPosition.Sample(gSampler, input.TexCoord * 4);
+        }
+        else if (More(input.TexCoord, norm_start) && More(norm_end, input.TexCoord))
+        {
+            return gNormal.Sample(gSampler, (input.TexCoord - norm_start) * 4);
+        }
+        else if (More(input.TexCoord, albedo_start) && More(albedo_end, input.TexCoord))
+        {
+            return gDiffuse.Sample(gSampler, (input.TexCoord - albedo_start) * 4);
+        }
+    }
+    */
+    
     float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
     float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
     float4 albedo = gDiffuse.Sample(gSampler, input.TexCoord);
+    
     if (albedo.a == 0)
         discard;
     albedo = pow(albedo, 2.2f);
+    
     float3 cameraPixelVector = worldPos.xyz - LightPropertiesCB.CameraPos.xyz;
+    float3 cameraPixelDirection = normalize(cameraPixelVector);
     float cameraPixelDistance = length(cameraPixelVector);
     
     // Ambient
@@ -286,13 +313,16 @@ float4 main(PSInput input) : SV_Target
         }
     }
     
-    float3 reflectionColor = float3(0, 0, 0);
-    if (normal.y > 0.5)
-    {
-        reflectionColor = TraceScreenSpaceReflection(worldPos, normalize(reflect(normalize(worldPos - LightPropertiesCB.CameraPos.xyz), normal))) * ReflectionIntensity;
-    }
+    float3 outputPixelColor = albedo.xyz * lightingResult;
     
-    float4 outputPixelColor = float4(albedo.xyz * lightingResult + reflectionColor, 1.0);
+    if (normal.y > 0.5f)
+    {
+        float3 reflectDir = normalize(reflect(cameraPixelDirection, normal));
+        float3 reflectionColor = TraceScreenSpaceReflection(worldPos, reflectDir);
+        float f0 = 0.04; // либо из материала
+        float fresnel = saturate(f0 + (1 - f0) * pow(1 - dot(normal, normalize(LightPropertiesCB.CameraPos.xyz - worldPos)), 5));
+        outputPixelColor = lerp(outputPixelColor, reflectionColor, fresnel * ReflectionIntensity);
+    }
     
     outputPixelColor = pow(outputPixelColor, 1.0f / 2.2f);
     
@@ -301,10 +331,10 @@ float4 main(PSInput input) : SV_Target
     {
         float fogFactor = 1.0f - (cameraPixelDistance - fogStart) / fogDistance;
         fogFactor = clamp(fogFactor, 0.0f, 1.0f);
-        float4 fogColor = float4(0.8f, 0.5f, 0.5f, 1.0f);
+        float3 fogColor = float3(0.5f, 0.5f, 0.5f);
         outputPixelColor = fogFactor * outputPixelColor + (1.0 - fogFactor) * fogColor;
     }
     
     // Result
-    return outputPixelColor;
+    return float4(outputPixelColor, 1.0);
 }

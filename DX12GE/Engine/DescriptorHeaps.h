@@ -34,4 +34,10 @@ public:
 	static ComPtr<ID3D12DescriptorHeap> GetDSVHeap();
 
 	static HandlePair BatchHandles(D3D12_DESCRIPTOR_HEAP_TYPE type);
+
+	static int GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE type);
+private:
+	static int GetNextFreeCBVIndex();
+	static int GetNextFreeRTVIndex();
+	static int GetNextFreeDSVIndex();
 };

@@ -30,11 +30,8 @@ public:
 
     Vector3 Position;
     Vector3 Rotation;
-
-    bool eaten = false;
-    bool canEatIt = false;
 private:
-	vector<BaseObject> m_Meshes;
-    vector<Material> m_Materials;
+	vector<BaseObject*> m_Meshes;
+    vector<Material*> m_Materials;
     vector<int> m_MaterialIndices;
 };

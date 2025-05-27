@@ -39,6 +39,8 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
     }
 }
 
+
+
 void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     if (!IsInitialized()) return;
@@ -269,3 +271,4 @@ Vector3 BaseObject::GetScale()
 {
     return m_Scale;
 }
+

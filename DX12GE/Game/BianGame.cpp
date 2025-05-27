@@ -34,6 +34,7 @@ bool BianGame::LoadContent()
     ShaderResources::Create();
     DescriptorHeaps::OnInit(device);
 
+
     // PIPELINES
     m_GeometryPassPipeline.Initialize(device);
     m_LightPassPipeline.Initialize(device);
@@ -44,7 +45,7 @@ bool BianGame::LoadContent()
 
     // 3D SCENE
     m_CascadedShadowMap.Create();
-    m_GBuffer.Init(device, GetClientWidth(), GetClientHeight(), CASCADES_COUNT);
+    m_GBuffer.Init(device, GetClientWidth(), GetClientHeight());
     particles.OnLoad(commandList);
     katamariScene.OnLoad(commandList);
     lights.Init(&(katamariScene.player));
@@ -68,6 +69,7 @@ bool BianGame::LoadContent()
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
 
+    m_DepthBuffer.Init();
     m_DepthBuffer.ResizeDepthBuffer(GetClientWidth(), GetClientHeight());
 
     return true;
@@ -87,7 +89,6 @@ void BianGame::OnUpdate(UpdateEventArgs& e)
     lights.OnUpdate(e.ElapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
     ShaderResources::GetWorldCB()->ViewProjection = m_Camera.GetViewProjMatrix();
-    ShaderResources::GetWorldCB()->IsMirror = Vector4(0, 0, 0, 0);
     particles.OnUpdate(e.ElapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
     RefreshTitle(e);
     m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
@@ -171,9 +172,8 @@ void BianGame::LightPassRender(RenderEventArgs& e)
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetView();
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
     TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    FLOAT clearColor[] = { 0.8f, 0.5f, 0.5f, 1.0f };
+    FLOAT clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-    //m_DepthBuffer.ClearDepth(commandList);
     commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
     commandList->RSSetViewports(1, &m_Viewport);
     commandList->RSSetScissorRects(1, &m_ScissorRect);

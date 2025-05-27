@@ -4,7 +4,7 @@
 class GeometryPassPipeline
 {
 private:
-    const static int InputLayoutCount = 3;
+    const static int InputLayoutCount = 5;
 public:
     ComPtr<ID3D12RootSignature> RootSignature;
     ComPtr<ID3D12PipelineState> PipelineState;

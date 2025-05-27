@@ -18,7 +18,7 @@ void CascadedShadowMap::Create()
 
 	for (int i = 0; i < CASCADES_COUNT; i++)
 	{
-		m_Cascades[i].ShadowMapTexture = new ShadowMap(device, width, height, i);
+		m_Cascades[i].ShadowMapTexture = new ShadowMap(device, width, height);
 		m_Cascades[i].ShadowMapTexture->Resource()->SetName(names[i]);
 		m_Cascades[i].Radius = sqrtf(maxRadius * splits[i] * maxRadius * splits[i] * 2.0);
 	}

@@ -77,7 +77,6 @@ struct WorldConstantBuffer
 	LightProperties LightProps;
 
 	Matrix ViewProjection;
-	Vector4 IsMirror;
 };
 
 struct ParticleConstantBuffer
@@ -103,6 +102,12 @@ struct BitonicSortConstantBuffer
 	Vector4 CameraPos;
 };
 
+struct MaterialConstantBuffer
+{
+	Vector4 HasDiffuseNormalEmissive;
+	Vector4 HasMetallicRoughnessOcclusion;
+};
+
 class ShaderResources
 {
 public:
@@ -113,6 +118,7 @@ public:
 	static ParticleConstantBuffer* GetParticleCB();
 	static ParticleComputeConstantBuffer* GetParticleComputeCB();
 	static BitonicSortConstantBuffer* GetBitonicSortCB();
+	static MaterialConstantBuffer* GetMaterialCB();
 
 	static UploadBuffer* GetUploadBuffer();
 	
@@ -124,6 +130,7 @@ public:
 	static void SetGraphicsParticleCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetParticleComputeCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetBitonicSortCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
+	static void SetMaterialCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 };
 
 template<typename T>

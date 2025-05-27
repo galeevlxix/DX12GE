@@ -49,7 +49,7 @@ private:
 public:
     void Load(ComPtr<ID3D12GraphicsCommandList2> commandList, string path);
     void CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc);
-    void Render(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void Render(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot);
 
     D3D12_CPU_DESCRIPTOR_HANDLE GetCpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE heapType);
     D3D12_GPU_DESCRIPTOR_HANDLE GetGpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE heapType);

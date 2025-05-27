@@ -10,65 +10,9 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	player.OnLoad(commandList);
 
-	CreateField(commandList);
-
-	srand(time(0));
-
-	for (int i = 0; i < itemCount; i++)
-	{
-		string name = "boot" + to_string(i);
-		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/low-poly-boot/model.fbx");
-		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.x, 0, randVector.z);
-		m_objects[name].SetRotationY(randVector.y);
-		m_objects[name].SetScale(20, 20, 20);
-		m_objects[name].canEatIt = true;
-	}
-
-	for (int i = 0; i < itemCount; i++)
-	{
-		string name = "cup" + to_string(i);
-		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/low-poly-cup-with-lemon-tea/Cup.fbx");
-		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.x, 0, randVector.z);
-		m_objects[name].SetRotationY(randVector.y);
-		m_objects[name].SetScale(0.3f, 0.3f, 0.3f);
-		m_objects[name].canEatIt = true;
-	}
-
-	for (int i = 0; i < itemCount; i++)
-	{
-		string name = "juice" + to_string(i);
-		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/low-poly-stylized-juice/model.dae");
-		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.x, 2, randVector.z);
-		m_objects[name].SetRotationY(randVector.y);
-		m_objects[name].SetScale(150, 150, 150);
-		m_objects[name].canEatIt = true;
-	}
-
-	for (int i = 0; i < itemCount; i++)
-	{
-		string name = "chair" + to_string(i);
-		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/old-wooden-chair-low-poly/chair.fbx");
-		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.x, 0, randVector.z);
-		m_objects[name].SetRotationY(randVector.y);
-		m_objects[name].SetScale(0.05, 0.05, 0.05);
-		m_objects[name].canEatIt = true;
-	}
-
-	for (int i = 0; i < itemCount; i++)
-	{
-		string name = "toothbrush" + to_string(i);
-		Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/toothbrush/model.dae");
-		Vector3 randVector = Vector3(GetRandomNumber(-60, 60), GetRandomNumber(-100, 100) / 100.0 * PI, GetRandomNumber(-60, 60));
-		m_objects[name].Move(randVector.x, -98, randVector.z);
-		m_objects[name].SetScale(0.03, 0.03, 0.03);
-		m_objects[name].canEatIt = true;
-	}
+	Add(commandList, "scene_forest", "../../DX12GE/Resources/Models/gaz/scene.gltf");
+	m_objects["scene_forest"].SetScale(3, 3, 3);
 }
-
 
 void KatamariGame::OnUpdate(float deltaTime)
 {
@@ -76,20 +20,16 @@ void KatamariGame::OnUpdate(float deltaTime)
 
 	for (string name : m_names)
 	{
-		if (m_objects.find(name) == m_objects.end() || m_objects[name].eaten) { continue; }
 		m_objects[name].OnUpdate(deltaTime);
 	}
 }
 
 void KatamariGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
-	ShaderResources::GetWorldCB()->IsMirror = Vector4(1, 0, 0, 0);
 	player.OnRender(commandList, viewProjMatrix);
-	ShaderResources::GetWorldCB()->IsMirror = Vector4(0, 0, 0, 0);
 
 	for (string name : m_names)
 	{
-		if (m_objects.find(name) == m_objects.end() || m_objects[name].eaten) { continue; }
 		m_objects[name].OnRender(commandList, viewProjMatrix);
 	}
 }

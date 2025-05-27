@@ -4,8 +4,8 @@
 void Player::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	prince.OnLoad(commandList, "../../DX12GE/Resources/Katamari Objects/prince_katamari_damacy/scene.gltf");
-
-	Direction = Vector3(0, 0, 1);
+	prince.SetPosition(-6.7f, 13.3f, 43.0f);
+	Direction = Vector3(0, 0, -1);
 }
 
 void Player::OnUpdate(double deltaTime)

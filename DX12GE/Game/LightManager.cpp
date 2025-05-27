@@ -21,13 +21,13 @@ void LightManager::Init(Player* player)
 	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.1;
 
 	// Specular
-	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 0.3f;
+	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 0.5f;
 
 	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 64;
 
 	// DirectionalLight
 	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Color = COLOR_WHITE;
-	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.3;
+	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.5;
 	ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(1, -1, -1, 1);
 
 	ShaderResources::GetWorldCB()->LightProps.PointLightsCount = 14;
@@ -141,4 +141,5 @@ void LightManager::OnUpdate(float deltaTime)
 
 	m_SpotLights[1].PointLightComponent.Position = (*m_player).prince.Position + Vector3(0, 2, 0);
 	m_SpotLights[1].Direction = (*m_player).Direction;
+	m_SpotLights[1].PointLightComponent.BaseLightComponent.Intensity == 5;
 }

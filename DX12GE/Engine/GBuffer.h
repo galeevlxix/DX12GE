@@ -9,6 +9,9 @@ struct Target
 	D3D12_CPU_DESCRIPTOR_HANDLE CpuRtvHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE CpuSrvHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE GpuSrvHandle;
+
+	int RtvHeapIndex = -1;
+	int SrvHeapIndex = -1;
 };
 
 class GBuffer
@@ -21,7 +24,7 @@ public:
 		DIFFUSE = 2,
 	};
 
-	void Init(ComPtr<ID3D12Device2> device, UINT width, UINT height, int cpuDescHandleOffset);
+	void Init(ComPtr<ID3D12Device2> device, UINT width, UINT height);
 	void Release();
 	void Resize(UINT width, UINT height);
 	void BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle);
@@ -37,7 +40,6 @@ private:
 	UINT m_Width = 0;
 	UINT m_Height = 0;
 	ComPtr<ID3D12Device2> m_Device;
-	UINT HandleOffset;
 
 	Target m_Targets[GBUFFER_COUNT];
 

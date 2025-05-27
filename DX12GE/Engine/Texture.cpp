@@ -14,8 +14,8 @@ void Texture::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, string path)
 
     ScratchImage image;
     TexMetadata metadata;
-    //../../DX12GE/Resources/Katamari Objects/prince_katamari_damacy/Material_baseColor.png
-    
+    ScratchImage mipChain;
+
     ThrowIfFailed(
         LoadFromWICFile(
             (wstring(path.begin(), path.end())).c_str(),
@@ -23,14 +23,14 @@ void Texture::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, string path)
             nullptr,
             image));
 
-    // generate mip chain
-    ScratchImage mipChain;
+
     ThrowIfFailed(
         GenerateMipMaps(
             *image.GetImages(),
             TEX_FILTER_BOX,
             0,
             mipChain));
+
 
     // create resource 
     const auto& chainBase = *mipChain.GetImages();
@@ -71,7 +71,6 @@ void Texture::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, string path)
     }
 
     // create the intermediate upload buffer
-    //CD3DX12_HEAP_PROPERTIES heapProps2{ D3D12_HEAP_TYPE_UPLOAD };
     CD3DX12_HEAP_PROPERTIES heapProps2{ D3D12_HEAP_TYPE_UPLOAD };
     const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_Resource.Get(), 0, static_cast<uint32_t>(subresources.size()));
     const CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
@@ -110,9 +109,7 @@ void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
 {
     auto device = Application::Get().GetDevice();
 
-    static int index = CASCADES_COUNT + GBUFFER_COUNT + 2;
-    m_SRVHeapIndex = index;
-    index++;
+    m_SRVHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(
         DescriptorHeaps::GetCPUHandle(
@@ -123,10 +120,10 @@ void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
     device->CreateShaderResourceView(m_Resource.Get(), &srvDesc, handle);
 }
 
-void Texture::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void Texture::Render(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot)
 {
     commandList->SetGraphicsRootDescriptorTable(
-        1,
+        slot,
         DescriptorHeaps::GetGPUHandle(
             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 
             m_SRVHeapIndex)
