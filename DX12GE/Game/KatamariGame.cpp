@@ -34,21 +34,6 @@ void KatamariGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMA
 	}
 }
 
-void KatamariGame::CreateField(ComPtr<ID3D12GraphicsCommandList2> commandList)
-{
-	for (UINT i = 0; i < fieldSize; i++)
-	{
-		for (UINT j = 0; j < fieldSize; j++)
-		{
-			string name = "field" + to_string(i) + "_" + to_string(j);
-			Add(commandList, name, "../../DX12GE/Resources/Katamari Objects/field/cube.obj");
-			m_objects[name].SetScale(cellSize, 0.01f, cellSize);
-			float offset = fieldSize % 2 == 1 ? cellSize : 0;
-			m_objects[name].SetPosition((i - fieldSize * 0.5f) * cellSize * 2 + cellSize, -0.01f / 2.0f , (j - fieldSize * 0.5f) * cellSize * 2 + cellSize);
-		}
-	}
-}
-
 void KatamariGame::Add(ComPtr<ID3D12GraphicsCommandList2> commandList, string name, string path)
 {
 	// KEY found

@@ -182,11 +182,11 @@ void BianGame::LightPassRender(RenderEventArgs& e)
 
     m_LightPassPipeline.Set(commandList);
     ShaderResources::SetGraphicsWorldCB(commandList, 0);
-    ShaderResources::SetGraphicsShadowCB(commandList, 6);
-    SetGraphicsDynamicStructuredBuffer(commandList, 4, lights.m_PointLights);
-    SetGraphicsDynamicStructuredBuffer(commandList, 5, lights.m_SpotLights);
-    m_GBuffer.SetGraphicsRootDescriptorTables(1, commandList);
-    m_CascadedShadowMap.SetGraphicsRootDescriptorTables(7, commandList);
+    ShaderResources::SetGraphicsShadowCB(commandList, 1);
+    SetGraphicsDynamicStructuredBuffer(commandList, 2, lights.m_PointLights);
+    SetGraphicsDynamicStructuredBuffer(commandList, 3, lights.m_SpotLights);
+    m_CascadedShadowMap.SetGraphicsRootDescriptorTables(4, commandList);
+    m_GBuffer.SetGraphicsRootDescriptorTables(8, commandList);
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
 

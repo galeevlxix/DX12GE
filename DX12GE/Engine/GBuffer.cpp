@@ -36,7 +36,7 @@ void GBuffer::BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, 
         m_Targets[0].CpuRtvHandle,
         m_Targets[1].CpuRtvHandle,
         m_Targets[2].CpuRtvHandle,
-        //m_Targets[3].CpuRtvHandle,
+        m_Targets[3].CpuRtvHandle,
     };
 
     commandList->OMSetRenderTargets(GBUFFER_COUNT, rtvs, FALSE, &dsvHandle);
@@ -88,7 +88,7 @@ void GBuffer::BuildResources()
         DXGI_FORMAT_R32G32B32A32_FLOAT, // Position
         DXGI_FORMAT_R16G16B16A16_FLOAT, // Normal
         DXGI_FORMAT_R8G8B8A8_UNORM,     // Diffuse
-        //DXGI_FORMAT_R8G8B8A8_UNORM      // ORM
+        DXGI_FORMAT_R8G8B8A8_UNORM      // Emissive
     };
 
     for (size_t i = 0; i < GBUFFER_COUNT; i++)

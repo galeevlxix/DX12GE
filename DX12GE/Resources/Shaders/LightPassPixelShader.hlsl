@@ -71,6 +71,7 @@ cbuffer SCB : register(b1)
 Texture2D<float4> gPosition : register(t0);     // RGBA32_FLOAT
 Texture2D<float4> gNormal : register(t1);       // RGBA16_FLOAT
 Texture2D<float4> gDiffuse : register(t2);      // RGBA8_UNORM
+Texture2D<float4> gEmissive : register(t9);     // RGBA8_UNORM
 
 StructuredBuffer<PointLight> PointLightsSB : register(t3);
 StructuredBuffer<SpotLight> SpotLightsSB : register(t4);
@@ -271,6 +272,7 @@ float4 main(PSInput input) : SV_Target
     float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
     float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
     float4 albedo = gDiffuse.Sample(gSampler, input.TexCoord);
+    float4 emissive = gEmissive.Sample(gSampler, input.TexCoord);
     
     if (albedo.a == 0)
         discard;
@@ -313,9 +315,9 @@ float4 main(PSInput input) : SV_Target
         }
     }
     
-    float3 outputPixelColor = albedo.xyz * lightingResult;
+    float3 outputPixelColor = albedo.xyz * lightingResult + emissive.rgb;
     
-    if (normal.y > 0.5f)
+    if (normal.y > 0.8f)
     {
         float3 reflectDir = normalize(reflect(cameraPixelDirection, normal));
         float3 reflectionColor = TraceScreenSpaceReflection(worldPos, reflectDir);

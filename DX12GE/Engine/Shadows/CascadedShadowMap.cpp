@@ -54,7 +54,6 @@ void CascadedShadowMap::SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3
 	{
 		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, i);
 		commandList->SetGraphicsRootDescriptorTable(fromSlot + i, gpuHandle);
-		int a = 3;
 	}
 }
 

@@ -75,8 +75,6 @@ private:
 
 public:
     bool IsInitialized() { return Initialized; }
-
-    
 };
 
 template<typename T>

@@ -60,4 +60,5 @@ void Material::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
     m_DiffuseTexture->Render(commandList, 2);
     if (HasDiffuseNormalEmissive.y > 0.5f) m_NormalTexture->Render(commandList, 3);
+    if (HasDiffuseNormalEmissive.z > 0.5f) m_EmissiveTexture->Render(commandList, 4);
 }

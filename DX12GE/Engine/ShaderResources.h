@@ -10,7 +10,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 const int CASCADES_COUNT = 4;
-const int GBUFFER_COUNT = 3;
+const int GBUFFER_COUNT = 4;
 
 // LIGHTS
 
