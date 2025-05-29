@@ -22,7 +22,7 @@ void GBuffer::Release()
 
 void GBuffer::Resize(UINT width, UINT height)
 {
-    if (width == m_Width && height == m_Height)
+    if (width == m_Width && height == m_Height || m_Device == nullptr)
         return;
 
     Release();

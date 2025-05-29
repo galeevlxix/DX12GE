@@ -84,7 +84,7 @@ float4 main(PSInput IN) : SV_Target
         float cameraPixelDistance = length(IN.WorldPos.xyz - LightPropertiesCB.CameraPos.xyz);
         float fogFactor = 1.0f - (cameraPixelDistance - fogStart) / fogDistance;
         fogFactor = clamp(fogFactor, 0.0f, 1.0f);
-        float3 fogColor = float3(0.8f, 0.5f, 0.5f);
+        float3 fogColor = float3(0.5f, 0.5f, 0.5f);
         color = fogFactor * color + (1.0 - fogFactor) * fogColor;
         pixelColor = float4(color, pixelColor.a);
     }

@@ -8,7 +8,7 @@ private:
     //ComPtr<ID3D12Resource> DepthBuffer;
     Texture DepthBufferTexture;
 public:
-    UINT dsvCpuHandleIndex;
+    UINT dsvCpuHandleIndex = -1;
 
     void Init();
     void ResizeDepthBuffer(int width, int height);

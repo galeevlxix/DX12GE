@@ -19,6 +19,8 @@ void DepthBuffer::Init()
 // Resize the depth buffer to match the size of the client area.
 void DepthBuffer::ResizeDepthBuffer(int width, int height)
 {
+    if (dsvCpuHandleIndex == -1) return;
+
     // Flush any GPU commands that might be referencing the depth buffer
     Application::Get().Flush();
 

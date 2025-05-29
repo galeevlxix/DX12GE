@@ -34,7 +34,6 @@ bool BianGame::LoadContent()
     ShaderResources::Create();
     DescriptorHeaps::OnInit(device);
 
-
     // PIPELINES
     m_GeometryPassPipeline.Initialize(device);
     m_LightPassPipeline.Initialize(device);
