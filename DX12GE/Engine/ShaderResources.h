@@ -10,7 +10,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 const int CASCADES_COUNT = 4;
-const int GBUFFER_COUNT = 4;
+const int GBUFFER_COUNT = 5;
 
 // LIGHTS
 
@@ -105,7 +105,7 @@ struct BitonicSortConstantBuffer
 struct MaterialConstantBuffer
 {
 	Vector4 HasDiffuseNormalEmissive;
-	Vector4 HasMetallicRoughnessOcclusion;
+	Vector4 HasOcclusionRoughnessMetallicCombined;
 };
 
 class ShaderResources

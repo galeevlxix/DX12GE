@@ -23,6 +23,7 @@ public:
 		NORMAL = 1,
 		DIFFUSE = 2,
 		EMISSIVE = 3,
+		ORM = 4
 	};
 
 	void Init(ComPtr<ID3D12Device2> device, UINT width, UINT height);

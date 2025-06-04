@@ -65,7 +65,7 @@ void GeometryPassPipeline::CreateRootSignatureFlags()
 
 void GeometryPassPipeline::CreateRootSignatureBlob()
 {
-    CD3DX12_ROOT_PARAMETER1 rootParameters[5];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[9];
 
     rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);  //objConst
     rootParameters[1].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);  //matConst
@@ -78,6 +78,18 @@ void GeometryPassPipeline::CreateRootSignatureBlob()
 
     const CD3DX12_DESCRIPTOR_RANGE1 emissiveTexDescRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
     rootParameters[4].InitAsDescriptorTable(1, &emissiveTexDescRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_DESCRIPTOR_RANGE1 occlusionTexDescRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
+    rootParameters[5].InitAsDescriptorTable(1, &occlusionTexDescRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_DESCRIPTOR_RANGE1 roughnessTexDescRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4);
+    rootParameters[6].InitAsDescriptorTable(1, &roughnessTexDescRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_DESCRIPTOR_RANGE1 metallicTexDescRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5);
+    rootParameters[7].InitAsDescriptorTable(1, &metallicTexDescRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_DESCRIPTOR_RANGE1 combinedTexDescRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 6);
+    rootParameters[8].InitAsDescriptorTable(1, &combinedTexDescRange, D3D12_SHADER_VISIBILITY_PIXEL);
     
     const CD3DX12_STATIC_SAMPLER_DESC samplers[1] =
     {
@@ -131,11 +143,12 @@ void GeometryPassPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
     } pipelineStateStream;
 
     D3D12_RT_FORMAT_ARRAY rtvFormats = {};
-    rtvFormats.NumRenderTargets = 4;
+    rtvFormats.NumRenderTargets = 5;
     rtvFormats.RTFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;   // Position
     rtvFormats.RTFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;   // Normal
     rtvFormats.RTFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;       // Diffuse
     rtvFormats.RTFormats[3] = DXGI_FORMAT_R8G8B8A8_UNORM;       // Emissive
+    rtvFormats.RTFormats[4] = DXGI_FORMAT_R8G8B8A8_UNORM;       // Orm
 
     pipelineStateStream.pRootSignature = RootSignature.Get();
     pipelineStateStream.InputLayout = { m_InputLayout, _countof(m_InputLayout) };

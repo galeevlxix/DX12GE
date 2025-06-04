@@ -18,8 +18,8 @@ private:
 
     bool DrawIt = true;
 
-    DirectX::SimpleMath::Vector4 HasDiffuseNormalEmissive;
-    DirectX::SimpleMath::Vector4 HasMetallicRoughnessOcclusion;
+    DirectX::SimpleMath::Vector4 HasDiffuseNormalEmissive = DirectX::SimpleMath::Vector4(0, 0, 0, 0);
+    DirectX::SimpleMath::Vector4 HasOcclusionRoughnessMetallicCombined = DirectX::SimpleMath::Vector4(0, 0, 0, 0);
 
     Texture* AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, const char* path);    
 
@@ -27,6 +27,7 @@ public:
     map<TextureType, string> m_ImagePaths;
 
     void Load(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void RenderTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot, Texture* texture, float mask);
     void Render(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
     bool CanDrawIt() { return DrawIt; }

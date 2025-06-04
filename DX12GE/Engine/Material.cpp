@@ -27,13 +27,6 @@ int IsNotNull(Texture* texture)
 
 void Material::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    if (m_ImagePaths.size() == 0 || NotFoundTexture(m_ImagePaths[TextureType::DIFFUSE].c_str()))
-    {
-        m_DiffuseTexture = new Texture();
-        m_DiffuseTexture->Load(commandList, "../../DX12GE/Resources/empty.png");
-        return;
-    }
-
     m_DiffuseTexture = AddTexture(commandList, m_ImagePaths[TextureType::DIFFUSE].c_str());
     m_NormalTexture = AddTexture(commandList, m_ImagePaths[TextureType::NORMALS].c_str());
     m_EmissiveTexture = AddTexture(commandList, m_ImagePaths[TextureType::EMISSIVE].c_str());
@@ -46,19 +39,33 @@ void Material::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
     HasDiffuseNormalEmissive.y = IsNotNull(m_NormalTexture);
     HasDiffuseNormalEmissive.z = IsNotNull(m_EmissiveTexture);
     HasDiffuseNormalEmissive.w = 1.234567f;
-    HasMetallicRoughnessOcclusion.x = IsNotNull(m_MetallicTexture);
-    HasMetallicRoughnessOcclusion.y = IsNotNull(m_RoughnessTexture);
-    HasMetallicRoughnessOcclusion.z = IsNotNull(m_GltfMetallicRoughnessTexture);
-    HasMetallicRoughnessOcclusion.w = IsNotNull(m_AOTexture);
+
+    HasOcclusionRoughnessMetallicCombined.x = IsNotNull(m_AOTexture);
+    HasOcclusionRoughnessMetallicCombined.w = IsNotNull(m_GltfMetallicRoughnessTexture);
+    if (HasOcclusionRoughnessMetallicCombined.w < 0.5f)
+    {
+        HasOcclusionRoughnessMetallicCombined.y = IsNotNull(m_RoughnessTexture);
+        HasOcclusionRoughnessMetallicCombined.z = IsNotNull(m_MetallicTexture);
+    }
+}
+
+void Material::RenderTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot, Texture* texture, float mask)
+{
+    if (mask > 0.5f) texture->Render(commandList, slot);
 }
 
 void Material::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
     ShaderResources::GetMaterialCB()->HasDiffuseNormalEmissive = HasDiffuseNormalEmissive;
-    ShaderResources::GetMaterialCB()->HasMetallicRoughnessOcclusion = HasMetallicRoughnessOcclusion;
+    ShaderResources::GetMaterialCB()->HasOcclusionRoughnessMetallicCombined = HasOcclusionRoughnessMetallicCombined;
     ShaderResources::SetMaterialCB(commandList, 1);
 
-    m_DiffuseTexture->Render(commandList, 2);
-    if (HasDiffuseNormalEmissive.y > 0.5f) m_NormalTexture->Render(commandList, 3);
-    if (HasDiffuseNormalEmissive.z > 0.5f) m_EmissiveTexture->Render(commandList, 4);
+    RenderTexture(commandList, 2, m_DiffuseTexture,     HasDiffuseNormalEmissive.x);
+    RenderTexture(commandList, 3, m_NormalTexture,      HasDiffuseNormalEmissive.y);
+    RenderTexture(commandList, 4, m_EmissiveTexture,    HasDiffuseNormalEmissive.z);
+
+    RenderTexture(commandList, 5, m_AOTexture,          HasOcclusionRoughnessMetallicCombined.x);
+    RenderTexture(commandList, 6, m_RoughnessTexture,   HasOcclusionRoughnessMetallicCombined.y);
+    RenderTexture(commandList, 7, m_MetallicTexture,    HasOcclusionRoughnessMetallicCombined.z);
+    RenderTexture(commandList, 8, m_GltfMetallicRoughnessTexture,HasOcclusionRoughnessMetallicCombined.w);
 }

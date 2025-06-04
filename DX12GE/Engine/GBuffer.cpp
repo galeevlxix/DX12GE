@@ -37,6 +37,7 @@ void GBuffer::BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, 
         m_Targets[1].CpuRtvHandle,
         m_Targets[2].CpuRtvHandle,
         m_Targets[3].CpuRtvHandle,
+        m_Targets[4].CpuRtvHandle,
     };
 
     commandList->OMSetRenderTargets(GBUFFER_COUNT, rtvs, FALSE, &dsvHandle);
@@ -73,7 +74,7 @@ void GBuffer::SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 void GBuffer::SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    for (int i = 0; i < GBUFFER_COUNT; i++) //áåç ORM, ÈÑÏÐÀÂÈÒÜ Â ÁÓÄÓÙÅÌ
+    for (int i = 0; i < GBUFFER_COUNT; i++)
     {
         commandList->SetGraphicsRootDescriptorTable(
             fromSlot + i,
@@ -88,7 +89,8 @@ void GBuffer::BuildResources()
         DXGI_FORMAT_R32G32B32A32_FLOAT, // Position
         DXGI_FORMAT_R16G16B16A16_FLOAT, // Normal
         DXGI_FORMAT_R8G8B8A8_UNORM,     // Diffuse
-        DXGI_FORMAT_R8G8B8A8_UNORM      // Emissive
+        DXGI_FORMAT_R8G8B8A8_UNORM,     // Emissive
+        DXGI_FORMAT_R8G8B8A8_UNORM      // ORM
     };
 
     for (size_t i = 0; i < GBUFFER_COUNT; i++)

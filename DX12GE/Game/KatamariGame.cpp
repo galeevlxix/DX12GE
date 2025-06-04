@@ -10,8 +10,12 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	player.OnLoad(commandList);
 
-	Add(commandList, "scene_forest", "../../DX12GE/Resources/Models/gaz/scene.gltf");
-	m_objects["scene_forest"].SetScale(3, 3, 3);
+	Add(commandList, "scene", "../../DX12GE/Resources/Models/gaz/scene.gltf");
+	m_objects["scene"].SetScale(3, 3, 3);
+
+	//Add(commandList, "samurai", "../../DX12GE/Resources/Models/cyber_samurai/scene.gltf");
+	//m_objects["samurai"].Move(-3, 6.5, 5);
+	//m_objects["samurai"].SetScale(4, 4, 4);
 }
 
 void KatamariGame::OnUpdate(float deltaTime)

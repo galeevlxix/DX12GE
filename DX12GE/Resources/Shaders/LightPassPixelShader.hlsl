@@ -72,6 +72,7 @@ Texture2D<float4> gPosition : register(t0);     // RGBA32_FLOAT
 Texture2D<float4> gNormal : register(t1);       // RGBA16_FLOAT
 Texture2D<float4> gDiffuse : register(t2);      // RGBA8_UNORM
 Texture2D<float4> gEmissive : register(t9);     // RGBA8_UNORM
+Texture2D<float4> gORM : register(t10);         // RGBA8_UNORM
 
 StructuredBuffer<PointLight> PointLightsSB : register(t3);
 StructuredBuffer<SpotLight> SpotLightsSB : register(t4);
@@ -89,12 +90,12 @@ static float splitDistances[3] = { 37.5, 75, 140 };
 
 static bool fogEnable = true;
 static float fogStart = 35;
-static float fogDistance = 115; //fogEnd - fogStart
+static float fogDistance = 115;         //fogEnd - fogStart
 
 static float RayStep = 0.025;            // Шаг трассировки луча
 static int MaxSteps = 256;               // Макс. число шагов
 static float MaxDistance = 32.0;         // Макс. дистанция трассировки
-static float Thickness = 0.0125;           // Толщина проверки пересечений
+static float Thickness = 0.0125;         // Толщина проверки пересечений
 static float ReflectionIntensity = 1.0f; // Интенсивность отражений 
 
 float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
@@ -120,6 +121,10 @@ float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
         
         if (depthDiff > 0 && depthDiff <= Thickness)
         {
+            float3 normal = gNormal.Sample(gSampler, uv).xyz;
+            if (dot(reflectionDir, normal) > 0)
+                return float3(0, 0, 0);
+            
             return gDiffuse.Sample(gSampler, uv).rgb;
         }
     }
@@ -243,36 +248,11 @@ bool More(float2 v1, float2 v2)
 
 float4 main(PSInput input) : SV_Target
 {
-    /*
-    {
-        float2 wp_start = float2(0.0, -0.25);
-        float2 wp_end = float2(0.25, 0);
-    
-        float2 norm_start = float2(0.0, -0.55);
-        float2 norm_end = float2(0.25, -0.3);
-    
-        float2 albedo_start = float2(0.0, -0.85);
-        float2 albedo_end = float2(0.25, -0.6);
-    
-        if (More(input.TexCoord, wp_start) && More(wp_end, input.TexCoord))
-        {
-            return gPosition.Sample(gSampler, input.TexCoord * 4);
-        }
-        else if (More(input.TexCoord, norm_start) && More(norm_end, input.TexCoord))
-        {
-            return gNormal.Sample(gSampler, (input.TexCoord - norm_start) * 4);
-        }
-        else if (More(input.TexCoord, albedo_start) && More(albedo_end, input.TexCoord))
-        {
-            return gDiffuse.Sample(gSampler, (input.TexCoord - albedo_start) * 4);
-        }
-    }
-    */
-    
     float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
     float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
     float4 albedo = gDiffuse.Sample(gSampler, input.TexCoord);
     float4 emissive = gEmissive.Sample(gSampler, input.TexCoord);
+    float4 orm = gORM.Sample(gSampler, input.TexCoord);
     
     if (albedo.a == 0)
         discard;
@@ -317,13 +297,13 @@ float4 main(PSInput input) : SV_Target
     
     float3 outputPixelColor = albedo.xyz * lightingResult + emissive.rgb;
     
-    if (normal.y > 0.8f)
+    if (orm.b > 0.05f)
     {
         float3 reflectDir = normalize(reflect(cameraPixelDirection, normal));
         float3 reflectionColor = TraceScreenSpaceReflection(worldPos, reflectDir);
         float f0 = 0.04; // либо из материала
         float fresnel = saturate(f0 + (1 - f0) * pow(1 - dot(normal, normalize(LightPropertiesCB.CameraPos.xyz - worldPos)), 5));
-        outputPixelColor = lerp(outputPixelColor, reflectionColor, fresnel * ReflectionIntensity);
+        outputPixelColor = lerp(outputPixelColor, reflectionColor, fresnel);
     }
     
     outputPixelColor = pow(outputPixelColor, 1.0f / 2.2f);
