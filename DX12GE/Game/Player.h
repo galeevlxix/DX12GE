@@ -1,6 +1,5 @@
 #pragma once
-#include "BianObject.h"
-
+#include "../Engine/Graphics/Object3D.h"
 
 class Player
 {

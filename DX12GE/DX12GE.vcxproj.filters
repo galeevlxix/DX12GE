@@ -37,18 +37,6 @@
     <Filter Include="Файлы ресурсов\Shaders\Textured">
       <UniqueIdentifier>{331f9f4e-cfe2-48f3-bf2e-423f4f1ca25e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Engine\Debug">
-      <UniqueIdentifier>{f294d541-8036-454c-82ac-fede22300a48}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Engine\Debug">
-      <UniqueIdentifier>{35a56de1-4cb4-4491-a3f7-3e5224538b4c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Engine\Shadows">
-      <UniqueIdentifier>{6a8631e4-5993-4913-b804-93d9744b9768}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Engine\Shadows">
-      <UniqueIdentifier>{80fede8c-637c-478d-9750-3636f3654af3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы ресурсов\Shaders\Shadow">
       <UniqueIdentifier>{8bfede72-e102-4603-8587-1a23a66a2242}</UniqueIdentifier>
     </Filter>
@@ -61,52 +49,28 @@
     <Filter Include="Файлы ресурсов\Shaders\ParticleSystem">
       <UniqueIdentifier>{444e92ce-a4cf-47b9-b45e-5c11cf553b75}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Engine\ParticleSystem">
-      <UniqueIdentifier>{9f3343d7-32c7-4018-b2e0-5d524e59be52}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Engine\Pipelines">
+      <UniqueIdentifier>{2ac7919c-fae6-4548-974a-b2f16f909350}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\Engine\ParticleSystem">
-      <UniqueIdentifier>{4c48fbcf-d272-42e8-854a-495d76b987f1}</UniqueIdentifier>
+    <Filter Include="Файлы заголовков\Engine\Pipelines">
+      <UniqueIdentifier>{d1007e85-eed4-4051-ad9a-c5ee5615d484}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Base">
+      <UniqueIdentifier>{043d49e6-3ad0-49be-b3b2-9c35abefea0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Base">
+      <UniqueIdentifier>{55d51197-5eee-49e9-9282-f969f62c4a3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Graphics">
+      <UniqueIdentifier>{d83d1e20-e03d-4a0a-b827-f2e04169e1d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Graphics">
+      <UniqueIdentifier>{a02971a0-71d1-4d20-9061-c9c7eeef9822}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Application.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="DX12GE.cpp">
       <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\BianGame.cpp">
-      <Filter>Исходные файлы\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\CommandQueue.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\DX12LibPCH.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Game.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\HighResolutionClock.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Window.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\BaseObject.cpp">
-      <Filter>Исходные файлы\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Camera.cpp">
-      <Filter>Исходные файлы\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\BianObject.cpp">
-      <Filter>Исходные файлы\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\LightManager.cpp">
-      <Filter>Исходные файлы\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\UploadBuffer.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Game\KatamariGame.cpp">
       <Filter>Исходные файлы\Game</Filter>
@@ -114,202 +78,238 @@
     <ClCompile Include="Game\Player.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Pipeline.cpp">
+    <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\LightPassPipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\MergingPipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\ParticleComputePipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\ParticlePipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\Pipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\ShadowMapPipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\SimplePipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\TexturedPipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\Application.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\CommandQueue.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\DescriptorHeaps.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\DX12LibPCH.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\Game.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\HighResolutionClock.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\SimpleMath.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\UploadBuffer.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\Window.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\BianEngineGame.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\DepthBuffer.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
+    <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\DebugSystem\DebugRenderSystem.cpp">
-      <Filter>Исходные файлы\Engine\Debug</Filter>
+    <ClCompile Include="Engine\Graphics\src\Camera.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\DebugSystem\SimplePipeline.cpp">
-      <Filter>Исходные файлы\Engine\Debug</Filter>
+    <ClCompile Include="Engine\Graphics\src\CascadedShadowMap.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\DebugSystem\TexturedPipeline.cpp">
-      <Filter>Исходные файлы\Engine\Debug</Filter>
+    <ClCompile Include="Engine\Graphics\src\DebugRenderSystem.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\AssimpModelLoader.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
+    <ClCompile Include="Engine\Graphics\src\DepthBuffer.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Material.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
+    <ClCompile Include="Engine\Graphics\src\GBuffer.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Shadows\ShadowMap.cpp">
-      <Filter>Исходные файлы\Engine\Shadows</Filter>
+    <ClCompile Include="Engine\Graphics\src\LightManager.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Shadows\ShadowMapPipeline.cpp">
-      <Filter>Исходные файлы\Engine\Shadows</Filter>
+    <ClCompile Include="Engine\Graphics\src\Material.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\DescriptorHeaps.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
+    <ClCompile Include="Engine\Graphics\src\Mesh3D.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Texture.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
+    <ClCompile Include="Engine\Graphics\src\Object3D.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Shadows\CascadedShadowMap.cpp">
-      <Filter>Исходные файлы\Engine\Shadows</Filter>
+    <ClCompile Include="Engine\Graphics\src\ParticleSystem.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\ShaderResources.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
+    <ClCompile Include="Engine\Graphics\src\ShaderResources.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\CacheHeap.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
+    <ClCompile Include="Engine\Graphics\src\ShadowMap.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\GBuffer.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
+    <ClCompile Include="Engine\Graphics\src\Texture.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\RenderingSystem.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\GeometryPassPipeline.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\LightPassPipeline.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ParticleSystem\ParticlePipeline.cpp">
-      <Filter>Исходные файлы\Engine\ParticleSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ParticleSystem\ParticleSystem.cpp">
-      <Filter>Исходные файлы\Engine\ParticleSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Texture3D.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ParticleSystem\ParticleComputePipeline.cpp">
-      <Filter>Исходные файлы\Engine\ParticleSystem</Filter>
+    <ClCompile Include="Engine\Graphics\src\Texture3D.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\d3dx12.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Helpers.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\resource.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Application.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\BianGame.h">
-      <Filter>Файлы заголовков\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\CommandQueue.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\DX12LibPCH.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Window.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Game.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\HighResolutionClock.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Events.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\KeyCodes.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\BaseObject.h">
-      <Filter>Файлы заголовков\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Camera.h">
-      <Filter>Файлы заголовков\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\BianObject.h">
-      <Filter>Файлы заголовков\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\LightManager.h">
-      <Filter>Файлы заголовков\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\UploadBuffer.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Game\KatamariGame.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\Player.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Pipeline.h">
+    <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipelines\LightPassPipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipelines\MergingPipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipelines\ParticleComputePipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipelines\ParticlePipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipelines\Pipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipelines\ShadowMapPipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipelines\SimplePipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipelines\TexturedPipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Application.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\CommandQueue.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\d3dx12.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\DescriptorHeaps.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\DX12LibPCH.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Events.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Game.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Helpers.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\HighResolutionClock.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\KeyCodes.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\resource (2).h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\resource.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\SimpleMath.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\UploadBuffer.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Window.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\BianEngineGame.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\DepthBuffer.h">
-      <Filter>Файлы заголовков\Engine</Filter>
+    <ClInclude Include="Engine\Graphics\AssimpModelLoader.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\DebugSystem\DebugRenderSystem.h">
-      <Filter>Файлы заголовков\Engine\Debug</Filter>
+    <ClInclude Include="Engine\Graphics\Camera.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\DebugSystem\SimplePipeline.h">
-      <Filter>Файлы заголовков\Engine\Debug</Filter>
+    <ClInclude Include="Engine\Graphics\CascadedShadowMap.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\DebugSystem\TexturedPipeline.h">
-      <Filter>Файлы заголовков\Engine\Debug</Filter>
+    <ClInclude Include="Engine\Graphics\DebugRenderSystem.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\VertexStructures.h">
-      <Filter>Файлы заголовков\Engine</Filter>
+    <ClInclude Include="Engine\Graphics\DepthBuffer.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\AssimpModelLoader.h">
-      <Filter>Файлы заголовков\Engine</Filter>
+    <ClInclude Include="Engine\Graphics\GBuffer.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Material.h">
-      <Filter>Файлы заголовков\Engine</Filter>
+    <ClInclude Include="Engine\Graphics\LightManager.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Shadows\ShadowMapPipeline.h">
-      <Filter>Файлы заголовков\Engine\Shadows</Filter>
+    <ClInclude Include="Engine\Graphics\Material.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Shadows\ShadowMap.h">
-      <Filter>Файлы заголовков\Engine\Shadows</Filter>
+    <ClInclude Include="Engine\Graphics\Mesh3D.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\DescriptorHeaps.h">
-      <Filter>Файлы заголовков\Engine</Filter>
+    <ClInclude Include="Engine\Graphics\Object3D.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Texture.h">
-      <Filter>Файлы заголовков\Engine</Filter>
+    <ClInclude Include="Engine\Graphics\ParticleSystem.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Shadows\CascadedShadowMap.h">
-      <Filter>Файлы заголовков\Engine\Shadows</Filter>
+    <ClInclude Include="Engine\Graphics\ShaderResources.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\ShaderResources.h">
-      <Filter>Файлы заголовков\Engine</Filter>
+    <ClInclude Include="Engine\Graphics\ShadowMap.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\CacheHeap.h">
-      <Filter>Файлы заголовков\Engine</Filter>
+    <ClInclude Include="Engine\Graphics\Texture.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\GBuffer.h">
-      <Filter>Файлы заголовков\Engine</Filter>
+    <ClInclude Include="Engine\Graphics\Texture3D.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\RenderingSystem.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\GeometryPassPipeline.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\LightPassPipeline.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ParticleSystem\ParticlePipeline.h">
-      <Filter>Файлы заголовков\Engine\ParticleSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ParticleSystem\ParticleSystem.h">
-      <Filter>Файлы заголовков\Engine\ParticleSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Texture3D.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\PerlinNoise.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ParticleSystem\ParticleComputePipeline.h">
-      <Filter>Файлы заголовков\Engine\ParticleSystem</Filter>
+    <ClInclude Include="Engine\Graphics\VertexStructures.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -383,5 +383,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Engine\Base\SimpleMath.inl">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </None>
   </ItemGroup>
 </Project>

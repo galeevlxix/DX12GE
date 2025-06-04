@@ -1,5 +1,5 @@
 #include "KatamariGame.h"
-#include "../Engine/ShaderResources.h"
+#include "../Engine/Graphics/ShaderResources.h"
 
 int GetRandomNumber(int start, int end)
 {
