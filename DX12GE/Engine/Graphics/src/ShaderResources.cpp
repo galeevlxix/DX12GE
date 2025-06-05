@@ -7,6 +7,7 @@ static ParticleConstantBuffer* ParticleCB = nullptr;
 static ParticleComputeConstantBuffer* ComputeConstantCB = nullptr;
 static BitonicSortConstantBuffer* BitonicCB = nullptr;
 static MaterialConstantBuffer* MaterialCB = nullptr;
+static SSRConstantBuffer* SSRCB = nullptr;
 
 static UploadBuffer* mUploadBuffer = nullptr;
 
@@ -17,6 +18,7 @@ static UploadBuffer::Allocation PcbAllocation;
 static UploadBuffer::Allocation CcbAllocation;
 static UploadBuffer::Allocation BcbAllocation;
 static UploadBuffer::Allocation McbAllocation;
+static UploadBuffer::Allocation SSRcbAllocation;
 
 static const UINT OcbSize = sizeof(ObjectConstantBuffer);
 static const UINT ScbSize = sizeof(ShadowConstantBuffer);
@@ -25,6 +27,7 @@ static const UINT PcbSize = sizeof(ParticleConstantBuffer);
 static const UINT CcbSize = sizeof(ParticleComputeConstantBuffer);
 static const UINT BcbSize = sizeof(BitonicSortConstantBuffer);
 static const UINT McbSize = sizeof(MaterialConstantBuffer);
+static const UINT SSRcbSize = sizeof(SSRConstantBuffer);
 
 void ShaderResources::Create()
 {
@@ -67,6 +70,11 @@ void ShaderResources::Create()
 	{
 		MaterialCB = new MaterialConstantBuffer();
 	}
+
+	if (!SSRCB)
+	{
+		SSRCB = new SSRConstantBuffer();
+	}
 }
 
 ObjectConstantBuffer* ShaderResources::GetObjectCB()
@@ -102,6 +110,11 @@ BitonicSortConstantBuffer* ShaderResources::GetBitonicSortCB()
 MaterialConstantBuffer* ShaderResources::GetMaterialCB()
 {
 	return MaterialCB;
+}
+
+SSRConstantBuffer* ShaderResources::GetSSRCB()
+{
+	return SSRCB;
 }
 
 UploadBuffer* ShaderResources::GetUploadBuffer()
@@ -162,5 +175,12 @@ void ShaderResources::SetMaterialCB(ComPtr<ID3D12GraphicsCommandList2> commandLi
 	McbAllocation = mUploadBuffer->Allocate(McbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(McbAllocation.CPU, MaterialCB, McbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, McbAllocation.GPU);
+}
+
+void ShaderResources::SetSSRCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
+{
+	SSRcbAllocation = mUploadBuffer->Allocate(SSRcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	memcpy(SSRcbAllocation.CPU, SSRCB, SSRcbSize);
+	commandList->SetGraphicsRootConstantBufferView(slot, SSRcbAllocation.GPU);
 }
 

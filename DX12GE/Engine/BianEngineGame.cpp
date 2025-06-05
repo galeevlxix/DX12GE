@@ -18,7 +18,6 @@ BianEngineGame::~BianEngineGame()
     // todo: удалить все comptr на статические объекты
 }
 
-
 bool BianEngineGame::LoadContent()
 {
     ComPtr<ID3D12Device2> device = Application::Get().GetDevice();
@@ -36,6 +35,8 @@ bool BianEngineGame::LoadContent()
     m_ParticleComputePipeline.Initialize(device);
     m_SimplePipeline.Initialize(device);
     m_ShadowMapPipeline.Initialize(device);
+    m_SSRPipeline.Initialize(device);
+    m_MergingPipeline.Initialize(device);
 
     // 3D SCENE
     m_CascadedShadowMap.Create();
@@ -46,6 +47,14 @@ bool BianEngineGame::LoadContent()
     m_Camera.OnLoad(&(katamariScene.player));
     m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
     debug.Initialize(&m_Camera, device);
+
+    SSRResult.Init(device, GetClientWidth(), GetClientHeight());
+    LightPassResult.Init(device, GetClientWidth(), GetClientHeight());
+
+    ShaderResources::GetSSRCB()->RayStep = 0.025;
+    ShaderResources::GetSSRCB()->MaxSteps = 2048;
+    ShaderResources::GetSSRCB()->MaxDistance = 32.0;
+    ShaderResources::GetSSRCB()->Thickness = 0.0125;
 
     // DRAW THE CUBE
     debug.DrawPoint(boxPosition, 2);
@@ -82,7 +91,8 @@ void BianEngineGame::OnUpdate(UpdateEventArgs& e)
     katamariScene.OnUpdate(e.ElapsedTime);
     lights.OnUpdate(e.ElapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
-    ShaderResources::GetWorldCB()->ViewProjection = m_Camera.GetViewProjMatrix();
+    ShaderResources::GetSSRCB()->ViewProjection = m_Camera.GetViewProjMatrix();
+    ShaderResources::GetSSRCB()->CameraPos = m_Camera.Position;
     particles.OnUpdate(e.ElapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
     RefreshTitle(e);
     m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
@@ -90,7 +100,7 @@ void BianEngineGame::OnUpdate(UpdateEventArgs& e)
 
 void BianEngineGame::DrawSceneToShadowMaps()
 {
-    BaseObject::SetShadowPass(true);
+    Mesh3D::SetShadowPass(true);
 
     for (int i = 0; i < CASCADES_COUNT; i++)
     {
@@ -121,12 +131,12 @@ void BianEngineGame::DrawSceneToShadowMaps()
         commandQueue->WaitForFenceValue(fenceValue);
     }
 
-    BaseObject::SetShadowPass(false);
+    Mesh3D::SetShadowPass(false);
 }
 
 void BianEngineGame::DrawSceneToGBuffer()
 {
-    BaseObject::SetGeometryPass(true);
+    Mesh3D::SetGeometryPass(true);
 
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
@@ -152,12 +162,80 @@ void BianEngineGame::DrawSceneToGBuffer()
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
 
-    BaseObject::SetGeometryPass(false);
+    Mesh3D::SetGeometryPass(false);
 }
  
-void BianEngineGame::LightPassRender(RenderEventArgs& e)
+void BianEngineGame::LightPassRender()
 {
-    BaseObject::SetLightPass(true);
+    Mesh3D::SetLightPass(true);
+    
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+    
+    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
+
+    LightPassResult.SetToWriteAndClear(commandList);
+    LightPassResult.BindRenderTargets(commandList, dsv);
+
+    commandList->RSSetViewports(1, &m_Viewport);
+    commandList->RSSetScissorRects(1, &m_ScissorRect);
+
+    m_LightPassPipeline.Set(commandList);
+    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
+
+    ShaderResources::SetGraphicsWorldCB(commandList, 0);
+    ShaderResources::SetGraphicsShadowCB(commandList, 1);
+    SetGraphicsDynamicStructuredBuffer(commandList, 2, lights.m_PointLights);
+    SetGraphicsDynamicStructuredBuffer(commandList, 3, lights.m_SpotLights);
+    m_CascadedShadowMap.SetGraphicsRootDescriptorTables(4, commandList);
+    m_GBuffer.SetGraphicsRootDescriptorTable(8, GBuffer::POSITION, commandList);
+    m_GBuffer.SetGraphicsRootDescriptorTable(9, GBuffer::NORMAL, commandList);
+    m_GBuffer.SetGraphicsRootDescriptorTable(10, GBuffer::DIFFUSE, commandList);
+    m_GBuffer.SetGraphicsRootDescriptorTable(11, GBuffer::EMISSIVE, commandList);
+
+    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commandList->DrawInstanced(3, 1, 0, 0);
+
+    LightPassResult.SetToRead(commandList);
+
+    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+    commandQueue->WaitForFenceValue(fenceValue);
+    
+    Mesh3D::SetLightPass(false);
+}
+
+void BianEngineGame::DrawSSR()
+{
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+
+    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
+    SSRResult.SetToWriteAndClear(commandList);
+    SSRResult.BindRenderTargets(commandList, dsv);
+
+    commandList->RSSetViewports(1, &m_Viewport);
+    commandList->RSSetScissorRects(1, &m_ScissorRect);
+
+    m_SSRPipeline.Set(commandList);
+    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
+
+    ShaderResources::SetSSRCB(commandList, 0);
+    m_GBuffer.SetGraphicsRootDescriptorTable(1, GBuffer::POSITION, commandList);
+    m_GBuffer.SetGraphicsRootDescriptorTable(2, GBuffer::NORMAL, commandList);
+    m_GBuffer.SetGraphicsRootDescriptorTable(3, GBuffer::ORM, commandList);
+    commandList->SetGraphicsRootDescriptorTable(4, LightPassResult.SrvGPU());
+
+    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commandList->DrawInstanced(3, 1, 0, 0);
+
+    SSRResult.SetToRead(commandList);
+
+    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+    commandQueue->WaitForFenceValue(fenceValue);
+}
+
+void BianEngineGame::MergeResults()
+{
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
@@ -166,21 +244,19 @@ void BianEngineGame::LightPassRender(RenderEventArgs& e)
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetView();
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
     TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
     FLOAT clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
     commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
     commandList->RSSetViewports(1, &m_Viewport);
     commandList->RSSetScissorRects(1, &m_ScissorRect);
 
+    m_MergingPipeline.Set(commandList);
     commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap().GetAddressOf());
 
-    m_LightPassPipeline.Set(commandList);
-    ShaderResources::SetGraphicsWorldCB(commandList, 0);
-    ShaderResources::SetGraphicsShadowCB(commandList, 1);
-    SetGraphicsDynamicStructuredBuffer(commandList, 2, lights.m_PointLights);
-    SetGraphicsDynamicStructuredBuffer(commandList, 3, lights.m_SpotLights);
-    m_CascadedShadowMap.SetGraphicsRootDescriptorTables(4, commandList);
-    m_GBuffer.SetGraphicsRootDescriptorTables(8, commandList);
+    commandList->SetGraphicsRootDescriptorTable(0, LightPassResult.SrvGPU());
+    commandList->SetGraphicsRootDescriptorTable(1, SSRResult.SrvGPU());
+
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
 
@@ -194,7 +270,6 @@ void BianEngineGame::LightPassRender(RenderEventArgs& e)
         currentBackBufferIndex = m_pWindow->Present();
         commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
     }
-    BaseObject::SetLightPass(false);
 }
 
 void BianEngineGame::DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -216,7 +291,9 @@ void BianEngineGame::OnRender(RenderEventArgs& e)
     super::OnRender(e);
     DrawSceneToShadowMaps();
     DrawSceneToGBuffer();
-    LightPassRender(e);
+    LightPassRender();
+    DrawSSR();
+    MergeResults();
 }
 
 void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
@@ -245,7 +322,7 @@ void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
         shouldAddDebugObjects = true;
         break;
     case KeyCode::Z:
-        BaseObject::DebugMatrices();
+        Mesh3D::DebugMatrices();
         break;
     case KeyCode::P:
         stopParticles = !stopParticles;
@@ -293,6 +370,8 @@ void BianEngineGame::OnResize(ResizeEventArgs& e)
         m_Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(e.Width), static_cast<float>(e.Height));
         m_DepthBuffer.ResizeDepthBuffer(e.Width, e.Height);
         m_GBuffer.Resize(GetClientWidth(), GetClientHeight());
+        SSRResult.Resize(GetClientWidth(), GetClientHeight());
+        LightPassResult.Resize(GetClientWidth(), GetClientHeight());
     }
 
     m_Camera.Ratio = static_cast<float>(e.Width) / static_cast<float>(e.Height);

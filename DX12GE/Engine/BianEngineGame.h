@@ -12,6 +12,8 @@
 #include "Pipelines/ParticlePipeline.h"
 #include "Pipelines/ParticleComputePipeline.h"
 #include "Pipelines/LightPassPipeline.h"
+#include "Pipelines/SSRPipeline.h"
+#include "Pipelines/MergingPipeline.h"
 
 #include "Graphics/ShaderResources.h"
 #include "Graphics/DepthBuffer.h"
@@ -22,6 +24,7 @@
 #include "Graphics/LightManager.h"
 #include "Graphics/ParticleSystem.h"
 #include "Graphics/Texture3D.h"
+#include "Graphics/TextureBuffer.h"
 
 #include "../Game/KatamariGame.h" 
 
@@ -57,7 +60,10 @@ private:
     void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSceneToShadowMaps();
     void DrawSceneToGBuffer();
-    void LightPassRender(RenderEventArgs& e);
+    void LightPassRender();
+    void DrawSSR();
+    void MergeResults();
+
     void RefreshTitle(UpdateEventArgs& e);
     void DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
@@ -77,9 +83,10 @@ private:
     KatamariGame katamariScene;  
     LightManager lights;
 
-    // SHADOWS
-
     CascadedShadowMap m_CascadedShadowMap;
+
+    TextureBuffer SSRResult;
+    TextureBuffer LightPassResult;
 
     // PARTICLES
 
@@ -96,6 +103,8 @@ private:
     SimplePipeline m_SimplePipeline;
     ShadowMapPipeline m_ShadowMapPipeline;
     GeometryPassPipeline m_GeometryPassPipeline;
+    SSRPipeline m_SSRPipeline;
+    MergingPipeline m_MergingPipeline;
     LightPassPipeline m_LightPassPipeline;
 };
 

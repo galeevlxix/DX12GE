@@ -140,5 +140,3 @@ D3D12_GPU_DESCRIPTOR_HANDLE Texture::GetGpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE
 {
     return DescriptorHeaps::GetGPUHandle(heapType, m_SRVHeapIndex);
 }
-
-//zaprogramirui mne pojaluista sistemu chastiz v korobke 

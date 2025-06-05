@@ -155,6 +155,7 @@
     <ClCompile Include="Engine\Graphics\src\ParticleSystem.cpp" />
     <ClCompile Include="Engine\Graphics\src\ShaderResources.cpp" />
     <ClCompile Include="Engine\Graphics\src\ShadowMap.cpp" />
+    <ClCompile Include="Engine\Graphics\src\TextureBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\src\Texture.cpp" />
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp" />
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Engine\Pipelines\src\Pipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\ShadowMapPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\SimplePipeline.cpp" />
+    <ClCompile Include="Engine\Pipelines\src\SSRPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\TexturedPipeline.cpp" />
     <ClCompile Include="Game\KatamariGame.cpp" />
     <ClCompile Include="Game\Player.cpp" />
@@ -199,6 +201,7 @@
     <ClInclude Include="Engine\Graphics\ParticleSystem.h" />
     <ClInclude Include="Engine\Graphics\ShaderResources.h" />
     <ClInclude Include="Engine\Graphics\ShadowMap.h" />
+    <ClInclude Include="Engine\Graphics\TextureBuffer.h" />
     <ClInclude Include="Engine\Graphics\Texture.h" />
     <ClInclude Include="Engine\Graphics\Texture3D.h" />
     <ClInclude Include="Engine\Graphics\VertexStructures.h" />
@@ -210,6 +213,7 @@
     <ClInclude Include="Engine\Pipelines\Pipeline.h" />
     <ClInclude Include="Engine\Pipelines\ShadowMapPipeline.h" />
     <ClInclude Include="Engine\Pipelines\SimplePipeline.h" />
+    <ClInclude Include="Engine\Pipelines\SSRPipeline.h" />
     <ClInclude Include="Engine\Pipelines\TexturedPipeline.h" />
     <ClInclude Include="Game\KatamariGame.h" />
     <ClInclude Include="Game\Player.h" />
@@ -239,6 +243,16 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\LightPassVertexShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\MergingPixelShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\MergingVertexShader.hlsl">
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
@@ -298,6 +312,16 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
     </FxCompile>
+    <FxCompile Include="Resources\Shaders\SSRPixelShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\SSRVertexShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Resources\Shaders\TexturedPixelShader.hlsl">
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
       <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableDebuggingInformation>
@@ -320,6 +344,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\README.md" />
     <None Include="Engine\Base\SimpleMath.inl" />
     <None Include="packages.config" />
   </ItemGroup>

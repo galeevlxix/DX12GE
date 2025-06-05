@@ -1,26 +1,26 @@
-#include "../MergingPipeline.h"
+#include "../SSRPipeline.h"
 
-void MergingPipeline::Initialize(ComPtr<ID3D12Device2> device)
+void SSRPipeline::Initialize(ComPtr<ID3D12Device2> device)
 {
 	CreateRootSignature(device);
 	CreatePipelineState(device);
 
-	PipelineState.Get()->SetName(L"Merging Pipeline State");
-	RootSignature.Get()->SetName(L"Merging Root Signature");
+	PipelineState.Get()->SetName(L"SSR Pipeline State");
+	RootSignature.Get()->SetName(L"SSR Root Signature");
 }
 
-void MergingPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void SSRPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	commandList->SetPipelineState(PipelineState.Get());
 	commandList->SetGraphicsRootSignature(RootSignature.Get());
 }
 
-void MergingPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
+void SSRPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
 {
 	ThrowIfFailed(
-		D3DReadFileToBlob(L"MergingVertexShader.cso", &m_VertexShaderBlob));
+		D3DReadFileToBlob(L"SSRVertexShader.cso", &m_VertexShaderBlob));
 	ThrowIfFailed(
-		D3DReadFileToBlob(L"MergingPixelShader.cso", &m_PixelShaderBlob));
+		D3DReadFileToBlob(L"SSRPixelShader.cso", &m_PixelShaderBlob));
 
 	D3D12_FEATURE_DATA_ROOT_SIGNATURE m_RootSignatureFeatureData = {};
 	m_RootSignatureFeatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
@@ -32,28 +32,36 @@ void MergingPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
 	D3D12_ROOT_SIGNATURE_FLAGS m_RootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+	CD3DX12_ROOT_PARAMETER1 rootParameters[5];
 
-	const CD3DX12_DESCRIPTOR_RANGE1 colTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-	rootParameters[0].InitAsDescriptorTable(1, &colTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+	rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   // ssr const buffer
 
-	const CD3DX12_DESCRIPTOR_RANGE1 ssrTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
-	rootParameters[1].InitAsDescriptorTable(1, &ssrTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+	const CD3DX12_DESCRIPTOR_RANGE1 posTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	rootParameters[1].InitAsDescriptorTable(1, &posTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
 
-	const CD3DX12_STATIC_SAMPLER_DESC samplers[1] =
-	{
-		CD3DX12_STATIC_SAMPLER_DESC(
-		0,
-		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-		0.0f,
-		16,
-		D3D12_COMPARISON_FUNC_EQUAL,
-		D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE
-		)
-	};
+	const CD3DX12_DESCRIPTOR_RANGE1 normTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
+	rootParameters[2].InitAsDescriptorTable(1, &normTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	const CD3DX12_DESCRIPTOR_RANGE1 ormTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
+	rootParameters[3].InitAsDescriptorTable(1, &ormTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	const CD3DX12_DESCRIPTOR_RANGE1 colTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
+	rootParameters[4].InitAsDescriptorTable(1, &colTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    const CD3DX12_STATIC_SAMPLER_DESC samplers[1] =
+    {
+        CD3DX12_STATIC_SAMPLER_DESC(
+        0,
+        D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+        D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+        D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+        D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+        0.0f,
+        16,
+        D3D12_COMPARISON_FUNC_EQUAL,
+        D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE
+        )
+    };
 
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC m_RootSignatureDescription;
 	m_RootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, _countof(samplers), samplers, m_RootSignatureFlags);
@@ -67,7 +75,7 @@ void MergingPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
 		device->CreateRootSignature(0, m_RootSignatureBlob->GetBufferPointer(), m_RootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&RootSignature)));
 }
 
-void MergingPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
+void SSRPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
 {
 	CD3DX12_RASTERIZER_DESC m_RasterizerDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	m_RasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
@@ -113,4 +121,3 @@ void MergingPipeline::CreatePipelineState(ComPtr<ID3D12Device2> device)
 	ThrowIfFailed(
 		device->CreatePipelineState(&pipelineStateStreamDesc, IID_PPV_ARGS(&PipelineState)));
 }
-

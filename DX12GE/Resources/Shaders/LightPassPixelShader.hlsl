@@ -55,8 +55,6 @@ cbuffer WCB : register(b0)
     AmbientLight AmbientLightCB;
     DirectionalLight DirectionalLightCB;
     LightProperties LightPropertiesCB;
-    
-    matrix ViewProjection;
 };
 
 cbuffer SCB : register(b1)
@@ -68,11 +66,10 @@ cbuffer SCB : register(b1)
 };
 
 // GBuffer textures
-Texture2D<float4> gPosition : register(t0);     // RGBA32_FLOAT
-Texture2D<float4> gNormal : register(t1);       // RGBA16_FLOAT
-Texture2D<float4> gDiffuse : register(t2);      // RGBA8_UNORM
-Texture2D<float4> gEmissive : register(t9);     // RGBA8_UNORM
-Texture2D<float4> gORM : register(t10);         // RGBA8_UNORM
+Texture2D<float4> gPosition : register(t0);
+Texture2D<float4> gNormal   : register(t1);  
+Texture2D<float4> gDiffuse  : register(t2); 
+Texture2D<float4> gEmissive : register(t9);
 
 StructuredBuffer<PointLight> PointLightsSB : register(t3);
 StructuredBuffer<SpotLight> SpotLightsSB : register(t4);
@@ -88,49 +85,10 @@ SamplerState ShadowSampler : register(s1);
 // 0.15f, 0.3f, 0.6f, 1.0f
 static float splitDistances[3] = { 37.5, 75, 140 };
 
-static bool fogEnable = true;
+static bool fogEnable = false;
 static float fogStart = 35;
 static float fogDistance = 115;         //fogEnd - fogStart
 
-static float RayStep = 0.025;            // Шаг трассировки луча
-static int MaxSteps = 256;               // Макс. число шагов
-static float MaxDistance = 32.0;         // Макс. дистанция трассировки
-static float Thickness = 0.0125;         // Толщина проверки пересечений
-static float ReflectionIntensity = 1.0f; // Интенсивность отражений 
-
-float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
-{
-    float3 rayStep = reflectionDir * RayStep;
-    float3 currentPos = worldPos;
-    
-    [loop]
-    while (length(worldPos - currentPos) < MaxDistance)
-    {
-        currentPos += rayStep;
-        
-        float4 clipPos = mul(ViewProjection, float4(currentPos, 1.0));
-        clipPos.xyz /= clipPos.w;
-        clipPos.y = -clipPos.y;
-        float2 uv = clipPos.xy * 0.5 + 0.5;
-        
-        if (uv.x < 0 || uv.y < 0 || uv.x > 1 || uv.y > 1)
-            return float3(0, 0, 0);
-        
-        float3 gBufferWorldPos = gPosition.SampleLevel(gSampler, uv, 0).xyz;
-        float depthDiff = length(currentPos - gBufferWorldPos);
-        
-        if (depthDiff > 0 && depthDiff <= Thickness)
-        {
-            float3 normal = gNormal.Sample(gSampler, uv).xyz;
-            if (dot(reflectionDir, normal) > 0)
-                return float3(0, 0, 0);
-            
-            return gDiffuse.Sample(gSampler, uv).rgb;
-        }
-    }
-    
-    return float3(0, 0, 0);
-}
 float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
 {
     // Complete projection by doing division by w.
@@ -252,7 +210,6 @@ float4 main(PSInput input) : SV_Target
     float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
     float4 albedo = gDiffuse.Sample(gSampler, input.TexCoord);
     float4 emissive = gEmissive.Sample(gSampler, input.TexCoord);
-    float4 orm = gORM.Sample(gSampler, input.TexCoord);
     
     if (albedo.a == 0)
         discard;
@@ -296,15 +253,6 @@ float4 main(PSInput input) : SV_Target
     }
     
     float3 outputPixelColor = albedo.xyz * lightingResult + emissive.rgb;
-    
-    if (orm.b > 0.05f)
-    {
-        float3 reflectDir = normalize(reflect(cameraPixelDirection, normal));
-        float3 reflectionColor = TraceScreenSpaceReflection(worldPos, reflectDir);
-        float f0 = 0.04; // либо из материала
-        float fresnel = saturate(f0 + (1 - f0) * pow(1 - dot(normal, normalize(LightPropertiesCB.CameraPos.xyz - worldPos)), 5));
-        outputPixelColor = lerp(outputPixelColor, reflectionColor, fresnel);
-    }
     
     outputPixelColor = pow(outputPixelColor, 1.0f / 2.2f);
     

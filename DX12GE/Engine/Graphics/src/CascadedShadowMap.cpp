@@ -64,7 +64,7 @@ void CascadedShadowMap::ApplyShadowTransforms()
 	{
 		matrices[i] = m_Cascades[i].ShadowViewProj;
 	}
-	BaseObject::SetSMMatrices(matrices);
+	Mesh3D::SetSMMatrices(matrices);
 }
 
 ShadowMap* CascadedShadowMap::GetShadowMap(int index)

@@ -21,9 +21,9 @@ void DebugRenderSystem::Draw(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	if (m_Camera == nullptr || isLinesDirty || !canDraw) return;
 	
-	BaseObject::SetShadowPass(true);
+	Mesh3D::SetShadowPass(true);
 	m_Lines.OnRenderLineList(commandList, m_Camera->GetViewProjMatrix());
-	BaseObject::SetShadowPass(false);
+	Mesh3D::SetShadowPass(false);
 }
 
 void DebugRenderSystem::Clear()

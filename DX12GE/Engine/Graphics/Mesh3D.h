@@ -10,7 +10,7 @@ using namespace DirectX::SimpleMath;
 
 #define PI 3.1415926535f
 
-class BaseObject
+class Mesh3D
 {
 public:
     template<typename T>
@@ -78,7 +78,7 @@ public:
 };
 
 template<typename T>
-void BaseObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const vector<T> vertices, const vector<WORD> indices)
+void Mesh3D::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const vector<T> vertices, const vector<WORD> indices)
 {
     indiciesCount = static_cast<UINT>(indices.size());
 

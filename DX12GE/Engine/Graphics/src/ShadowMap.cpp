@@ -1,5 +1,5 @@
-#include "ShadowMap.h"
-#include "../DescriptorHeaps.h"
+#include "../ShadowMap.h"
+#include "../../Base/DescriptorHeaps.h"
 
 ShadowMap::ShadowMap(ComPtr<ID3D12Device2> device, UINT width, UINT height)
 {
@@ -66,7 +66,6 @@ void ShadowMap::OnResize(UINT newWidth, UINT newHeight)
 
 void ShadowMap::SetToWrite(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    //commandList->SetDescriptorHeaps(1, m_SRVHeap.GetAddressOf());
     commandList->SetGraphicsRootDescriptorTable(1, m_GpuSrvHandle);
 }
 

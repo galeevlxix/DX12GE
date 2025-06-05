@@ -72,14 +72,11 @@ void GBuffer::SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList)
     }
 }
 
-void GBuffer::SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3D12GraphicsCommandList2> commandList)
+void GBuffer::SetGraphicsRootDescriptorTable(int slot, TargetType type, ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    for (int i = 0; i < GBUFFER_COUNT; i++)
-    {
-        commandList->SetGraphicsRootDescriptorTable(
-            fromSlot + i,
-            DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_Targets[i].SrvHeapIndex));
-    }
+    commandList->SetGraphicsRootDescriptorTable(
+        slot,
+        DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_Targets[type].SrvHeapIndex));
 }
 
 void GBuffer::BuildResources()

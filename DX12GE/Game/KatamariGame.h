@@ -11,7 +11,7 @@ class KatamariGame
 {
 private:
 	vector<string> m_names;
-	map<string, BianObject> m_objects;
+	map<string, Object3D> m_objects;
 
 public:
 	Player player;

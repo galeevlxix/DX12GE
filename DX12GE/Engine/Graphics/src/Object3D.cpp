@@ -4,7 +4,7 @@
 #include "../VertexStructures.h"
 #include "../AssimpModelLoader.h"
 
-void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath)
+void Object3D::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath)
 {
     AssimpModelLoader modelLoader;
 
@@ -16,7 +16,7 @@ void BianObject::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
     }
 }
 
-void BianObject::OnUpdate(double deltaTime )
+void Object3D::OnUpdate(double deltaTime )
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -24,7 +24,7 @@ void BianObject::OnUpdate(double deltaTime )
     }
 }
 
-void BianObject::OnUpdateRotMat(double deltaTime, XMMATRIX rotMat)
+void Object3D::OnUpdateRotMat(double deltaTime, XMMATRIX rotMat)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -32,20 +32,20 @@ void BianObject::OnUpdateRotMat(double deltaTime, XMMATRIX rotMat)
     }
 }
 
-void BianObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
+void Object3D::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
         if (m_Materials[m_MaterialIndices[i]]->CanDrawIt())
         {
-            if (!BaseObject::GetShadowPass() && !BaseObject::GetLightPass()) 
+            if (!Mesh3D::GetShadowPass() && !Mesh3D::GetLightPass()) 
                 m_Materials[m_MaterialIndices[i]]->Render(commandList);
             m_Meshes[i]->OnRender(commandList, viewProjMatrix);
         }        
     }
 }
 
-void BianObject::SetPosition(float x, float y, float z)
+void Object3D::SetPosition(float x, float y, float z)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -54,7 +54,7 @@ void BianObject::SetPosition(float x, float y, float z)
     Position = Vector3(x, y, z);
 }
 
-void BianObject::SetPosition(Vector3 PositionVector)
+void Object3D::SetPosition(Vector3 PositionVector)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -64,7 +64,7 @@ void BianObject::SetPosition(Vector3 PositionVector)
     Position = PositionVector;
 }
 
-void BianObject::Move(float dx, float dy, float dz)
+void Object3D::Move(float dx, float dy, float dz)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -74,7 +74,7 @@ void BianObject::Move(float dx, float dy, float dz)
     Position = Position + Vector3(dx, dy, dz);
 }
 
-void BianObject::Move(Vector3 MoveVector)
+void Object3D::Move(Vector3 MoveVector)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -83,7 +83,7 @@ void BianObject::Move(Vector3 MoveVector)
     Position = Position + MoveVector;
 }
 
-void BianObject::SetRotation(float x, float y, float z)
+void Object3D::SetRotation(float x, float y, float z)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -92,7 +92,7 @@ void BianObject::SetRotation(float x, float y, float z)
     Rotation = Vector3(x, y, z);
 }
 
-void BianObject::SetRotation(Vector3 RotationVector)
+void Object3D::SetRotation(Vector3 RotationVector)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -101,7 +101,7 @@ void BianObject::SetRotation(Vector3 RotationVector)
     Rotation = RotationVector;
 }
 
-void BianObject::SetRotationX(float value)
+void Object3D::SetRotationX(float value)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -110,7 +110,7 @@ void BianObject::SetRotationX(float value)
     Rotation = Vector3(value, Rotation.y, Rotation.z);
 }
 
-void BianObject::SetRotationY(float value)
+void Object3D::SetRotationY(float value)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -119,7 +119,7 @@ void BianObject::SetRotationY(float value)
     Rotation = Vector3(Rotation.x, value, Rotation.z);
 }
 
-void BianObject::SetRotationZ(float value)
+void Object3D::SetRotationZ(float value)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -128,7 +128,7 @@ void BianObject::SetRotationZ(float value)
     Rotation = Vector3(Rotation.x, Rotation.y, value);
 }
 
-void BianObject::Rotate(Vector3 RotateVector)
+void Object3D::Rotate(Vector3 RotateVector)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -137,7 +137,7 @@ void BianObject::Rotate(Vector3 RotateVector)
     Rotation = Rotation + RotateVector;
 }
 
-void BianObject::SetScale(float x, float y, float z)
+void Object3D::SetScale(float x, float y, float z)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -145,7 +145,7 @@ void BianObject::SetScale(float x, float y, float z)
     }
 }
 
-void BianObject::SetScale(Vector3 ScaleVector)
+void Object3D::SetScale(Vector3 ScaleVector)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {
@@ -153,7 +153,7 @@ void BianObject::SetScale(Vector3 ScaleVector)
     }
 }
 
-void BianObject::Expand(float ExpandValue)
+void Object3D::Expand(float ExpandValue)
 {
     for (int i = 0; i < m_Meshes.size(); i++)
     {

@@ -7,7 +7,7 @@ private:
 	
 public:
 	Vector3 Direction;
-	BianObject prince;
+	Object3D prince;
 
 	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void OnUpdate(double deltaTime);

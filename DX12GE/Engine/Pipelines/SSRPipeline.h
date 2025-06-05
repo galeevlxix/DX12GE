@@ -2,7 +2,7 @@
 
 #include "../Base/DX12LibPCH.h"
 
-class MergingPipeline
+class SSRPipeline
 {
 public:
     ComPtr<ID3D12RootSignature> RootSignature;
@@ -13,7 +13,7 @@ public:
 
 protected:
     ComPtr<ID3DBlob> m_VertexShaderBlob;
-    ComPtr<ID3DBlob> m_PixelShaderBlob;
+    ComPtr<ID3DBlob> m_PixelShaderBlob;    
 
     void CreateRootSignature(ComPtr<ID3D12Device2> device);
     void CreatePipelineState(ComPtr<ID3D12Device2> device);

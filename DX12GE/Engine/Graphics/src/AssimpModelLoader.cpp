@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-bool AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, vector<BaseObject*>& Meshes, vector<Material*>& Materials, vector<int>& MaterialIndices, float& OutYOffset)
+bool AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, vector<Mesh3D*>& Meshes, vector<Material*>& Materials, vector<int>& MaterialIndices, float& OutYOffset)
 {
     Assimp::Importer importer;
     
@@ -70,7 +70,7 @@ bool AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> command
 
     for (unsigned int i = 0; i < meshesCount; i++)
     {
-        Meshes.push_back(new BaseObject());
+        Meshes.push_back(new Mesh3D());
         MaterialIndices.push_back(0);
 
         const aiMesh* paiMesh = pScene->mMeshes[i];

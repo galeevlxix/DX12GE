@@ -1,7 +1,6 @@
-#include "Game.h"
-
-#include "Application.h"
-#include "Window.h"
+#include "../Game.h"
+#include "../Application.h"
+#include "../Window.h"
 
 Game::Game(const std::wstring& name, int width, int height, bool vSync) : m_Name(name), m_Width(width), m_Height(height), m_vSync(vSync)
 {

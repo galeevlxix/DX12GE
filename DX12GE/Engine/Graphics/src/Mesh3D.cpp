@@ -9,7 +9,7 @@ bool g_IsShadowPass = false;
 bool g_IsGeometryPass = false;
 bool g_IsLightPass = false;
 
-void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
+void Mesh3D::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
 {
     auto device = Application::Get().GetDevice();
 
@@ -41,7 +41,7 @@ void BaseObject::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> command
 
 
 
-void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
+void Mesh3D::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     if (!IsInitialized()) return;
 
@@ -67,19 +67,12 @@ void BaseObject::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATR
             ShaderResources::GetShadowCB()->ShadowTransforms[i] = BaseObjectShadowMapView[i];
         }
     }
-    else if (g_IsLightPass) 
-    {
-        ShaderResources::SetGraphicsShadowCB(commandList, 1);
-    }
-    else
-    {
-        
-    }    
+    else { }    
     
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
 }
 
-void BaseObject::OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
+void Mesh3D::OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     if (!IsInitialized()) return;
 
@@ -93,7 +86,7 @@ void BaseObject::OnRenderLineList(ComPtr<ID3D12GraphicsCommandList2> commandList
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
 }
 
-void BaseObject::OnRenderPointList(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void Mesh3D::OnRenderPointList(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
     if (!IsInitialized()) return;
 
@@ -104,7 +97,7 @@ void BaseObject::OnRenderPointList(ComPtr<ID3D12GraphicsCommandList2> commandLis
     commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
 }
 
-void BaseObject::SetSMMatrices(Matrix m[])
+void Mesh3D::SetSMMatrices(Matrix m[])
 {
     for (int i = 0; i < CASCADES_COUNT; i++)
     {
@@ -112,42 +105,42 @@ void BaseObject::SetSMMatrices(Matrix m[])
     }
 }
 
-void BaseObject::DebugMatrices()
+void Mesh3D::DebugMatrices()
 {
     debugMatrix = true;
 }
 
-void BaseObject::SetShadowPass(bool isShadowPass)
+void Mesh3D::SetShadowPass(bool isShadowPass)
 {
     g_IsShadowPass = isShadowPass;
 }
 
-bool BaseObject::GetShadowPass()
+bool Mesh3D::GetShadowPass()
 {
     return g_IsShadowPass;
 }
 
-void BaseObject::SetGeometryPass(bool isGeometryPass)
+void Mesh3D::SetGeometryPass(bool isGeometryPass)
 {
     g_IsGeometryPass = isGeometryPass;
 }
 
-bool BaseObject::GetGeometryPass()
+bool Mesh3D::GetGeometryPass()
 {
     return g_IsGeometryPass;
 }
 
-void BaseObject::SetLightPass(bool isLightPass)
+void Mesh3D::SetLightPass(bool isLightPass)
 {
     g_IsLightPass = isLightPass;
 }
 
-bool BaseObject::GetLightPass()
+bool Mesh3D::GetLightPass()
 {
     return g_IsLightPass;
 }
 
-void BaseObject::Release()
+void Mesh3D::Release()
 {
     if (!Initialized) return;
     Initialized = false;
@@ -161,7 +154,7 @@ void BaseObject::Release()
     IntermediateIndexBufferResource = nullptr;
 }
 
-void BaseObject::OnUpdate()
+void Mesh3D::OnUpdate()
 {
     if (!IsInitialized()) return;
 
@@ -173,7 +166,7 @@ void BaseObject::OnUpdate()
         XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
 }
 
-void BaseObject::OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat)
+void Mesh3D::OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat)
 {
     if (!IsInitialized()) return;
 
@@ -183,91 +176,91 @@ void BaseObject::OnUpdateByRotationMatrix(double deltaTime, XMMATRIX rotMat)
         XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
 }
 
-void BaseObject::SetDefaultState()
+void Mesh3D::SetDefaultState()
 {
     SetPosition(Vector3(0, 0, 0));
     SetRotation(Vector3(0, 0, 0));
     SetScale(Vector3(1, 1, 1));
 }
 
-void BaseObject::SetPosition(float x, float y, float z)
+void Mesh3D::SetPosition(float x, float y, float z)
 {
     m_Position = Vector3(x, y, z);
 }
 
-void BaseObject::SetPosition(Vector3 Position)
+void Mesh3D::SetPosition(Vector3 Position)
 {
     m_Position = Position;
 }
 
-void BaseObject::Move(float dx, float dy, float dz)
+void Mesh3D::Move(float dx, float dy, float dz)
 {
     m_Position += Vector3(dx, dy, dz);
 }
 
-void BaseObject::Move(Vector3 MoveVector)
+void Mesh3D::Move(Vector3 MoveVector)
 {
     m_Position = m_Position + MoveVector;
 }
 
-void BaseObject::SetRotation(float angleX, float angleY, float angleZ)
+void Mesh3D::SetRotation(float angleX, float angleY, float angleZ)
 {
     SetRotationX(angleX);
     SetRotationY(angleY);
     SetRotationZ(angleZ);
 }
 
-void BaseObject::SetRotation(Vector3 RotationVector)
+void Mesh3D::SetRotation(Vector3 RotationVector)
 {
     m_Rotation = RotationVector;
 }
 
-void BaseObject::SetRotationX(float angleX)
+void Mesh3D::SetRotationX(float angleX)
 {
     m_Rotation.x = angleX;
 }
 
-void BaseObject::SetRotationY(float angleY)
+void Mesh3D::SetRotationY(float angleY)
 {
     m_Rotation.y = angleY;
 }
 
-void BaseObject::SetRotationZ(float angleZ)
+void Mesh3D::SetRotationZ(float angleZ)
 {
     m_Rotation.z = angleZ;
 }
 
-void BaseObject::Rotate(Vector3 RotateVector)
+void Mesh3D::Rotate(Vector3 RotateVector)
 {
     m_Rotation = m_Rotation + RotateVector;
 }
 
-void BaseObject::SetScale(float x, float y, float z)
+void Mesh3D::SetScale(float x, float y, float z)
 {
     m_Scale = Vector3(x, y, z);
 }
 
-void BaseObject::SetScale(Vector3 ScaleVector)
+void Mesh3D::SetScale(Vector3 ScaleVector)
 {
     m_Scale = ScaleVector;
 }
 
-void BaseObject::Expand(float value)
+void Mesh3D::Expand(float value)
 {
     m_Scale = m_Scale * value;
 }
 
-Vector3 BaseObject::GetPosition()
+Vector3 Mesh3D::GetPosition()
 {
     return m_Position;
 }
 
-Vector3 BaseObject::GetRotation()
+Vector3 Mesh3D::GetRotation()
 {
     return m_Rotation;
 }
 
-Vector3 BaseObject::GetScale()
+Vector3 Mesh3D::GetScale()
 {
     return m_Scale;
 }

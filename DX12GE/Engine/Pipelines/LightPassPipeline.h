@@ -1,8 +1,6 @@
 #pragma once
 #include "../Base/DX12LibPCH.h"
 
-using namespace std;
-
 class LightPassPipeline
 {
 private:
@@ -26,7 +24,6 @@ protected:
 
     virtual void LoadVertexShader();
     virtual void LoadPixelShader();
-    virtual void CreateVertexInputLayout();
     void CreateRootSignatureFeatureData(ComPtr<ID3D12Device2> device);
     void CreateRootSignatureFlags();
     virtual void CreateRootSignatureBlob();

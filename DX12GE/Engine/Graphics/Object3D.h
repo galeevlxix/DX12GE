@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class BianObject
+class Object3D
 {
 public:
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath);
@@ -31,7 +31,7 @@ public:
     Vector3 Position;
     Vector3 Rotation;
 private:
-	vector<BaseObject*> m_Meshes;
+	vector<Mesh3D*> m_Meshes;
     vector<Material*> m_Materials;
     vector<int> m_MaterialIndices;
 };

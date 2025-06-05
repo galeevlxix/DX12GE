@@ -13,9 +13,9 @@ class DebugRenderSystem
 {
 private:
 	
-	BaseObject m_Lines;
-	BaseObject m_Quads;
-	BaseObject m_Meshes;
+	Mesh3D m_Lines;
+	Mesh3D m_Quads;
+	Mesh3D m_Meshes;
 
 	vector<VertexPositionColor> linesVertices;
 	vector<WORD> linesIndices;
