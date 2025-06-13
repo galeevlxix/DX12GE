@@ -292,7 +292,15 @@ void BianEngineGame::OnRender(RenderEventArgs& e)
     DrawSceneToShadowMaps();
     DrawSceneToGBuffer();
     LightPassRender();
-    DrawSSR();
+    
+    if (drawSSR)
+        DrawSSR();
+    else if (resizeSSR)
+    {
+        SSRResult.Init(Application::Get().GetPrimaryDevice(), GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
+        resizeSSR = false;
+    }
+
     MergeResults();
 }
 
@@ -326,6 +334,11 @@ void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
         break;
     case KeyCode::P:
         stopParticles = !stopParticles;
+        break;
+    case KeyCode::C:
+        drawSSR = !drawSSR;
+        resizeSSR = !drawSSR;
+        
         break;
     case KeyCode::R:
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
@@ -369,9 +382,9 @@ void BianEngineGame::OnResize(ResizeEventArgs& e)
         super::OnResize(e);
         m_Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(e.Width), static_cast<float>(e.Height));
         m_DepthBuffer.ResizeDepthBuffer(e.Width, e.Height);
-        m_GBuffer.Resize(GetClientWidth(), GetClientHeight());
-        SSRResult.Resize(GetClientWidth(), GetClientHeight());
-        LightPassResult.Resize(GetClientWidth(), GetClientHeight());
+        m_GBuffer.Resize(e.Width, e.Height);
+        SSRResult.Resize(e.Width, e.Height);
+        LightPassResult.Resize(e.Width, e.Height);
     }
 
     m_Camera.Ratio = static_cast<float>(e.Width) / static_cast<float>(e.Height);

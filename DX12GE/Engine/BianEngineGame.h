@@ -88,6 +88,9 @@ private:
     TextureBuffer SSRResult;
     TextureBuffer LightPassResult;
 
+    bool drawSSR = true;
+    bool resizeSSR = false;
+
     // PARTICLES
 
     ParticleSystem particles;

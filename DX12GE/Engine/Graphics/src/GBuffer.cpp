@@ -37,7 +37,7 @@ void GBuffer::Resize(UINT width, UINT height)
 
 void GBuffer::BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle)
 {
-    const D3D12_CPU_DESCRIPTOR_HANDLE rtvs[GBUFFER_COUNT] =
+    const D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] =
     {
         m_Targets[0].RtvCPU(),
         m_Targets[1].RtvCPU(),
