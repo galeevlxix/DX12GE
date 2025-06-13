@@ -1,18 +1,7 @@
 #pragma once
 #include "../Base/DX12LibPCH.h"
 #include "ShaderResources.h"
-
-struct Target
-{
-	ComPtr<ID3D12Resource> Texture;
-
-	D3D12_CPU_DESCRIPTOR_HANDLE CpuRtvHandle;
-	D3D12_CPU_DESCRIPTOR_HANDLE CpuSrvHandle;
-	D3D12_GPU_DESCRIPTOR_HANDLE GpuSrvHandle;
-
-	int RtvHeapIndex = -1;
-	int SrvHeapIndex = -1;
-};
+#include "TextureBuffer.h"
 
 class GBuffer
 {
@@ -39,12 +28,6 @@ public:
 	void SetGraphicsRootDescriptorTable(int slot, TargetType type, ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 private:
-	UINT m_Width = 0;
-	UINT m_Height = 0;
-	ComPtr<ID3D12Device2> m_Device;
-
-	Target m_Targets[GBUFFER_COUNT];
-
-	void BuildResources();
-	void BuildDescriptors();
+	
+	TextureBuffer m_Targets[GBUFFER_COUNT];
 };

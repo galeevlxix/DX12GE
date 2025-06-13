@@ -57,17 +57,29 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
         MessageBoxA(NULL, "Unable to register the window class.", "Error", MB_OK | MB_ICONERROR);
     }
 
-    m_dxgiAdapter = GetAdapter(false);
-    if (m_dxgiAdapter)
+    auto adapters = GetAdapters();
+    PrimaryAdapter = adapters[0];
+    SecondAdapter = adapters[1];
+    
+    if (PrimaryAdapter)
     {
-        m_d3d12Device = CreateDevice(m_dxgiAdapter);
+        PrimaryDevice = CreateDevice(PrimaryAdapter);
     }
 
-    if (m_d3d12Device)
+    if (SecondAdapter)
     {
-        m_DirectCommandQueue = std::make_shared<CommandQueue>(m_d3d12Device, D3D12_COMMAND_LIST_TYPE_DIRECT);
-        m_ComputeCommandQueue = std::make_shared<CommandQueue>(m_d3d12Device, D3D12_COMMAND_LIST_TYPE_COMPUTE);
-        m_CopyCommandQueue = std::make_shared<CommandQueue>(m_d3d12Device, D3D12_COMMAND_LIST_TYPE_COPY);
+        SecondDevice = CreateDevice(SecondAdapter);
+    }
+
+    if (PrimaryDevice && SecondDevice)
+    {
+        PrimaryDirectCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
+        PrimaryComputeCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+        PrimaryCopyCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COPY);
+
+        SecondDirectCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
+        SecondComputeCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+        SecondCopyCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COPY);
 
         m_TearingSupported = CheckTearingSupport();
     }
@@ -102,51 +114,53 @@ void Application::Destroy()
 Application::~Application()
 {
     Flush();
+    Destroy();
 }
 
-ComPtr<IDXGIAdapter4> Application::GetAdapter(bool bUseWarp)
+std::vector<ComPtr<IDXGIAdapter4>> Application::GetAdapters()
 {
+    // Creating Factory
     ComPtr<IDXGIFactory4> dxgiFactory;
     UINT createFactoryFlags = 0;
-
 #if defined(_DEBUG)
     createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
 #endif
-
     ThrowIfFailed(CreateDXGIFactory2(createFactoryFlags, IID_PPV_ARGS(&dxgiFactory)));
 
     ComPtr<IDXGIAdapter1> dxgiAdapter1;
-    ComPtr<IDXGIAdapter4> dxgiAdapter4;
 
-    if (bUseWarp)
+    std::vector<ComPtr<IDXGIAdapter4>> adapters;
+    std::vector<SIZE_T> sizes;
+
+    for (UINT i = 0; dxgiFactory->EnumAdapters1(i, &dxgiAdapter1) != DXGI_ERROR_NOT_FOUND; ++i)
     {
-        ThrowIfFailed(dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&dxgiAdapter1)));
-        ThrowIfFailed(dxgiAdapter1.As(&dxgiAdapter4));
-    }
-    else
-    {
-        SIZE_T maxDedicatedVideoMemory = 0;
-        for (UINT i = 0; dxgiFactory->EnumAdapters1(i, &dxgiAdapter1) != DXGI_ERROR_NOT_FOUND; ++i)
+        DXGI_ADAPTER_DESC1 dxgiAdapterDesc1;
+        dxgiAdapter1->GetDesc1(&dxgiAdapterDesc1);
+        if ((dxgiAdapterDesc1.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) == 0 && SUCCEEDED(D3D12CreateDevice(dxgiAdapter1.Get(), D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr)))
         {
-            DXGI_ADAPTER_DESC1 dxgiAdapterDesc1;
-            dxgiAdapter1->GetDesc1(&dxgiAdapterDesc1);
+            ComPtr<IDXGIAdapter4> dxgiAdapter4;
+            ThrowIfFailed(dxgiAdapter1.As(&dxgiAdapter4));
+            sizes.push_back(dxgiAdapterDesc1.DedicatedVideoMemory);
+            adapters.push_back(dxgiAdapter4);
+        }
+    }
 
-            // Check to see if the adapter can create a D3D12 device without actually 
-            // creating it. The adapter with the largest dedicated video memory
-            // is favored.
-            if ((dxgiAdapterDesc1.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) == 0 &&
-                SUCCEEDED(D3D12CreateDevice(dxgiAdapter1.Get(),
-                    D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr)) &&
-                dxgiAdapterDesc1.DedicatedVideoMemory > maxDedicatedVideoMemory)
+    // Сортировка адаптеров по убыванию видеопамяти
+    for (int i = 0; i < adapters.size() - 1; ++i)
+    {
+        for (int j = 0; j < adapters.size() - i - 1; ++j)
+        {
+            if (sizes[j] < sizes[j + 1])
             {
-                maxDedicatedVideoMemory = dxgiAdapterDesc1.DedicatedVideoMemory;
-                ThrowIfFailed(dxgiAdapter1.As(&dxgiAdapter4));
+                std::swap(sizes[j], sizes[j + 1]);
+                std::swap(adapters[j], adapters[j + 1]);
             }
         }
     }
 
-    return dxgiAdapter4;
+    return adapters;
 }
+
 ComPtr<ID3D12Device2> Application::CreateDevice(ComPtr<IDXGIAdapter4> adapter)
 {
     ComPtr<ID3D12Device2> d3d12Device2;
@@ -160,9 +174,6 @@ ComPtr<ID3D12Device2> Application::CreateDevice(ComPtr<IDXGIAdapter4> adapter)
         pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
         pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
         pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE);
-
-        // Suppress whole categories of messages
-        //D3D12_MESSAGE_CATEGORY Categories[] = {};
 
         // Suppress messages based on their severity level
         D3D12_MESSAGE_SEVERITY Severities[] =
@@ -307,24 +318,50 @@ void Application::Quit(int exitCode)
     PostQuitMessage(exitCode);
 }
 
-ComPtr<ID3D12Device2> Application::GetDevice() const
+ComPtr<ID3D12Device2> Application::GetPrimaryDevice() const
 {
-    return m_d3d12Device;
+    return PrimaryDevice;
 }
 
-std::shared_ptr<CommandQueue> Application::GetCommandQueue(D3D12_COMMAND_LIST_TYPE type) const
+ComPtr<ID3D12Device2> Application::GetSecondDevice() const
+{
+    return SecondDevice;
+}
+
+std::shared_ptr<CommandQueue> Application::GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE type) const
 {
     std::shared_ptr<CommandQueue> commandQueue;
     switch (type)
     {
     case D3D12_COMMAND_LIST_TYPE_DIRECT:
-        commandQueue = m_DirectCommandQueue;
+        commandQueue = PrimaryDirectCommandQueue;
         break;
     case D3D12_COMMAND_LIST_TYPE_COMPUTE:
-        commandQueue = m_ComputeCommandQueue;
+        commandQueue = PrimaryComputeCommandQueue;
         break;
     case D3D12_COMMAND_LIST_TYPE_COPY:
-        commandQueue = m_CopyCommandQueue;
+        commandQueue = PrimaryCopyCommandQueue;
+        break;
+    default:
+        assert(false && "Invalid command queue type.");
+    }
+
+    return commandQueue;
+}
+
+std::shared_ptr<CommandQueue> Application::GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE type) const
+{
+    std::shared_ptr<CommandQueue> commandQueue;
+    switch (type)
+    {
+    case D3D12_COMMAND_LIST_TYPE_DIRECT:
+        commandQueue = SecondDirectCommandQueue;
+        break;
+    case D3D12_COMMAND_LIST_TYPE_COMPUTE:
+        commandQueue = SecondComputeCommandQueue;
+        break;
+    case D3D12_COMMAND_LIST_TYPE_COPY:
+        commandQueue = SecondCopyCommandQueue;
         break;
     default:
         assert(false && "Invalid command queue type.");
@@ -335,9 +372,13 @@ std::shared_ptr<CommandQueue> Application::GetCommandQueue(D3D12_COMMAND_LIST_TY
 
 void Application::Flush()
 {
-    m_DirectCommandQueue->Flush();
-    m_ComputeCommandQueue->Flush();
-    m_CopyCommandQueue->Flush();
+    PrimaryDirectCommandQueue->Flush();
+    PrimaryComputeCommandQueue->Flush();
+    PrimaryCopyCommandQueue->Flush();
+
+    SecondDirectCommandQueue->Flush();
+    SecondComputeCommandQueue->Flush();
+    SecondCopyCommandQueue->Flush();
 }
 
 ComPtr<ID3D12DescriptorHeap> Application::CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type)
@@ -349,14 +390,14 @@ ComPtr<ID3D12DescriptorHeap> Application::CreateDescriptorHeap(UINT numDescripto
     desc.NodeMask = 0;
 
     ComPtr<ID3D12DescriptorHeap> descriptorHeap;
-    ThrowIfFailed(m_d3d12Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&descriptorHeap)));
+    ThrowIfFailed(PrimaryDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&descriptorHeap)));
 
     return descriptorHeap;
 }
 
 UINT Application::GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type) const
 {
-    return m_d3d12Device->GetDescriptorHandleIncrementSize(type);
+    return PrimaryDevice->GetDescriptorHandleIncrementSize(type);
 }
 
 // Remove a window from our window lists.

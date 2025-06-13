@@ -27,7 +27,7 @@ void DepthBuffer::ResizeDepthBuffer(int width, int height)
     width = std::max(1, width);
     height = std::max(1, height);
 
-    auto device = Application::Get().GetDevice();
+    auto device = Application::Get().GetPrimaryDevice();
 
     // Resize screen dependent resources
     // Create a depth buffer

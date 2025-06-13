@@ -2,13 +2,14 @@
 #include "../../Base/DescriptorHeaps.h"
 #include "../ShaderResources.h"
 
-void TextureBuffer::Init(ComPtr<ID3D12Device2> device, UINT width, UINT height)
+void TextureBuffer::Init(ComPtr<ID3D12Device2> device, UINT width, UINT height, DXGI_FORMAT format)
 {
 	m_Device = device;
 	m_Width = width;
 	m_Height = height;
+    m_Format = format;
 
-	BuildResources();
+	BuildResource();
 	BuildDescriptors();
 }
 
@@ -23,10 +24,10 @@ void TextureBuffer::Resize(UINT width, UINT height)
 		return;
 
 	Release();
-	Init(m_Device, width, height);
+	Init(m_Device, width, height, m_Format);
 }
 
-void TextureBuffer::BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle)
+void TextureBuffer::BindRenderTarget(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle)
 {
 	commandList->OMSetRenderTargets(1, &CpuRtvHandle, FALSE, &dsvHandle);
 }
@@ -43,8 +44,6 @@ CD3DX12_CPU_DESCRIPTOR_HANDLE TextureBuffer::RtvCPU() const
 
 void TextureBuffer::SetToWriteAndClear(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	const static FLOAT clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
 	TransitionResource(commandList, Buffer, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	commandList->ClearRenderTargetView(CpuRtvHandle, clearColor, 0, nullptr);
 }
@@ -54,12 +53,12 @@ void TextureBuffer::SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	TransitionResource(commandList, Buffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ);
 }
 
-void TextureBuffer::SetGraphicsRootDescriptorTables(int slot, ComPtr<ID3D12GraphicsCommandList2> commandList)
+void TextureBuffer::SetGraphicsRootDescriptorTable(int slot, ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	commandList->SetGraphicsRootDescriptorTable(slot, DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, SrvHeapIndex));
 }
 
-void TextureBuffer::BuildResources()
+void TextureBuffer::BuildResource()
 {
     D3D12_RESOURCE_DESC texDesc = {};
     texDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -67,13 +66,13 @@ void TextureBuffer::BuildResources()
     texDesc.Height = m_Height;
     texDesc.DepthOrArraySize = 1;
     texDesc.MipLevels = 1;
-    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    texDesc.Format = m_Format;
     texDesc.SampleDesc.Count = 1;
     texDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
     texDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
     D3D12_CLEAR_VALUE clearValue = {};
-    clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    clearValue.Format = m_Format;
 
     CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
 

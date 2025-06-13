@@ -11,7 +11,7 @@ using namespace DirectX;
 
 void Texture::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, string path)
 {
-    auto device = Application::Get().GetDevice();
+    auto device = Application::Get().GetPrimaryDevice();
 
     ScratchImage image;
     TexMetadata metadata;
@@ -108,7 +108,7 @@ void Texture::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, string path)
 
 void Texture::CreateShaderResourceView(D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc)
 {
-    auto device = Application::Get().GetDevice();
+    auto device = Application::Get().GetPrimaryDevice();
 
     m_SRVHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 

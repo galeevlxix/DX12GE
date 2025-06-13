@@ -4,7 +4,7 @@
 
 void CascadedShadowMap::Create()
 {
-	ComPtr<ID3D12Device2> device = Application::Get().GetDevice();
+	ComPtr<ID3D12Device2> device = Application::Get().GetPrimaryDevice();
 
 	const float splits[CASCADES_COUNT] = { 0.15f, 0.3f, 0.6f, 1.0f };
 

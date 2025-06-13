@@ -14,42 +14,42 @@ BianEngineGame::~BianEngineGame()
     DescriptorHeaps::GetDSVHeap()->Release();
     DescriptorHeaps::GetCBVHeap()->Release();
 
-    Application::Get().GetDevice()->Release();
+    Application::Get().GetPrimaryDevice()->Release();
     // todo: удалить все comptr на статические объекты
 }
 
 bool BianEngineGame::LoadContent()
 {
-    ComPtr<ID3D12Device2> device = Application::Get().GetDevice();
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+    ComPtr<ID3D12Device2> primaryDevice = Application::Get().GetPrimaryDevice();
+    shared_ptr<CommandQueue> primaryCommandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    ComPtr<ID3D12GraphicsCommandList2> commandList = primaryCommandQueue->GetCommandList();
 
     // INITIALIZE
     ShaderResources::Create();
-    DescriptorHeaps::OnInit(device);
+    DescriptorHeaps::OnInit(primaryDevice);
 
     // PIPELINES
-    m_GeometryPassPipeline.Initialize(device);
-    m_LightPassPipeline.Initialize(device);
-    m_ParticlePipeline.Initialize(device);
-    m_ParticleComputePipeline.Initialize(device);
-    m_SimplePipeline.Initialize(device);
-    m_ShadowMapPipeline.Initialize(device);
-    m_SSRPipeline.Initialize(device);
-    m_MergingPipeline.Initialize(device);
+    m_GeometryPassPipeline.Initialize(primaryDevice);
+    m_LightPassPipeline.Initialize(primaryDevice);
+    m_ParticlePipeline.Initialize(primaryDevice);
+    m_ParticleComputePipeline.Initialize(primaryDevice);
+    m_SimplePipeline.Initialize(primaryDevice);
+    m_ShadowMapPipeline.Initialize(primaryDevice);
+    m_SSRPipeline.Initialize(primaryDevice);
+    m_MergingPipeline.Initialize(primaryDevice);
 
     // 3D SCENE
     m_CascadedShadowMap.Create();
-    m_GBuffer.Init(device, GetClientWidth(), GetClientHeight());
+    m_GBuffer.Init(primaryDevice, GetClientWidth(), GetClientHeight());
     particles.OnLoad(commandList);
     katamariScene.OnLoad(commandList);
     lights.Init(&(katamariScene.player));
     m_Camera.OnLoad(&(katamariScene.player));
     m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
-    debug.Initialize(&m_Camera, device);
+    debug.Initialize(&m_Camera, primaryDevice);
 
-    SSRResult.Init(device, GetClientWidth(), GetClientHeight());
-    LightPassResult.Init(device, GetClientWidth(), GetClientHeight());
+    SSRResult.Init(primaryDevice, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
+    LightPassResult.Init(primaryDevice, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
 
     ShaderResources::GetSSRCB()->RayStep = 0.025;
     ShaderResources::GetSSRCB()->MaxSteps = 2048;
@@ -69,8 +69,8 @@ bool BianEngineGame::LoadContent()
     // CREATE TEXTURE3D
     tex3d.Load(commandList, boxSize.x, boxSize.y, boxSize.z);
 
-    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);
+    uint64_t fenceValue = primaryCommandQueue->ExecuteCommandList(commandList);
+    primaryCommandQueue->WaitForFenceValue(fenceValue);
 
     m_DepthBuffer.Init();
     m_DepthBuffer.ResizeDepthBuffer(GetClientWidth(), GetClientHeight());
@@ -104,7 +104,7 @@ void BianEngineGame::DrawSceneToShadowMaps()
 
     for (int i = 0; i < CASCADES_COUNT; i++)
     {
-        shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+        shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
         ShadowMap* shadowMap = m_CascadedShadowMap.GetShadowMap(i);
@@ -138,7 +138,7 @@ void BianEngineGame::DrawSceneToGBuffer()
 {
     Mesh3D::SetGeometryPass(true);
 
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
@@ -169,13 +169,13 @@ void BianEngineGame::LightPassRender()
 {
     Mesh3D::SetLightPass(true);
     
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
     
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
 
     LightPassResult.SetToWriteAndClear(commandList);
-    LightPassResult.BindRenderTargets(commandList, dsv);
+    LightPassResult.BindRenderTarget(commandList, dsv);
 
     commandList->RSSetViewports(1, &m_Viewport);
     commandList->RSSetScissorRects(1, &m_ScissorRect);
@@ -206,12 +206,12 @@ void BianEngineGame::LightPassRender()
 
 void BianEngineGame::DrawSSR()
 {
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer.dsvCpuHandleIndex);
     SSRResult.SetToWriteAndClear(commandList);
-    SSRResult.BindRenderTargets(commandList, dsv);
+    SSRResult.BindRenderTarget(commandList, dsv);
 
     commandList->RSSetViewports(1, &m_Viewport);
     commandList->RSSetScissorRects(1, &m_ScissorRect);
@@ -236,7 +236,7 @@ void BianEngineGame::DrawSSR()
 
 void BianEngineGame::MergeResults()
 {
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
     UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
@@ -328,7 +328,7 @@ void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
         stopParticles = !stopParticles;
         break;
     case KeyCode::R:
-        auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+        auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         auto commandList = commandQueue->GetCommandList();
         particles.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5, 7, 1000);
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);

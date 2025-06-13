@@ -11,7 +11,7 @@ bool g_IsLightPass = false;
 
 void Mesh3D::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
 {
-    auto device = Application::Get().GetDevice();
+    auto device = Application::Get().GetPrimaryDevice();
 
     size_t bufferSize = numElements * elementSize;
 

@@ -8,7 +8,7 @@ void ParticleSystem::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	m_Texture.Load(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png");
 	CreateParticleGroupPrototype(pow(2, 13));
 
-	m_Device = Application::Get().GetDevice();
+	m_Device = Application::Get().GetPrimaryDevice();
 }
 
 void ParticleSystem::OnUpdate(float deltaTime, bool stop, XMMATRIX projMatrix, Vector3 CameraPos)

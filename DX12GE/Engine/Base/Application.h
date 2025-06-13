@@ -14,23 +14,23 @@ class Application
 {
 public:
 
-    /**
-    * Create the application singleton with the application instance handle.
+    /**  
+    Create the application singleton with the application instance handle.
     */
     static void Create(HINSTANCE hInst);
 
     /**
-    * Destroy the application instance and all windows created by this application instance.
+    Destroy the application instance and all windows created by this application instance.
     */
     static void Destroy();
     /**
-    * Get the application singleton.
+    Get the application singleton.
     */
     static Application& Get();
 
     /**
-     * Check to see if VSync-off is supported.
-     */
+    Check to see if VSync-off is supported.
+    */
     bool IsTearingSupported() const;
 
     /**
@@ -75,14 +75,21 @@ public:
     /**
      * Get the Direct3D 12 device
      */
-    ComPtr<ID3D12Device2> GetDevice() const;
+    ComPtr<ID3D12Device2> GetPrimaryDevice() const;
+
+    /**
+     * Get the additional device
+     */
+    ComPtr<ID3D12Device2> GetSecondDevice() const;
+
     /**
      * Get a command queue. Valid types are:
      * - D3D12_COMMAND_LIST_TYPE_DIRECT : Can be used for draw, dispatch, or copy commands.
      * - D3D12_COMMAND_LIST_TYPE_COMPUTE: Can be used for dispatch or copy commands.
      * - D3D12_COMMAND_LIST_TYPE_COPY   : Can be used for copy commands.
      */
-    std::shared_ptr<CommandQueue> GetCommandQueue(D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT) const;
+    std::shared_ptr<CommandQueue> GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT) const;
+    std::shared_ptr<CommandQueue> GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT) const;
 
     // Flush all command queues.
     void Flush();
@@ -97,7 +104,8 @@ protected:
     // Destroy the application instance and all windows associated with this application.
     virtual ~Application();
 
-    ComPtr<IDXGIAdapter4> GetAdapter(bool bUseWarp);
+    std::vector<ComPtr<IDXGIAdapter4>> GetAdapters();
+
     ComPtr<ID3D12Device2> CreateDevice(ComPtr<IDXGIAdapter4> adapter);
     bool CheckTearingSupport();
 
@@ -108,13 +116,17 @@ private:
     // The application instance handle that this application was created with.
     HINSTANCE m_hInstance;
 
-    ComPtr<IDXGIAdapter4> m_dxgiAdapter;
-    ComPtr<ID3D12Device2> m_d3d12Device;
+    ComPtr<IDXGIAdapter4> PrimaryAdapter;
+    ComPtr<ID3D12Device2> PrimaryDevice;
+    std::shared_ptr<CommandQueue> PrimaryDirectCommandQueue;
+    std::shared_ptr<CommandQueue> PrimaryComputeCommandQueue;
+    std::shared_ptr<CommandQueue> PrimaryCopyCommandQueue;
 
-    std::shared_ptr<CommandQueue> m_DirectCommandQueue;
-    std::shared_ptr<CommandQueue> m_ComputeCommandQueue;
-    std::shared_ptr<CommandQueue> m_CopyCommandQueue;
+    ComPtr<IDXGIAdapter4> SecondAdapter;
+    ComPtr<ID3D12Device2> SecondDevice;
+    std::shared_ptr<CommandQueue> SecondDirectCommandQueue;
+    std::shared_ptr<CommandQueue> SecondComputeCommandQueue;
+    std::shared_ptr<CommandQueue> SecondCopyCommandQueue;
 
     bool m_TearingSupported;
-
 };

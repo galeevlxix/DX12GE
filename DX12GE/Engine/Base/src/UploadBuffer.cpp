@@ -63,7 +63,7 @@ UploadBuffer::Page::Page(size_t sizeInBytes)
     , m_CPUPtr(nullptr)
     , m_GPUPtr(D3D12_GPU_VIRTUAL_ADDRESS(0))
 {
-    auto device = Application::Get().GetDevice();
+    auto device = Application::Get().GetPrimaryDevice();
 
     auto heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     auto resDesc = CD3DX12_RESOURCE_DESC::Buffer(m_PageSize);

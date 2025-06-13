@@ -180,6 +180,12 @@
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\SSRPipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\src\TextureBuffer.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\KatamariGame.h">
@@ -311,6 +317,12 @@
     <ClInclude Include="Engine\Graphics\VertexStructures.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Pipelines\SSRPipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\TextureBuffer.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc">
@@ -380,11 +392,16 @@
     <FxCompile Include="Resources\Shaders\ParticleSystemShaders\SortParticleComputeShader.hlsl">
       <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\Shaders\MergingPixelShader.hlsl" />
+    <FxCompile Include="Resources\Shaders\MergingVertexShader.hlsl" />
+    <FxCompile Include="Resources\Shaders\SSRPixelShader.hlsl" />
+    <FxCompile Include="Resources\Shaders\SSRVertexShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Engine\Base\SimpleMath.inl">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </None>
+    <None Include="..\README.md" />
   </ItemGroup>
 </Project>

@@ -44,7 +44,7 @@ Vector3 GetVectorValue(int x, int y, int z, int width, int height, int depth)
 
 void Texture3D::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, int width, int height, int depth)
 {
-	auto device = Application::Get().GetDevice();
+	auto device = Application::Get().GetPrimaryDevice();
 
 	// CREATE DATA
 
