@@ -16,15 +16,21 @@ void JsonScene::Save(std::map<std::string, Object3DEntity>& objects)
 		json entity;	
 		entity["name"] = obj.first;
 		entity["path"] = ResourceStorage::GetObject3D(obj.second.GetId())->ResourcePath;
-		entity["posX"] = obj.second.Transform.GetPosition().x;
-		entity["posY"] = obj.second.Transform.GetPosition().y;
-		entity["posZ"] = obj.second.Transform.GetPosition().z;
-		entity["rotX"] = obj.second.Transform.GetRotation().x;
-		entity["rotY"] = obj.second.Transform.GetRotation().y;
-		entity["rotZ"] = obj.second.Transform.GetRotation().z;
-		entity["sclX"] = obj.second.Transform.GetScale().x;
-		entity["sclY"] = obj.second.Transform.GetScale().y;
-		entity["sclZ"] = obj.second.Transform.GetScale().z;
+
+		auto pos = obj.second.Transform.GetPosition();
+		auto rot = obj.second.Transform.GetRotation();
+		auto scl = obj.second.Transform.GetScale();
+
+		entity["posX"] = pos.x;
+		entity["posY"] = pos.y;
+		entity["posZ"] = pos.z;
+		entity["rotX"] = rot.x;
+		entity["rotY"] = rot.y;
+		entity["rotZ"] = rot.z;
+		entity["sclX"] = scl.x;
+		entity["sclY"] = scl.y;
+		entity["sclZ"] = scl.z;
+
 		scene.push_back(entity);
 	}
 	

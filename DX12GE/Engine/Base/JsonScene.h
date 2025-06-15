@@ -1,7 +1,6 @@
 #pragma once
 #include "../Graphics/Object3DEntity.h"
 #include <string>
-#include <vector>
 #include <map>
 
 class JsonScene

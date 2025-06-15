@@ -1,10 +1,10 @@
 #include "KatamariGame.h"
 #include "../Engine/Graphics/ShaderResources.h"
 
-
 void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	player.OnLoad(commandList);
+
 	js.Load(commandList, m_objects);
 }
 

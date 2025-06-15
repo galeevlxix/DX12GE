@@ -12,6 +12,8 @@ BianEngineGame::BianEngineGame(const wstring& name, int width, int height, bool 
 
 BianEngineGame::~BianEngineGame()
 {
+    katamariScene.OnExit();
+
     Destroy();
     DescriptorHeaps::GetDSVHeap()->Release();
     DescriptorHeaps::GetCBVHeap()->Release();
@@ -390,7 +392,6 @@ void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
     switch (e.Key)
     {
     case KeyCode::Escape:
-        katamariScene.OnExit();
         Application::Get().Quit(0);
         break;
     case KeyCode::Enter:
