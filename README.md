@@ -1,6 +1,13 @@
 # DirectX 12 Game Engine
-
-# Nau Engine Test
+### Инструкция по сборке и запуску проекта:
+1) В терминале:
+```
+cd path/to/your/folder
+git clone https://github.com/galeevlxix/DX12GE.git
+```
+2) Открыть файл решения `path/to/your/folder/DX12GE/DX12GE.sln`
+3) Собрать решение и запустить проект
+# Nau Engine Test  
 В качестве основы для прохождения тестового задания я использую собственный движок на DX12.  
 [1. Система компонентов и управление ресурсами](#first-part)  
 [2. Сериализация и десериализация сцены](#second-part)  
