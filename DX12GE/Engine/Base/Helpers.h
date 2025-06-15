@@ -2,6 +2,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h> // For HRESULT
+#include <io.h>
 
   // From DXSampleHelper.h 
   // Source: https://github.com/Microsoft/DirectX-Graphics-Samples
@@ -55,6 +56,16 @@ inline HRESULT ReadDataFromFile(LPCWSTR filename, byte** data, UINT* size)
     }
 
     return S_OK;
+}
+
+inline bool FileExists(const char* fname)
+{
+    return _access(fname, 0) != -1;
+}
+
+inline bool NotFoundFile(const char* path)
+{
+    return path == "" || !FileExists(path);
 }
 
 namespace Math
@@ -172,6 +183,7 @@ namespace Math
         return v;
     }
 }
+
 
 #define STR1(x) #x
 #define STR(x) STR1(x)

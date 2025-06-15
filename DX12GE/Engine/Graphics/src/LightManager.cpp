@@ -43,7 +43,7 @@ void LightManager::Init(Player* player)
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity * 2;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*player).prince.Position;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*player).prince.Transform.GetPosition();
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
 	m_SpotLights[m_SpotLights.size() - 1].Direction = (*player).Direction;
 	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.65f;
@@ -125,7 +125,7 @@ void LightManager::OnUpdate(float deltaTime)
 {
 	static float path = 0;
 
-	path += speed * 2 * deltaTime;
+	path += speed * deltaTime;
 	if (path >= 2 * PI) path -= 2 * PI;
 
 	radius = max_radius * ((sin(path) + 1.0) / 2.0 + 0.3);
@@ -138,7 +138,10 @@ void LightManager::OnUpdate(float deltaTime)
 		}
 	}
 
-	m_SpotLights[1].PointLightComponent.Position = (*m_player).prince.Position + Vector3(0, 2, 0);
+	ShaderResources::GetWorldCB()->DirLight.Direction.x = sin(path);
+	ShaderResources::GetWorldCB()->DirLight.Direction.z = cos(path);
+
+	m_SpotLights[1].PointLightComponent.Position = (*m_player).prince.Transform.GetPosition() + Vector3(0, 2, 0);
 	m_SpotLights[1].Direction = (*m_player).Direction;
 	m_SpotLights[1].PointLightComponent.BaseLightComponent.Intensity == 10;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Texture.h"
+#include "TextureComponent.h"
 
 static const FLOAT clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 

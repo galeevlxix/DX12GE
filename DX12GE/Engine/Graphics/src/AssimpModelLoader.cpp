@@ -1,13 +1,22 @@
 #include "../AssimpModelLoader.h"
 #include "../../Base/Application.h"
 #include "../VertexStructures.h"
+#include "../ResourceStorage.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-bool AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, vector<Mesh3D*>& Meshes, vector<Material*>& Materials, vector<int>& MaterialIndices, float& OutYOffset)
+uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, float& OutYOffset)
 {
+    if (NotFoundFile(filePath.c_str())) return -1;
+
+    int id = ResourceStorage::AddObject3D(filePath);
+    auto object = ResourceStorage::GetObject3D(id);
+
+    if (object->IsInitialized())
+        return id;
+
     Assimp::Importer importer;
     
     const aiScene* pScene = importer.ReadFile(filePath.c_str(),
@@ -18,9 +27,6 @@ bool AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> command
         aiProcess_PreTransformVertices |
         aiProcess_SortByPType |
         aiProcess_JoinIdenticalVertices
-        /*aiProcessPreset_TargetRealtime_Quality |
-        aiProcessPreset_TargetRealtime_MaxQuality | 
-        aiProcess_FlipUVs*/
     );
 
     if (!pScene)
@@ -45,9 +51,11 @@ bool AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> command
         return false;
     }
 
+    std::vector<MaterialEntity*> materials;
+
     for (unsigned int i = 0; i < materialsCount; i++)
     {
-        Materials.push_back(new Material());
+        materials.push_back(new MaterialEntity());
 
         for (int tt = 0; tt <= 27; tt++)
         {
@@ -59,19 +67,20 @@ bool AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> command
 
             if (p != "")
             {
-                Materials[i]->m_ImagePaths[(TextureType)tt] = directory + "/" + p;
+                materials[i]->m_ImagePaths[(TextureType)tt] = directory + "/" + p;
             }
         }
 
-        Materials[i]->Load(commandList);
+        materials[i]->Load(commandList);
     }
+
+    std::vector<Mesh3DComponent*> meshes;
 
     float yOffset = 0.0f;
 
     for (unsigned int i = 0; i < meshesCount; i++)
     {
-        Meshes.push_back(new Mesh3D());
-        MaterialIndices.push_back(0);
+        meshes.push_back(new Mesh3DComponent());
 
         const aiMesh* paiMesh = pScene->mMeshes[i];
 
@@ -104,7 +113,7 @@ bool AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> command
             Vertices.push_back(v);
         }
 
-        MaterialIndices[i] = paiMesh->mMaterialIndex;
+        meshes[i]->Material = materials[paiMesh->mMaterialIndex];
 
         for (unsigned int i = 0; i < paiMesh->mNumFaces; i++)
         {
@@ -115,8 +124,12 @@ bool AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> command
             Indices.push_back(Face.mIndices[2]);
         }
 
-        Meshes[i]->OnLoad<VertexStruct>(commandList, Vertices, Indices);
+        meshes[i]->OnLoad<VertexStruct>(commandList, Vertices, Indices);
     }
 
     OutYOffset = yOffset;
+
+    object->OnLoad(meshes);
+
+    return id;
 }

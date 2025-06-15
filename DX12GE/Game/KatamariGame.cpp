@@ -1,30 +1,52 @@
 #include "KatamariGame.h"
 #include "../Engine/Graphics/ShaderResources.h"
 
-int GetRandomNumber(int start, int end)
-{
-	return rand() % (end - start + 1) + start;
-}
-
 void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	player.OnLoad(commandList);
 
 	Add(commandList, "scene", "../../DX12GE/Resources/Models/gaz/scene.gltf");
-	m_objects["scene"].SetScale(3, 3, 3);
+	m_objects["scene"].Transform.SetScale(3, 3, 3);
+	m_objects["scene"].Transform.SetPosition(0, 0, 0);
 
-	/*Add(commandList, "samurai", "../../DX12GE/Resources/Models/cyber_samurai/scene.gltf");
-	m_objects["samurai"].Move(-3, 6.5, 5);
-	m_objects["samurai"].SetScale(4, 4, 4);*/
+	Add(commandList, "scene1", "../../DX12GE/Resources/Models/gaz/scene.gltf");
+	m_objects["scene1"].Transform.SetScale(3, 3, 3);
+	m_objects["scene1"].Transform.SetPosition(-75, 0, 0);
+
+	Add(commandList, "scene2", "../../DX12GE/Resources/Models/gaz/scene.gltf");
+	m_objects["scene2"].Transform.SetScale(3, 3, 3);
+	m_objects["scene2"].Transform.SetPosition(-150, 0, 0);
+
+	Add(commandList, "scene3", "../../DX12GE/Resources/Models/gaz/scene.gltf");
+	m_objects["scene3"].Transform.SetScale(3, 3, 3);
+	m_objects["scene3"].Transform.SetPosition(0, 0, 75);
+
+	Add(commandList, "scene4", "../../DX12GE/Resources/Models/gaz/scene.gltf");
+	m_objects["scene4"].Transform.SetScale(3, 3, 3);
+	m_objects["scene4"].Transform.SetPosition(-75, 0, 75);
+
+	Add(commandList, "scene5", "../../DX12GE/Resources/Models/gaz/scene.gltf");
+	m_objects["scene5"].Transform.SetScale(3, 3, 3);
+	m_objects["scene5"].Transform.SetPosition(-150, 0, 75);
 }
 
 void KatamariGame::OnUpdate(float deltaTime)
 {
 	player.OnUpdate(deltaTime);
 
-	for (string name : m_names)
+	static float counter = 0.0f;
+	counter += deltaTime;
+
+	if (counter >= 2 * PI) counter -= 2 * PI;
+
+	Vector3 sc1Pos = m_objects["scene1"].Transform.GetPosition();
+	sc1Pos.y = sin(counter) * 10;
+	m_objects["scene1"].Transform.SetPosition(sc1Pos);
+	m_objects["scene4"].Transform.SetRotationY(-counter);
+
+	for (auto obj : m_objects)
 	{
-		m_objects[name].OnUpdate(deltaTime);
+		obj.second.OnUpdate(deltaTime);
 	}
 }
 
@@ -32,23 +54,16 @@ void KatamariGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMA
 {
 	player.OnRender(commandList, viewProjMatrix);
 
-	for (string name : m_names)
+	for (auto obj : m_objects)
 	{
-		m_objects[name].OnRender(commandList, viewProjMatrix);
+		obj.second.OnRender(commandList, viewProjMatrix);
 	}
 }
 
 void KatamariGame::Add(ComPtr<ID3D12GraphicsCommandList2> commandList, string name, string path)
 {
-	// KEY found
 	if (m_objects.find(name) != m_objects.end()) { return; }
 
-	m_names.push_back(name);
-	m_objects.insert({ name, Object3D() });
+	m_objects.insert({ name, Object3DEntity() });
 	m_objects[name].OnLoad(commandList, path);
-}
-
-void KatamariGame::Remove(string name)
-{
-	
 }

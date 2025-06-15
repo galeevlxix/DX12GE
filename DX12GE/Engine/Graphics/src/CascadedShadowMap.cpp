@@ -59,12 +59,10 @@ void CascadedShadowMap::SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3
 
 void CascadedShadowMap::ApplyShadowTransforms()
 {
-	Matrix matrices[CASCADES_COUNT];
 	for (size_t i = 0; i < CASCADES_COUNT; i++)
 	{
-		matrices[i] = m_Cascades[i].ShadowViewProj;
+		ShaderResources::GetShadowCB()->ShadowTransforms[i] = m_Cascades[i].ShadowViewProj;
 	}
-	Mesh3D::SetSMMatrices(matrices);
 }
 
 ShadowMap* CascadedShadowMap::GetShadowMap(int index)

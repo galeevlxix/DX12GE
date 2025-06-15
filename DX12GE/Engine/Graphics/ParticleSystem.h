@@ -1,8 +1,8 @@
 #pragma once
 #include "../Base/DX12LibPCH.h"
 #include "../Base/SimpleMath.h"
-#include "Texture.h"
-#include "Object3D.h"
+#include "TextureComponent.h"
+#include "Object3DEntity.h"
 #include "VertexStructures.h"
 
 #include <vector>
@@ -37,7 +37,7 @@ public:
 
 	void SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, float speed, float lifeTime);
 private:
-	Texture m_Texture;
+	TextureComponent m_Texture;
 
 	ParticleGroup m_ParticleGroupPrototype;
 	vector<ParticleGroup> m_Particles;

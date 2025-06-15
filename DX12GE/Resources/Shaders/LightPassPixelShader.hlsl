@@ -254,8 +254,6 @@ float4 main(PSInput input) : SV_Target
     
     float3 outputPixelColor = albedo.xyz * lightingResult + emissive.rgb;
     
-    outputPixelColor = pow(outputPixelColor, 1.0f / 2.2f);
-    
     // Fog
     if (fogEnable)
     {

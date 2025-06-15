@@ -43,11 +43,13 @@ bool BianEngineGame::LoadContent()
     m_CascadedShadowMap.Create();
     m_GBuffer.Init(primaryDevice, GetClientWidth(), GetClientHeight());
     particles.OnLoad(commandList);
+    particles.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5, 7, 1000);
     katamariScene.OnLoad(commandList);
     lights.Init(&(katamariScene.player));
     m_Camera.OnLoad(&(katamariScene.player));
     m_Camera.Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
     debug.Initialize(&m_Camera, primaryDevice);
+    CurrentPass::Set(CurrentPass::None);
 
     SSRResult.Init(primaryDevice, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
     LightPassResult.Init(primaryDevice, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
@@ -99,7 +101,7 @@ void BianEngineGame::OnUpdate(UpdateEventArgs& e)
 
 void BianEngineGame::DrawSceneToShadowMaps()
 {
-    Mesh3D::SetShadowPass(true);
+    CurrentPass::Set(CurrentPass::Shadow);
 
     for (int i = 0; i < CASCADES_COUNT; i++)
     {
@@ -128,13 +130,11 @@ void BianEngineGame::DrawSceneToShadowMaps()
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
         commandQueue->WaitForFenceValue(fenceValue);
     }
-
-    Mesh3D::SetShadowPass(false);
 }
 
 void BianEngineGame::DrawSceneToGBuffer()
 {
-    Mesh3D::SetGeometryPass(true);
+    CurrentPass::Set(CurrentPass::Geometry);
 
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
@@ -159,14 +159,12 @@ void BianEngineGame::DrawSceneToGBuffer()
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
-
-    Mesh3D::SetGeometryPass(false);
 }
  
 void BianEngineGame::LightPassRender()
 {
-    Mesh3D::SetLightPass(true);
-    
+    CurrentPass::Set(CurrentPass::Lighting);
+
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
     
@@ -198,12 +196,12 @@ void BianEngineGame::LightPassRender()
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
-    
-    Mesh3D::SetLightPass(false);
 }
 
 void BianEngineGame::DrawSSR()
 {
+    CurrentPass::Set(CurrentPass::SSR);
+
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
@@ -234,6 +232,8 @@ void BianEngineGame::DrawSSR()
 
 void BianEngineGame::MergeResults()
 {
+    CurrentPass::Set(CurrentPass::Merging);
+
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
@@ -272,6 +272,8 @@ void BianEngineGame::MergeResults()
 
 void BianEngineGame::DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
+    CurrentPass::Set(CurrentPass::TransparentParticles);
+
     m_ParticleComputePipeline.SetUpdatePSO(commandList);
     tex3d.Render(commandList);
     particles.OnUpdateComputeRender(commandList);
@@ -286,6 +288,8 @@ void BianEngineGame::DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> com
 
 void BianEngineGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
+    CurrentPass::Set(CurrentPass::Debug);
+
     m_SimplePipeline.Set(commandList);
     debug.Draw(commandList);
 }
@@ -371,6 +375,8 @@ void BianEngineGame::OnRender(RenderEventArgs& e)
         timer = 0.0f;
         frameCounter = 0.0f;
     }
+
+    CurrentPass::Set(CurrentPass::None);
 }
 
 void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
@@ -398,9 +404,6 @@ void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
         debug.canDraw = !debug.canDraw;
         shouldAddDebugObjects = true;
         break;
-    case KeyCode::Z:
-        Mesh3D::DebugMatrices();
-        break;
     case KeyCode::P:
         stopParticles = !stopParticles;
         break;
@@ -412,7 +415,7 @@ void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::R:
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         auto commandList = commandQueue->GetCommandList();
-        particles.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5, 7, 1000);
+        
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
         commandQueue->WaitForFenceValue(fenceValue);
         break;

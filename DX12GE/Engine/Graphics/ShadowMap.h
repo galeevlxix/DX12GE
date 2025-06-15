@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Base/DX12LibPCH.h"
-#include "Texture.h"
+#include "TextureComponent.h"
 
 class ShadowMap
 {
@@ -46,5 +46,5 @@ private:
 	int m_SrvHeapIndex;
 	int m_DsvHeapIndex;
 
-	Texture m_Texture;
+	TextureComponent m_Texture;
 };

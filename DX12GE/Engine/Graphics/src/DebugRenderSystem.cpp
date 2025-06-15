@@ -3,7 +3,6 @@
 
 void DebugRenderSystem::Initialize(Camera* camera, ComPtr<ID3D12Device2> device)
 {
-	
 	m_Camera = camera;
 }
 
@@ -14,16 +13,16 @@ void DebugRenderSystem::Update(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		m_Lines.OnLoad<VertexPositionColor>(commandList, linesVertices, linesIndices);
 		isLinesDirty = false;
 	}
-	m_Lines.OnUpdate();
 }
 
 void DebugRenderSystem::Draw(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	if (m_Camera == nullptr || isLinesDirty || !canDraw) return;
-	
-	Mesh3D::SetShadowPass(true);
-	m_Lines.OnRenderLineList(commandList, m_Camera->GetViewProjMatrix());
-	Mesh3D::SetShadowPass(false);
+
+	XMMATRIX mvpMatrix = XMMatrixMultiply(Matrix::Identity, m_Camera->GetViewProjMatrix());
+	commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvpMatrix, 0);
+
+	m_Lines.OnRender(commandList, D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 }
 
 void DebugRenderSystem::Clear()

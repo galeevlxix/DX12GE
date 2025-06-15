@@ -4,7 +4,7 @@
 void Player::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	prince.OnLoad(commandList, "../../DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf");
-	prince.SetPosition(-6.7f, 13.3f, 43.0f);
+	prince.Transform.SetPosition(-6.7f, 13.3f, 43.0f);
 	Direction = Vector3(0, 0, -1);
 }
 
@@ -110,39 +110,3 @@ float Player::GetAngleOfMatrixAndAxis(XMMATRIX rotMat, Vector3 axis)
 
 	return angle;
 }
-
-
-/*XMMATRIX rotMat = XMMatrixSet
-(
-	right.x * right.x * (1 - cos(ballAngle)) + cos(ballAngle),
-	right.x * right.y * (1 - cos(ballAngle)) - right.z * sin(ballAngle),
-	right.x * right.z * (1 - cos(ballAngle)) + right.y * sin(ballAngle),
-	0,
-
-	right.y * right.x * (1 - cos(ballAngle)) + right.z * sin(ballAngle),
-	right.y * right.y * (1 - cos(ballAngle)) + cos(ballAngle),
-	right.y * right.z * (1 - cos(ballAngle)) + right.x * sin(ballAngle),
-	0,
-
-	right.z * right.x * (1 - cos(ballAngle)) + right.y * sin(ballAngle),
-	right.z * right.y * (1 - cos(ballAngle)) + right.x * sin(ballAngle),
-	right.z * right.z * (1 - cos(ballAngle)) + cos(ballAngle),
-	0,
-
-	0, 0, 0, 1
-);*/
-
-
-//rotMat = XMMatrixTranspose(rotMat);
-
-	//\cos \theta + (1 - \cos \theta) x ^ 2
-	//& (1 - \cos \theta) x y - (\sin \theta) z
-	//& (1 - \cos \theta) x z + (\sin \theta) y
-	//\\
-		//(1 - \cos \theta) y x + (\sin \theta) z
-		//& \cos \theta + (1 - \cos \theta) y ^ 2
-		//& (1 - \cos \theta) y z - (\sin \theta) x
-		//\\
-		//(1 - \cos \theta) z x - (\sin \theta) y
-		//& (1 - \cos \theta) z y + (\sin \theta) x
-		//& \cos \theta + (1 - \cos \theta) z ^ 2

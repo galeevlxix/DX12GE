@@ -50,7 +50,7 @@ void Camera::OnUpdate(float deltaTime)
 {
     ////////////////////////////////
     //  ¿Ã≈–¿
-    Vector3 playerPos = (*player).prince.Position + Vector3(0.0f, 2.0f, 0.0f);
+    Vector3 playerPos = (*player).prince.Transform.GetPosition() + Vector3(0.0f, 2.0f, 0.0f);
     float xTar = cos(angle_h) * sin(PI / 2.0f - angle_v);
     float yTar = cos(PI / 2.0f - angle_v);
     float zTar = sin(angle_h) * sin(PI / 2.0f - angle_v);
@@ -72,35 +72,35 @@ void Camera::OnUpdate(float deltaTime)
     {
         (*player).Direction = Vector3(Target.m128_f32[0], 0.0f, Target.m128_f32[2]);
         (*player).Direction.Normalize();
-        (*player).prince.Move((*player).Direction * speed * deltaTime);
-        (*player).prince.SetRotationY(-PI / 2.0f - angle_h);
+        (*player).prince.Transform.Move((*player).Direction * speed * deltaTime);
+        (*player).prince.Transform.SetRotationY(-PI / 2.0f - angle_h);
     }
     if (monitor.S) 
     {
         (*player).Direction = -Vector3(Target.m128_f32[0], 0.0f, Target.m128_f32[2]);
         (*player).Direction.Normalize();
-        (*player).prince.Move((*player).Direction * speed * deltaTime);
-        (*player).prince.SetRotationY(PI / 2.0f - angle_h);
+        (*player).prince.Transform.Move((*player).Direction * speed * deltaTime);
+        (*player).prince.Transform.SetRotationY(PI / 2.0f - angle_h);
     }
     if (monitor.A)
     {
         (*player).Direction = left;
-        (*player).prince.Move((*player).Direction * speed * deltaTime);
-        (*player).prince.SetRotationY(-PI - angle_h);
+        (*player).prince.Transform.Move((*player).Direction * speed * deltaTime);
+        (*player).prince.Transform.SetRotationY(-PI - angle_h);
     }
     if (monitor.D)
     {
         (*player).Direction = -left;
-        (*player).prince.Move((*player).Direction * speed * deltaTime);
-        (*player).prince.SetRotationY(-angle_h);
+        (*player).prince.Transform.Move((*player).Direction * speed * deltaTime);
+        (*player).prince.Transform.SetRotationY(-angle_h);
     }
     if (monitor.E)
     {
-        (*player).prince.Move(Up * speed * deltaTime);
+        (*player).prince.Transform.Move(Up * speed * deltaTime);
     }
     if (monitor.Q)
     {
-        (*player).prince.Move(-Up * speed * deltaTime);
+        (*player).prince.Transform.Move(-Up * speed * deltaTime);
     }
 }
 

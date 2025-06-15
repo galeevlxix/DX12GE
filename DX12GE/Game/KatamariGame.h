@@ -10,8 +10,7 @@ using namespace std;
 class KatamariGame
 {
 private:
-	vector<string> m_names;
-	map<string, Object3D> m_objects;
+	map<string, Object3DEntity> m_objects;
 
 public:
 	Player player;
@@ -22,6 +21,4 @@ public:
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 private:
 	void Add(ComPtr<ID3D12GraphicsCommandList2> commandList, string name, string path);
-	void Remove(string name);
-
 };

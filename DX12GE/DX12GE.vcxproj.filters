@@ -162,13 +162,13 @@
     <ClCompile Include="Engine\Graphics\src\LightManager.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\src\Material.cpp">
+    <ClCompile Include="Engine\Graphics\src\MaterialEntity.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\src\Mesh3D.cpp">
+    <ClCompile Include="Engine\Graphics\src\Mesh3DComponent.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\src\Object3D.cpp">
+    <ClCompile Include="Engine\Graphics\src\Object3DEntity.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\src\ParticleSystem.cpp">
@@ -180,7 +180,7 @@
     <ClCompile Include="Engine\Graphics\src\ShadowMap.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\src\Texture.cpp">
+    <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp">
@@ -190,6 +190,18 @@
       <Filter>Исходные файлы\Engine\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\src\TextureBuffer.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\src\CurrentPass.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\src\ResourceStorage.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\src\Object3DComponent.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\src\TransformComponent.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -296,13 +308,13 @@
     <ClInclude Include="Engine\Graphics\LightManager.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\Material.h">
+    <ClInclude Include="Engine\Graphics\MaterialEntity.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\Mesh3D.h">
+    <ClInclude Include="Engine\Graphics\Mesh3DComponent.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\Object3D.h">
+    <ClInclude Include="Engine\Graphics\Object3DEntity.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\ParticleSystem.h">
@@ -314,7 +326,7 @@
     <ClInclude Include="Engine\Graphics\ShadowMap.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\Texture.h">
+    <ClInclude Include="Engine\Graphics\TextureComponent.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\Texture3D.h">
@@ -327,6 +339,18 @@
       <Filter>Файлы заголовков\Engine\Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\TextureBuffer.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\CurrentPass.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\ResourceStorage.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\Object3DComponent.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\TransformComponent.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

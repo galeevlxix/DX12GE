@@ -1,11 +1,11 @@
 #include "../Base/DX12LibPCH.h"
-#include "Texture.h"
+#include "TextureComponent.h"
 
 class DepthBuffer
 {
 private:
     // Depth buffer.
-    Texture DepthBufferTexture;
+    TextureComponent DepthBufferTexture;
 public:
     UINT dsvCpuHandleIndex = -1;
 
