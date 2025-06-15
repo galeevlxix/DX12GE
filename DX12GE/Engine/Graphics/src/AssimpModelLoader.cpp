@@ -130,6 +130,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     OutYOffset = yOffset;
 
     object->OnLoad(meshes);
+    object->ResourcePath = filePath;
 
     return id;
 }

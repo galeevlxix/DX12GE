@@ -1,4 +1,5 @@
 #include "BianEngineGame.h"
+#include "Graphics/ResourceStorage.h"
 
 #include <sstream>
 #include <iomanip>
@@ -16,6 +17,7 @@ BianEngineGame::~BianEngineGame()
     DescriptorHeaps::GetCBVHeap()->Release();
 
     Application::Get().GetPrimaryDevice()->Release();
+    //ResourceStorage::Unload();
     // todo: удалить все comptr на статические объекты
 }
 
@@ -388,6 +390,7 @@ void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
     switch (e.Key)
     {
     case KeyCode::Escape:
+        katamariScene.OnExit();
         Application::Get().Quit(0);
         break;
     case KeyCode::Enter:

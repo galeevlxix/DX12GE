@@ -30,5 +30,5 @@ public:
 private:
     Vector3 m_Position;
     Vector3 m_Rotation;
-    Vector3 m_Scale;
+    Vector3 m_Scale;    
 };

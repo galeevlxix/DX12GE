@@ -138,6 +138,7 @@
     <ClCompile Include="Engine\Base\src\DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Base\src\Game.cpp" />
     <ClCompile Include="Engine\Base\src\HighResolutionClock.cpp" />
+    <ClCompile Include="Engine\Base\src\JsonScene.cpp" />
     <ClCompile Include="Engine\Base\src\SimpleMath.cpp" />
     <ClCompile Include="Engine\Base\src\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Base\src\Window.cpp" />
@@ -185,6 +186,8 @@
     <ClInclude Include="Engine\Base\Game.h" />
     <ClInclude Include="Engine\Base\Helpers.h" />
     <ClInclude Include="Engine\Base\HighResolutionClock.h" />
+    <ClInclude Include="Engine\Base\json.hpp" />
+    <ClInclude Include="Engine\Base\JsonScene.h" />
     <ClInclude Include="Engine\Base\KeyCodes.h" />
     <ClInclude Include="Engine\Base\resource (2).h" />
     <ClInclude Include="Engine\Base\resource.h" />

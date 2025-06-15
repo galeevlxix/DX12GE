@@ -59,27 +59,27 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
 
     auto adapters = GetAdapters();
     PrimaryAdapter = adapters[0];
-    SecondAdapter = adapters[1];
+    //SecondAdapter = adapters[1];
     
     if (PrimaryAdapter)
     {
         PrimaryDevice = CreateDevice(PrimaryAdapter);
     }
 
-    if (SecondAdapter)
+    /*if (SecondAdapter)
     {
         SecondDevice = CreateDevice(SecondAdapter);
-    }
+    }*/
 
-    if (PrimaryDevice && SecondDevice)
+    if (PrimaryDevice)
     {
         PrimaryDirectCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
         PrimaryComputeCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
         PrimaryCopyCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COPY);
 
-        SecondDirectCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
-        SecondComputeCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
-        SecondCopyCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COPY);
+        //SecondDirectCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
+        //SecondComputeCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+        //SecondCopyCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COPY);
 
         m_TearingSupported = CheckTearingSupport();
     }
@@ -323,10 +323,10 @@ ComPtr<ID3D12Device2> Application::GetPrimaryDevice() const
     return PrimaryDevice;
 }
 
-ComPtr<ID3D12Device2> Application::GetSecondDevice() const
-{
-    return SecondDevice;
-}
+//ComPtr<ID3D12Device2> Application::GetSecondDevice() const
+//{
+//    return SecondDevice;
+//}
 
 std::shared_ptr<CommandQueue> Application::GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE type) const
 {
@@ -349,26 +349,26 @@ std::shared_ptr<CommandQueue> Application::GetPrimaryCommandQueue(D3D12_COMMAND_
     return commandQueue;
 }
 
-std::shared_ptr<CommandQueue> Application::GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE type) const
-{
-    std::shared_ptr<CommandQueue> commandQueue;
-    switch (type)
-    {
-    case D3D12_COMMAND_LIST_TYPE_DIRECT:
-        commandQueue = SecondDirectCommandQueue;
-        break;
-    case D3D12_COMMAND_LIST_TYPE_COMPUTE:
-        commandQueue = SecondComputeCommandQueue;
-        break;
-    case D3D12_COMMAND_LIST_TYPE_COPY:
-        commandQueue = SecondCopyCommandQueue;
-        break;
-    default:
-        assert(false && "Invalid command queue type.");
-    }
-
-    return commandQueue;
-}
+//std::shared_ptr<CommandQueue> Application::GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE type) const
+//{
+//    std::shared_ptr<CommandQueue> commandQueue;
+//    switch (type)
+//    {
+//    case D3D12_COMMAND_LIST_TYPE_DIRECT:
+//        commandQueue = SecondDirectCommandQueue;
+//        break;
+//    case D3D12_COMMAND_LIST_TYPE_COMPUTE:
+//        commandQueue = SecondComputeCommandQueue;
+//        break;
+//    case D3D12_COMMAND_LIST_TYPE_COPY:
+//        commandQueue = SecondCopyCommandQueue;
+//        break;
+//    default:
+//        assert(false && "Invalid command queue type.");
+//    }
+//
+//    return commandQueue;
+//}
 
 void Application::Flush()
 {
@@ -376,9 +376,9 @@ void Application::Flush()
     PrimaryComputeCommandQueue->Flush();
     PrimaryCopyCommandQueue->Flush();
 
-    SecondDirectCommandQueue->Flush();
+    /*SecondDirectCommandQueue->Flush();
     SecondComputeCommandQueue->Flush();
-    SecondCopyCommandQueue->Flush();
+    SecondCopyCommandQueue->Flush();*/
 }
 
 ComPtr<ID3D12DescriptorHeap> Application::CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type)

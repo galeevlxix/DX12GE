@@ -1,0 +1,80 @@
+[
+    {
+        "name": "scene",
+        "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
+        "posX": 0.0,
+        "posY": 0.0,
+        "posZ": 0.0,
+        "rotX": 0.0,
+        "rotY": 0.0,
+        "rotZ": 0.0,
+        "sclX": 3.0,
+        "sclY": 3.0,
+        "sclZ": 3.0
+    },
+    {
+        "name": "scene1",
+        "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
+        "posX": -75.0,
+        "posY": 0.04283142089844,
+        "posZ": 0.0,
+        "rotX": 0.0,
+        "rotY": 0.0,
+        "rotZ": 0.0,
+        "sclX": 3.0,
+        "sclY": 3.0,
+        "sclZ": 3.0
+    },
+    {
+        "name": "scene2",
+        "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
+        "posX": -150.0,
+        "posY": 0.0,
+        "posZ": 0.0,
+        "rotX": 0.0,
+        "rotY": 0.0,
+        "rotZ": 0.0,
+        "sclX": 3.0,
+        "sclY": 3.0,
+        "sclZ": 3.0
+    },
+    {
+        "name": "scene3",
+        "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
+        "posX": 0.0,
+        "posY": 0.0,
+        "posZ": 75.0,
+        "rotX": 0.0,
+        "rotY": 0.0,
+        "rotZ": 0.0,
+        "sclX": 3.0,
+        "sclY": 3.0,
+        "sclZ": 3.0
+    },
+    {
+        "name": "scene4",
+        "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
+        "posX": -75.0,
+        "posY": 0.0,
+        "posZ": 75.0,
+        "rotX": 0.0,
+        "rotY": -13.585114479064941,
+        "rotZ": 0.0,
+        "sclX": 3.0,
+        "sclY": 3.0,
+        "sclZ": 3.0
+    },
+    {
+        "name": "scene5",
+        "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
+        "posX": -150.0,
+        "posY": 0.0,
+        "posZ": 75.0,
+        "rotX": 0.0,
+        "rotY": 0.0,
+        "rotZ": 0.0,
+        "sclX": 3.0,
+        "sclY": 3.0,
+        "sclZ": 3.0
+    }
+]

@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "../Engine/Base/JsonScene.h"
 
 using namespace std;
 
@@ -16,9 +17,11 @@ public:
 	Player player;
 
 	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
-
+	void OnExit();
 	void OnUpdate(float deltaTime);
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 private:
-	void Add(ComPtr<ID3D12GraphicsCommandList2> commandList, string name, string path);
+	JsonScene js;
+
+	void Add(ComPtr<ID3D12GraphicsCommandList2> commandList, string name, string path);	
 };

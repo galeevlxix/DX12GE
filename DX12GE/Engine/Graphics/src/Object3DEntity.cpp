@@ -45,3 +45,8 @@ void Object3DEntity::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XM
     ResourceStorage::GetObject3D(ObjectId)->OnRender(commandList);
 }
 
+uint32_t Object3DEntity::GetId()
+{
+    return ObjectId;
+}
+
