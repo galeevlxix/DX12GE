@@ -111,7 +111,7 @@ struct SSRConstantBuffer
 	Matrix ViewProjection;
 	Vector4 CameraPos;
 	float RayStep;
-	int MaxSteps;
+	//int MaxSteps;
 	float MaxDistance;
 	float Thickness;
 };

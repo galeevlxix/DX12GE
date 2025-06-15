@@ -67,6 +67,12 @@
     <Filter Include="Файлы заголовков\Engine\Graphics">
       <UniqueIdentifier>{a02971a0-71d1-4d20-9061-c9c7eeef9822}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\Shaders\SSR">
+      <UniqueIdentifier>{1840aa84-b66b-4798-ae71-b03e28de52ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы ресурсов\Shaders\Merging">
+      <UniqueIdentifier>{9459a864-b609-4743-ac58-5ccaf7c3c5fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX12GE.cpp">
@@ -392,10 +398,18 @@
     <FxCompile Include="Resources\Shaders\ParticleSystemShaders\SortParticleComputeShader.hlsl">
       <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\Shaders\MergingPixelShader.hlsl" />
-    <FxCompile Include="Resources\Shaders\MergingVertexShader.hlsl" />
-    <FxCompile Include="Resources\Shaders\SSRPixelShader.hlsl" />
-    <FxCompile Include="Resources\Shaders\SSRVertexShader.hlsl" />
+    <FxCompile Include="Resources\Shaders\MergingPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Merging</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\MergingVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Merging</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\SSRPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\SSR</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\SSRVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\SSR</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

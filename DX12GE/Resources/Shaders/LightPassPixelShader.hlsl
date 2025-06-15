@@ -259,7 +259,7 @@ float4 main(PSInput input) : SV_Target
     // Fog
     if (fogEnable)
     {
-        float fogFactor = 1.0f - (cameraPixelDistance - fogStart) / fogDistance;
+        float fogFactor = 1.0f - (cameraPixelDistance - fogStart) / fogDistance;    
         fogFactor = clamp(fogFactor, 0.0f, 1.0f);
         float3 fogColor = float3(0.5f, 0.5f, 0.5f);
         outputPixelColor = fogFactor * outputPixelColor + (1.0 - fogFactor) * fogColor;

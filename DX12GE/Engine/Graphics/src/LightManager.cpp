@@ -22,7 +22,6 @@ void LightManager::Init(Player* player)
 
 	// Specular
 	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 0.5f;
-
 	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 64;
 
 	// DirectionalLight
@@ -141,5 +140,5 @@ void LightManager::OnUpdate(float deltaTime)
 
 	m_SpotLights[1].PointLightComponent.Position = (*m_player).prince.Position + Vector3(0, 2, 0);
 	m_SpotLights[1].Direction = (*m_player).Direction;
-	m_SpotLights[1].PointLightComponent.BaseLightComponent.Intensity == 5;
+	m_SpotLights[1].PointLightComponent.BaseLightComponent.Intensity == 10;
 }

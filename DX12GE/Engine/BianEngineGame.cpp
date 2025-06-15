@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iomanip>
 #include <string>
+#include <chrono>
 
 BianEngineGame::BianEngineGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
     , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
@@ -52,9 +53,13 @@ bool BianEngineGame::LoadContent()
     LightPassResult.Init(primaryDevice, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
 
     ShaderResources::GetSSRCB()->RayStep = 0.025;
-    ShaderResources::GetSSRCB()->MaxSteps = 2048;
+    //ShaderResources::GetSSRCB()->MaxSteps = 2048;
     ShaderResources::GetSSRCB()->MaxDistance = 32.0;
-    ShaderResources::GetSSRCB()->Thickness = 0.0125;
+    ShaderResources::GetSSRCB()->Thickness = 0.02;
+
+    // distance 8 -> 32
+    // ray step 0.025 -> 0.3
+    // thickness 0.02 -> 0.25
 
     // DRAW THE CUBE
     debug.DrawPoint(boxPosition, 2);
@@ -76,12 +81,6 @@ bool BianEngineGame::LoadContent()
     m_DepthBuffer.ResizeDepthBuffer(GetClientWidth(), GetClientHeight());
 
     return true;
-}
-
-void BianEngineGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList)
-{
-    m_SimplePipeline.Set(commandList);
-    debug.Draw(commandList);
 }
 
 void BianEngineGame::OnUpdate(UpdateEventArgs& e)
@@ -120,7 +119,6 @@ void BianEngineGame::DrawSceneToShadowMaps()
         m_ShadowMapPipeline.Set(commandList);
 
         commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
         commandList->OMSetRenderTargets(0, nullptr, false, &dsv);
 
         katamariScene.OnRender(commandList, m_CascadedShadowMap.GetShadowViewProj(i));
@@ -286,22 +284,93 @@ void BianEngineGame::DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> com
     particles.OnRender(commandList);
 }
 
+void BianEngineGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList)
+{
+    m_SimplePipeline.Set(commandList);
+    debug.Draw(commandList);
+}
+
 void BianEngineGame::OnRender(RenderEventArgs& e)
 {
     super::OnRender(e);
-    DrawSceneToShadowMaps();
-    DrawSceneToGBuffer();
-    LightPassRender();
-    
-    if (drawSSR)
-        DrawSSR();
-    else if (resizeSSR)
+
+    static float totalShadowDuration = 0.0f;
+    static float totalGpDuration = 0.0f;
+    static float totalLpDuration = 0.0f;
+    static float totalSsrDuration = 0.0f;
+    static float totalMergeDuration = 0.0f;
+
+    static float timer = 0.0f;
+    static float frameCounter = 0.0f;
+
+    timer += e.ElapsedTime;
+    frameCounter += 1.0f;
+
     {
-        SSRResult.Init(Application::Get().GetPrimaryDevice(), GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
-        resizeSSR = false;
+        auto start = std::chrono::steady_clock::now();
+        DrawSceneToShadowMaps();
+        auto end = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        totalShadowDuration += duration;
     }
 
-    MergeResults();
+    {
+        auto start = std::chrono::steady_clock::now();
+        DrawSceneToGBuffer();
+        auto end = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        totalGpDuration += duration;
+    }
+
+    {
+        auto start = std::chrono::steady_clock::now();
+        LightPassRender();
+        auto end = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        totalLpDuration += duration;
+    }
+    
+    {
+        auto start = std::chrono::steady_clock::now();
+
+        if (drawSSR)
+            DrawSSR();
+        else if (resizeSSR)
+        {
+            SSRResult.Init(Application::Get().GetPrimaryDevice(), GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
+            resizeSSR = false;
+        }
+
+        auto end = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        totalSsrDuration += duration;
+    }
+
+    {
+        auto start = std::chrono::steady_clock::now();
+        MergeResults();
+        auto end = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        totalMergeDuration += duration;
+    }
+
+    if (timer >= 1.0f)
+    {
+        shadowTime = totalShadowDuration / frameCounter;
+        gpTime = totalGpDuration / frameCounter;
+        lpTime = totalLpDuration / frameCounter;
+        ssrTime = totalSsrDuration / frameCounter;
+        mergeTime = totalMergeDuration / frameCounter;
+
+        totalShadowDuration = 0.0f;
+        totalGpDuration = 0.0f;
+        totalLpDuration = 0.0f;
+        totalSsrDuration = 0.0f;
+        totalMergeDuration = 0.0f;
+        
+        timer = 0.0f;
+        frameCounter = 0.0f;
+    }
 }
 
 void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
@@ -416,6 +485,21 @@ void BianEngineGame::RefreshTitle(UpdateEventArgs& e)
         std::wstring fps = L"Fps " + std::to_wstring(frameCounter);
         fps = Align(fps, 10);
 
+        std::wstring shadow = L"shadow " + std::to_wstring(shadowTime);
+        shadow = Align(shadow, 10);
+
+        std::wstring geom = L"geom " + std::to_wstring(gpTime);
+        geom = Align(geom, 10);
+
+        std::wstring light = L"light " + std::to_wstring(lpTime);
+        light = Align(light, 10);
+
+        std::wstring ssr = L"ssr " + std::to_wstring(ssrTime);
+        ssr = Align(ssr, 10);
+
+        std::wstring merge = L"merge " + std::to_wstring(mergeTime);
+        merge = Align(merge, 10);
+
         std::wstring cPos = L"Pos " +
             rStr(m_Camera.Position.m128_f32[0], 1) + L"; " +
             rStr(m_Camera.Position.m128_f32[1], 1) + L"; " +
@@ -428,7 +512,7 @@ void BianEngineGame::RefreshTitle(UpdateEventArgs& e)
             rStr(m_Camera.Target.m128_f32[2], 1);
         cTar = Align(cTar, 21);
 
-        m_pWindow->UpdateWindowText(winName + L" | " + fps + L" | " + cPos + L" | " + cTar + L" | ");
+        m_pWindow->UpdateWindowText(winName + L" | " + fps + L" | " + shadow + L" | " + geom + L" | " + light + L" | " + ssr + L" | " + merge + +L" | " + cPos);
 
         timer = 0.0;
         frameCounter = 0;

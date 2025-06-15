@@ -91,6 +91,12 @@ private:
     bool drawSSR = true;
     bool resizeSSR = false;
 
+    float shadowTime = 0.0f;
+    float gpTime = 0.0f;
+    float lpTime = 0.0f;
+    float ssrTime = 0.0f;
+    float mergeTime = 0.0f;    
+
     // PARTICLES
 
     ParticleSystem particles;

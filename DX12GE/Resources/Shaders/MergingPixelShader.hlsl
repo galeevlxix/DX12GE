@@ -13,6 +13,6 @@ float4 main(PSInput input) : SV_Target
 {
     float4 color = gColor.Sample(gSampler, input.TexCoord);
     float4 ssr = gSSR.Sample(gSampler, input.TexCoord);
-    float3 result = lerp(color.rgb, ssr.rgb, clamp(ssr.a, 0.5, 1.0));
+    float3 result = lerp(color.rgb, ssr.rgb, ssr.a);
     return float4(result, 1.0);
 }
