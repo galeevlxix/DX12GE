@@ -20,8 +20,12 @@ public:
 	void OnExit();
 	void OnUpdate(float deltaTime);
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
+	Object3DEntity* Get(std::string name);
+
+	void Save();
+
 private:
 	JsonScene js;
-
+	bool alwaysSave = false;
 	void Add(ComPtr<ID3D12GraphicsCommandList2> commandList, string name, string path);	
 };

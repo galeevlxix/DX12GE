@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="DX12GE.cpp" />
     <ClCompile Include="Engine\Base\src\Application.cpp" />
+    <ClCompile Include="Engine\Base\src\CommandExecutor.cpp" />
     <ClCompile Include="Engine\Base\src\CommandQueue.cpp" />
     <ClCompile Include="Engine\Base\src\DescriptorHeaps.cpp" />
     <ClCompile Include="Engine\Base\src\DX12LibPCH.cpp" />
@@ -178,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Base\Application.h" />
+    <ClInclude Include="Engine\Base\CommandExecutor.h" />
     <ClInclude Include="Engine\Base\CommandQueue.h" />
     <ClInclude Include="Engine\Base\d3dx12.h" />
     <ClInclude Include="Engine\Base\DescriptorHeaps.h" />

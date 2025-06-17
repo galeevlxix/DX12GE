@@ -1,6 +1,8 @@
 #pragma once
 #include "../TransformComponent.h"
 
+const static float PI = 3.1415926536f;
+
 DirectX::XMMATRIX TransformComponent::GetWorldMatrix()
 {
     return 
@@ -16,6 +18,16 @@ void TransformComponent::SetDefault(float yOffset)
     m_Position = Vector3(0, -yOffset, 0);
     m_Rotation = Vector3(0, 0, 0);
     m_Scale = Vector3(1, 1, 1);
+}
+
+float TransformComponent::ToDegrees(float radians)
+{
+    return radians * 180.0 / PI;
+}
+
+float TransformComponent::ToRadians(float degrees)
+{
+    return degrees * PI / 180.0;
 }
 
 void TransformComponent::SetPosition(float x, float y, float z)
@@ -48,6 +60,14 @@ void TransformComponent::SetRotation(Vector3 RotationVector)
     m_Rotation = RotationVector;
 }
 
+void TransformComponent::SetRotationDegrees(Vector3 RotationVector)
+{
+    SetRotation(RotationVector);
+    m_Rotation.x = ToRadians(m_Rotation.x);
+    m_Rotation.y = ToRadians(m_Rotation.y);
+    m_Rotation.z = ToRadians(m_Rotation.z);
+}
+
 void TransformComponent::SetRotationX(float value)
 {
     m_Rotation.x = value;
@@ -68,6 +88,16 @@ void TransformComponent::Rotate(Vector3 RotateVector)
     m_Rotation += RotateVector;
 }
 
+void TransformComponent::RotateDegrees(Vector3 RotateVector)
+{
+    SetRotationDegrees(m_Rotation + RotateVector);
+}
+
+void TransformComponent::Rotate(float dx, float dy, float dz)
+{
+    m_Rotation += Vector3(dx, dy, dz);
+}
+
 void TransformComponent::SetScale(float x, float y, float z)
 {
     m_Scale = Vector3(x, y, z);
@@ -86,6 +116,11 @@ void TransformComponent::SetScale(Vector3 ScaleVector)
 void TransformComponent::Expand(float ExpandValue)
 {
     m_Scale *= ExpandValue;
+}
+
+void TransformComponent::Expand(float dx, float dy, float dz)
+{
+    m_Scale *= Vector3(dx, dy, dz);
 }
 
 Vector3 TransformComponent::GetPosition()

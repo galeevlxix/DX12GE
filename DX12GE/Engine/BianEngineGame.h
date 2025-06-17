@@ -5,6 +5,7 @@
 #include "Base/Window.h"
 #include "Base/CommandQueue.h"
 #include "Base/DescriptorHeaps.h"
+#include "Base/CommandExecutor.h"
 
 #include "Pipelines/Pipeline.h"
 #include "Pipelines/ShadowMapPipeline.h"
@@ -95,7 +96,9 @@ private:
     float gpTime = 0.0f;
     float lpTime = 0.0f;
     float ssrTime = 0.0f;
-    float mergeTime = 0.0f;    
+    float mergeTime = 0.0f;   
+
+    CommandExecutor* executor;
 
     // PARTICLES
 

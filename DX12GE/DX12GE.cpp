@@ -19,6 +19,7 @@ void ReportLiveObjects()
 int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nCmdShow)
 {
     int retCode = 0;
+    setlocale(LC_ALL, "Russian");
 
     // Set the working directory to the path of the executable.
     WCHAR path[MAX_PATH];

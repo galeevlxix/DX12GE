@@ -13,6 +13,7 @@ BianEngineGame::BianEngineGame(const wstring& name, int width, int height, bool 
 BianEngineGame::~BianEngineGame()
 {
     katamariScene.OnExit();
+    executor->Exit();
 
     Destroy();
     DescriptorHeaps::GetDSVHeap()->Release();
@@ -86,6 +87,8 @@ bool BianEngineGame::LoadContent()
     m_DepthBuffer.Init();
     m_DepthBuffer.ResizeDepthBuffer(GetClientWidth(), GetClientHeight());
 
+    executor = new CommandExecutor(&katamariScene);
+
     return true;
 }
 
@@ -101,6 +104,7 @@ void BianEngineGame::OnUpdate(UpdateEventArgs& e)
     particles.OnUpdate(e.ElapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
     RefreshTitle(e);
     m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
+    executor->Update();
 }
 
 void BianEngineGame::DrawSceneToShadowMaps()
@@ -492,19 +496,19 @@ void BianEngineGame::RefreshTitle(UpdateEventArgs& e)
         std::wstring fps = L"Fps " + std::to_wstring(frameCounter);
         fps = Align(fps, 10);
 
-        std::wstring shadow = L"shadow " + std::to_wstring(shadowTime);
+        std::wstring shadow = L"shadow " + std::to_wstring(int(shadowTime));
         shadow = Align(shadow, 10);
 
-        std::wstring geom = L"geom " + std::to_wstring(gpTime);
+        std::wstring geom = L"geom " + std::to_wstring(int(gpTime));
         geom = Align(geom, 10);
 
-        std::wstring light = L"light " + std::to_wstring(lpTime);
+        std::wstring light = L"light " + std::to_wstring(int(lpTime));
         light = Align(light, 10);
 
-        std::wstring ssr = L"ssr " + std::to_wstring(ssrTime);
+        std::wstring ssr = L"ssr " + std::to_wstring(int(ssrTime));
         ssr = Align(ssr, 10);
 
-        std::wstring merge = L"merge " + std::to_wstring(mergeTime);
+        std::wstring merge = L"merge " + std::to_wstring(int(mergeTime));
         merge = Align(merge, 10);
 
         std::wstring cPos = L"Pos " +

@@ -207,6 +207,9 @@
     <ClCompile Include="Engine\Base\src\JsonScene.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Base\src\CommandExecutor.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\KatamariGame.h">
@@ -360,6 +363,9 @@
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Base\JsonScene.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\CommandExecutor.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
   </ItemGroup>
