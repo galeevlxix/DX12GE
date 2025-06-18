@@ -48,7 +48,7 @@ bool BianEngineGame::LoadContent()
     m_CascadedShadowMap.Create();
     m_GBuffer.Init(primaryDevice, GetClientWidth(), GetClientHeight());
     particles.OnLoad(commandList);
-    particles.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5, 7, 1000);
+    
     katamariScene.OnLoad(commandList);
     lights.Init(&(katamariScene.player));
     m_Camera.OnLoad(&(katamariScene.player));
@@ -59,10 +59,10 @@ bool BianEngineGame::LoadContent()
     SSRResult.Init(primaryDevice, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
     LightPassResult.Init(primaryDevice, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
 
-    ShaderResources::GetSSRCB()->RayStep = 0.025;
     //ShaderResources::GetSSRCB()->MaxSteps = 2048;
     ShaderResources::GetSSRCB()->MaxDistance = 32.0;
-    ShaderResources::GetSSRCB()->Thickness = 0.02;
+    ShaderResources::GetSSRCB()->RayStep = 0.3;
+    ShaderResources::GetSSRCB()->Thickness = 0.24;
 
     // distance 8 -> 32
     // ray step 0.025 -> 0.3
@@ -89,11 +89,13 @@ bool BianEngineGame::LoadContent()
 
     executor = new CommandExecutor(&katamariScene);
 
+    m_Initialized = true;
     return true;
 }
 
 void BianEngineGame::OnUpdate(UpdateEventArgs& e)
 {
+    if (!m_Initialized) return;
     super::OnUpdate(e);
     m_Camera.OnUpdate(e.ElapsedTime);
     katamariScene.OnUpdate(e.ElapsedTime);
@@ -304,6 +306,8 @@ void BianEngineGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> command
 
 void BianEngineGame::OnRender(RenderEventArgs& e)
 {
+    if (!m_Initialized) return;
+
     super::OnRender(e);
 
     static float totalShadowDuration = 0.0f;
@@ -423,7 +427,7 @@ void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::R:
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         auto commandList = commandQueue->GetCommandList();
-        
+        particles.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5, 7, 1000);
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
         commandQueue->WaitForFenceValue(fenceValue);
         break;

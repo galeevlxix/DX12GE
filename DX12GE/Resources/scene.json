@@ -1,6 +1,110 @@
 [
     {
-        "name": "scene",
+        "name": "audi1",
+        "path": "../../DX12GE/Resources/Models/cars/audi/scene.gltf",
+        "posX": -6.0,
+        "posY": 5.599999904632568,
+        "posZ": 0.0,
+        "rotX": 0.0,
+        "rotY": 0.0,
+        "rotZ": 0.0,
+        "sclX": 10.0,
+        "sclY": 10.0,
+        "sclZ": 10.0
+    },
+    {
+        "name": "audi2",
+        "path": "../../DX12GE/Resources/Models/cars/audi/scene.gltf",
+        "posX": -66.0,
+        "posY": 5.599999904632568,
+        "posZ": 6.0,
+        "rotX": 0.0,
+        "rotY": -1.5707963705062866,
+        "rotZ": 0.0,
+        "sclX": 10.0,
+        "sclY": 10.0,
+        "sclZ": 10.0
+    },
+    {
+        "name": "audi3",
+        "path": "../../DX12GE/Resources/Models/cars/audi/scene.gltf",
+        "posX": -54.0,
+        "posY": 5.599999904632568,
+        "posZ": 73.0,
+        "rotX": 0.0,
+        "rotY": 3.1415927410125732,
+        "rotZ": 0.0,
+        "sclX": 10.0,
+        "sclY": 10.0,
+        "sclZ": 10.0
+    },
+    {
+        "name": "audi4",
+        "path": "../../DX12GE/Resources/Models/cars/audi/scene.gltf",
+        "posX": -89.0,
+        "posY": 5.599999904632568,
+        "posZ": 37.0,
+        "rotX": 0.0,
+        "rotY": 1.5707963705062866,
+        "rotZ": 0.0,
+        "sclX": 10.0,
+        "sclY": 10.0,
+        "sclZ": 10.0
+    },
+    {
+        "name": "audi5",
+        "path": "../../DX12GE/Resources/Models/cars/audi/scene.gltf",
+        "posX": -137.0,
+        "posY": 5.599999904632568,
+        "posZ": 54.0,
+        "rotX": 0.0,
+        "rotY": -1.5707963705062866,
+        "rotZ": 0.0,
+        "sclX": 10.0,
+        "sclY": 10.0,
+        "sclZ": 10.0
+    },
+    {
+        "name": "buch1",
+        "path": "../../DX12GE/Resources/Models/cars/buchanka/scene.gltf",
+        "posX": -69.0,
+        "posY": 5.599999904632568,
+        "posZ": 33.0,
+        "rotX": 0.0,
+        "rotY": 1.5707963705062866,
+        "rotZ": 0.0,
+        "sclX": 10.0,
+        "sclY": 10.0,
+        "sclZ": 10.0
+    },
+    {
+        "name": "buch2",
+        "path": "../../DX12GE/Resources/Models/cars/buchanka/scene.gltf",
+        "posX": -102.5,
+        "posY": 5.599999904632568,
+        "posZ": 2.6999998092651367,
+        "rotX": 0.0,
+        "rotY": 1.5707963705062866,
+        "rotZ": 0.0,
+        "sclX": 10.0,
+        "sclY": 10.0,
+        "sclZ": 10.0
+    },
+    {
+        "name": "buch3",
+        "path": "../../DX12GE/Resources/Models/cars/buchanka/scene.gltf",
+        "posX": -10.0,
+        "posY": 5.599999904632568,
+        "posZ": 50.0,
+        "rotX": 0.0,
+        "rotY": 3.1415927410125732,
+        "rotZ": 0.0,
+        "sclX": 10.0,
+        "sclY": 10.0,
+        "sclZ": 10.0
+    },
+    {
+        "name": "gas1",
         "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
         "posX": 0.0,
         "posY": 0.0,
@@ -13,7 +117,7 @@
         "sclZ": 3.0
     },
     {
-        "name": "scene1",
+        "name": "gas2",
         "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
         "posX": -60.0,
         "posY": 0.0,
@@ -26,7 +130,7 @@
         "sclZ": 3.0
     },
     {
-        "name": "scene2",
+        "name": "gas3",
         "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
         "posX": -120.0,
         "posY": 0.0,
@@ -39,7 +143,7 @@
         "sclZ": -3.0
     },
     {
-        "name": "scene3",
+        "name": "gas4",
         "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
         "posX": 0.0,
         "posY": 0.0,
@@ -52,7 +156,7 @@
         "sclZ": 3.0
     },
     {
-        "name": "scene4",
+        "name": "gas5",
         "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
         "posX": -60.0,
         "posY": 0.0,
@@ -65,7 +169,7 @@
         "sclZ": 3.0
     },
     {
-        "name": "scene5",
+        "name": "gas6",
         "path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
         "posX": -120.0,
         "posY": 0.0,
@@ -76,5 +180,83 @@
         "sclX": 3.0,
         "sclY": 3.0,
         "sclZ": -3.0
+    },
+    {
+        "name": "police1",
+        "path": "../../DX12GE/Resources/Models/cars/police/scene.gltf",
+        "posX": -35.0,
+        "posY": 7.000000953674316,
+        "posZ": -10.0,
+        "rotX": 0.0,
+        "rotY": 0.0,
+        "rotZ": 0.0,
+        "sclX": 3.0,
+        "sclY": 3.0,
+        "sclZ": 3.0
+    },
+    {
+        "name": "police2",
+        "path": "../../DX12GE/Resources/Models/cars/police/scene.gltf",
+        "posX": -109.0,
+        "posY": 7.000000953674316,
+        "posZ": 54.0,
+        "rotX": 0.0,
+        "rotY": -1.5707963705062866,
+        "rotZ": 0.0,
+        "sclX": 3.0,
+        "sclY": 3.0,
+        "sclZ": 3.0
+    },
+    {
+        "name": "police3",
+        "path": "../../DX12GE/Resources/Models/cars/police/scene.gltf",
+        "posX": 6.0,
+        "posY": 7.000000953674316,
+        "posZ": 25.0,
+        "rotX": 0.0,
+        "rotY": -1.5707963705062866,
+        "rotZ": 0.0,
+        "sclX": 3.0,
+        "sclY": 3.0,
+        "sclZ": 3.0
+    },
+    {
+        "name": "vintage1",
+        "path": "../../DX12GE/Resources/Models/cars/vintage/scene.gltf",
+        "posX": -53.5,
+        "posY": 5.600000381469727,
+        "posZ": 48.0,
+        "rotX": 0.0,
+        "rotY": 0.0,
+        "rotZ": 0.0,
+        "sclX": 6.0,
+        "sclY": 6.0,
+        "sclZ": 6.0
+    },
+    {
+        "name": "vintage2",
+        "path": "../../DX12GE/Resources/Models/cars/vintage/scene.gltf",
+        "posX": -20.0,
+        "posY": 5.600000381469727,
+        "posZ": 23.700000762939453,
+        "rotX": 0.0,
+        "rotY": -1.5707963705062866,
+        "rotZ": 0.0,
+        "sclX": 6.0,
+        "sclY": 6.0,
+        "sclZ": 6.0
+    },
+    {
+        "name": "vintage3",
+        "path": "../../DX12GE/Resources/Models/cars/vintage/scene.gltf",
+        "posX": -128.0,
+        "posY": 5.600000381469727,
+        "posZ": 6.700000762939453,
+        "rotX": 0.0,
+        "rotY": -1.5707963705062866,
+        "rotZ": 0.0,
+        "sclX": 6.0,
+        "sclY": 6.0,
+        "sclZ": 6.0
     }
 ]

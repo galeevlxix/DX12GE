@@ -18,7 +18,7 @@ void LightManager::Init(Player* player)
 
 	// AmbientLight
 	ShaderResources::GetWorldCB()->AmbientLight.Color = COLOR_WHITE;
-	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.1;
+	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.3;
 
 	// Specular
 	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 0.5f;

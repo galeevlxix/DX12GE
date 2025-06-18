@@ -2,6 +2,8 @@
 #include "../json.hpp"
 #include "../../Graphics/ResourceStorage.h"
 #include <fstream>
+#include <iostream>
+#include <chrono>
 
 using json = nlohmann::json;
 
@@ -45,6 +47,10 @@ void JsonScene::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<st
 
 	json scene;
 	in >> scene;
+
+	std::string prevPath = "";
+	std::cout << "Начало загрузки объектов сцены из файла " + path << std::endl;
+	auto start = std::chrono::steady_clock::now();
 	
 	for (json::iterator it = scene.begin(); it != scene.end(); ++it)
 	{
@@ -52,16 +58,26 @@ void JsonScene::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<st
 		if (objects.find(name) != objects.end()) { continue; }
 
 		objects.insert({ name, Object3DEntity() });
-		std::string path = it->at("path");
-		objects[name].OnLoad(commandList, path);
+		std::string modelPath = it->at("path");
 
-		auto pos = DirectX::SimpleMath::Vector3(it->at("posX"), it->at("posY"), it->at("posZ"));
-		auto rot = DirectX::SimpleMath::Vector3(it->at("rotX"), it->at("rotY"), it->at("rotZ"));
-		auto scl = DirectX::SimpleMath::Vector3(it->at("sclX"), it->at("sclY"), it->at("sclZ"));
-		objects[name].Transform.SetPosition(pos);
-		objects[name].Transform.SetRotation(rot);
-		objects[name].Transform.SetScale(scl);
+		if (modelPath != prevPath)
+		{
+			float progress = (float)(it - scene.begin()) / (float)(scene.end() - scene.begin());
+			std::cout << (int)(progress * 100) << "%: Загрузка компонента " + modelPath << std::endl;
+
+			prevPath = modelPath;
+		}
+
+		objects[name].OnLoad(commandList, modelPath);
+
+		objects[name].Transform.SetPosition(DirectX::SimpleMath::Vector3(it->at("posX"), it->at("posY"), it->at("posZ")));
+		objects[name].Transform.SetRotation(DirectX::SimpleMath::Vector3(it->at("rotX"), it->at("rotY"), it->at("rotZ")));
+		objects[name].Transform.SetScale(DirectX::SimpleMath::Vector3(it->at("sclX"), it->at("sclY"), it->at("sclZ")));
 	}
+
+	auto end = std::chrono::steady_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+	std::cout << "Конец загрузки объектов сцены. Затраченное время: " << duration << "s" << std::endl;
 
 	in.close();
 }

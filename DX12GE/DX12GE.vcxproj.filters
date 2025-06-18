@@ -456,5 +456,8 @@
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </None>
     <None Include="..\README.md" />
+    <None Include="Resources\scene.json">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
   </ItemGroup>
 </Project>

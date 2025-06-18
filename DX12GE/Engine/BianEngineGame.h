@@ -72,6 +72,8 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
+    bool m_Initialized = false;
+
     // SCENE
 
     GBuffer m_GBuffer;
