@@ -7,23 +7,35 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <stack>
 
 #include "../../Game/KatamariGame.h"
 
 class CommandExecutor
 {
 private:
+	struct ActionCommand
+	{
+		Object3DEntity* obj;
+		std::string action;
+		Vector3 value;
+		Vector3 undo_value;
+	};
+
 	std::string path = "../../DX12GE/Resources/commands.json";
 	KatamariGame* m_scene;
 
 	void ProcessCommand(const std::string& line, std::string& output);
 
 	void ProcessSet(const std::vector<std::string>& tokens, std::string& output);
-	void ProcessGet(const std::vector<std::string>& tokens, std::string& output);
 	void ProcessSave(const std::vector<std::string>& tokens, std::string& output);
 	void ProcessLoad(const std::vector<std::string>& tokens, std::string& output);
+	void ProcessUndo(std::string& output);
 
 	void ProcessObject(const std::vector<std::string>& tokens, std::string& output);
+	bool ProcessObjectAction(ActionCommand& command, std::string& output);
+
+	void GetObjectInfo(const std::vector<std::string>& tokens, std::string& output);
 	
 public:
 	CommandExecutor(KatamariGame* scene);
@@ -35,6 +47,7 @@ private:
 	std::mutex mutex;
 	std::condition_variable cv;
 	std::queue<std::string> lines;
+	std::stack<ActionCommand> action_commands;
 
 	void read_loop() 
 	{

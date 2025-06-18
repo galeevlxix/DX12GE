@@ -53,8 +53,12 @@ void CommandExecutor::ProcessCommand(const std::string& line, std::string& outpu
 
 	if (tokens[0] == "set")
 		ProcessSet(tokens, output);
+	if (tokens[0] == "get")
+		GetObjectInfo(tokens, output);
 	else if (tokens[0] == "save")
 		ProcessSave(tokens, output);
+	else if (tokens[0] == "undo")
+		ProcessUndo(output);
 	else
 		output = "Ошибка: неизвестная команда " + tokens[0];
 }
@@ -63,88 +67,143 @@ void CommandExecutor::ProcessSet(const std::vector<std::string>& tokens, std::st
 {
 	if (tokens.size() <= 2)
 	{
-		output = "Ошибка: Недостаточно аргументов";
+		output = "Ошибка Set: Недостаточно аргументов";
 		return;
 	}
 
 	if (tokens[1] == "object")
 		ProcessObject(tokens, output);
 	else
-		output = "Ошибка: неизвестная команда" + tokens[1];
+		output = "Ошибка Set: неизвестная команда" + tokens[1];
 }
 
 void CommandExecutor::ProcessObject(const std::vector<std::string>& tokens, std::string& output)
 {
 	if (tokens.size() < 7)
 	{
-		output = "Ошибка: Недостаточно аргументов";
+		output = "Ошибка Set Object: Недостаточно аргументов";
 		return;
 	}
+
+	ActionCommand command;
+
 
 	std::string name = tokens[2];
-	Object3DEntity* obj = m_scene->Get(name);
-	if (!obj)
+	command.obj = m_scene->Get(name);
+	if (!command.obj)
 	{
-		output = "Ошибка: Объект по имени " + name + " не найден";
+		output = "Ошибка Set Object: Объект по имени " + name + " не найден";
 		return;
 	}
 
-	std::string action = tokens[3];
-	Vector3 value;
+	command.action = tokens[3];
+
 	try
 	{
 		double x = std::stof(tokens[4]);
 		double y = std::stof(tokens[5]);
 		double z = std::stof(tokens[6]);
-		value = Vector3(x, y, z);
+		command.value = Vector3(x, y, z);
 	}
 	catch (exception exc)
 	{
-		output = "Ошибка: координаты некорректны";
+		output = "Ошибка Set Object: координаты некорректны";
 		return;
 	}	
 
-	if (action == "pos" || action == "position")
+	if (ProcessObjectAction(command, output))
 	{
-		obj->Transform.SetPosition(value);
+		output = "Объект изменен";
+		action_commands.push(command);
+	}	
+}
 
-	}
-	else if (action == "rot" || action == "rotation")
+bool CommandExecutor::ProcessObjectAction(ActionCommand& command, std::string& output)
+{
+	if (
+		(command.action == "expand" || command.action == "scl" || command.action == "scale") && 
+		(command.value.x == 0.0 || command.value.y == 0.0 || command.value.z == 0.0))
 	{
-		obj->Transform.SetRotationDegrees(value);
+		output = "Ошибка Set Object: Scale не может быть равен 0";
+		return false;
 	}
-	else if (action == "scl" || action == "scale")
+
+	if (command.action == "pos" || command.action == "position")
 	{
-		obj->Transform.SetScale(value);
+		command.undo_value = command.obj->Transform.GetPosition();
+		command.obj->Transform.SetPosition(command.value);
 	}
-	else if (action == "move")
+	else if (command.action == "rot" || command.action == "rotation")
 	{
-		obj->Transform.Move(value);
+		command.undo_value = command.obj->Transform.GetRotationDegrees();
+		command.obj->Transform.SetRotationDegrees(command.value);
 	}
-	else if (action == "rotate")
+	else if (command.action == "scl" || command.action == "scale")
 	{
-		obj->Transform.RotateDegrees(value);
+		command.undo_value = command.obj->Transform.GetScale();
+		command.obj->Transform.SetScale(command.value);
 	}
-	else if (action == "expand")
+	else if (command.action == "move")
 	{
-		obj->Transform.Expand(value.x, value.y, value.z);
+		command.undo_value = -command.value;
+		command.obj->Transform.Move(command.value);
+	}
+	else if (command.action == "rotate")
+	{
+		command.undo_value = -command.value;
+		command.obj->Transform.RotateDegrees(command.value);
+	}
+	else if (command.action == "expand")
+	{
+		command.undo_value = 1.0 / command.value;
+		command.obj->Transform.Expand(command.value.x, command.value.y, command.value.z);
 	}
 	else
 	{
-		output = "Ошибка: Неизвестное действие " + action;
-		return;
+		output = "Ошибка Set Object: Неизвестное действие " + command.action;
+		return false;
 	}
 
-	output = "Объект изменен";
+	return true;
 }
 
-void CommandExecutor::ProcessGet(const std::vector<std::string>& tokens, std::string& output)
+void CommandExecutor::GetObjectInfo(const std::vector<std::string>& tokens, std::string& output)
 {
 	if (tokens.size() <= 2)
 	{
-		output = "Ошибка: Недостаточно аргументов";
+		output = "Ошибка Get: Недостаточно аргументов";
 		return;
 	}
+
+	if (tokens[1] == "object")
+	{
+		ActionCommand command; 
+
+		std::string name = tokens[2];
+		command.obj = m_scene->Get(name);
+		if (!command.obj)
+		{
+			output = "Ошибка Set Object: Объект по имени " + name + " не найден";
+			return;
+		}
+		command.action = tokens[3];
+		command.value = Vector3(1.0, 1.0, 1.0);
+
+		ProcessObjectAction(command, output);
+
+		std::string info = "(" + 
+			std::to_string(command.undo_value.x) + ";" +
+			std::to_string(command.undo_value.y) + ";" +
+			std::to_string(command.undo_value.z) + ")";
+
+		command.value = command.undo_value;
+		ProcessObjectAction(command, output);
+
+		output = info;
+	}
+		
+	else
+		output = "Ошибка Set: неизвестная команда" + tokens[1];
 }
 
 void CommandExecutor::ProcessSave(const std::vector<std::string>& tokens, std::string& output)
@@ -158,7 +217,21 @@ void CommandExecutor::ProcessLoad(const std::vector<std::string>& tokens, std::s
 	
 }
 
+void CommandExecutor::ProcessUndo(std::string& output)
+{
+	if (action_commands.size() == 0)
+	{
+		output = "Ошибка Undo: отсутствуют команды в стеке";
+		return;
+	}
+	
+	ActionCommand last = action_commands.top();
+	last.value = last.undo_value;
+	ProcessObjectAction(last, output);
 
+	action_commands.pop();
+	output = "Команда отменена";
+}
 
 //<set|get|save|load>
 //<obj_position|obj_rotation|obj_scale|obj_move|obj_rotate|obj_expand> <name_obj> <x> <y> <z>

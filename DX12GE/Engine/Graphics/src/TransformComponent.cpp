@@ -90,7 +90,7 @@ void TransformComponent::Rotate(Vector3 RotateVector)
 
 void TransformComponent::RotateDegrees(Vector3 RotateVector)
 {
-    SetRotationDegrees(m_Rotation + RotateVector);
+    SetRotation(m_Rotation + Vector3(ToRadians(RotateVector.x), ToRadians(RotateVector.y), ToRadians(RotateVector.z)));
 }
 
 void TransformComponent::Rotate(float dx, float dy, float dz)
@@ -131,6 +131,11 @@ Vector3 TransformComponent::GetPosition()
 Vector3 TransformComponent::GetRotation()
 {
     return m_Rotation;
+}
+
+Vector3 TransformComponent::GetRotationDegrees()
+{
+    return Vector3(ToDegrees(m_Rotation.x), ToDegrees(m_Rotation.y), ToDegrees(m_Rotation.z));
 }
 
 Vector3 TransformComponent::GetScale()

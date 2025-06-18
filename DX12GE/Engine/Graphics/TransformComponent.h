@@ -33,6 +33,7 @@ public:
 
     Vector3 GetPosition();
     Vector3 GetRotation();
+    Vector3 GetRotationDegrees();
     Vector3 GetScale();
 
 private:

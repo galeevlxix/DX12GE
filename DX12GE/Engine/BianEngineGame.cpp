@@ -202,6 +202,9 @@ void BianEngineGame::LightPassRender()
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
 
+    DrawDebugObjects(commandList);
+    DrawParticlesForward(commandList);
+
     LightPassResult.SetToRead(commandList);
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
@@ -268,8 +271,7 @@ void BianEngineGame::MergeResults()
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
 
-    DrawDebugObjects(commandList);
-    DrawParticlesForward(commandList);
+    
 
     // Present
     {
