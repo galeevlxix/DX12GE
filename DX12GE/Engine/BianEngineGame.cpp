@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <chrono>
+#include <fstream>
 
 BianEngineGame::BianEngineGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
     , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
@@ -271,8 +272,6 @@ void BianEngineGame::MergeResults()
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
 
-    
-
     // Present
     {
         TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -309,6 +308,8 @@ void BianEngineGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> command
 void BianEngineGame::OnRender(RenderEventArgs& e)
 {
     if (!m_Initialized) return;
+
+    TestTime("../../DX12GE/Resources/single_gpu.txt", e.ElapsedTime);
 
     super::OnRender(e);
 
@@ -393,6 +394,27 @@ void BianEngineGame::OnRender(RenderEventArgs& e)
     CurrentPass::Set(CurrentPass::None);
 }
 
+void BianEngineGame::TestTime(string outputFile, float elapsedTime)
+{
+    if (!IsTesting) return;
+
+    if (m_Camera.IsTesting())
+    {
+        elapsed.push_back(elapsedTime);
+    }
+    else
+    {
+        IsTesting = false;
+        ofstream out(outputFile);
+        for (size_t i = 0; i < elapsed.size(); i++)
+        {
+            out << elapsed[i] << endl;
+        }
+        elapsed.clear();
+        out.close();
+    }
+}
+
 void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
 {
     super::OnKeyPressed(e);
@@ -424,15 +446,19 @@ void BianEngineGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::C:
         drawSSR = !drawSSR;
         resizeSSR = !drawSSR;
-        
         break;
-    case KeyCode::R:
+    case KeyCode::T:
+        m_Camera.StartTest();
+        IsTesting = true;
+        
+
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         auto commandList = commandQueue->GetCommandList();
         particles.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5, 7, 1000);
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
         commandQueue->WaitForFenceValue(fenceValue);
         break;
+    
     }    
 }
 

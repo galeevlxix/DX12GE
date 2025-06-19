@@ -40,8 +40,44 @@ private:
 	int dy = 0;
 
 	float flyRadius = 15.0f;
-
 	PressedKeyMonitor monitor;
+	
+	bool testMode = false;
+	float step = 0.5;
+	
+	Vector2 MapMin = Vector2(-150.0, -30.0);
+	Vector2 MapMax = Vector2(30.0, 90.0);
+	
+	Vector3 playerPosInTest = Vector3(-90.0, 8.0, 24.0);
+	Vector3 playerRotInTest = Vector3(0.0, 1.57, 0.0);
+	Vector3 initPos;
+	Vector3 initTar; 
+	Vector3 initPosPlayer;
+	float initRotYPlayer;
+
+	struct TestPhase
+	{
+		bool enable = false;
+		Vector3 start;
+		Vector3 target;
+		Vector3 move_target;
+
+		TestPhase(Vector3 s, Vector3 t, Vector3 m) : start(s), target(t), move_target(m) { }
+	};
+
+	const static int max_phases = 6;
+	TestPhase phases[max_phases] =
+	{
+		TestPhase(Vector3(MapMax.x - 0.1, 10.0, 17.0),	Vector3(-1, 0, 0),		Vector3(-1, 0, 0)),
+		TestPhase(Vector3(MapMin.x + 0.1, 10.0, 0.0),	Vector3(1, -0.2, 0),	Vector3(1, 0, 0)),
+		TestPhase(Vector3(MapMin.x + 0.1, 12.0, 42.0),	Vector3(1, -0.15, 0),	Vector3(1, 0, 0)),
+		TestPhase(Vector3(-42.0, 10.0, MapMax.y - 0.1),	Vector3(0.3, -0.2, -1),		Vector3(0, 0, -1)),
+		TestPhase(Vector3(0.0, 12.0, MapMin.y + 0.1),	Vector3(0, 0, 1),		Vector3(0, 0, 1)),
+		TestPhase(Vector3(-93.0, 12.0, -5.0),			Vector3(-0.3, 0, 1),		Vector3(0, 0, 1)),
+	};
+
+	void TestProcess();
+
 public:
 	XMVECTOR Position;
 	XMVECTOR Target;  
@@ -59,10 +95,10 @@ public:
 		XMVECTOR position = XMVectorSet(0.0f, 0.0f, -5.0f, 1.0f),
 		XMVECTOR target = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f),
 		XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
-		float fov = 70.0f, 
+		float fov = 90.0f, 
 		float ratio = 1.0f, 
 		float zNear = 0.1f, 
-		float zFar = 150.0f);
+		float zFar = 300.0);
 
 	void OnUpdate(float deltaTime);
 	XMMATRIX GetViewProjMatrix();
@@ -74,4 +110,7 @@ public:
 	void OnKeyReleased(KeyEventArgs& e);
 	void OnMouseButtonPressed(MouseButtonEventArgs& e);
 	void OnMouseButtonReleased(MouseButtonEventArgs& e);
+
+	void StartTest();
+	bool IsTesting();
 };

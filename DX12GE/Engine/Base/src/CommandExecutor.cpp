@@ -60,7 +60,9 @@ void CommandExecutor::ProcessCommand(const std::string& line, std::string& outpu
 	else if (tokens[0] == "undo")
 		ProcessUndo(output);
 	else
+	{
 		output = "Ошибка: неизвестная команда " + tokens[0];
+	}
 }
 
 void CommandExecutor::ProcessSet(const std::vector<std::string>& tokens, std::string& output)
@@ -203,7 +205,7 @@ void CommandExecutor::GetObjectInfo(const std::vector<std::string>& tokens, std:
 	}
 		
 	else
-		output = "Ошибка Set: неизвестная команда" + tokens[1];
+		output = "Ошибка Get: неизвестная команда" + tokens[1];
 }
 
 void CommandExecutor::ProcessSave(const std::vector<std::string>& tokens, std::string& output)

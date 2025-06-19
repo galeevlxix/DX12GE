@@ -74,6 +74,10 @@ private:
 
     bool m_Initialized = false;
 
+    bool IsTesting = false;
+    vector<float> elapsed;
+    void TestTime(string outputFile, float elapsedTime);
+
     // SCENE
 
     GBuffer m_GBuffer;

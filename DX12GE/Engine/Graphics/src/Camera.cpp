@@ -48,6 +48,12 @@ XMMATRIX Camera::GetProjMatrix()
 
 void Camera::OnUpdate(float deltaTime)
 {
+    if (testMode)
+    {
+        TestProcess();
+        return;
+    }
+
     ////////////////////////////////
     //  ¿Ã≈–¿
     Vector3 playerPos = (*player).prince.Transform.GetPosition() + Vector3(0.0f, 2.0f, 0.0f);
@@ -101,6 +107,37 @@ void Camera::OnUpdate(float deltaTime)
     if (monitor.Q)
     {
         (*player).prince.Transform.Move(-Up * speed * deltaTime);
+    }
+}
+
+void Camera::TestProcess()
+{
+    for (size_t i = 0; i < max_phases; i++)
+    {
+        if (!phases[i].enable) continue;
+        Position += phases[i].move_target * step;
+
+        if (Position.m128_f32[0] < MapMin.x ||
+            Position.m128_f32[0] > MapMax.x ||
+            Position.m128_f32[2] < MapMin.y ||
+            Position.m128_f32[2] > MapMax.y)
+        {
+            phases[i].enable = false;
+            if (i == max_phases - 1)
+            {
+                testMode = false;
+                Position = initPos;
+                Target = initTar;
+                player->prince.Transform.SetPosition(initPosPlayer);
+                player->prince.Transform.SetRotationY(initRotYPlayer);
+            }
+            else
+            {
+                phases[i + 1].enable = true;
+                Position = phases[i + 1].start;
+                Target = phases[i + 1].target;
+            }
+        }
     }
 }
 
@@ -224,4 +261,25 @@ void Camera::OnMouseButtonReleased(MouseButtonEventArgs& e)
         monitor.MBC = false;
         break;
     }
+}
+
+void Camera::StartTest()
+{
+    testMode = true;
+
+    initPos = Position;
+    initTar = Target;
+    initPosPlayer = player->prince.Transform.GetPosition();
+    initRotYPlayer = player->prince.Transform.GetRotation().y;
+    player->prince.Transform.SetPosition(playerPosInTest);
+    player->prince.Transform.SetRotation(playerRotInTest);
+
+    phases[0].enable = true;
+    Position = phases[0].start;
+    Target = phases[0].target;
+}
+
+bool Camera::IsTesting()
+{
+    return testMode;
 }
