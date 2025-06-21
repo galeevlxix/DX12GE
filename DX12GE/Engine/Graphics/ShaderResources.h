@@ -140,7 +140,7 @@ public:
 	static void SetParticleComputeCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetBitonicSortCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetMaterialCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
-	static void SetSSRCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
+	static void SetSSRCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, GraphicsAdapter graphicsAdapter);
 };
 
 template<typename T>

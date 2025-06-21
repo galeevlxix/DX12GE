@@ -7,7 +7,8 @@ static const FLOAT clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 class TextureBuffer
 {
 public:
-	void Init(ComPtr<ID3D12Device2> device, UINT width, UINT height, DXGI_FORMAT format);
+	TextureBuffer();
+	void Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter, UINT width, UINT height, DXGI_FORMAT format);
 	void Release();
 	void Resize(UINT width, UINT height);
 	void BindRenderTarget(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle);
@@ -17,13 +18,25 @@ public:
 
 	void SetToWriteAndClear(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void SetToCopyDest(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void SetToCopySource(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void SetToState(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_RESOURCE_STATES newState);
+
+
 	void SetGraphicsRootDescriptorTable(int slot, ComPtr<ID3D12GraphicsCommandList2> commandList);
 
-private:
+	ComPtr<ID3D12Resource> GetResource();
+	ComPtr<ID3D12Device2> GetDevice();
+	void SetResourceName(LPCWSTR name);
+	D3D12_RESOURCE_STATES GetResourceState();
 
+private:
 	UINT m_Width = 0;
 	UINT m_Height = 0;
+
 	ComPtr<ID3D12Device2> m_Device;
+	GraphicsAdapter m_Adapter;
+
 	DXGI_FORMAT m_Format;
 
 	ComPtr<ID3D12Resource> Buffer;
@@ -31,6 +44,10 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE CpuRtvHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE CpuSrvHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE GpuSrvHandle;
+
+	LPCWSTR m_Name = L"";
+
+	D3D12_RESOURCE_STATES currentState;
 
 	int RtvHeapIndex = -1;
 	int SrvHeapIndex = -1;

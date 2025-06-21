@@ -51,3 +51,9 @@ using namespace Microsoft::WRL;
 
 // Helper functions
 #include "Helpers.h"
+
+enum GraphicsAdapter : UINT
+{
+	GraphicAdapterPrimary = 0,
+	GraphicAdapterSecond = 1
+};

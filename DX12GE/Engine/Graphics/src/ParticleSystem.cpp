@@ -6,7 +6,7 @@
 void ParticleSystem::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	m_Texture.OnLoad(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png");
-	CreateParticleGroupPrototype(pow(2, 17));
+	CreateParticleGroupPrototype(pow(2, 20));
 
 	m_Device = Application::Get().GetPrimaryDevice();
 }
@@ -49,7 +49,7 @@ void ParticleSystem::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		1,
 		DescriptorHeaps::GetGPUHandle(
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-			m_Texture.m_SRVHeapIndex));
+			m_Texture.m_SRVHeapIndex, GraphicAdapterPrimary));
 
 	
 	ShaderResources::SetGraphicsParticleCB(commandList, 0);
@@ -209,9 +209,9 @@ void ParticleSystem::SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> comma
 
 	// CREATE UAV
 
-	int indexInHeap = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	group.uavCPUDescHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, indexInHeap);
-	group.uavGPUDescHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, indexInHeap);
+	int indexInHeap = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, GraphicAdapterPrimary);
+	group.uavCPUDescHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, indexInHeap, GraphicAdapterPrimary);
+	group.uavGPUDescHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, indexInHeap, GraphicAdapterPrimary);
 
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;

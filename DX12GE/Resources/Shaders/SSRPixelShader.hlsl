@@ -21,8 +21,6 @@ Texture2D<float4> gColor    : register(t3);
 
 SamplerState gSampler : register(s0);
 
-static float f0 = 0.04;
-
 float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
 {
     float3 rayStep = reflectionDir * RayStep;
@@ -69,7 +67,9 @@ float4 main(PSInput input) : SV_Target
     
     float3 cameraPixelVector = worldPos - CameraPos.xyz;
     
-    float fresnel = saturate(f0 + (1 - f0) * pow(1 - dot(normal, normalize(-cameraPixelVector)), 5));
+    float f0 = orm.b * orm.b * orm.b;
+    
+    float fresnel = saturate(f0 + (1 - f0) * pow(1 - dot(normal, normalize(-cameraPixelVector)), 1));
     
     float3 cameraPixelDirection = normalize(cameraPixelVector.xyz);    
     float3 reflectDir = normalize(reflect(cameraPixelDirection, normal));

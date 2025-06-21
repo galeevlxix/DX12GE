@@ -161,7 +161,7 @@ float4 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, 
         SpecularFactor = pow(SpecularFactor, LightPropertiesCB.MaterialPower);
         if (SpecularFactor > 0)
         {
-            SpecularColor = float4(Color, 1.0) * Intensity * SpecularFactor;
+            SpecularColor = float4(Color, 1.0) * 2.0 * SpecularFactor;
         }
     }
     

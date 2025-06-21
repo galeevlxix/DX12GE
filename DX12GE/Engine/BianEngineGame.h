@@ -26,6 +26,7 @@
 #include "Graphics/ParticleSystem.h"
 #include "Graphics/Texture3D.h"
 #include "Graphics/TextureBuffer.h"
+#include "Graphics/SharedMemory.h"
 
 #include "../Game/KatamariGame.h" 
 
@@ -63,7 +64,13 @@ private:
     void DrawSceneToGBuffer();
     void LightPassRender();
     void DrawSSR();
+    void DrawSSRSecondDevice();
     void MergeResults();
+
+    void CopyPrimaryDeviceDataToSharedMemory();
+    void CopySecondDeviceDataToSharedMemory();
+    void CopySharedMemoryDataToPrimaryDevice();
+    void CopySharedMemoryDataToSecondDevice(); 
 
     void RefreshTitle(UpdateEventArgs& e);
     void DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList);
@@ -80,9 +87,8 @@ private:
 
     // SCENE
 
-    GBuffer m_GBuffer;
-
-    DepthBuffer m_DepthBuffer;
+    DepthBuffer m_PrimaryDeviceDepthBuffer;
+    DepthBuffer m_SecondDeviceDepthBuffer;
 
     DebugRenderSystem debug;
     bool shouldAddDebugObjects = false;
@@ -91,18 +97,19 @@ private:
     LightManager lights;
 
     CascadedShadowMap m_CascadedShadowMap;
+    
+    GBuffer m_PrimaryDeviceGBuffer;
+    std::shared_ptr<TextureBuffer> m_PrimaryDeviceLightPassResult;
+    std::shared_ptr<TextureBuffer> m_PrimaryDeviceSSRResult;
 
-    TextureBuffer SSRResult;
-    TextureBuffer LightPassResult;
+    GBuffer m_SecondDeviceGBuffer;
+    std::shared_ptr<TextureBuffer> m_SecondDeviceLightPassResult;
+    std::shared_ptr<TextureBuffer> m_SecondDeviceSSRResult;
+
+    std::unique_ptr<SharedMemory> m_SharedMemory;
 
     bool drawSSR = true;
     bool resizeSSR = false;
-
-    float shadowTime = 0.0f;
-    float gpTime = 0.0f;
-    float lpTime = 0.0f;
-    float ssrTime = 0.0f;
-    float mergeTime = 0.0f;   
 
     CommandExecutor* executor;
 
@@ -121,7 +128,8 @@ private:
     SimplePipeline m_SimplePipeline;
     ShadowMapPipeline m_ShadowMapPipeline;
     GeometryPassPipeline m_GeometryPassPipeline;
-    SSRPipeline m_SSRPipeline;
+    SSRPipeline m_SSRPipelinePrimaryDevice;
+    SSRPipeline m_SSRPipelineSecondDevice;
     MergingPipeline m_MergingPipeline;
     LightPassPipeline m_LightPassPipeline;
 };

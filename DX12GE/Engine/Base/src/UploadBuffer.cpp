@@ -1,8 +1,8 @@
 #include "../UploadBuffer.h"
 #include "../Application.h"
 
-UploadBuffer::UploadBuffer(size_t pageSize)
-    : m_PageSize(pageSize)
+UploadBuffer::UploadBuffer(size_t pageSize, GraphicsAdapter adapter)
+    : m_PageSize(pageSize), Adapter(adapter)
 {}
 
 UploadBuffer::~UploadBuffer()
@@ -37,7 +37,7 @@ shared_ptr<UploadBuffer::Page> UploadBuffer::RequestPage()
     }
     else
     {
-        page = make_shared<Page>(m_PageSize);
+        page = make_shared<Page>(m_PageSize, Adapter);
         m_PagePool.push_back(page);
     }
 
@@ -57,13 +57,21 @@ void UploadBuffer::Reset()
     }
 }
 
-UploadBuffer::Page::Page(size_t sizeInBytes)
+UploadBuffer::Page::Page(size_t sizeInBytes, GraphicsAdapter adapter)
     : m_PageSize(sizeInBytes)
     , m_Offset(0)
     , m_CPUPtr(nullptr)
     , m_GPUPtr(D3D12_GPU_VIRTUAL_ADDRESS(0))
 {
-    auto device = Application::Get().GetPrimaryDevice();
+    ComPtr<ID3D12Device2> device;
+    if (adapter == GraphicAdapterPrimary)
+    {
+        device = Application::Get().GetPrimaryDevice();
+    }
+    else
+    {
+        device = Application::Get().GetSecondDevice();
+    }
 
     auto heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     auto resDesc = CD3DX12_RESOURCE_DESC::Buffer(m_PageSize);

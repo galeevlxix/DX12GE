@@ -13,6 +13,14 @@ DirectX::XMMATRIX TransformComponent::GetWorldMatrix()
         DirectX::XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
 }
 
+DirectX::XMMATRIX TransformComponent::GetInverseMatrix()
+{
+    Matrix m = GetWorldMatrix();
+    m = m.Invert();
+    m = m.Transpose();
+    return m;
+}
+
 void TransformComponent::SetDefault(float yOffset)
 {
     m_Position = Vector3(0, -yOffset, 0);

@@ -6,6 +6,8 @@ class TransformComponent
 {
 public:
     DirectX::XMMATRIX GetWorldMatrix();
+    DirectX::XMMATRIX GetInverseMatrix();
+
     void SetDefault(float yOffset = 0);
 
     

@@ -12,86 +12,121 @@
 #define COLOR_BLUE		Vector3(0, 0, 1)
 #define COLOR_PURPLE	Vector3(0.5, 0, 1)
 
-void LightManager::Init(Player* player)
+#define PURPLE_LIGHT	Vector3(0.54902, 0.0, 0.8549)
+#define WHITE_LIGHT		Vector3(1.0, 0.87059, 0.71373)
+
+void LightManager::Init(KatamariGame* game)
 {
-	m_player = player;
+	m_player = &game->player;
 
 	// AmbientLight
 	ShaderResources::GetWorldCB()->AmbientLight.Color = COLOR_WHITE;
-	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.3;
+	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.2;
 
 	// Specular
-	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 0.5f;
-	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 64;
+	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 1.0f;
+	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 32.0;
 
 	// DirectionalLight
 	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Color = COLOR_WHITE;
 	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.5;
 	ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(1, -1, -1, 1);
 
-	ShaderResources::GetWorldCB()->LightProps.PointLightsCount = 14;
-	ShaderResources::GetWorldCB()->LightProps.SpotlightsCount = 2;
-
-	m_SpotLights.push_back(SpotLight());
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity * 6;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = Vector3(0, 15, 0);
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
-	m_SpotLights[m_SpotLights.size() - 1].Direction = Vector3(0, -1, 0.001);
-	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.7f;
-
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity * 2;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*player).prince.Transform.GetPosition();
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*m_player).prince.Transform.GetPosition();
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
-	m_SpotLights[m_SpotLights.size() - 1].Direction = (*player).Direction;
+	m_SpotLights[m_SpotLights.size() - 1].Direction = (*m_player).Direction;
 	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.65f;
 
-	for (int i = 0; i < 2; i++)
+	
 	{
+		// white
+
 		m_PointLights.push_back(PointLight());
-		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_RED;
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = WHITE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(0 * step + PI * i) * radius, defaultHeight, sin(0 * step + PI * i) * radius);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(5.7, 13.7, 3.0);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
-		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_ORANGE;
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = WHITE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(1 * step + PI * i) * radius, defaultHeight, sin(1 * step + PI * i) * radius);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(5.7, 8.9, 3.0);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
-		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_YELLOW;
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = WHITE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(2 * step + PI * i) * radius, defaultHeight, sin(2 * step + PI * i) * radius);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(20.1, 19.6, 11.2);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
-		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_GREEN;
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = WHITE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(3 * step + PI * i) * radius, defaultHeight, sin(3 * step + PI * i) * radius);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(16.1, 19.6, 11.2);
+		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
+
+		{
+			Vector3 start = Vector3(5.7, 10.6, -25.9);
+			Vector3 end = Vector3(5.7, 15.0, -7.9);
+
+			float stepZ = (end.z - start.z) / (6.0 - 1.0);
+			float stepY = (end.y - start.y) / (3.0 - 1.0);
+
+			for (size_t i = 0; i < 6; i++)
+			{
+				for (size_t j = 0; j < 3; j++)
+				{
+					m_PointLights.push_back(PointLight());
+					m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = WHITE_LIGHT;
+					m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
+					m_PointLights[m_PointLights.size() - 1].Position = start + Vector3(0, j * stepY, i * stepZ);
+					m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
+				}
+			}
+		}		
+
+		// purple
+
+		m_PointLights.push_back(PointLight());
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = PURPLE_LIGHT;
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(7.4, 18.0, 12.7);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
-		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_CYAN;
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = PURPLE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(4 * step + PI * i) * radius, defaultHeight, sin(4 * step + PI * i) * radius);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(7.4, 16.2, 12.7);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
-		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_BLUE;
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = PURPLE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(5 * step + PI * i) * radius, defaultHeight, sin(5 * step + PI * i) * radius);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-26.2, 18.7, 10.2);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
-		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = COLOR_PURPLE;
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = PURPLE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(cos(6 * step + PI * i) * radius, defaultHeight, sin(6 * step + PI * i) * radius);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-26.2, 18.7, 8.3);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
+
+		AddPLights(Vector3(5.8, 18.8, -26.9), Vector3(-17.4, 18.8, -13.2));
+		AddPLights(Vector3(-17.4, 18.8, -13.2), Vector3(-17.4, 18.8, 5.9));
+		AddPLights(Vector3(-17.4, 18.8, 5.9), Vector3(5.8, 18.8, 5.9));
+
+		AddPLights(Vector3(-14.7, 17.8, -0.2), Vector3(-14.7, 6.3, -3.7));
+		AddPLights(Vector3(-14.7, 17.8, -6.1), Vector3(-14.7, 6.3, -6.1));
+		AddPLights(Vector3(-5.7, 17.0, -2.1), Vector3(-5.7, 17.0, -12.2));
 	}
+  
+
+	// кол-ва источников света
+	ShaderResources::GetWorldCB()->LightProps.PointLightsCount = m_PointLights.size();
+	ShaderResources::GetWorldCB()->LightProps.SpotlightsCount = m_SpotLights.size();
 
 	// высчитывание максимального радиуса для каждого источника
 	for (size_t i = 0; i < m_PointLights.size(); i++)
@@ -121,6 +156,32 @@ void LightManager::Init(Player* player)
 	}
 }
 
+void LightManager::AddPLights(Vector3 start, Vector3 end)
+{
+	float step_length = 3.7f;
+
+	Vector3 vec = end - start;
+	float dist = vec.Length();
+
+	Vector3 step;
+	vec.Normalize(step);
+	step *= step_length;
+
+	int step_count = dist / step_length;
+	Vector3 cur_pos = start;
+
+	for (size_t i = 0; i <= step_count; i++)
+	{
+		m_PointLights.push_back(PointLight());
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = PURPLE_LIGHT;
+		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
+		m_PointLights[m_PointLights.size() - 1].Position = cur_pos;
+		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
+
+		cur_pos += step;
+	}
+}
+
 void LightManager::OnUpdate(float deltaTime)
 {
 	static float path = 0;
@@ -128,20 +189,10 @@ void LightManager::OnUpdate(float deltaTime)
 	path += speed * deltaTime;
 	if (path >= 2 * PI) path -= 2 * PI;
 
-	radius = max_radius * ((sin(path) + 1.0) / 2.0 + 0.3);
-
-	for (int i = 0; i < 2; i++)
-	{
-		for (int j = 0; j < 7; j++)
-		{
-			m_PointLights[j + 7 * i].Position = Vector3(cos(j * step + PI * i + path) * radius, defaultHeight, sin(j * step + PI * i + path) * radius);
-		}
-	}
-
 	ShaderResources::GetWorldCB()->DirLight.Direction.x = sin(path);
 	ShaderResources::GetWorldCB()->DirLight.Direction.z = cos(path);
 
-	m_SpotLights[1].PointLightComponent.Position = (*m_player).prince.Transform.GetPosition() + Vector3(0, 2, 0);
-	m_SpotLights[1].Direction = (*m_player).Direction;
-	m_SpotLights[1].PointLightComponent.BaseLightComponent.Intensity == 10;
+	m_SpotLights[0].PointLightComponent.Position = (*m_player).prince.Transform.GetPosition() + Vector3(0, 2, 0);
+	m_SpotLights[0].Direction = (*m_player).Direction;
+	m_SpotLights[0].PointLightComponent.BaseLightComponent.Intensity == 10;
 }

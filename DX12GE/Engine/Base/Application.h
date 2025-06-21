@@ -80,7 +80,7 @@ public:
     /**
      * Get the additional device
      */
-    //ComPtr<ID3D12Device2> GetSecondDevice() const;
+    ComPtr<ID3D12Device2> GetSecondDevice() const;
 
     /**
      * Get a command queue. Valid types are:
@@ -89,7 +89,7 @@ public:
      * - D3D12_COMMAND_LIST_TYPE_COPY   : Can be used for copy commands.
      */
     std::shared_ptr<CommandQueue> GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT) const;
-    //std::shared_ptr<CommandQueue> GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT) const;
+    std::shared_ptr<CommandQueue> GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT) const;
 
     // Flush all command queues.
     void Flush();
@@ -122,11 +122,11 @@ private:
     std::shared_ptr<CommandQueue> PrimaryComputeCommandQueue;
     std::shared_ptr<CommandQueue> PrimaryCopyCommandQueue;
 
-    //ComPtr<IDXGIAdapter4> SecondAdapter;
-    //ComPtr<ID3D12Device2> SecondDevice;
-    //std::shared_ptr<CommandQueue> SecondDirectCommandQueue;
-    //std::shared_ptr<CommandQueue> SecondComputeCommandQueue;
-    //std::shared_ptr<CommandQueue> SecondCopyCommandQueue;
+    ComPtr<IDXGIAdapter4> SecondAdapter;
+    ComPtr<ID3D12Device2> SecondDevice;
+    std::shared_ptr<CommandQueue> SecondDirectCommandQueue;
+    std::shared_ptr<CommandQueue> SecondComputeCommandQueue;
+    std::shared_ptr<CommandQueue> SecondCopyCommandQueue;
 
     bool m_TearingSupported;
 };

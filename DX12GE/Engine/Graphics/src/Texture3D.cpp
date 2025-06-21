@@ -126,12 +126,12 @@ void Texture3D::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, int width, 
 	srvDesc.Texture3D.MostDetailedMip = 0;
 	srvDesc.Texture3D.ResourceMinLODClamp = 0.0f;
 
-	m_SRVHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	m_SRVHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, GraphicAdapterPrimary);
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(
 		DescriptorHeaps::GetCPUHandle(
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-			m_SRVHeapIndex)
+			m_SRVHeapIndex, GraphicAdapterPrimary)
 	);
 
 	device->CreateShaderResourceView(m_Resource.Get(), &srvDesc, handle);
@@ -143,16 +143,16 @@ void Texture3D::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		2,
 		DescriptorHeaps::GetGPUHandle(
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-			m_SRVHeapIndex)
+			m_SRVHeapIndex, GraphicAdapterPrimary)
 	);
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE Texture3D::GetCpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE heapType)
 {
-	return DescriptorHeaps::GetCPUHandle(heapType, m_SRVHeapIndex);
+	return DescriptorHeaps::GetCPUHandle(heapType, m_SRVHeapIndex, GraphicAdapterPrimary);
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE Texture3D::GetGpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE heapType)
 {
-	return DescriptorHeaps::GetGPUHandle(heapType, m_SRVHeapIndex);
+	return DescriptorHeaps::GetGPUHandle(heapType, m_SRVHeapIndex, GraphicAdapterPrimary);
 }

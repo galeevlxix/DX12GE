@@ -15,7 +15,7 @@ public:
 		ORM = 4
 	};
 
-	void Init(ComPtr<ID3D12Device2> device, UINT width, UINT height);
+	void Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter, UINT width, UINT height);
 	void Release();
 	void Resize(UINT width, UINT height);
 	void BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle);
@@ -27,7 +27,8 @@ public:
 	void SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void SetGraphicsRootDescriptorTable(int slot, TargetType type, ComPtr<ID3D12GraphicsCommandList2> commandList);
 
+	std::shared_ptr<TextureBuffer> GetBuffer(TargetType type);
+
 private:
-	
-	TextureBuffer m_Targets[GBUFFER_COUNT];
+	std::shared_ptr<TextureBuffer> m_Targets[GBUFFER_COUNT];
 };

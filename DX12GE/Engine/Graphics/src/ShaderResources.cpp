@@ -9,7 +9,8 @@ static BitonicSortConstantBuffer* BitonicCB = nullptr;
 static MaterialConstantBuffer* MaterialCB = nullptr;
 static SSRConstantBuffer* SSRCB = nullptr;
 
-static UploadBuffer* mUploadBuffer = nullptr;
+static UploadBuffer* mPrimaryDeviceUploadBuffer = nullptr;
+static UploadBuffer* mSecondDeviceUploadBuffer = nullptr;
 
 static UploadBuffer::Allocation OcbAllocation;
 static UploadBuffer::Allocation WcbAllocation;
@@ -31,9 +32,10 @@ static const UINT SSRcbSize = sizeof(SSRConstantBuffer);
 
 void ShaderResources::Create()
 {
-	if (!mUploadBuffer)
+	if (!mPrimaryDeviceUploadBuffer || !mSecondDeviceUploadBuffer)
 	{
-		mUploadBuffer = new UploadBuffer();
+		mPrimaryDeviceUploadBuffer = new UploadBuffer();
+		mSecondDeviceUploadBuffer = new UploadBuffer(2 * 1024 * 1024, GraphicAdapterSecond);
 	}
 
 	if (!ObjectCB)
@@ -119,67 +121,75 @@ SSRConstantBuffer* ShaderResources::GetSSRCB()
 
 UploadBuffer* ShaderResources::GetUploadBuffer()
 {
-	return mUploadBuffer;
+	return mPrimaryDeviceUploadBuffer;
 }
 
 void ShaderResources::OnDelete()
 {
-	mUploadBuffer->Reset();
-	mUploadBuffer = nullptr;
+	mPrimaryDeviceUploadBuffer->Reset();
+	mPrimaryDeviceUploadBuffer = nullptr;
 }
 
 void ShaderResources::SetGraphicsObjectCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
-	OcbAllocation = mUploadBuffer->Allocate(OcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	OcbAllocation = mPrimaryDeviceUploadBuffer->Allocate(OcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(OcbAllocation.CPU, ObjectCB, OcbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, OcbAllocation.GPU);
 }
 
 void ShaderResources::SetGraphicsShadowCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
-	ScbAllocation = mUploadBuffer->Allocate(ScbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	ScbAllocation = mPrimaryDeviceUploadBuffer->Allocate(ScbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(ScbAllocation.CPU, ShadowCB, ScbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, ScbAllocation.GPU);
 }
 
 void ShaderResources::SetGraphicsWorldCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
-	WcbAllocation = mUploadBuffer->Allocate(WcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	WcbAllocation = mPrimaryDeviceUploadBuffer->Allocate(WcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(WcbAllocation.CPU, WorldCB, WcbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, WcbAllocation.GPU);
 }
 
 void ShaderResources::SetGraphicsParticleCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
-	PcbAllocation = mUploadBuffer->Allocate(PcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	PcbAllocation = mPrimaryDeviceUploadBuffer->Allocate(PcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(PcbAllocation.CPU, ParticleCB, PcbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, PcbAllocation.GPU);
 }
 
 void ShaderResources::SetParticleComputeCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
-	CcbAllocation = mUploadBuffer->Allocate(CcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	CcbAllocation = mPrimaryDeviceUploadBuffer->Allocate(CcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(CcbAllocation.CPU, ComputeConstantCB, CcbSize);
 	commandList->SetComputeRootConstantBufferView(slot, CcbAllocation.GPU);
 }
 
 void ShaderResources::SetBitonicSortCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
-	BcbAllocation = mUploadBuffer->Allocate(BcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	BcbAllocation = mPrimaryDeviceUploadBuffer->Allocate(BcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(BcbAllocation.CPU, BitonicCB, BcbSize);
 	commandList->SetComputeRootConstantBufferView(slot, BcbAllocation.GPU);
 }
 
 void ShaderResources::SetMaterialCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
-	McbAllocation = mUploadBuffer->Allocate(McbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	McbAllocation = mPrimaryDeviceUploadBuffer->Allocate(McbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	memcpy(McbAllocation.CPU, MaterialCB, McbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, McbAllocation.GPU);
 }
 
-void ShaderResources::SetSSRCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
+void ShaderResources::SetSSRCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, GraphicsAdapter graphicsAdapter)
 {
-	SSRcbAllocation = mUploadBuffer->Allocate(SSRcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	if (graphicsAdapter == GraphicAdapterPrimary)
+	{
+		SSRcbAllocation = mPrimaryDeviceUploadBuffer->Allocate(SSRcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	}
+	else
+	{
+		SSRcbAllocation = mSecondDeviceUploadBuffer->Allocate(SSRcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	}
+	
 	memcpy(SSRcbAllocation.CPU, SSRCB, SSRcbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, SSRcbAllocation.GPU);
 }

@@ -59,27 +59,41 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
 
     auto adapters = GetAdapters();
     PrimaryAdapter = adapters[0];
-    //SecondAdapter = adapters[1];
+    SecondAdapter = adapters[1];
+
+    DXGI_ADAPTER_DESC2 primaryDesc;
+    DXGI_ADAPTER_DESC2 secondDesc;
+
+    D3D12_FEATURE_DATA_D3D12_OPTIONS primaryAdapterOptions = {};
+    D3D12_FEATURE_DATA_D3D12_OPTIONS secondAdapterOptions = {};
     
     if (PrimaryAdapter)
     {
         PrimaryDevice = CreateDevice(PrimaryAdapter);
+        
+        ThrowIfFailed(PrimaryAdapter->GetDesc2(&primaryDesc));
+        ThrowIfFailed(
+            PrimaryDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &primaryAdapterOptions, sizeof(primaryAdapterOptions)));
     }
 
-    /*if (SecondAdapter)
+    if (SecondAdapter)
     {
         SecondDevice = CreateDevice(SecondAdapter);
-    }*/
+        DXGI_ADAPTER_DESC2 desc;
+        ThrowIfFailed(SecondAdapter->GetDesc2(&secondDesc));
+        ThrowIfFailed(
+            SecondDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &secondAdapterOptions, sizeof(secondAdapterOptions)));
+    }
 
-    if (PrimaryDevice)
+    if (PrimaryDevice && SecondAdapter)
     {
         PrimaryDirectCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
         PrimaryComputeCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
         PrimaryCopyCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COPY);
 
-        //SecondDirectCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
-        //SecondComputeCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
-        //SecondCopyCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COPY);
+        SecondDirectCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
+        SecondComputeCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+        SecondCopyCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COPY);
 
         m_TearingSupported = CheckTearingSupport();
     }
@@ -323,10 +337,10 @@ ComPtr<ID3D12Device2> Application::GetPrimaryDevice() const
     return PrimaryDevice;
 }
 
-//ComPtr<ID3D12Device2> Application::GetSecondDevice() const
-//{
-//    return SecondDevice;
-//}
+ComPtr<ID3D12Device2> Application::GetSecondDevice() const
+{
+    return SecondDevice;
+}
 
 std::shared_ptr<CommandQueue> Application::GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE type) const
 {
@@ -349,26 +363,26 @@ std::shared_ptr<CommandQueue> Application::GetPrimaryCommandQueue(D3D12_COMMAND_
     return commandQueue;
 }
 
-//std::shared_ptr<CommandQueue> Application::GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE type) const
-//{
-//    std::shared_ptr<CommandQueue> commandQueue;
-//    switch (type)
-//    {
-//    case D3D12_COMMAND_LIST_TYPE_DIRECT:
-//        commandQueue = SecondDirectCommandQueue;
-//        break;
-//    case D3D12_COMMAND_LIST_TYPE_COMPUTE:
-//        commandQueue = SecondComputeCommandQueue;
-//        break;
-//    case D3D12_COMMAND_LIST_TYPE_COPY:
-//        commandQueue = SecondCopyCommandQueue;
-//        break;
-//    default:
-//        assert(false && "Invalid command queue type.");
-//    }
-//
-//    return commandQueue;
-//}
+std::shared_ptr<CommandQueue> Application::GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE type) const
+{
+    std::shared_ptr<CommandQueue> commandQueue;
+    switch (type)
+    {
+    case D3D12_COMMAND_LIST_TYPE_DIRECT:
+        commandQueue = SecondDirectCommandQueue;
+        break;
+    case D3D12_COMMAND_LIST_TYPE_COMPUTE:
+        commandQueue = SecondComputeCommandQueue;
+        break;
+    case D3D12_COMMAND_LIST_TYPE_COPY:
+        commandQueue = SecondCopyCommandQueue;
+        break;
+    default:
+        assert(false && "Invalid command queue type.");
+    }
+
+    return commandQueue;
+}
 
 void Application::Flush()
 {
@@ -376,9 +390,9 @@ void Application::Flush()
     PrimaryComputeCommandQueue->Flush();
     PrimaryCopyCommandQueue->Flush();
 
-    /*SecondDirectCommandQueue->Flush();
+    SecondDirectCommandQueue->Flush();
     SecondComputeCommandQueue->Flush();
-    SecondCopyCommandQueue->Flush();*/
+    SecondCopyCommandQueue->Flush();
 }
 
 ComPtr<ID3D12DescriptorHeap> Application::CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type)
@@ -464,9 +478,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
             // Delta time will be filled in by the Window.
             UpdateEventArgs updateEventArgs(0.0f, 0.0f);
             pWindow->OnUpdate(updateEventArgs);
-            RenderEventArgs renderEventArgs(0.0f, 0.0f);
             
             // Delta time will be filled in by the Window.
+            RenderEventArgs renderEventArgs(0.0f, 0.0f);
             pWindow->OnRender(renderEventArgs);
         }
         break;

@@ -147,6 +147,7 @@
     <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp" />
     <ClCompile Include="Engine\Graphics\src\Camera.cpp" />
     <ClCompile Include="Engine\Graphics\src\CascadedShadowMap.cpp" />
+    <ClCompile Include="Engine\Graphics\src\CrossAdapterResource.cpp" />
     <ClCompile Include="Engine\Graphics\src\CurrentPass.cpp" />
     <ClCompile Include="Engine\Graphics\src\DebugRenderSystem.cpp" />
     <ClCompile Include="Engine\Graphics\src\DepthBuffer.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="Engine\Graphics\src\ResourceStorage.cpp" />
     <ClCompile Include="Engine\Graphics\src\ShaderResources.cpp" />
     <ClCompile Include="Engine\Graphics\src\ShadowMap.cpp" />
+    <ClCompile Include="Engine\Graphics\src\SharedMemory.cpp" />
     <ClCompile Include="Engine\Graphics\src\TextureBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp" />
@@ -200,6 +202,7 @@
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h" />
     <ClInclude Include="Engine\Graphics\Camera.h" />
     <ClInclude Include="Engine\Graphics\CascadedShadowMap.h" />
+    <ClInclude Include="Engine\Graphics\CrossAdapterResource.h" />
     <ClInclude Include="Engine\Graphics\CurrentPass.h" />
     <ClInclude Include="Engine\Graphics\DebugRenderSystem.h" />
     <ClInclude Include="Engine\Graphics\DepthBuffer.h" />
@@ -213,6 +216,7 @@
     <ClInclude Include="Engine\Graphics\ResourceStorage.h" />
     <ClInclude Include="Engine\Graphics\ShaderResources.h" />
     <ClInclude Include="Engine\Graphics\ShadowMap.h" />
+    <ClInclude Include="Engine\Graphics\SharedMemory.h" />
     <ClInclude Include="Engine\Graphics\TextureBuffer.h" />
     <ClInclude Include="Engine\Graphics\TextureComponent.h" />
     <ClInclude Include="Engine\Graphics\Texture3D.h" />

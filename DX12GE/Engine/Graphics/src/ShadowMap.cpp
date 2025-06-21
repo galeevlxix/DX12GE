@@ -10,8 +10,8 @@ ShadowMap::ShadowMap(ComPtr<ID3D12Device2> device, UINT width, UINT height)
     mViewport = { 0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f };
     mScissorRect = { 0, 0, (int)width, (int)height };
 
-    m_SrvHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-    m_DsvHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    m_SrvHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, GraphicAdapterPrimary);
+    m_DsvHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, GraphicAdapterPrimary);
 
     BuildResource();
     BuildDescriptors();
@@ -76,9 +76,9 @@ void ShadowMap::SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 void ShadowMap::BuildDescriptors()
 {
-    m_CpuSrvHadle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_SrvHeapIndex);
-    m_GpuSrvHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_SrvHeapIndex);
-    m_CpuDsvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DsvHeapIndex);
+    m_CpuSrvHadle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_SrvHeapIndex, GraphicAdapterPrimary);
+    m_GpuSrvHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_SrvHeapIndex, GraphicAdapterPrimary);
+    m_CpuDsvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DsvHeapIndex, GraphicAdapterPrimary);
 
     // Create SRV to resource so we can sample the shadow map in a shader program.
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};

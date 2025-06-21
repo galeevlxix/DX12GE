@@ -11,9 +11,10 @@
 #undef max
 #endif
 
-void DepthBuffer::Init()
+void DepthBuffer::Init(GraphicsAdapter graphicsAdapter)
 {
-    dsvCpuHandleIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    Adapter = graphicsAdapter;
+    dsvCpuHandleIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, graphicsAdapter);
 }
 
 // Resize the depth buffer to match the size of the client area.
@@ -27,7 +28,17 @@ void DepthBuffer::ResizeDepthBuffer(int width, int height)
     width = std::max(1, width);
     height = std::max(1, height);
 
-    auto device = Application::Get().GetPrimaryDevice();
+
+    ComPtr<ID3D12Device2> device;
+
+    if (Adapter == GraphicAdapterPrimary)
+    {
+        device = Application::Get().GetPrimaryDevice();
+    }
+    else
+    {
+        device = Application::Get().GetSecondDevice();
+    }
 
     // Resize screen dependent resources
     // Create a depth buffer
@@ -47,11 +58,11 @@ void DepthBuffer::ResizeDepthBuffer(int width, int height)
     dsvDesc.Texture2D.MipSlice = 0;
     dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, dsvCpuHandleIndex));
+    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, dsvCpuHandleIndex, Adapter));
     device->CreateDepthStencilView(DepthBufferTexture.m_Resource.Get(), &dsvDesc, dsvHandle);
 }
 
 void DepthBuffer::ClearDepth(ComPtr<ID3D12GraphicsCommandList2> commandList, FLOAT depth)
 {
-    commandList->ClearDepthStencilView(DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, dsvCpuHandleIndex), D3D12_CLEAR_FLAG_DEPTH, depth, 0, 0, nullptr);
+    commandList->ClearDepthStencilView(DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, dsvCpuHandleIndex, Adapter), D3D12_CLEAR_FLAG_DEPTH, depth, 0, 0, nullptr);
 }

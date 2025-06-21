@@ -21,6 +21,8 @@ using namespace std;
 
 class UploadBuffer
 {
+private:
+    GraphicsAdapter Adapter;
 public:
     // Use to upload data to the GPU
     struct Allocation
@@ -32,7 +34,7 @@ public:
     /**
      * @param pageSize The size to use to allocate new pages in GPU memory.
      */
-    explicit UploadBuffer(size_t pageSize = _2MB);
+    explicit UploadBuffer(size_t pageSize = _2MB, GraphicsAdapter adapter = GraphicAdapterPrimary);
 
     ~UploadBuffer();
 
@@ -62,7 +64,7 @@ private:
     // A single page for the allocator.
     struct Page
     {
-        Page(size_t sizeInBytes);
+        Page(size_t sizeInBytes, GraphicsAdapter adapter);
         ~Page();
 
         // Check to see if the page has room to satisfy the requested
@@ -81,6 +83,8 @@ private:
     private:
 
         ComPtr<ID3D12Resource> m_d3d12Resource;
+
+        
 
         // Base pointer.
         void* m_CPUPtr;
