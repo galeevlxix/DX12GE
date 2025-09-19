@@ -387,12 +387,7 @@ std::shared_ptr<CommandQueue> Application::GetSecondCommandQueue(D3D12_COMMAND_L
 void Application::Flush()
 {
     PrimaryDirectCommandQueue->Flush();
-    PrimaryComputeCommandQueue->Flush();
-    PrimaryCopyCommandQueue->Flush();
-
     SecondDirectCommandQueue->Flush();
-    SecondComputeCommandQueue->Flush();
-    SecondCopyCommandQueue->Flush();
 }
 
 ComPtr<ID3D12DescriptorHeap> Application::CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type)

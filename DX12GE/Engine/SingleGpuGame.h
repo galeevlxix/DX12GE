@@ -17,30 +17,29 @@
 #include "Pipelines/MergingPipeline.h"
 
 #include "Graphics/ShaderResources.h"
-#include "Graphics/DepthBuffer.h"
+
 #include "Graphics/DebugRenderSystem.h"
 #include "Graphics/CascadedShadowMap.h"
-#include "Graphics/GBuffer.h"
+
 #include "Graphics/Camera.h" 
 #include "Graphics/LightManager.h"
 #include "Graphics/ParticleSystem.h"
 #include "Graphics/Texture3D.h"
 #include "Graphics/TextureBuffer.h"
-#include "Graphics/SharedMemory.h"
-
+#include "Graphics/SSRCrossAdapterResources.h"
 #include "../Game/KatamariGame.h" 
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
 using namespace std;
 
-class BianEngineGame : public Game
+class SingleGpuGame : public Game
 {
 public:
     using super = Game;
     
-    BianEngineGame(const wstring& name, int width, int height, bool vSync = false);
-    ~BianEngineGame();
+    SingleGpuGame(const wstring& name, int width, int height, bool vSync = false);
+    ~SingleGpuGame();
 
     virtual bool LoadContent() override;
     virtual void UnloadContent() override {};
@@ -60,76 +59,59 @@ protected:
 
 private:
     void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void DrawSceneToShadowMaps();
-    void DrawSceneToGBuffer();
-    void LightPassRender();
-    void DrawSSR();
-    void DrawSSRSecondDevice();
-    void MergeResults();
-
-    void CopyPrimaryDeviceDataToSharedMemory();
-    void CopySecondDeviceDataToSharedMemory();
-    void CopySharedMemoryDataToPrimaryDevice();
-    void CopySharedMemoryDataToSecondDevice(); 
+    void DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
     void RefreshTitle(UpdateEventArgs& e);
-    void DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList);
+
+    ComPtr<ID3D12Device2> m_Device;
 
     uint64_t m_FenceValues[Window::BufferCount] = {};
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
     bool m_Initialized = false;
-
-    bool IsTesting = false;
-    vector<float> elapsed;
-    void TestTime(string outputFile, float elapsedTime);
-
-    // SCENE
-
-    DepthBuffer m_PrimaryDeviceDepthBuffer;
-    DepthBuffer m_SecondDeviceDepthBuffer;
-
-    DebugRenderSystem debug;
-    bool shouldAddDebugObjects = false;
-
-    KatamariGame katamariScene;  
-    LightManager lights;
-
-    CascadedShadowMap m_CascadedShadowMap;
     
-    GBuffer m_PrimaryDeviceGBuffer;
-    std::shared_ptr<TextureBuffer> m_PrimaryDeviceLightPassResult;
-    std::shared_ptr<TextureBuffer> m_PrimaryDeviceSSRResult;
-
-    GBuffer m_SecondDeviceGBuffer;
-    std::shared_ptr<TextureBuffer> m_SecondDeviceLightPassResult;
-    std::shared_ptr<TextureBuffer> m_SecondDeviceSSRResult;
-
-    std::unique_ptr<SharedMemory> m_SharedMemory;
-
-    bool drawSSR = true;
-    bool resizeSSR = false;
+    bool IsTesting = false;
+    vector<float> m_ElapsedTimeArray;
+    string m_TestTimeOutputFile = "../../DX12GE/Resources/single_gpu.txt";
+    void TestTime(float elapsedTime);
 
     CommandExecutor* executor;
 
+    // SCENE
+
+    bool shouldAddDebugObjects = false;
+    DebugRenderSystem m_DebugSystem;
+    KatamariGame m_KatamariScene;  
+    LightManager m_Lights;
+    CascadedShadowMap m_CascadedShadowMap;
+
+    std::shared_ptr<DepthBuffer> m_DepthBuffer;
+    GBuffer m_GBuffer;
+    std::shared_ptr<TextureBuffer> m_LightPassBuffer;
+    std::shared_ptr<TextureBuffer> m_SSRBuffer;
+
     // PARTICLES
 
-    ParticleSystem particles;
+    ParticleSystem m_ParticleSystem;
     Texture3D tex3d;
     bool stopParticles = false;
     Vector3 boxPosition = Vector3(50, 0, -15);
     Vector3 boxSize = Vector3(30, 30, 30);
 
-    // PIPELINE
+    // PIPELINES
 
     ParticlePipeline m_ParticlePipeline;
     ParticleComputePipeline m_ParticleComputePipeline;
     SimplePipeline m_SimplePipeline;
     ShadowMapPipeline m_ShadowMapPipeline;
     GeometryPassPipeline m_GeometryPassPipeline;
-    SSRPipeline m_SSRPipelinePrimaryDevice;
-    SSRPipeline m_SSRPipelineSecondDevice;
+    SSRPipeline m_SSRPipeline;
     MergingPipeline m_MergingPipeline;
     LightPassPipeline m_LightPassPipeline;
 };

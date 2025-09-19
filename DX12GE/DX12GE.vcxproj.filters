@@ -138,9 +138,6 @@
     <ClCompile Include="Engine\Base\src\Window.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\BianEngineGame.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
@@ -215,6 +212,15 @@
     </ClCompile>
     <ClCompile Include="Engine\Graphics\src\SharedMemory.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\src\SSRCrossAdapterResources.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\MultiGpuGame.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\SingleGpuGame.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -296,9 +302,6 @@
     <ClInclude Include="Engine\Base\Window.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\BianEngineGame.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
@@ -379,6 +382,15 @@
     </ClInclude>
     <ClInclude Include="Engine\Graphics\SharedMemory.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\SSRCrossAdapterResources.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\MultiGpuGame.h">
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SingleGpuGame.h">
+      <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

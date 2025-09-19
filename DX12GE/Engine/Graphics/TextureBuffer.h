@@ -9,12 +9,13 @@ class TextureBuffer
 public:
 	TextureBuffer();
 	void Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter, UINT width, UINT height, DXGI_FORMAT format);
+	void Init(ComPtr<ID3D12Device2> device, D3D12_RESOURCE_DESC& resourceDesc, ComPtr<ID3D12Heap> heap, const std::wstring& name);
 	void Release();
 	void Resize(UINT width, UINT height);
 	void BindRenderTarget(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle);
 
-	CD3DX12_GPU_DESCRIPTOR_HANDLE SrvGPU() const;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvCPU() const;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE SrvGPU() const { return CD3DX12_GPU_DESCRIPTOR_HANDLE(GpuSrvHandle); }
+	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvCPU() const { return CD3DX12_CPU_DESCRIPTOR_HANDLE(CpuRtvHandle); }
 
 	void SetToWriteAndClear(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList);
@@ -22,13 +23,14 @@ public:
 	void SetToCopySource(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void SetToState(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_RESOURCE_STATES newState);
 
-
 	void SetGraphicsRootDescriptorTable(int slot, ComPtr<ID3D12GraphicsCommandList2> commandList);
 
-	ComPtr<ID3D12Resource> GetResource();
-	ComPtr<ID3D12Device2> GetDevice();
-	void SetResourceName(LPCWSTR name);
-	D3D12_RESOURCE_STATES GetResourceState();
+	ComPtr<ID3D12Resource> GetResource() { return Buffer; }
+	ComPtr<ID3D12Device2> GetDevice() { return m_Device; }
+	void SetName(LPCWSTR name) { m_Name = name; }
+	wstring GetName() { return m_Name; }
+	D3D12_RESOURCE_STATES GetResourceState() { return currentState; }
+	void SetAdapter(GraphicsAdapter graphicsAdapter) { m_Adapter = graphicsAdapter; }
 
 private:
 	UINT m_Width = 0;

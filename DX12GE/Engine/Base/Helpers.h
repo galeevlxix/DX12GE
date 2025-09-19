@@ -3,6 +3,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h> // For HRESULT
 #include <io.h>
+#include <string>
+#include <iomanip>
+#include <sstream>
 
   // From DXSampleHelper.h 
   // Source: https://github.com/Microsoft/DirectX-Graphics-Samples
@@ -66,6 +69,20 @@ inline bool FileExists(const char* fname)
 inline bool NotFoundFile(const char* path)
 {
     return path == "" || !FileExists(path);
+}
+
+inline std::wstring rStr(double value, int signCount)
+{
+    std::wstringstream wss;
+    wss << std::fixed << std::setprecision(signCount) << value;
+    return wss.str();
+}
+
+inline std::wstring Align(std::wstring s, int cnt)
+{
+    std::wstring out = s;
+    while (out.length() < cnt) out += L" ";
+    return out;
 }
 
 namespace Math

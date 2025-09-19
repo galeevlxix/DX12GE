@@ -91,6 +91,8 @@ public:
     std::shared_ptr<CommandQueue> GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT) const;
     std::shared_ptr<CommandQueue> GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT) const;
 
+    //std::shared_ptr<SharedFenceCommandQueues> GetSharedCommandQueues();
+
     // Flush all command queues.
     void Flush();
 

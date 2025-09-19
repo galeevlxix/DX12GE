@@ -16,6 +16,32 @@ void TextureBuffer::Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsA
 	BuildDescriptors();
 }
 
+void TextureBuffer::Init(ComPtr<ID3D12Device2> device, D3D12_RESOURCE_DESC& resourceDesc, ComPtr<ID3D12Heap> heap, const std::wstring& name)
+{
+    m_Device = device;
+    m_Width = resourceDesc.Width;
+    m_Height = resourceDesc.Height;
+    m_Format = resourceDesc.Format;
+    currentState = D3D12_RESOURCE_STATE_COMMON;
+
+    /*D3D12_CLEAR_VALUE clearValue = {};
+    clearValue.Format = m_Format;*/
+
+    ThrowIfFailed(
+        m_Device->CreatePlacedResource(
+            heap.Get(),
+            0,
+            &resourceDesc,
+            currentState,
+            nullptr,
+            IID_PPV_ARGS(&Buffer)
+        )
+    );
+
+    m_Name = name.c_str();
+    Buffer->SetName(m_Name);
+}
+
 void TextureBuffer::Release()
 {
 	Buffer.Reset();
@@ -23,7 +49,7 @@ void TextureBuffer::Release()
 
 void TextureBuffer::Resize(UINT width, UINT height)
 {
-	if (width == m_Width && height == m_Height || m_Device == nullptr)
+    if ((width == m_Width && height == m_Height) || width == 0 || height == 0 || m_Device == nullptr )
 		return;
 
 	Release();
@@ -33,16 +59,6 @@ void TextureBuffer::Resize(UINT width, UINT height)
 void TextureBuffer::BindRenderTarget(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle)
 {
 	commandList->OMSetRenderTargets(1, &CpuRtvHandle, FALSE, &dsvHandle);
-}
-
-CD3DX12_GPU_DESCRIPTOR_HANDLE TextureBuffer::SrvGPU() const
-{
-	return CD3DX12_GPU_DESCRIPTOR_HANDLE(GpuSrvHandle);
-}
-
-CD3DX12_CPU_DESCRIPTOR_HANDLE TextureBuffer::RtvCPU() const
-{
-	return CD3DX12_CPU_DESCRIPTOR_HANDLE(CpuRtvHandle);
 }
 
 void TextureBuffer::SetToWriteAndClear(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -83,27 +99,11 @@ void TextureBuffer::SetToState(ComPtr<ID3D12GraphicsCommandList2> commandList, D
 
 void TextureBuffer::SetGraphicsRootDescriptorTable(int slot, ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	commandList->SetGraphicsRootDescriptorTable(slot, DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, SrvHeapIndex, m_Adapter));
-}
-
-ComPtr<ID3D12Resource> TextureBuffer::GetResource()
-{
-    return Buffer;
-}
-
-ComPtr<ID3D12Device2> TextureBuffer::GetDevice()
-{
-    return m_Device;
-}
-
-void TextureBuffer::SetResourceName(LPCWSTR name)
-{
-    m_Name = name;
-}
-
-D3D12_RESOURCE_STATES TextureBuffer::GetResourceState()
-{
-    return currentState;
+	commandList->SetGraphicsRootDescriptorTable(
+        slot, 
+        DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 
+            SrvHeapIndex, 
+            m_Adapter));
 }
 
 void TextureBuffer::BuildResource()
@@ -134,8 +134,6 @@ void TextureBuffer::BuildResource()
         &clearValue,
         IID_PPV_ARGS(&Buffer)
     );
-
-    
 
     if (m_Name != L"") 
         Buffer->SetName(m_Name);

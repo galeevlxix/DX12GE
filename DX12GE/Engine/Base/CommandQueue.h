@@ -42,7 +42,7 @@ private:
     };
 
     using CommandAllocatorQueue = std::queue<CommandAllocatorEntry>;
-    using CommandListQueue = std::queue< ComPtr<ID3D12GraphicsCommandList2> >;
+    using CommandListQueue = std::queue<ComPtr<ID3D12GraphicsCommandList2>>;
 
     D3D12_COMMAND_LIST_TYPE                     m_CommandListType;
     ComPtr<ID3D12Device2>                       m_d3d12Device;

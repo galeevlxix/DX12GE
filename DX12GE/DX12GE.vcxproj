@@ -143,7 +143,6 @@
     <ClCompile Include="Engine\Base\src\SimpleMath.cpp" />
     <ClCompile Include="Engine\Base\src\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Base\src\Window.cpp" />
-    <ClCompile Include="Engine\BianEngineGame.cpp" />
     <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp" />
     <ClCompile Include="Engine\Graphics\src\Camera.cpp" />
     <ClCompile Include="Engine\Graphics\src\CascadedShadowMap.cpp" />
@@ -162,10 +161,12 @@
     <ClCompile Include="Engine\Graphics\src\ShaderResources.cpp" />
     <ClCompile Include="Engine\Graphics\src\ShadowMap.cpp" />
     <ClCompile Include="Engine\Graphics\src\SharedMemory.cpp" />
+    <ClCompile Include="Engine\Graphics\src\SSRCrossAdapterResources.cpp" />
     <ClCompile Include="Engine\Graphics\src\TextureBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp" />
     <ClCompile Include="Engine\Graphics\src\TransformComponent.cpp" />
+    <ClCompile Include="Engine\MultiGpuGame.cpp" />
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\LightPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\MergingPipeline.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="Engine\Pipelines\src\SimplePipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\SSRPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\TexturedPipeline.cpp" />
+    <ClCompile Include="Engine\SingleGpuGame.cpp" />
     <ClCompile Include="Game\KatamariGame.cpp" />
     <ClCompile Include="Game\Player.cpp" />
   </ItemGroup>
@@ -198,7 +200,6 @@
     <ClInclude Include="Engine\Base\SimpleMath.h" />
     <ClInclude Include="Engine\Base\UploadBuffer.h" />
     <ClInclude Include="Engine\Base\Window.h" />
-    <ClInclude Include="Engine\BianEngineGame.h" />
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h" />
     <ClInclude Include="Engine\Graphics\Camera.h" />
     <ClInclude Include="Engine\Graphics\CascadedShadowMap.h" />
@@ -217,11 +218,13 @@
     <ClInclude Include="Engine\Graphics\ShaderResources.h" />
     <ClInclude Include="Engine\Graphics\ShadowMap.h" />
     <ClInclude Include="Engine\Graphics\SharedMemory.h" />
+    <ClInclude Include="Engine\Graphics\SSRCrossAdapterResources.h" />
     <ClInclude Include="Engine\Graphics\TextureBuffer.h" />
     <ClInclude Include="Engine\Graphics\TextureComponent.h" />
     <ClInclude Include="Engine\Graphics\Texture3D.h" />
     <ClInclude Include="Engine\Graphics\TransformComponent.h" />
     <ClInclude Include="Engine\Graphics\VertexStructures.h" />
+    <ClInclude Include="Engine\MultiGpuGame.h" />
     <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\LightPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\MergingPipeline.h" />
@@ -232,6 +235,7 @@
     <ClInclude Include="Engine\Pipelines\SimplePipeline.h" />
     <ClInclude Include="Engine\Pipelines\SSRPipeline.h" />
     <ClInclude Include="Engine\Pipelines\TexturedPipeline.h" />
+    <ClInclude Include="Engine\SingleGpuGame.h" />
     <ClInclude Include="Game\KatamariGame.h" />
     <ClInclude Include="Game\Player.h" />
   </ItemGroup>

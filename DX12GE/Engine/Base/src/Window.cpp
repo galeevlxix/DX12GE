@@ -39,7 +39,7 @@ const std::wstring& Window::GetWindowName() const
 {
     return m_WindowName;
 }
-
+  
 void Window::Show()
 {
     ::ShowWindow(m_hWnd, SW_SHOW);

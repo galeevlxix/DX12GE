@@ -8,7 +8,7 @@ cbuffer SSRCB : register(b0)
 {
     matrix ViewProjection;
     float4 CameraPos;
-    float RayStep;
+    float RayStepLength;
     //int MaxSteps;
     float MaxDistance;
     float Thickness;
@@ -23,7 +23,7 @@ SamplerState gSampler : register(s0);
 
 float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
 {
-    float3 rayStep = reflectionDir * RayStep;
+    float3 rayStep = reflectionDir * RayStepLength;
     float3 currentPos = worldPos;
     
     [loop]
@@ -58,18 +58,15 @@ float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
 float4 main(PSInput input) : SV_Target
 {
     float4 orm = gORM.Sample(gSampler, input.TexCoord);
-    
-    if (orm.b < 0.025)
+    if (orm.b < 0.25)
         return float4(0.0, 0.0, 0.0, 0.0);
     
     float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
     float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
-    
     float3 cameraPixelVector = worldPos - CameraPos.xyz;
     
-    float f0 = orm.b * orm.b * orm.b;
-    
-    float fresnel = saturate(f0 + (1 - f0) * pow(1 - dot(normal, normalize(-cameraPixelVector)), 1));
+    float f0 = 0.04;
+    float fresnel = saturate(f0 + (1 - f0) * pow(1 - dot(normal, normalize(-cameraPixelVector)), 2));
     
     float3 cameraPixelDirection = normalize(cameraPixelVector.xyz);    
     float3 reflectDir = normalize(reflect(cameraPixelDirection, normal));
