@@ -59,8 +59,8 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
 
     auto adapters = GetAdapters();
     PrimaryAdapter = adapters[0];
-    SecondAdapter = adapters[1];
-
+    SecondAdapter = adapters.size() > 1 ? adapters[1] : nullptr;
+    
     DXGI_ADAPTER_DESC2 primaryDesc;
     DXGI_ADAPTER_DESC2 secondDesc;
 
@@ -74,27 +74,27 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
         ThrowIfFailed(PrimaryAdapter->GetDesc2(&primaryDesc));
         ThrowIfFailed(
             PrimaryDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &primaryAdapterOptions, sizeof(primaryAdapterOptions)));
+
+        PrimaryDirectCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
+        PrimaryComputeCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+        PrimaryCopyCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COPY);
     }
 
     if (SecondAdapter)
     {
         SecondDevice = CreateDevice(SecondAdapter);
-        DXGI_ADAPTER_DESC2 desc;
+
         ThrowIfFailed(SecondAdapter->GetDesc2(&secondDesc));
         ThrowIfFailed(
             SecondDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &secondAdapterOptions, sizeof(secondAdapterOptions)));
-    }
-
-    if (PrimaryDevice && SecondAdapter)
-    {
-        PrimaryDirectCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
-        PrimaryComputeCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
-        PrimaryCopyCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COPY);
-
+        
         SecondDirectCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
         SecondComputeCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
         SecondCopyCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COPY);
+    }
 
+    if (PrimaryAdapter || SecondAdapter)
+    {
         m_TearingSupported = CheckTearingSupport();
     }
 }
@@ -387,7 +387,8 @@ std::shared_ptr<CommandQueue> Application::GetSecondCommandQueue(D3D12_COMMAND_L
 void Application::Flush()
 {
     PrimaryDirectCommandQueue->Flush();
-    SecondDirectCommandQueue->Flush();
+    if (SecondDirectCommandQueue)
+        SecondDirectCommandQueue->Flush();
 }
 
 ComPtr<ID3D12DescriptorHeap> Application::CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type)

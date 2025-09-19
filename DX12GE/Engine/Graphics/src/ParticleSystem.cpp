@@ -5,7 +5,8 @@
 
 void ParticleSystem::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	m_Texture.OnLoad(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png");
+	//m_Texture.OnLoad(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png");
+	m_Texture.OnLoad(commandList, "C:\\Users\\Lenovo\\source\\repos\\DX12GE\\DX12GE\\Resources\\Particle Textures\\circle_05.png");
 	CreateParticleGroupPrototype(pow(2, 21));
 
 	m_Device = Application::Get().GetPrimaryDevice();

@@ -25,7 +25,7 @@ SingleGpuGame::~SingleGpuGame()
     Application::Get().GetSecondDevice()->Release();
 }
 
-bool SingleGpuGame::LoadContent()
+bool SingleGpuGame::Initialize()
 {
     m_Device = Application::Get().GetPrimaryDevice();
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
@@ -46,7 +46,7 @@ bool SingleGpuGame::LoadContent()
     m_MergingPipeline.Initialize(m_Device);
 
     // 3D SCENE
-    m_CascadedShadowMap.Create();  
+    m_CascadedShadowMap.Create();
 
     m_GBuffer.Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight());
 
@@ -58,7 +58,7 @@ bool SingleGpuGame::LoadContent()
     m_LightPassBuffer->SetName(L"LightPass");
     m_LightPassBuffer->Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
 
-    m_ParticleSystem.OnLoad(commandList);    
+    m_ParticleSystem.OnLoad(commandList);
     m_KatamariScene.OnLoad(commandList);
     m_Lights.Init(&m_KatamariScene);
     m_Camera.OnLoad(&(m_KatamariScene.player));
@@ -95,6 +95,12 @@ bool SingleGpuGame::LoadContent()
 
     m_Initialized = true;
     return true;
+}
+
+bool SingleGpuGame::LoadContent()
+{
+    return true;
+
 }
 
 void SingleGpuGame::OnUpdate(UpdateEventArgs& e)

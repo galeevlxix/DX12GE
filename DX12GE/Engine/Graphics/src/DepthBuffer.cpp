@@ -28,7 +28,6 @@ void DepthBuffer::ResizeDepthBuffer(int width, int height)
     width = std::max(1, width);
     height = std::max(1, height);
 
-
     ComPtr<ID3D12Device2> device;
 
     if (Adapter == GraphicAdapterPrimary)

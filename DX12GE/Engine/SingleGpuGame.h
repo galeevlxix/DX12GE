@@ -41,6 +41,7 @@ public:
     SingleGpuGame(const wstring& name, int width, int height, bool vSync = false);
     ~SingleGpuGame();
 
+    virtual bool Initialize() override;
     virtual bool LoadContent() override;
     virtual void UnloadContent() override {};
 

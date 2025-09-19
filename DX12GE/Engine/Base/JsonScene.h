@@ -6,7 +6,7 @@
 class JsonScene
 {
 private:
-	const std::string path = "../../DX12GE/Resources/scene.json";
+	const std::string path = "../../DX12GE/Resources/scene lite.json";
 public:
 	void Save(std::map<std::string, Object3DEntity>& objects);
 	void Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<std::string, Object3DEntity>& objects);
