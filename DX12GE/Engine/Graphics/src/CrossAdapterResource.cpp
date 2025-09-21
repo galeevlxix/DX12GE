@@ -73,17 +73,32 @@ void CrossAdapterResource::Resize(const UINT newWidth, const UINT newHeight)
     desc.Width = newWidth;
     desc.Height = newHeight;
 
-    m_PrimeResource->Release();
+    m_PrimeResource->Destroy();
     m_PrimeResource->Init(
         m_PrimeResource->GetDevice(), 
         desc, 
         crossAdapterResourceHeap[0], 
         m_PrimeResource->GetName());
 
-    m_SharedResource->Release();
+    m_SharedResource->Destroy();
     m_SharedResource->Init(
         m_SharedResource->GetDevice(), 
         desc, 
         crossAdapterResourceHeap[1], 
         m_SharedResource->GetName());
+}
+
+void CrossAdapterResource::Destroy()
+{
+    m_PrimeResource->Destroy();
+    m_PrimeResource = nullptr;
+    
+    m_SharedResource->Destroy();
+    m_SharedResource = nullptr;
+
+    crossAdapterResourceHeap[0].Reset();
+    crossAdapterResourceHeap[0] = nullptr;
+
+    crossAdapterResourceHeap[1].Reset();
+    crossAdapterResourceHeap[1] = nullptr;
 }

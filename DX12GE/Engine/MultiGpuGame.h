@@ -4,7 +4,7 @@
 #include "Base/Game.h"
 #include "Base/Window.h"
 #include "Base/CommandQueue.h"
-#include "Base/DescriptorHeaps.h"
+#include "Graphics/DescriptorHeaps.h"
 #include "Base/CommandExecutor.h"
 
 #include "Pipelines/Pipeline.h"
@@ -41,8 +41,9 @@ public:
     MultiGpuGame(const wstring& name, int width, int height, bool vSync = false);
     ~MultiGpuGame();
 
+    virtual bool Initialize() override;
     virtual bool LoadContent() override;
-    virtual void UnloadContent() override {};
+    virtual void UnloadContent() override;
 
     Camera m_Camera;
 

@@ -50,7 +50,7 @@ private:
 public:
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, string path);
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot);
-    void Release();
+    void Destroy();
 
     D3D12_CPU_DESCRIPTOR_HANDLE GetCpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE heapType);
     D3D12_GPU_DESCRIPTOR_HANDLE GetGpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE heapType);

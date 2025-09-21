@@ -10,27 +10,12 @@ SingleGpuGame::SingleGpuGame(const wstring& name, int width, int height, bool vS
     , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
     , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height))) { }
 
-SingleGpuGame::~SingleGpuGame()
-{
-    m_KatamariScene.OnExit();
-    executor->Exit();
-
-    Destroy();
-    DescriptorHeaps::GetDSVHeap(GraphicAdapterPrimary)->Release();
-    DescriptorHeaps::GetCBVHeap(GraphicAdapterPrimary)->Release();
-    DescriptorHeaps::GetDSVHeap(GraphicAdapterSecond)->Release();
-    DescriptorHeaps::GetCBVHeap(GraphicAdapterSecond)->Release();
-
-    Application::Get().GetPrimaryDevice()->Release();
-    Application::Get().GetSecondDevice()->Release();
-}
-
 bool SingleGpuGame::Initialize()
 {
-    m_Device = Application::Get().GetPrimaryDevice();
-    shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+    if(!super::Initialize()) return false;
 
+    m_Device = Application::Get().GetPrimaryDevice();
+    
     // INITIALIZE
     ShaderResources::Create();
     DescriptorHeaps::OnInit(m_Device, GraphicAdapterPrimary);
@@ -46,7 +31,7 @@ bool SingleGpuGame::Initialize()
     m_MergingPipeline.Initialize(m_Device);
 
     // 3D SCENE
-    m_CascadedShadowMap.Create();
+    m_CascadedShadowMap.Create(m_Device);
 
     m_GBuffer.Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight());
 
@@ -58,6 +43,18 @@ bool SingleGpuGame::Initialize()
     m_LightPassBuffer->SetName(L"LightPass");
     m_LightPassBuffer->Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
 
+    m_DepthBuffer = std::make_shared<DepthBuffer>();
+    m_DepthBuffer->Init(GraphicAdapterPrimary);
+    m_DepthBuffer->ResizeDepthBuffer(GetClientWidth(), GetClientHeight());
+    
+    return true;
+}
+
+bool SingleGpuGame::LoadContent()
+{
+    shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+
     m_ParticleSystem.OnLoad(commandList);
     m_KatamariScene.OnLoad(commandList);
     m_Lights.Init(&m_KatamariScene);
@@ -66,14 +63,14 @@ bool SingleGpuGame::Initialize()
     m_DebugSystem.Initialize(&m_Camera, m_Device);
     CurrentPass::Set(CurrentPass::None);
 
-    ShaderResources::GetSSRCB()->MaxDistance = 32.0;
-    ShaderResources::GetSSRCB()->RayStep = 0.03;
-    ShaderResources::GetSSRCB()->Thickness = 0.0275;
+    ShaderResources::GetSSRCB()->MaxDistance = 32.0f;
+    ShaderResources::GetSSRCB()->RayStep = 0.03f;
+    ShaderResources::GetSSRCB()->Thickness = 0.0275f;
 
     // DRAW THE CUBE
-    m_DebugSystem.DrawPoint(boxPosition, 2);
+    m_DebugSystem.DrawPoint(boxPosition, 2.0f);
 
-    BoundingBox box(boxPosition + boxSize * 0.5, boxSize * 0.5);
+    BoundingBox box(boxPosition + boxSize * 0.5f, boxSize * 0.5f);
     m_DebugSystem.DrawBoundingBox(box);
 
     m_DebugSystem.Update(commandList);
@@ -82,38 +79,29 @@ bool SingleGpuGame::Initialize()
     ShaderResources::GetParticleComputeCB()->BoxSize = Vector3(boxSize);
 
     // CREATE TEXTURE3D
-    tex3d.Load(commandList, boxSize.x, boxSize.y, boxSize.z);
+    tex3d.Load(commandList, static_cast<int>(boxSize.x), static_cast<int>(boxSize.y), static_cast<int>(boxSize.z));
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);
-
-    m_DepthBuffer = std::make_shared<DepthBuffer>();
-    m_DepthBuffer->Init(GraphicAdapterPrimary);
-    m_DepthBuffer->ResizeDepthBuffer(GetClientWidth(), GetClientHeight());
+    commandQueue->WaitForFenceValue(fenceValue);    
 
     executor = new CommandExecutor(&m_KatamariScene);
-
     m_Initialized = true;
-    return true;
-}
 
-bool SingleGpuGame::LoadContent()
-{
     return true;
-
 }
 
 void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 {
     if (!m_Initialized) return;
     super::OnUpdate(e);
-    m_Camera.OnUpdate(e.ElapsedTime);
-    m_KatamariScene.OnUpdate(e.ElapsedTime);
-    m_Lights.OnUpdate(e.ElapsedTime);
+    float elapsedTime = static_cast<float>(e.ElapsedTime);
+    m_Camera.OnUpdate(elapsedTime);
+    m_KatamariScene.OnUpdate(elapsedTime);
+    m_Lights.OnUpdate(elapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
     ShaderResources::GetSSRCB()->ViewProjection = m_Camera.GetViewProjMatrix();
     ShaderResources::GetSSRCB()->CameraPos = m_Camera.Position;
-    m_ParticleSystem.OnUpdate(e.ElapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
+    m_ParticleSystem.OnUpdate(elapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
     RefreshTitle(e);
     m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
     executor->Update();
@@ -287,7 +275,7 @@ void SingleGpuGame::OnRender(RenderEventArgs& e)
     if (!m_Initialized) return;
     super::OnRender(e);
 
-    TestTime(e.ElapsedTime);
+    TestTime(static_cast<float>(e.ElapsedTime));
 
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
@@ -296,7 +284,7 @@ void SingleGpuGame::OnRender(RenderEventArgs& e)
     DrawSceneToShadowMaps(commandList);
     DrawSceneToGBuffer(commandList);
     LightPassRender(commandList);
-    //DrawSSR(commandList);
+    DrawSSR(commandList);
     MergeResults(commandList);
 
     m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
@@ -362,7 +350,7 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::R:
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         auto commandList = commandQueue->GetCommandList();
-        m_ParticleSystem.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5, 7, 1000);
+        m_ParticleSystem.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5f, 7.0f, 1000.0f);
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
         commandQueue->WaitForFenceValue(fenceValue);
         break;
@@ -444,4 +432,55 @@ void SingleGpuGame::RefreshTitle(UpdateEventArgs& e)
         frameCounter++;
         timer += e.ElapsedTime;
     }
+}
+
+void SingleGpuGame::UnloadContent()
+{
+    m_KatamariScene.Exit();
+    executor->Exit();
+}
+
+void SingleGpuGame::Destroy()
+{
+    super::Destroy();
+
+    m_DebugSystem.Destroy();
+    m_CascadedShadowMap.Destroy();
+
+    m_DepthBuffer->Destroy();
+    m_DepthBuffer.reset();
+    m_DepthBuffer = nullptr;
+
+    m_GBuffer.Destroy();
+
+    m_LightPassBuffer->Destroy();
+    m_LightPassBuffer.reset();
+    m_LightPassBuffer = nullptr;
+
+    m_SSRBuffer->Destroy();
+    m_SSRBuffer.reset();
+    m_SSRBuffer = nullptr;
+
+    m_ParticleSystem.Destroy();
+    tex3d.Destroy();
+
+    m_ParticlePipeline.Destroy();
+    m_ParticleComputePipeline.Destroy();
+    m_SimplePipeline.Destroy();
+    m_ShadowMapPipeline.Destroy();
+    m_GeometryPassPipeline.Destroy();
+    m_SSRPipeline.Destroy();
+    m_MergingPipeline.Destroy();
+    m_LightPassPipeline.Destroy();
+
+    ShaderResources::Destroy();
+    DescriptorHeaps::DestroyAll();
+
+    m_Device.Reset();
+    m_Device = nullptr;
+}
+
+SingleGpuGame::~SingleGpuGame()
+{
+
 }

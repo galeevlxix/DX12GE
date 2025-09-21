@@ -52,7 +52,8 @@ private:
 	void read_loop() 
 	{
 		std::string line;
-		while (!stop_flag) {
+		while (!stop_flag) 
+		{
 			std::getline(std::cin, line);
 			{
 				std::lock_guard<std::mutex> lock(mutex);

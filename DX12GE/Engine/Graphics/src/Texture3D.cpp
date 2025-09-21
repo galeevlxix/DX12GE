@@ -1,7 +1,7 @@
 #include "../Texture3D.h"
 #include "../../Base/Application.h"
 #include "../../Base/SimpleMath.h"
-#include "../../Base/DescriptorHeaps.h"
+#include "../../Graphics/DescriptorHeaps.h"
 #include "../ShaderResources.h"
 #include <vector>
 #include <cstdlib> // для srand и rand
@@ -16,9 +16,9 @@ float RandomFloat()
 	return 2.0f * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - 1.0f;
 }
 
-float GetFloatValue(int pos, static int border, float value)
+float GetFloatValue(int pos, int border, float value)
 {
-	static const float maxForceValue = 5;
+	static const float maxForceValue = 5.0f;
 
 	if (pos == 0) 
 		return maxForceValue;
@@ -53,11 +53,11 @@ void Texture3D::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, int width, 
 	
 	srand(static_cast<unsigned int>(time(0)));
 
-	for (float z = 0; z < depth; z++)
+	for (int z = 0; z < depth; z++)
 	{
-		for (float y = 0; y < height; ++y)
+		for (int y = 0; y < height; ++y)
 		{
-			for (float x = 0; x < width; ++x)
+			for (int x = 0; x < width; ++x)
 			{
 				int index = x + y * width + z * width * height;
 				Vector3 p = GetVectorValue(x, y, z, width, height, depth);
@@ -155,4 +155,13 @@ D3D12_CPU_DESCRIPTOR_HANDLE Texture3D::GetCpuDescHandle(D3D12_DESCRIPTOR_HEAP_TY
 D3D12_GPU_DESCRIPTOR_HANDLE Texture3D::GetGpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE heapType)
 {
 	return DescriptorHeaps::GetGPUHandle(heapType, m_SRVHeapIndex, GraphicAdapterPrimary);
+}
+
+void Texture3D::Destroy()
+{
+	m_Resource.Reset();
+	m_Resource = nullptr;
+
+	m_UploadBuffer.Reset();
+	m_UploadBuffer = nullptr;
 }

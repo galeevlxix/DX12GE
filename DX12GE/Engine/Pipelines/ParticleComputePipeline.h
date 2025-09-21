@@ -28,4 +28,26 @@ protected:
     void CreateRootSignatureFeatureData(ComPtr<ID3D12Device2> device);
     void CreateRootSignature(ComPtr<ID3D12Device2> device);
     void CreatePipelineState(ComPtr<ID3D12Device2> device);
+
+public:
+    void Destroy()
+    {
+        RootSignature.Reset();
+        RootSignature = nullptr;
+
+        UpdatePipelineState.Reset();
+        UpdatePipelineState = nullptr;
+
+        SortPipelineState.Reset();
+        SortPipelineState = nullptr;
+
+        m_UpdateShaderBlob.Reset();
+        m_UpdateShaderBlob = nullptr;
+
+        m_SortShaderBlob.Reset();
+        m_SortShaderBlob = nullptr;
+
+        m_RootSignatureBlob.Reset();
+        m_RootSignatureBlob = nullptr;
+    }
 };

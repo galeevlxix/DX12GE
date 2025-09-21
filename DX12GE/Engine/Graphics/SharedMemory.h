@@ -21,6 +21,8 @@ public:
 	void CopyFromSharedMemory(SharedMemoryTextureBuffer textureType, std::shared_ptr<TextureBuffer> dst, ComPtr<ID3D12GraphicsCommandList2> dstCommandList);
 	bool IsBufferEmpty(SharedMemoryTextureBuffer textureType);
 
+	void Destroy();
+
 private:
 	struct SharedDesc 
 	{
@@ -29,6 +31,18 @@ private:
 		UINT numRows;
 		UINT64 rowSize, totalBytes;
 		bool initialized = false;
+
+		void Destroy()
+		{
+			if (!initialized) return;
+			initialized = false;
+
+			readbackBuffer.Reset();
+			readbackBuffer = nullptr;
+
+			uploadBuffer.Reset();
+			uploadBuffer = nullptr;
+		}
 	};
 
 	SharedDesc m_SharedBuffers[SharedMemoryCount];

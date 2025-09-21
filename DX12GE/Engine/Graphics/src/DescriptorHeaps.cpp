@@ -82,7 +82,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_
 {
 	DescriptorHeaps* heaps = GetHeaps(graphicsAdapter);
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
 	switch (type) {
 	case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
 		cpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(heaps->m_cbvHeap->GetCPUDescriptorHandleForHeapStart());
@@ -101,13 +101,14 @@ D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_
 		cpuHandle.Offset(index, heaps->m_incrementSize[3]);
 		return cpuHandle;
 	}
+	return cpuHandle;
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT index, GraphicsAdapter graphicsAdapter)
 {
 	DescriptorHeaps* heaps = GetHeaps(graphicsAdapter);
 
-	CD3DX12_GPU_DESCRIPTOR_HANDLE cpuHandle;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE cpuHandle = {};
 	switch (type) {
 	case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
 		cpuHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(heaps->m_cbvHeap->GetGPUDescriptorHandleForHeapStart());
@@ -126,6 +127,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_
 		cpuHandle.Offset(index, heaps->m_incrementSize[3]);
 		return cpuHandle;
 	}
+	return cpuHandle;
 }
 
 ComPtr<ID3D12DescriptorHeap> DescriptorHeaps::GetCBVHeap(GraphicsAdapter graphicsAdapter) { return GetHeaps(graphicsAdapter)->m_cbvHeap; }
@@ -197,4 +199,28 @@ int DescriptorHeaps::GetNextFreeDSVIndex(GraphicsAdapter graphicsAdapter)
 	{
 		return DSVindexSecond++;
 	}
+}
+
+void DescriptorHeaps::Destroy()
+{
+	if (m_cbvHeap)
+		m_cbvHeap.Reset();
+
+	if (m_samplerHeap)
+		m_samplerHeap.Reset();
+
+	if (m_rtvHeap)
+		m_rtvHeap.Reset();
+
+	if (m_dsvHeap)
+		m_dsvHeap.Reset();
+}
+
+void DescriptorHeaps::DestroyAll()
+{
+	if (pSinglePrimaryDevice)
+		pSinglePrimaryDevice->Destroy();
+
+	if (pSingleSecondDevice)
+		pSingleSecondDevice->Destroy();
 }

@@ -9,7 +9,6 @@ public:
 	ShadowMap(ComPtr<ID3D12Device2> device, UINT width, UINT height);
 	ShadowMap(const ShadowMap& rhs) = delete;
 	ShadowMap& operator=(const ShadowMap& rhs) = delete;
-	~ShadowMap() = default;
 
 	UINT Width() const;
 	UINT Height() const;
@@ -27,11 +26,13 @@ public:
 	void SetToWrite(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
+	void Destroy();
+
 private:
 	void BuildDescriptors();
 	void BuildResource();
 
-	ComPtr<ID3D12Device2> md3dDevice = nullptr;
+	ComPtr<ID3D12Device2> m_Device = nullptr;
 
 	D3D12_VIEWPORT mViewport;
 	D3D12_RECT mScissorRect;

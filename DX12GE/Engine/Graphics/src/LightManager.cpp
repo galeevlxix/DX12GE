@@ -1,19 +1,19 @@
 #include "../LightManager.h"
 
-#define COLOR_WHITE		Vector3(1, 1, 1)
-#define COLOR_BLACK		Vector3(0, 0, 0)
-#define COLOR_GRAY		Vector3(0.5, 0.5, 0.5)
+#define COLOR_WHITE		Vector3(1.0f, 1.0f, 1.0f)
+#define COLOR_BLACK		Vector3(0.0f, 0.0f, 0.0f)
+#define COLOR_GRAY		Vector3(0.5f, 0.5f, 0.5f)
 
-#define COLOR_RED		Vector3(1, 0, 0)
-#define COLOR_ORANGE	Vector3(1, 0.5, 0)
-#define COLOR_YELLOW	Vector3(1, 1, 0)
-#define COLOR_GREEN		Vector3(0, 1, 0)
-#define COLOR_CYAN		Vector3(0, 0.5, 1)
-#define COLOR_BLUE		Vector3(0, 0, 1)
-#define COLOR_PURPLE	Vector3(0.5, 0, 1)
+#define COLOR_RED		Vector3(1.0f, 0.0f, 0.0f)
+#define COLOR_ORANGE	Vector3(1.0f, 0.5f, 0.0f)
+#define COLOR_YELLOW	Vector3(1.0f, 1.0f, 0.0f)
+#define COLOR_GREEN		Vector3(0.0f, 1.0f, 0.0f)
+#define COLOR_CYAN		Vector3(0.0f, 0.5f, 1.0f)
+#define COLOR_BLUE		Vector3(0.0f, 0.0f, 1.0f)
+#define COLOR_PURPLE	Vector3(0.5f, 0.0f,	1.0f)
 
-#define PURPLE_LIGHT	Vector3(0.54902, 0.0, 0.8549)
-#define WHITE_LIGHT		Vector3(1.0, 0.87059, 0.71373)
+#define PURPLE_LIGHT	Vector3(0.54902f,	0.0f,		0.8549f)
+#define WHITE_LIGHT		Vector3(1.0f,		0.87059f,	0.71373f)
 
 void LightManager::Init(KatamariGame* game)
 {
@@ -21,20 +21,20 @@ void LightManager::Init(KatamariGame* game)
 
 	// AmbientLight
 	ShaderResources::GetWorldCB()->AmbientLight.Color = COLOR_WHITE;
-	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.2;
+	ShaderResources::GetWorldCB()->AmbientLight.Intensity = 0.2f;
 
 	// Specular
 	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 1.0f;
-	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 32.0;
+	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 32.0f;
 
 	// DirectionalLight
 	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Color = COLOR_WHITE;
-	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.5;
-	ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(1, -1, -1, 1);
+	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.5f;
+	ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(1.0f, -1.0f, -1.0f, 1.0f);
 
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity * 2;
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity * 2.0f;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*m_player).prince.Transform.GetPosition();
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
 	m_SpotLights[m_SpotLights.size() - 1].Direction = (*m_player).Direction;
@@ -47,33 +47,33 @@ void LightManager::Init(KatamariGame* game)
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = WHITE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(5.7, 13.7, 3.0);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(5.7f, 13.7f, 3.0f);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = WHITE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(5.7, 8.9, 3.0);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(5.7f, 8.9f, 3.0f);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = WHITE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(20.1, 19.6, 11.2);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(20.1f, 19.6f, 11.2f);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = WHITE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(16.1, 19.6, 11.2);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(16.1f, 19.6f, 11.2f);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		{
-			Vector3 start = Vector3(5.7, 10.6, -25.9);
-			Vector3 end = Vector3(5.7, 15.0, -7.9);
+			Vector3 start = Vector3(5.7f, 10.6f, -25.9f);
+			Vector3 end = Vector3(5.7f, 15.0f, -7.9f);
 
-			float stepZ = (end.z - start.z) / (6.0 - 1.0);
-			float stepY = (end.y - start.y) / (3.0 - 1.0);
+			float stepZ = (end.z - start.z) / (6.0f - 1.0f);
+			float stepY = (end.y - start.y) / (3.0f - 1.0f);
 
 			for (size_t i = 0; i < 6; i++)
 			{
@@ -93,40 +93,39 @@ void LightManager::Init(KatamariGame* game)
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = PURPLE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(7.4, 18.0, 12.7);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(7.4f, 18.0f, 12.7f);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = PURPLE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(7.4, 16.2, 12.7);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(7.4f, 16.2f, 12.7f);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = PURPLE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-26.2, 18.7, 10.2);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-26.2f, 18.7f, 10.2f);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
 		m_PointLights.push_back(PointLight());
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Color = PURPLE_LIGHT;
 		m_PointLights[m_PointLights.size() - 1].BaseLightComponent.Intensity = defaultIntensity;
-		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-26.2, 18.7, 8.3);
+		m_PointLights[m_PointLights.size() - 1].Position = Vector3(-26.2f, 18.7f, 8.3f);
 		m_PointLights[m_PointLights.size() - 1].AttenuationComponent = m_DefaultAttenuation;
 
-		AddPLights(Vector3(5.8, 18.8, -26.9), Vector3(-17.4, 18.8, -13.2));
-		AddPLights(Vector3(-17.4, 18.8, -13.2), Vector3(-17.4, 18.8, 5.9));
-		AddPLights(Vector3(-17.4, 18.8, 5.9), Vector3(5.8, 18.8, 5.9));
+		AddPLights(Vector3(5.8f,	18.8f,	-26.9f),	Vector3(-17.4f, 18.8f, -13.2f));
+		AddPLights(Vector3(-17.4f,	18.8f,	-13.2f),	Vector3(-17.4f, 18.8f, 5.9f));
+		AddPLights(Vector3(-17.4f,	18.8f,	5.9f),		Vector3(5.8f,	18.8f, 5.9f));
 
-		AddPLights(Vector3(-14.7, 17.8, -0.2), Vector3(-14.7, 6.3, -3.7));
-		AddPLights(Vector3(-14.7, 17.8, -6.1), Vector3(-14.7, 6.3, -6.1));
-		AddPLights(Vector3(-5.7, 17.0, -2.1), Vector3(-5.7, 17.0, -12.2));
+		AddPLights(Vector3(-14.7f,	17.8f,	-0.2f),		Vector3(-14.7f, 6.3f,	-3.7f));
+		AddPLights(Vector3(-14.7f,	17.8f,	-6.1f),		Vector3(-14.7f, 6.3f,	-6.1f));
+		AddPLights(Vector3(-5.7f,	17.0f,	-2.1f),		Vector3(-5.7f,	17.0f,	-12.2f));
 	}
-  
 
 	// кол-ва источников света
-	ShaderResources::GetWorldCB()->LightProps.PointLightsCount = m_PointLights.size();
-	ShaderResources::GetWorldCB()->LightProps.SpotlightsCount = m_SpotLights.size();
+	ShaderResources::GetWorldCB()->LightProps.PointLightsCount = static_cast<float>(m_PointLights.size());
+	ShaderResources::GetWorldCB()->LightProps.SpotlightsCount = static_cast<float>(m_SpotLights.size());
 
 	// высчитывание максимального радиуса для каждого источника
 	for (size_t i = 0; i < m_PointLights.size(); i++)
@@ -136,9 +135,9 @@ void LightManager::Init(KatamariGame* game)
 		auto col = max({ pLight.BaseLightComponent.Color.x, pLight.BaseLightComponent.Color.y, pLight.BaseLightComponent.Color.z });
 		float a = pLight.AttenuationComponent.Exp;
 		float b = pLight.AttenuationComponent.Linear;
-		float c = pLight.AttenuationComponent.Constant - col * pLight.BaseLightComponent.Intensity * 128;
-		float desc = b * b - 4 * a * c;
-		float rad = (-b + sqrtf(desc)) / (2 * a);
+		float c = pLight.AttenuationComponent.Constant - col * pLight.BaseLightComponent.Intensity * 128.0f;
+		float desc = b * b - 4.0f * a * c;
+		float rad = (-b + sqrtf(desc)) / (2.0f * a);
 		m_PointLights[i].MaxRadius = rad;
 	}
 
@@ -149,9 +148,9 @@ void LightManager::Init(KatamariGame* game)
 		auto col = max({ pLight.PointLightComponent.BaseLightComponent.Color.x, pLight.PointLightComponent.BaseLightComponent.Color.y, pLight.PointLightComponent.BaseLightComponent.Color.z });
 		float a = pLight.PointLightComponent.AttenuationComponent.Exp;
 		float b = pLight.PointLightComponent.AttenuationComponent.Linear;
-		float c = pLight.PointLightComponent.AttenuationComponent.Constant - col * pLight.PointLightComponent.BaseLightComponent.Intensity * 128;
-		float desc = b * b - 4 * a * c;
-		float rad = (-b + sqrtf(desc)) / (2 * a);
+		float c = pLight.PointLightComponent.AttenuationComponent.Constant - col * pLight.PointLightComponent.BaseLightComponent.Intensity * 128.0f;
+		float desc = b * b - 4.0f * a * c;
+		float rad = (-b + sqrtf(desc)) / (2.0f * a);
 		m_SpotLights[i].PointLightComponent.MaxRadius = rad;
 	}
 }
@@ -167,7 +166,7 @@ void LightManager::AddPLights(Vector3 start, Vector3 end)
 	vec.Normalize(step);
 	step *= step_length;
 
-	int step_count = dist / step_length;
+	int step_count = static_cast<int>(dist / step_length);
 	Vector3 cur_pos = start;
 
 	for (size_t i = 0; i <= step_count; i++)
@@ -184,15 +183,15 @@ void LightManager::AddPLights(Vector3 start, Vector3 end)
 
 void LightManager::OnUpdate(float deltaTime)
 {
-	static float path = 0;
+	static float path = 0.0f;
 
 	path += speed * deltaTime;
-	if (path >= 2 * PI) path -= 2 * PI;
+	if (path >= 2.0f * PI) path -= 2.0f * PI;
 
 	ShaderResources::GetWorldCB()->DirLight.Direction.x = sin(path);
 	ShaderResources::GetWorldCB()->DirLight.Direction.z = cos(path);
 
-	m_SpotLights[0].PointLightComponent.Position = (*m_player).prince.Transform.GetPosition() + Vector3(0, 2, 0);
+	m_SpotLights[0].PointLightComponent.Position = (*m_player).prince.Transform.GetPosition() + Vector3(0.0f, 2.0f, 0.0f);
 	m_SpotLights[0].Direction = (*m_player).Direction;
-	m_SpotLights[0].PointLightComponent.BaseLightComponent.Intensity == 10;
+	m_SpotLights[0].PointLightComponent.BaseLightComponent.Intensity = 5.0f;
 }

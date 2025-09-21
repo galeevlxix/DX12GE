@@ -24,4 +24,6 @@ public:
 	std::shared_ptr<TextureBuffer> GetSharedResource();
 
 	void Resize(const UINT newWidth, const UINT newHeight);
+
+	void Destroy();
 };

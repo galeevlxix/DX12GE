@@ -12,7 +12,7 @@ MultiGpuGame::MultiGpuGame(const wstring& name, int width, int height, bool vSyn
 
 MultiGpuGame::~MultiGpuGame()
 {
-    katamariScene.OnExit();
+    katamariScene.Exit();
     executor->Exit();
 
     Destroy();
@@ -25,6 +25,13 @@ MultiGpuGame::~MultiGpuGame()
     Application::Get().GetSecondDevice()->Release();
     //ResourceStorage::Unload();
     // todo: удалить все comptr на статические объекты
+}
+
+bool MultiGpuGame::Initialize()
+{
+    if (!super::Initialize()) return false;
+
+    return true;
 }
 
 bool MultiGpuGame::LoadContent()
@@ -58,7 +65,7 @@ bool MultiGpuGame::LoadContent()
     m_MergingPipeline.Initialize(PrimaryDevice);
 
     // 3D SCENE
-    m_CascadedShadowMap.Create();  
+    m_CascadedShadowMap.Create(PrimaryDevice);
     
 
     CATR.PrimaryGBuffer = std::make_shared<GBuffer>();
@@ -99,14 +106,14 @@ bool MultiGpuGame::LoadContent()
     debug.Initialize(&m_Camera, PrimaryDevice);
     CurrentPass::Set(CurrentPass::None);
 
-    ShaderResources::GetSSRCB()->MaxDistance = 32.0;
-    ShaderResources::GetSSRCB()->RayStep = 0.03;
-    ShaderResources::GetSSRCB()->Thickness = 0.0275;
+    ShaderResources::GetSSRCB()->MaxDistance = 32.0f;
+    ShaderResources::GetSSRCB()->RayStep = 0.03f;
+    ShaderResources::GetSSRCB()->Thickness = 0.0275f;
 
     // DRAW THE CUBE
-    debug.DrawPoint(boxPosition, 2);
+    debug.DrawPoint(boxPosition, 2.0f);
 
-    BoundingBox box(boxPosition + boxSize * 0.5, boxSize * 0.5);
+    BoundingBox box(boxPosition + boxSize * 0.5f, boxSize * 0.5f);
     debug.DrawBoundingBox(box);
 
     debug.Update(primaryCommandList);
@@ -115,7 +122,7 @@ bool MultiGpuGame::LoadContent()
     ShaderResources::GetParticleComputeCB()->BoxSize = Vector3(boxSize);
 
     // CREATE TEXTURE3D
-    tex3d.Load(primaryCommandList, boxSize.x, boxSize.y, boxSize.z);
+    tex3d.Load(primaryCommandList, static_cast<int>(boxSize.x), static_cast<int>(boxSize.y), static_cast<int>(boxSize.z));
 
     uint64_t fenceValue = primaryCommandQueue->ExecuteCommandList(primaryCommandList);
     primaryCommandQueue->WaitForFenceValue(fenceValue);
@@ -134,17 +141,23 @@ bool MultiGpuGame::LoadContent()
     return true;
 }
 
+void MultiGpuGame::UnloadContent()
+{
+
+}
+
 void MultiGpuGame::OnUpdate(UpdateEventArgs& e)
 {
     if (!m_Initialized) return;
     super::OnUpdate(e);
-    m_Camera.OnUpdate(e.ElapsedTime);
-    katamariScene.OnUpdate(e.ElapsedTime);
-    lights.OnUpdate(e.ElapsedTime);
+    float elapsedTime = static_cast<float>(e.ElapsedTime);
+    m_Camera.OnUpdate(elapsedTime);
+    katamariScene.OnUpdate(elapsedTime);
+    lights.OnUpdate(elapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera.Position;
     ShaderResources::GetSSRCB()->ViewProjection = m_Camera.GetViewProjMatrix();
     ShaderResources::GetSSRCB()->CameraPos = m_Camera.Position;
-    particles.OnUpdate(e.ElapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
+    particles.OnUpdate(elapsedTime, stopParticles, m_Camera.GetViewProjMatrix(), m_Camera.Position);
     RefreshTitle(e);
     m_CascadedShadowMap.Update(m_Camera.Position, ShaderResources::GetWorldCB()->DirLight.Direction);
     executor->Update();
@@ -544,12 +557,12 @@ void MultiGpuGame::OnRender(RenderEventArgs& e)
 
     if (m_IsMultiGpuRender)
     {
-        TestTime("../../DX12GE/Resources/multi_gpu.txt", e.ElapsedTime);
+        TestTime("../../DX12GE/Resources/multi_gpu.txt", static_cast<float>(e.ElapsedTime));
         DrawMultiGpu();
     }
     else
     {
-        TestTime("../../DX12GE/Resources/single_gpu.txt", e.ElapsedTime);
+        TestTime("../../DX12GE/Resources/single_gpu.txt", static_cast<float>(e.ElapsedTime));
         DrawSingleGpu();
     }       
 
@@ -619,7 +632,7 @@ void MultiGpuGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::R:
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         auto commandList = commandQueue->GetCommandList();
-        particles.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5, 7, 1000);
+        particles.SpawnParticleGroup(commandList, boxPosition + boxSize * 0.5f, 7.0f, 1000.0f);
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
         commandQueue->WaitForFenceValue(fenceValue);
         break;

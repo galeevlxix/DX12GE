@@ -105,6 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\Include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,7 +136,6 @@
     <ClCompile Include="Engine\Base\src\Application.cpp" />
     <ClCompile Include="Engine\Base\src\CommandExecutor.cpp" />
     <ClCompile Include="Engine\Base\src\CommandQueue.cpp" />
-    <ClCompile Include="Engine\Base\src\DescriptorHeaps.cpp" />
     <ClCompile Include="Engine\Base\src\DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Base\src\Game.cpp" />
     <ClCompile Include="Engine\Base\src\HighResolutionClock.cpp" />
@@ -150,6 +150,7 @@
     <ClCompile Include="Engine\Graphics\src\CurrentPass.cpp" />
     <ClCompile Include="Engine\Graphics\src\DebugRenderSystem.cpp" />
     <ClCompile Include="Engine\Graphics\src\DepthBuffer.cpp" />
+    <ClCompile Include="Engine\Graphics\src\DescriptorHeaps.cpp" />
     <ClCompile Include="Engine\Graphics\src\GBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\src\LightManager.cpp" />
     <ClCompile Include="Engine\Graphics\src\MaterialEntity.cpp" />
@@ -186,7 +187,6 @@
     <ClInclude Include="Engine\Base\CommandExecutor.h" />
     <ClInclude Include="Engine\Base\CommandQueue.h" />
     <ClInclude Include="Engine\Base\d3dx12.h" />
-    <ClInclude Include="Engine\Base\DescriptorHeaps.h" />
     <ClInclude Include="Engine\Base\DX12LibPCH.h" />
     <ClInclude Include="Engine\Base\Events.h" />
     <ClInclude Include="Engine\Base\Game.h" />
@@ -207,6 +207,7 @@
     <ClInclude Include="Engine\Graphics\CurrentPass.h" />
     <ClInclude Include="Engine\Graphics\DebugRenderSystem.h" />
     <ClInclude Include="Engine\Graphics\DepthBuffer.h" />
+    <ClInclude Include="Engine\Graphics\DescriptorHeaps.h" />
     <ClInclude Include="Engine\Graphics\GBuffer.h" />
     <ClInclude Include="Engine\Graphics\LightManager.h" />
     <ClInclude Include="Engine\Graphics\MaterialEntity.h" />

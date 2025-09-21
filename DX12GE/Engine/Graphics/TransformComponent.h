@@ -9,7 +9,6 @@ public:
     DirectX::XMMATRIX GetInverseMatrix();
 
     void SetDefault(float yOffset = 0);
-
     
     static float ToDegrees(float radians);
     static float ToRadians(float degrees);

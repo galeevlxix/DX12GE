@@ -66,3 +66,16 @@ void SharedMemory::CopyFromSharedMemory(SharedMemoryTextureBuffer textureType, s
 	commandList->CopyTextureRegion(&dstLoc, 0, 0, 0, &srcLoc, nullptr);
 	dst->SetToState(commandList, state);
 }
+
+bool SharedMemory::IsBufferEmpty(SharedMemoryTextureBuffer textureType)
+{
+	return !m_SharedBuffers[textureType].initialized;
+}
+
+void SharedMemory::Destroy()
+{
+	for (SharedDesc buffer : m_SharedBuffers)
+	{
+		buffer.Destroy();
+	}
+}

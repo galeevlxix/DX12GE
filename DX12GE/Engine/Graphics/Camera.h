@@ -45,11 +45,11 @@ private:
 	bool testMode = false;
 	float step = 0.5;
 	
-	Vector2 MapMin = Vector2(-150.0, -30.0);
-	Vector2 MapMax = Vector2(30.0, 90.0);
+	Vector2 MapMin = Vector2(-150.0f, -30.0f);
+	Vector2 MapMax = Vector2(30.0f, 90.0f);
 	
-	Vector3 playerPosInTest = Vector3(-90.0, 8.0, 24.0);
-	Vector3 playerRotInTest = Vector3(0.0, 1.57, 0.0);
+	Vector3 playerPosInTest = Vector3(-90.0f, 8.0f, 24.0f);
+	Vector3 playerRotInTest = Vector3(0.0f, 1.57f, 0.0f);
 	Vector3 initPos;
 	Vector3 initTar; 
 	Vector3 initPosPlayer;
@@ -68,12 +68,12 @@ private:
 	const static int max_phases = 6;
 	TestPhase phases[max_phases] =
 	{
-		TestPhase(Vector3(MapMax.x - 0.1, 10.0, 17.0),	Vector3(-1, 0, 0),		Vector3(-1, 0, 0)),
-		TestPhase(Vector3(MapMin.x + 0.1, 10.0, 0.0),	Vector3(1, -0.2, 0),	Vector3(1, 0, 0)),
-		TestPhase(Vector3(MapMin.x + 0.1, 12.0, 42.0),	Vector3(1, -0.15, 0),	Vector3(1, 0, 0)),
-		TestPhase(Vector3(-42.0, 10.0, MapMax.y - 0.1),	Vector3(0.3, -0.2, -1),		Vector3(0, 0, -1)),
-		TestPhase(Vector3(0.0, 12.0, MapMin.y + 0.1),	Vector3(0, 0, 1),		Vector3(0, 0, 1)),
-		TestPhase(Vector3(-93.0, 12.0, -5.0),			Vector3(-0.3, 0, 1),		Vector3(0, 0, 1)),
+		TestPhase(Vector3(MapMax.x - 0.1f,	10.0f,	17.0f),				Vector3(-1.0f,	0.0f,	0.0f),		Vector3(-1.0f,	0.0f,	0.0f)),
+		TestPhase(Vector3(MapMin.x + 0.1f,	10.0f,	0.0f),				Vector3(1.0f,	-0.2f,	0.0f),		Vector3(1.0f,	0.0f,	0.0f)),
+		TestPhase(Vector3(MapMin.x + 0.1f,	12.0f,	42.0f),				Vector3(1.0f,	-0.15f, 0.0f),		Vector3(1.0f,	0.0f,	0.0f)),
+		TestPhase(Vector3(-42.0f,			10.0f,	MapMax.y - 0.1f),	Vector3(0.3f,	-0.2f,	-1.0f),		Vector3(0.0f,	0.0f,	-1.0f)),
+		TestPhase(Vector3(0.0f,				12.0f,	MapMin.y + 0.1f),	Vector3(0.0f,	0.0f,	1.0f),		Vector3(0.0f,	0.0f,	1.0f)),
+		TestPhase(Vector3(-93.0f,			12.0f,	-5.0f),				Vector3(-0.3f,	0.0f,	1.0f),		Vector3(0.0f,	0.0f,	1.0f)),
 	};
 
 	void TestProcess();
@@ -98,7 +98,7 @@ public:
 		float fov = 90.0f, 
 		float ratio = 1.0f, 
 		float zNear = 0.1f, 
-		float zFar = 300.0);
+		float zFar = 300.0f);
 
 	void OnUpdate(float deltaTime);
 	XMMATRIX GetViewProjMatrix();
@@ -113,4 +113,6 @@ public:
 
 	void StartTest();
 	bool IsTesting();
+
+	void OnUnload();
 };

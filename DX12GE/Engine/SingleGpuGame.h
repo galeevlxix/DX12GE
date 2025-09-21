@@ -4,7 +4,6 @@
 #include "Base/Game.h"
 #include "Base/Window.h"
 #include "Base/CommandQueue.h"
-#include "Base/DescriptorHeaps.h"
 #include "Base/CommandExecutor.h"
 
 #include "Pipelines/Pipeline.h"
@@ -16,17 +15,18 @@
 #include "Pipelines/SSRPipeline.h"
 #include "Pipelines/MergingPipeline.h"
 
+#include "Graphics/DescriptorHeaps.h"
 #include "Graphics/ShaderResources.h"
 
 #include "Graphics/DebugRenderSystem.h"
 #include "Graphics/CascadedShadowMap.h"
-
 #include "Graphics/Camera.h" 
 #include "Graphics/LightManager.h"
 #include "Graphics/ParticleSystem.h"
 #include "Graphics/Texture3D.h"
 #include "Graphics/TextureBuffer.h"
 #include "Graphics/SSRCrossAdapterResources.h"
+
 #include "../Game/KatamariGame.h" 
 
 using namespace Microsoft::WRL;
@@ -43,7 +43,8 @@ public:
 
     virtual bool Initialize() override;
     virtual bool LoadContent() override;
-    virtual void UnloadContent() override {};
+    virtual void UnloadContent() override;
+    virtual void Destroy() override;
 
     Camera m_Camera;
 
@@ -68,6 +69,8 @@ private:
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
     void RefreshTitle(UpdateEventArgs& e);
+
+private:
 
     ComPtr<ID3D12Device2> m_Device;
 

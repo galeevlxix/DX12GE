@@ -1,9 +1,9 @@
 #include "../ShadowMap.h"
-#include "../../Base/DescriptorHeaps.h"
+#include "../../Graphics/DescriptorHeaps.h"
 
 ShadowMap::ShadowMap(ComPtr<ID3D12Device2> device, UINT width, UINT height)
 {
-    md3dDevice = device;
+    m_Device = device;
     m_Width = width;
     m_Height = height;
 
@@ -15,6 +15,13 @@ ShadowMap::ShadowMap(ComPtr<ID3D12Device2> device, UINT width, UINT height)
 
     BuildResource();
     BuildDescriptors();
+}
+
+void ShadowMap::Destroy()
+{
+    m_Texture.Destroy();
+    m_Device.Reset();
+    m_Device = nullptr;
 }
 
 UINT ShadowMap::Width() const
@@ -90,8 +97,7 @@ void ShadowMap::BuildDescriptors()
     srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
     srvDesc.Texture2D.PlaneSlice = 0;
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle();
-    md3dDevice->CreateShaderResourceView(m_Texture.m_Resource.Get(), &srvDesc, m_CpuSrvHadle);
+    m_Device->CreateShaderResourceView(m_Texture.m_Resource.Get(), &srvDesc, m_CpuSrvHadle);
 
     // Create DSV to resource so we can render to the shadow map.
     D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc;
@@ -100,7 +106,7 @@ void ShadowMap::BuildDescriptors()
     dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     dsvDesc.Texture2D.MipSlice = 0;
 
-    md3dDevice->CreateDepthStencilView(m_Texture.m_Resource.Get(), &dsvDesc, m_CpuDsvHandle);
+    m_Device->CreateDepthStencilView(m_Texture.m_Resource.Get(), &dsvDesc, m_CpuDsvHandle);
 }
 
 void ShadowMap::BuildResource()
@@ -127,7 +133,7 @@ void ShadowMap::BuildResource()
     CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
 
     ThrowIfFailed(
-        md3dDevice->CreateCommittedResource(
+        m_Device->CreateCommittedResource(
             &heapProps,
             D3D12_HEAP_FLAG_NONE,
             &texDesc,

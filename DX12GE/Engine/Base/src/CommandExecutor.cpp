@@ -24,8 +24,10 @@ std::string CommandExecutor::GetInput()
 void CommandExecutor::Exit()
 {
 	stop_flag = true;
-	if (reader_thread.joinable()) {
-		reader_thread.join();
+	if (reader_thread.joinable()) 
+	{
+		// TODO: при вызове join происходит дедлок
+		/*reader_thread.join();*/
 	}
 }
 
@@ -102,9 +104,9 @@ void CommandExecutor::ProcessObject(const std::vector<std::string>& tokens, std:
 
 	try
 	{
-		double x = std::stof(tokens[4]);
-		double y = std::stof(tokens[5]);
-		double z = std::stof(tokens[6]);
+		float x = std::stof(tokens[4]);
+		float y = std::stof(tokens[5]);
+		float z = std::stof(tokens[6]);
 		command.value = Vector3(x, y, z);
 	}
 	catch (exception exc)

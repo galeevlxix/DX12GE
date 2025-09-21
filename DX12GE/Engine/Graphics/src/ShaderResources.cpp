@@ -124,12 +124,6 @@ UploadBuffer* ShaderResources::GetUploadBuffer()
 	return mPrimaryDeviceUploadBuffer;
 }
 
-void ShaderResources::OnDelete()
-{
-	mPrimaryDeviceUploadBuffer->Reset();
-	mPrimaryDeviceUploadBuffer = nullptr;
-}
-
 void ShaderResources::SetGraphicsObjectCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
 	OcbAllocation = mPrimaryDeviceUploadBuffer->Allocate(OcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
@@ -194,3 +188,37 @@ void ShaderResources::SetSSRCB(ComPtr<ID3D12GraphicsCommandList2> commandList, u
 	commandList->SetGraphicsRootConstantBufferView(slot, SSRcbAllocation.GPU);
 }
 
+void ShaderResources::Destroy()
+{
+	delete ObjectCB;
+	ObjectCB = nullptr;
+
+	delete ShadowCB;
+	ShadowCB = nullptr;
+
+	delete WorldCB;
+	WorldCB = nullptr;
+
+	delete ParticleCB;
+	ParticleCB = nullptr;
+
+	delete ComputeConstantCB;
+	ComputeConstantCB = nullptr;
+
+	delete BitonicCB;
+	BitonicCB = nullptr;
+
+	delete MaterialCB;
+	MaterialCB = nullptr;
+
+	delete SSRCB;
+	SSRCB = nullptr;
+
+	mPrimaryDeviceUploadBuffer->Reset();
+	delete mPrimaryDeviceUploadBuffer;
+	mPrimaryDeviceUploadBuffer = nullptr;
+
+	mSecondDeviceUploadBuffer->Reset();
+	delete mSecondDeviceUploadBuffer;
+	mSecondDeviceUploadBuffer = nullptr;
+}

@@ -1,5 +1,5 @@
 #include "../GBuffer.h"
-#include "../../Base/DescriptorHeaps.h"
+#include "../../Graphics/DescriptorHeaps.h"
 #include "../ShaderResources.h"
 
 void GBuffer::Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter, UINT width, UINT height)
@@ -31,11 +31,12 @@ void GBuffer::Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter
     }
 }
 
-void GBuffer::Release()
+void GBuffer::Destroy()
 {
     for (size_t i = 0; i < GBUFFER_COUNT; i++)
     {
-        m_Targets[i]->Release();
+        m_Targets[i]->Destroy();
+        m_Targets[i] = nullptr;
     }
 }
 

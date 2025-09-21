@@ -43,4 +43,6 @@ public:
 	void CopySharedMemoryDataToSecondDevice(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 	void Resize(UINT width, UINT height);
+
+	void Destroy();
 };

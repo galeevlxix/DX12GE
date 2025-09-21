@@ -7,12 +7,6 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	js.Load(commandList, m_objects);
 }
 
-void KatamariGame::OnExit()
-{
-	if (alwaysSave) 
-		Save();
-}
-
 void KatamariGame::OnUpdate(float deltaTime)
 {
 	player.OnUpdate(deltaTime);
@@ -39,15 +33,21 @@ Object3DEntity* KatamariGame::Get(std::string name)
 	return &m_objects[name];
 }
 
-void KatamariGame::Save()
-{
-	js.Save(m_objects);
-}
-
 void KatamariGame::Add(ComPtr<ID3D12GraphicsCommandList2> commandList, string name, string path)
 {
 	if (m_objects.find(name) != m_objects.end()) { return; }
 
 	m_objects.insert({ name, Object3DEntity() });
 	m_objects[name].OnLoad(commandList, path);
+}
+
+void KatamariGame::Save()
+{
+	js.Save(m_objects);
+}
+
+void KatamariGame::Exit()
+{
+	if (alwaysSave)
+		Save();
 }

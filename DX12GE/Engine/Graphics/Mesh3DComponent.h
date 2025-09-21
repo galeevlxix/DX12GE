@@ -16,40 +16,40 @@ class Mesh3DComponent
 public:
     template<typename T>
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const vector<T> vertices, const vector<WORD> indices);
-    void Release();
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D_PRIMITIVE_TOPOLOGY primitiveType);
+    void Destroy();
 
 private:
 
     // Vertex buffer for the cube.
     ComPtr<ID3D12Resource> m_VertexBuffer;
     D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView;
-    ComPtr<ID3D12Resource> IntermediateVertexBufferResource;
+    ComPtr<ID3D12Resource> m_IntermediateVertexBufferResource;
 
     // Index buffer for the cube.
     ComPtr<ID3D12Resource> m_IndexBuffer;
     D3D12_INDEX_BUFFER_VIEW m_IndexBufferView;
-    ComPtr<ID3D12Resource> IntermediateIndexBufferResource;
+    ComPtr<ID3D12Resource> m_IntermediateIndexBufferResource;
 
-    UINT indiciesCount;
-    bool Initialized = false;
+    UINT m_IndiciesCount;
+    bool m_Initialized = false;
 
     void UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE);
 
 public:
 
-    MaterialEntity* Material;   
+    MaterialEntity* m_Material;
 
-    bool IsInitialized() { return Initialized; }
+    bool IsInitialized() { return m_Initialized; }
 };
 
 template<typename T>
 void Mesh3DComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const vector<T> vertices, const vector<WORD> indices)
 {
-    indiciesCount = static_cast<UINT>(indices.size());
+    m_IndiciesCount = static_cast<UINT>(indices.size());
 
     // Загрузить данные вершинного буфера
-    UpdateBufferResource(commandList, &m_VertexBuffer, &IntermediateVertexBufferResource, vertices.size(), sizeof(T), vertices.data());
+    UpdateBufferResource(commandList, &m_VertexBuffer, &m_IntermediateVertexBufferResource, vertices.size(), sizeof(T), vertices.data());
 
     // Создать представление буфера вершин
     m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();
@@ -57,12 +57,12 @@ void Mesh3DComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, con
     m_VertexBufferView.StrideInBytes = sizeof(T);
 
     // Загрузить данные индексного буфера
-    UpdateBufferResource(commandList, &m_IndexBuffer, &IntermediateIndexBufferResource, indices.size(), sizeof(WORD), indices.data());
+    UpdateBufferResource(commandList, &m_IndexBuffer, &m_IntermediateIndexBufferResource, indices.size(), sizeof(WORD), indices.data());
 
     // Создать представление индексного буфера
     m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
     m_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
     m_IndexBufferView.SizeInBytes = static_cast<UINT>(indices.size() * sizeof(WORD));
 
-    Initialized = true;
+    m_Initialized = true;
 }

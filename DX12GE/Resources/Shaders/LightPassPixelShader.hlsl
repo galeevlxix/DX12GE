@@ -144,40 +144,40 @@ float4 DebugShadowCascade(float3 WorldPos, float Distance)
         return float4(1, 1.5f, 1.5f, 1);
 }
 
-float4 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, float3 Normal, float3 WorldPos)
+float3 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, float3 Normal, float3 WorldPos)
 {
     float3 LightDirection = normalize(pLightDirection);
     float DiffuseFactor = dot(Normal, -LightDirection);
     
-    float4 DiffuseColor = float4(0.0, 0.0, 0.0, 0.0);
-    float4 SpecularColor = float4(0.0, 0.0, 0.0, 0.0);
+    float3 DiffuseColor = float3(0.0, 0.0, 0.0);
+    float3 SpecularColor = float3(0.0, 0.0, 0.0);
     
     if (DiffuseFactor > 0)
     {
-        DiffuseColor = float4(normalize(Color), 1.0) * Intensity * DiffuseFactor;
+        DiffuseColor = normalize(Color) * Intensity * DiffuseFactor;
         float3 VertexToEye = normalize(LightPropertiesCB.CameraPos.xyz - WorldPos);
         float3 LightReflect = normalize(reflect(pLightDirection, Normal));
-        float SpecularFactor = dot(VertexToEye, LightReflect);
+        float SpecularFactor = abs(dot(VertexToEye, LightReflect));
         SpecularFactor = pow(SpecularFactor, LightPropertiesCB.MaterialPower);
         if (SpecularFactor > 0)
         {
-            SpecularColor = float4(Color, 1.0) * 2.0 * SpecularFactor;
+            SpecularColor = Color * 2.0 * SpecularFactor;
         }
     }
     
     return DiffuseColor + SpecularColor;
 }
 
-float4 CalcPointLight(PointLight pLight, float3 normal, float3 worldPos)
+float3 CalcPointLight(PointLight pLight, float3 normal, float3 worldPos)
 {
     float3 LightDirection = worldPos - pLight.Position;
     float Distance = length(LightDirection);
-    float4 Color = CalcLightInternal(pLight.Color, pLight.Intensity, LightDirection, normal, worldPos);
+    float3 Color = CalcLightInternal(pLight.Color, pLight.Intensity, LightDirection, normal, worldPos);
     float Attenuation = pLight.AttenuationConstant + pLight.AttenuationLinear * Distance + pLight.AttenuationExp * Distance * Distance;
     return Color / Attenuation;
 }
 
-float4 CalcSpotLight(SpotLight sLight, float3 normal, float3 worldPos)
+float3 CalcSpotLight(SpotLight sLight, float3 normal, float3 worldPos)
 {
     float3 LightToPixel = normalize(worldPos - sLight.Position);
     float SpotFactor = dot(LightToPixel, sLight.Direction);
@@ -192,11 +192,11 @@ float4 CalcSpotLight(SpotLight sLight, float3 normal, float3 worldPos)
         pointLight.AttenuationLinear = sLight.AttenuationLinear;
         pointLight.AttenuationExp = sLight.AttenuationExp;
         
-        float4 Color = CalcPointLight(pointLight, normal, worldPos);
+        float3 Color = CalcPointLight(pointLight, normal, worldPos);
         return Color * (1.0 - (1.0 - SpotFactor) * 1.0 / (1.0 - sLight.Cutoff));
     }
 
-    return float4(0, 0, 0, 0);
+    return float3(0, 0, 0);
 }
 
 bool More(float2 v1, float2 v2)
@@ -208,7 +208,7 @@ float4 main(PSInput input) : SV_Target
 {
     float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
     float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
-    float4 albedo = gDiffuse.Sample(gSampler, input.TexCoord);
+    float4 albedo = abs(gDiffuse.Sample(gSampler, input.TexCoord));
     float4 emissive = gEmissive.Sample(gSampler, input.TexCoord);
     
     if (albedo.a == 0)
@@ -235,20 +235,20 @@ float4 main(PSInput input) : SV_Target
     float3 lightingResult = ambient + diffuse * shadowFactor; // * DebugShadowCascade(worldPos).xyz;
     
     // Pointlights
-    for (int i = 0; i < LightPropertiesCB.PointLightsCount; i++)
+    for (int pIndex = 0; pIndex < LightPropertiesCB.PointLightsCount; pIndex++)
     {
-        if (length(worldPos - PointLightsSB[i].Position) < PointLightsSB[i].MaxRadius)
+        if (length(worldPos - PointLightsSB[pIndex].Position) < PointLightsSB[pIndex].MaxRadius)
         {
-            lightingResult += CalcPointLight(PointLightsSB[i], normal, worldPos);
+            lightingResult += CalcPointLight(PointLightsSB[pIndex], normal, worldPos);
         }
     }
     
     // Spotlights
-    for (int i = 0; i < LightPropertiesCB.SpotLightsCount; i++)
+    for (int sIndex = 0; sIndex < LightPropertiesCB.SpotLightsCount; sIndex++)
     {
-        if (length(worldPos - SpotLightsSB[i].Position) < SpotLightsSB[i].MaxRadius)
+        if (length(worldPos - SpotLightsSB[sIndex].Position) < SpotLightsSB[sIndex].MaxRadius)
         {
-            lightingResult += CalcSpotLight(SpotLightsSB[i], normal, worldPos);
+            lightingResult += CalcSpotLight(SpotLightsSB[sIndex], normal, worldPos);
         }
     }
     

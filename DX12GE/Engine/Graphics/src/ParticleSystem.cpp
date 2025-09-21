@@ -1,15 +1,31 @@
 #include "../ParticleSystem.h"
 #include "../ShaderResources.h"
-#include "../../Base/DescriptorHeaps.h"
+#include "../../Graphics/DescriptorHeaps.h"
 #include "../../Base/Application.h"
 
 void ParticleSystem::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	//m_Texture.OnLoad(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png");
-	m_Texture.OnLoad(commandList, "C:\\Users\\Lenovo\\source\\repos\\DX12GE\\DX12GE\\Resources\\Particle Textures\\circle_05.png");
-	CreateParticleGroupPrototype(pow(2, 21));
+	m_Texture.OnLoad(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png");
+	CreateParticleGroupPrototype(static_cast<int>(pow(2, 21)));
 
 	m_Device = Application::Get().GetPrimaryDevice();
+}
+
+void ParticleSystem::Destroy()
+{
+	m_Texture.Destroy();
+
+	m_ParticleGroupPrototype.Destroy();
+	for (auto group : m_Particles)
+	{
+		group.Destroy();
+	}
+
+	m_UploadBuffer.Reset();
+	m_UploadBuffer = nullptr;
+
+	m_Device.Reset();
+	m_Device = nullptr;
 }
 
 void ParticleSystem::OnUpdate(float deltaTime, bool stop, XMMATRIX projMatrix, Vector3 CameraPos)
@@ -63,13 +79,15 @@ void ParticleSystem::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 			D3D12_VERTEX_BUFFER_VIEW particleVBView = {};
 			particleVBView.BufferLocation = m_Particles[i].Resource->GetGPUVirtualAddress();
-			particleVBView.StrideInBytes = sizeof(VertexParticle);
-			particleVBView.SizeInBytes = sizeof(VertexParticle) * m_Particles[i].Vertices.size();
+			UINT sizeOfVertex = sizeof(VertexParticle);
+			UINT verticesCount = static_cast<UINT>(m_Particles[i].Vertices.size());
+			particleVBView.StrideInBytes = sizeOfVertex;
+			particleVBView.SizeInBytes = sizeOfVertex * verticesCount;
 
 			commandList->IASetVertexBuffers(0, 1, &particleVBView);
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST); // если частицы как точки
 			
-			commandList->DrawInstanced(m_Particles[i].Vertices.size(), 1, 0, 0);
+			commandList->DrawInstanced(verticesCount, 1, 0, 0);
 
 			TransitionResource(commandList, m_Particles[i].Resource, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 		}
@@ -78,7 +96,7 @@ void ParticleSystem::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 void ParticleSystem::OnUpdateComputeRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	static const int numOfThreads = 256;
+	static const UINT numOfThreads = 256;
 
 	if (stopUpdate) return;
 
@@ -86,10 +104,10 @@ void ParticleSystem::OnUpdateComputeRender(ComPtr<ID3D12GraphicsCommandList2> co
 	{
 		if (m_Particles[i].dead != true)
 		{
-			ShaderResources::GetParticleComputeCB()->ParticleCount = m_Particles[i].Vertices.size();
+			ShaderResources::GetParticleComputeCB()->ParticleCount = static_cast<float>(m_Particles[i].Vertices.size());
 			ShaderResources::SetParticleComputeCB(commandList, 0);
 			commandList->SetComputeRootDescriptorTable(1, m_Particles[i].uavGPUDescHandle);
-			int dispatchX = (m_Particles[i].Vertices.size() + numOfThreads - 1) / numOfThreads;
+			UINT dispatchX = (static_cast<UINT>(m_Particles[i].Vertices.size()) + numOfThreads - 1) / numOfThreads;
 			commandList->Dispatch(dispatchX, 1, 1);
 
 			// после каждого Dispatch:
@@ -110,10 +128,10 @@ void ParticleSystem::OnSortComputeRender(ComPtr<ID3D12GraphicsCommandList2> comm
 	{
 		if (m_Particles[i].dead != true)
 		{
-			static const int numOfThreads = 256;
-			UINT numGroups = (m_Particles[i].Vertices.size() + numOfThreads - 1) / numOfThreads;
+			static const UINT numOfThreads = 256;
+			UINT numGroups = (static_cast<UINT>(m_Particles[i].Vertices.size()) + numOfThreads - 1) / numOfThreads;
 
-			ShaderResources::GetBitonicSortCB()->ParticleCount = m_Particles[i].Vertices.size();
+			ShaderResources::GetBitonicSortCB()->ParticleCount = static_cast<UINT>(m_Particles[i].Vertices.size());
 			ShaderResources::GetBitonicSortCB()->Pad = 0;
 			commandList->SetComputeRootDescriptorTable(1, m_Particles[i].uavGPUDescHandle);
 
@@ -216,7 +234,7 @@ void ParticleSystem::SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> comma
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
 	uavDesc.Buffer.FirstElement = 0;
-	uavDesc.Buffer.NumElements = group.Vertices.size();
+	uavDesc.Buffer.NumElements = static_cast<UINT>(group.Vertices.size());
 	uavDesc.Buffer.StructureByteStride = sizeof(VertexParticle);
 	uavDesc.Format = group.Resource->GetDesc().Format;
 	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;

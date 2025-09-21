@@ -17,12 +17,12 @@ public:
 	Player player;
 
 	void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList);
-	void OnExit();
 	void OnUpdate(float deltaTime);
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 	Object3DEntity* Get(std::string name);
 
 	void Save();
+	void Exit();
 
 private:
 	JsonScene js;

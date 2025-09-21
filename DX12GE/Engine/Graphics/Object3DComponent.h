@@ -13,5 +13,5 @@ public:
 	void OnLoad(std::vector<Mesh3DComponent*>& meshes);
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	bool IsInitialized();
-	void Unload();
+	void Destroy();
 };

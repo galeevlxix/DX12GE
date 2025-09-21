@@ -1,7 +1,7 @@
 #include "../TextureComponent.h"
 
 #include "../../Base/Application.h"
-#include "../../Base/DescriptorHeaps.h"
+#include "../../Graphics/DescriptorHeaps.h"
 #include "../ShaderResources.h"
 #include "../GBuffer.h"
 #include "../Object3DEntity.h"
@@ -14,7 +14,6 @@ void TextureComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, st
     auto device = Application::Get().GetPrimaryDevice();
 
     ScratchImage image;
-    TexMetadata metadata;
     ScratchImage mipChain;
 
     ThrowIfFailed(
@@ -126,9 +125,16 @@ void TextureComponent::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, 
     );
 }
 
-void TextureComponent::Release()
+void TextureComponent::Destroy()
 {
-    m_Resource->Release();
+    if (!m_Initialized) return;
+    m_Initialized = false;
+
+    m_Resource.Reset();
+    m_Resource = nullptr;
+
+    m_UploadBuffer.Reset();
+    m_UploadBuffer = nullptr;
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE TextureComponent::GetCpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE heapType)

@@ -28,10 +28,12 @@ private:
 	void ApplyShadowTransforms();
 
 public:
-	void Create();
+	void Create(ComPtr<ID3D12Device2> device);
 	void Update(Vector3 centerPosition, Vector4 dirLightDirection);
 	void SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 	ShadowMap* GetShadowMap(int index);
 	Matrix GetShadowViewProj(int index);
+
+	void Destroy();
 };

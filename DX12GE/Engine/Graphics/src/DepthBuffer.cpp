@@ -1,6 +1,6 @@
 #include "../DepthBuffer.h"
 #include "../../Base/Application.h"
-#include "../../Base/DescriptorHeaps.h"
+#include "../../Graphics/DescriptorHeaps.h"
 #include "../CascadedShadowMap.h"
 
 #if defined(min)
@@ -15,6 +15,11 @@ void DepthBuffer::Init(GraphicsAdapter graphicsAdapter)
 {
     Adapter = graphicsAdapter;
     dsvCpuHandleIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, graphicsAdapter);
+}
+
+void DepthBuffer::Destroy()
+{
+    DepthBufferTexture.Destroy();
 }
 
 // Resize the depth buffer to match the size of the client area.

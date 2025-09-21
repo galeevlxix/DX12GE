@@ -72,3 +72,55 @@ void CrossAdapterTextureResources::Resize(UINT width, UINT height)
     LightPassBuffer->Resize(width, height);
     SSRBuffer->Resize(width, height);
 }
+
+void CrossAdapterTextureResources::Destroy()
+{
+    PositionBuffer->Destroy();
+    PositionBuffer = nullptr;
+
+    NormalBuffer->Destroy();
+    NormalBuffer = nullptr;
+
+    ORMBuffer->Destroy();
+    ORMBuffer = nullptr;
+
+    LightPassBuffer->Destroy();
+    LightPassBuffer = nullptr;
+
+    SSRBuffer->Destroy();
+    SSRBuffer = nullptr;
+
+
+    PrimaryDepthBuffer->Destroy();
+    PrimaryDepthBuffer = nullptr;
+
+    SecondDepthBuffer->Destroy();
+    SecondDepthBuffer = nullptr;
+
+
+    PrimaryGBuffer->Destroy();
+    PrimaryGBuffer = nullptr;
+
+    PrimaryLightPassResult->Destroy();
+    PrimaryLightPassResult = nullptr;
+
+    PrimarySSRResult->Destroy();
+    PrimarySSRResult = nullptr;
+
+
+    SecondGBuffer->Destroy();
+    SecondGBuffer = nullptr;
+
+    SecondLightPassResult->Destroy();
+    SecondLightPassResult = nullptr;
+
+    SecondSSRResult->Destroy();
+    SecondSSRResult = nullptr;
+
+
+    PrimaryDevice.Reset();
+    PrimaryDevice = nullptr;
+
+    SecondDevice.Reset();
+    SecondDevice = nullptr;
+}

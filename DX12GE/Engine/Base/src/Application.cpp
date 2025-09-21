@@ -75,6 +75,8 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
         ThrowIfFailed(
             PrimaryDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &primaryAdapterOptions, sizeof(primaryAdapterOptions)));
 
+        PrimaryDevice->SetName(L"Primary Device");
+
         PrimaryDirectCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
         PrimaryComputeCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
         PrimaryCopyCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COPY);
@@ -87,6 +89,8 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
         ThrowIfFailed(SecondAdapter->GetDesc2(&secondDesc));
         ThrowIfFailed(
             SecondDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &secondAdapterOptions, sizeof(secondAdapterOptions)));
+
+        SecondDevice->SetName(L"Second Device");
         
         SecondDirectCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
         SecondComputeCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
@@ -127,8 +131,36 @@ void Application::Destroy()
 
 Application::~Application()
 {
-    Flush();
-    Destroy();
+    PrimaryAdapter.Reset();
+    PrimaryAdapter = nullptr;
+
+    PrimaryDevice.Reset();
+    PrimaryDevice = nullptr;
+
+    PrimaryDirectCommandQueue.reset();
+    PrimaryDirectCommandQueue = nullptr;
+
+    PrimaryComputeCommandQueue.reset();
+    PrimaryComputeCommandQueue = nullptr;
+
+    PrimaryCopyCommandQueue.reset();
+    PrimaryCopyCommandQueue = nullptr;
+
+
+    SecondAdapter.Reset();
+    SecondAdapter = nullptr;
+
+    SecondDevice.Reset();
+    SecondDevice = nullptr;
+
+    SecondDirectCommandQueue.reset();
+    SecondDirectCommandQueue = nullptr;
+
+    SecondComputeCommandQueue.reset();
+    SecondComputeCommandQueue = nullptr;
+
+    SecondCopyCommandQueue.reset();
+    SecondCopyCommandQueue = nullptr;    
 }
 
 std::vector<ComPtr<IDXGIAdapter4>> Application::GetAdapters()

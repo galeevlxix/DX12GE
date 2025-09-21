@@ -30,17 +30,17 @@ void MaterialEntity::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
     m_GltfMetallicRoughnessTextureId =  AddTexture(commandList, m_ImagePaths[TextureType::GLTF_METALLIC_ROUGHNESS]);
     m_AOTextureId =                     AddTexture(commandList, m_ImagePaths[TextureType::AMBIENT_OCCLUSION]);
 
-    HasDiffuseNormalEmissive.x = IsNotNull(m_DiffuseTextureId);
-    HasDiffuseNormalEmissive.y = IsNotNull(m_NormalTextureId);
-    HasDiffuseNormalEmissive.z = IsNotNull(m_EmissiveTextureId);
+    HasDiffuseNormalEmissive.x = static_cast<float>(IsNotNull(m_DiffuseTextureId));
+    HasDiffuseNormalEmissive.y = static_cast<float>(IsNotNull(m_NormalTextureId));
+    HasDiffuseNormalEmissive.z = static_cast<float>(IsNotNull(m_EmissiveTextureId));
     HasDiffuseNormalEmissive.w = 1.234567f;
 
-    HasOcclusionRoughnessMetallicCombined.x = IsNotNull(m_AOTextureId);
-    HasOcclusionRoughnessMetallicCombined.w = IsNotNull(m_GltfMetallicRoughnessTextureId);
+    HasOcclusionRoughnessMetallicCombined.x = static_cast<float>(IsNotNull(m_AOTextureId));
+    HasOcclusionRoughnessMetallicCombined.w = static_cast<float>(IsNotNull(m_GltfMetallicRoughnessTextureId));
     if (HasOcclusionRoughnessMetallicCombined.w < 0.5f)
     {
-        HasOcclusionRoughnessMetallicCombined.y = IsNotNull(m_RoughnessTextureId);
-        HasOcclusionRoughnessMetallicCombined.z = IsNotNull(m_MetallicTextureId);
+        HasOcclusionRoughnessMetallicCombined.y = static_cast<float>(IsNotNull(m_RoughnessTextureId));
+        HasOcclusionRoughnessMetallicCombined.z = static_cast<float>(IsNotNull(m_MetallicTextureId));
     }
 }
 

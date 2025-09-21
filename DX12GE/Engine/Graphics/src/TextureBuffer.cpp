@@ -1,5 +1,5 @@
 #include "../TextureBuffer.h"
-#include "../../Base/DescriptorHeaps.h"
+#include "../../Graphics/DescriptorHeaps.h"
 #include "../ShaderResources.h"
 
 TextureBuffer::TextureBuffer() { }
@@ -19,10 +19,10 @@ void TextureBuffer::Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsA
 void TextureBuffer::Init(ComPtr<ID3D12Device2> device, D3D12_RESOURCE_DESC& resourceDesc, ComPtr<ID3D12Heap> heap, const std::wstring& name)
 {
     m_Device = device;
-    m_Width = resourceDesc.Width;
+    m_Width = static_cast<UINT>(resourceDesc.Width);
     m_Height = resourceDesc.Height;
     m_Format = resourceDesc.Format;
-    currentState = D3D12_RESOURCE_STATE_COMMON;
+    m_CurrentState = D3D12_RESOURCE_STATE_COMMON;
 
     /*D3D12_CLEAR_VALUE clearValue = {};
     clearValue.Format = m_Format;*/
@@ -32,19 +32,23 @@ void TextureBuffer::Init(ComPtr<ID3D12Device2> device, D3D12_RESOURCE_DESC& reso
             heap.Get(),
             0,
             &resourceDesc,
-            currentState,
+            m_CurrentState,
             nullptr,
-            IID_PPV_ARGS(&Buffer)
+            IID_PPV_ARGS(&m_Buffer)
         )
     );
 
     m_Name = name.c_str();
-    Buffer->SetName(m_Name);
+    m_Buffer->SetName(m_Name);
 }
 
-void TextureBuffer::Release()
+void TextureBuffer::Destroy()
 {
-	Buffer.Reset();
+	m_Buffer.Reset();
+    m_Buffer = nullptr;
+
+    m_Device.Reset();
+    m_Device = nullptr;
 }
 
 void TextureBuffer::Resize(UINT width, UINT height)
@@ -52,49 +56,49 @@ void TextureBuffer::Resize(UINT width, UINT height)
     if ((width == m_Width && height == m_Height) || width == 0 || height == 0 || m_Device == nullptr )
 		return;
 
-	Release();
+	Destroy();
     Init(m_Device, m_Adapter, width, height, m_Format);
 }
 
 void TextureBuffer::BindRenderTarget(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle)
 {
-	commandList->OMSetRenderTargets(1, &CpuRtvHandle, FALSE, &dsvHandle);
+	commandList->OMSetRenderTargets(1, &m_CpuRtvHandle, FALSE, &dsvHandle);
 }
 
 void TextureBuffer::SetToWriteAndClear(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    TransitionResource(commandList, Buffer, currentState, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    currentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
-    commandList->ClearRenderTargetView(CpuRtvHandle, clearColor, 0, nullptr);
+    TransitionResource(commandList, m_Buffer, m_CurrentState, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    m_CurrentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    commandList->ClearRenderTargetView(m_CpuRtvHandle, clearColor, 0, nullptr);
 }
 
 void TextureBuffer::SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	TransitionResource(commandList, Buffer, currentState, D3D12_RESOURCE_STATE_GENERIC_READ);
-    currentState = D3D12_RESOURCE_STATE_GENERIC_READ;
+	TransitionResource(commandList, m_Buffer, m_CurrentState, D3D12_RESOURCE_STATE_GENERIC_READ);
+    m_CurrentState = D3D12_RESOURCE_STATE_GENERIC_READ;
 }
 
 void TextureBuffer::SetToCopyDest(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    if (currentState == D3D12_RESOURCE_STATE_COPY_DEST) return;
+    if (m_CurrentState == D3D12_RESOURCE_STATE_COPY_DEST) return;
 
-    TransitionResource(commandList, Buffer, currentState, D3D12_RESOURCE_STATE_COPY_DEST);
-    currentState = D3D12_RESOURCE_STATE_COPY_DEST;
+    TransitionResource(commandList, m_Buffer, m_CurrentState, D3D12_RESOURCE_STATE_COPY_DEST);
+    m_CurrentState = D3D12_RESOURCE_STATE_COPY_DEST;
 }
 
 void TextureBuffer::SetToCopySource(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    if (currentState == D3D12_RESOURCE_STATE_COPY_SOURCE) return;
+    if (m_CurrentState == D3D12_RESOURCE_STATE_COPY_SOURCE) return;
 
-    TransitionResource(commandList, Buffer, currentState, D3D12_RESOURCE_STATE_COPY_SOURCE);
-    currentState = D3D12_RESOURCE_STATE_COPY_SOURCE;
+    TransitionResource(commandList, m_Buffer, m_CurrentState, D3D12_RESOURCE_STATE_COPY_SOURCE);
+    m_CurrentState = D3D12_RESOURCE_STATE_COPY_SOURCE;
 }
 
 void TextureBuffer::SetToState(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_RESOURCE_STATES newState)
 {
-    if (currentState == newState) return;
-    TransitionResource(commandList, Buffer, currentState, newState);
-    currentState = newState;
+    if (m_CurrentState == newState) return;
+    TransitionResource(commandList, m_Buffer, m_CurrentState, newState);
+    m_CurrentState = newState;
 }
 
 void TextureBuffer::SetGraphicsRootDescriptorTable(int slot, ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -102,7 +106,7 @@ void TextureBuffer::SetGraphicsRootDescriptorTable(int slot, ComPtr<ID3D12Graphi
 	commandList->SetGraphicsRootDescriptorTable(
         slot, 
         DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 
-            SrvHeapIndex, 
+            m_SrvHeapIndex, 
             m_Adapter));
 }
 
@@ -124,37 +128,37 @@ void TextureBuffer::BuildResource()
 
     CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
 
-    currentState = D3D12_RESOURCE_STATE_GENERIC_READ;
+    m_CurrentState = D3D12_RESOURCE_STATE_GENERIC_READ;
 
     m_Device->CreateCommittedResource(
         &heapProps,
         D3D12_HEAP_FLAG_NONE,
         &texDesc,
-        currentState,
+        m_CurrentState,
         &clearValue,
-        IID_PPV_ARGS(&Buffer)
+        IID_PPV_ARGS(&m_Buffer)
     );
 
     if (m_Name != L"") 
-        Buffer->SetName(m_Name);
+        m_Buffer->SetName(m_Name);
 }
 
 void TextureBuffer::BuildDescriptors()
 {
-    SrvHeapIndex = SrvHeapIndex == -1 ? DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_Adapter) : SrvHeapIndex;
-    RtvHeapIndex = RtvHeapIndex == -1 ? DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_Adapter) : RtvHeapIndex;
+    m_SrvHeapIndex = m_SrvHeapIndex == -1 ? DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_Adapter) : m_SrvHeapIndex;
+    m_RtvHeapIndex = m_RtvHeapIndex == -1 ? DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_Adapter) : m_RtvHeapIndex;
 
-    CpuRtvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, RtvHeapIndex, m_Adapter);
-    CpuSrvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, SrvHeapIndex, m_Adapter);
-    GpuSrvHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, SrvHeapIndex, m_Adapter);
+    m_CpuRtvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, m_RtvHeapIndex, m_Adapter);
+    m_CpuSrvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_SrvHeapIndex, m_Adapter);
+    m_GpuSrvHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_SrvHeapIndex, m_Adapter);
 
-    m_Device->CreateRenderTargetView(Buffer.Get(), nullptr, CpuRtvHandle);
+    m_Device->CreateRenderTargetView(m_Buffer.Get(), nullptr, m_CpuRtvHandle);
 
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    srvDesc.Format = Buffer->GetDesc().Format;
+    srvDesc.Format = m_Buffer->GetDesc().Format;
     srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srvDesc.Texture2D.MipLevels = 1;
 
-    m_Device->CreateShaderResourceView(Buffer.Get(), &srvDesc, CpuSrvHandle);
+    m_Device->CreateShaderResourceView(m_Buffer.Get(), &srvDesc, m_CpuSrvHandle);
 }

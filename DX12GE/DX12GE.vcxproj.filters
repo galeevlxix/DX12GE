@@ -117,9 +117,6 @@
     <ClCompile Include="Engine\Base\src\CommandQueue.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Base\src\DescriptorHeaps.cpp">
-      <Filter>Исходные файлы\Engine\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Base\src\DX12LibPCH.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
@@ -222,6 +219,9 @@
     <ClCompile Include="Engine\SingleGpuGame.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Graphics\src\DescriptorHeaps.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\KatamariGame.h">
@@ -264,9 +264,6 @@
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Base\d3dx12.h">
-      <Filter>Файлы заголовков\Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Base\DescriptorHeaps.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Base\DX12LibPCH.h">
@@ -391,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="Engine\SingleGpuGame.h">
       <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Graphics\DescriptorHeaps.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

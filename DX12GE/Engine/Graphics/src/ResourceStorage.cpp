@@ -18,7 +18,7 @@ uint32_t ResourceStorage::AddObject3D(const std::string& name)
     uint32_t foundId = Find(name);
     if (foundId != -1) return foundId;
 
-    uint32_t id = m_Objects.size();
+    uint32_t id = static_cast<uint32_t>(m_Objects.size());
     m_Objects.push_back(std::make_shared<Object3DComponent>());
     m_Names.emplace(name, id);
 
@@ -31,7 +31,7 @@ uint32_t ResourceStorage::AddTexture(const std::string& name)
     if (foundId != -1) 
         return foundId;
 
-    uint32_t id = m_Textures.size();
+    uint32_t id = static_cast<uint32_t>(m_Textures.size());
     m_Textures.push_back(std::make_shared<TextureComponent>());
     m_Names.emplace(name, id);
 
@@ -64,18 +64,18 @@ std::shared_ptr<TextureComponent> ResourceStorage::GetTextureByName(const std::s
     return nullptr;
 }
 
-void ResourceStorage::Unload()
+void ResourceStorage::Destroy()
 {
     for (auto obj : m_Objects)
     {
-        obj->Unload();
+        obj->Destroy();
         obj = nullptr;
     }
     m_Objects.clear();
 
     for (auto tex : m_Textures)
     {
-        tex->Release();
+        tex->Destroy();
         tex = nullptr;
     }
     m_Textures.clear();

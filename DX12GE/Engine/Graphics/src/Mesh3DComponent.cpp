@@ -33,23 +33,29 @@ void Mesh3DComponent::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> co
 
 void Mesh3DComponent::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D_PRIMITIVE_TOPOLOGY primitiveType)
 {
-    if (!Initialized) return;
+    if (!m_Initialized) return;
     commandList->IASetPrimitiveTopology(primitiveType);
     commandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
     commandList->IASetIndexBuffer(&m_IndexBufferView);
-    commandList->DrawIndexedInstanced(indiciesCount, 1, 0, 0, 0);
+    commandList->DrawIndexedInstanced(m_IndiciesCount, 1, 0, 0, 0);
 }
 
-void Mesh3DComponent::Release()
+void Mesh3DComponent::Destroy()
 {
-    if (!Initialized) return;
-    Initialized = false;
-    m_VertexBuffer->Release();
+    if (!m_Initialized) return;
+    m_Initialized = false;
+
+    m_VertexBuffer.Reset();
     m_VertexBuffer = nullptr;
-    IntermediateVertexBufferResource->Release();
-    IntermediateVertexBufferResource = nullptr;
-    m_IndexBuffer->Release();
+    m_VertexBufferView = {};
+    m_IntermediateVertexBufferResource.Reset();
+    m_IntermediateVertexBufferResource = nullptr;
+
+    m_IndexBuffer.Reset();
     m_IndexBuffer = nullptr;
-    IntermediateIndexBufferResource->Release();
-    IntermediateIndexBufferResource = nullptr;
+    m_IndexBufferView = {};
+    m_IntermediateIndexBufferResource.Reset();
+    m_IntermediateIndexBufferResource = nullptr;
+
+    m_Material = nullptr;
 }

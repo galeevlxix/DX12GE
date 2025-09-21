@@ -16,7 +16,7 @@ public:
 	};
 
 	void Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter, UINT width, UINT height);
-	void Release();
+	void Destroy();
 	void Resize(UINT width, UINT height);
 	void BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle);
 

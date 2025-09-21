@@ -24,6 +24,14 @@ struct ParticleGroup
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE uavCPUDescHandle;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE uavGPUDescHandle;
+
+	void Destroy()
+	{
+		Vertices.clear();
+		Indices.clear();
+		Resource.Reset();
+		Resource = nullptr;
+	}
 };
 
 class ParticleSystem
@@ -36,6 +44,8 @@ public:
 	void OnSortComputeRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 	void SpawnParticleGroup(ComPtr<ID3D12GraphicsCommandList2> commandList, Vector3 position, float speed, float lifeTime);
+
+	void Destroy();
 private:
 	TextureComponent m_Texture;
 

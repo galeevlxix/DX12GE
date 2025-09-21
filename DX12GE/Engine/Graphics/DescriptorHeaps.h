@@ -1,5 +1,5 @@
 #pragma once
-#include "DX12LibPCH.h"
+#include "../Base/DX12LibPCH.h"
 
 constexpr UINT MAXDESCRIPTORS = 1024; //https://learn.microsoft.com/en-us/windows/win32/direct3d12/hardware-support#invariable-limits
 
@@ -27,7 +27,10 @@ class DescriptorHeaps
 	static DescriptorHeaps* GetHeaps(GraphicsAdapter graphicsAdapter);
 
 public:
+	void Destroy();
+
 	static void OnInit(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter);
+	static void DestroyAll();
 
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT index, GraphicsAdapter graphicsAdapter);
 	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT index, GraphicsAdapter graphicsAdapter);

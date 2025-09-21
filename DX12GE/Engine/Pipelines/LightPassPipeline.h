@@ -3,8 +3,6 @@
 
 class LightPassPipeline
 {
-private:
-    const static int InputLayoutCount = 0;
 public:
     ComPtr<ID3D12RootSignature> RootSignature;
     ComPtr<ID3D12PipelineState> PipelineState;
@@ -20,7 +18,6 @@ protected:
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC m_RootSignatureDescription;
     CD3DX12_RASTERIZER_DESC m_RasterizerDesc;
     ComPtr<ID3DBlob> m_RootSignatureBlob;
-    D3D12_INPUT_ELEMENT_DESC m_InputLayout[InputLayoutCount];
 
     virtual void LoadVertexShader();
     virtual void LoadPixelShader();
@@ -30,4 +27,23 @@ protected:
     void CreateRootSignature(ComPtr<ID3D12Device2> device);
     virtual void CreateRasterizerDesc();
     void CreatePipelineState(ComPtr<ID3D12Device2> device);
+
+public:
+    void Destroy()
+    {
+        RootSignature.Reset();
+        RootSignature = nullptr;
+
+        PipelineState.Reset();
+        PipelineState = nullptr;
+
+        m_VertexShaderBlob.Reset();
+        m_VertexShaderBlob = nullptr;
+
+        m_PixelShaderBlob.Reset();
+        m_PixelShaderBlob = nullptr;
+
+        m_RootSignatureBlob.Reset();
+        m_RootSignatureBlob = nullptr;
+    }
 };

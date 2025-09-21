@@ -53,7 +53,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
 
     std::vector<MaterialEntity*> materials;
 
-    for (unsigned int i = 0; i < materialsCount; i++)
+    for (int i = 0; i < materialsCount; i++)
     {
         materials.push_back(new MaterialEntity());
 
@@ -78,7 +78,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
 
     float yOffset = 0.0f;
 
-    for (unsigned int i = 0; i < meshesCount; i++)
+    for (int i = 0; i < meshesCount; i++)
     {
         meshes.push_back(new Mesh3DComponent());
 
@@ -113,7 +113,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
             Vertices.push_back(v);
         }
 
-        meshes[i]->Material = materials[paiMesh->mMaterialIndex];
+        meshes[i]->m_Material = materials[paiMesh->mMaterialIndex];
 
         for (unsigned int i = 0; i < paiMesh->mNumFaces; i++)
         {

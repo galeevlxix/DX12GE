@@ -23,19 +23,19 @@ DirectX::XMMATRIX TransformComponent::GetInverseMatrix()
 
 void TransformComponent::SetDefault(float yOffset)
 {
-    m_Position = Vector3(0, -yOffset, 0);
-    m_Rotation = Vector3(0, 0, 0);
-    m_Scale = Vector3(1, 1, 1);
+    m_Position = Vector3(0.0f, -yOffset, 0.0f);
+    m_Rotation = Vector3(0.0f, 0.0f, 0.0f);
+    m_Scale = Vector3(1.0f, 1.0f, 1.0f);
 }
 
 float TransformComponent::ToDegrees(float radians)
 {
-    return radians * 180.0 / PI;
+    return radians * 180.0f / PI;
 }
 
 float TransformComponent::ToRadians(float degrees)
 {
-    return degrees * PI / 180.0;
+    return degrees * PI / 180.0f;
 }
 
 void TransformComponent::SetPosition(float x, float y, float z)

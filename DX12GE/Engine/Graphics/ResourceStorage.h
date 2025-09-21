@@ -14,5 +14,5 @@ public:
 	static std::shared_ptr<Object3DComponent> GetObject3DByName(const std::string& name);
 	static std::shared_ptr<TextureComponent> GetTextureByName(const std::string& name);
 
-	static void Unload();
+	static void Destroy();
 };

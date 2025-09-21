@@ -131,7 +131,7 @@ public:
 
 	static UploadBuffer* GetUploadBuffer();
 	
-	static void OnDelete();
+	static void Destroy();
 
 	static void SetGraphicsObjectCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetGraphicsShadowCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);

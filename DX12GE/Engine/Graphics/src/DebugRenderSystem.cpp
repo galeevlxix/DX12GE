@@ -29,7 +29,6 @@ void DebugRenderSystem::Clear()
 {
 	linesVertices.clear();
 	linesIndices.clear();
-	m_Lines.Release();
 }
 
 void DebugRenderSystem::CreateLine(const Vector3& pos0, const Vector3& pos1, const Color& color)
@@ -233,11 +232,11 @@ vector<Vector4> GetFrustumCornersWorldSpace(const Matrix& view, const Matrix& pr
 
 	vector<Vector4> frustumCorners;
 	frustumCorners.reserve(8);
-	for (unsigned int x = 0; x < 2; ++x)
+	for (float x = 0.0f; x < 2; ++x)
 	{
-		for (unsigned int y = 0; y < 2; ++y)
+		for (float y = 0.0f; y < 2; ++y)
 		{
-			for (unsigned int z = 0; z < 2; ++z)
+			for (float z = 0.0f; z < 2; ++z)
 			{
 				const Vector4 pt = Vector4::Transform(Vector4(2.0f * x - 1.0f, 2.0f * y - 1.0f, z, 1.0f), inv);
 				frustumCorners.push_back(pt / pt.w);
@@ -269,4 +268,13 @@ void DebugRenderSystem::DrawFrustrum(const DirectX::SimpleMath::Matrix& view, co
 	DrawLine(ToVec3(corners[1]), ToVec3(corners[5]), Vector4(0.5f, 0.0f, 0.0f, 1.0f));
 	DrawLine(ToVec3(corners[2]), ToVec3(corners[6]), Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 	DrawLine(ToVec3(corners[3]), ToVec3(corners[7]), Vector4(0.5f, 0.0f, 0.0f, 1.0f));
+}
+
+void DebugRenderSystem::Destroy()
+{
+	m_Lines.Destroy();
+	m_Quads.Destroy();
+	m_Meshes.Destroy();
+	Clear();
+	m_Camera = nullptr;
 }

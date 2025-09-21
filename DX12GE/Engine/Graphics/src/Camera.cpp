@@ -2,13 +2,6 @@
 
 #define PI 3.1415926535f
 
-// Clamp a value between a min and max range
-template<typename T>
-constexpr const T& clamp(const T& val, const T& min, const T& max)
-{
-    return val < min ? min : val > max ? max : val;
-}
-
 void Camera::OnLoad(Player* l_player, XMVECTOR position, XMVECTOR target, XMVECTOR up, float fov, float ratio, float zNear, float zFar)
 {
     player = l_player;
@@ -282,4 +275,18 @@ void Camera::StartTest()
 bool Camera::IsTesting()
 {
     return testMode;
+}
+
+void Camera::OnUnload()
+{
+    Position = {};
+    Target = {};
+    Up = {};
+
+    Fov = {};
+    Ratio = {};
+    ZNear = {};
+    ZFar = {};
+
+    player = nullptr;
 }

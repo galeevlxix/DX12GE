@@ -19,7 +19,7 @@ SamplerState StaticSampler : register(s0);
 [numthreads(256, 1, 1)]
 void main(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
-    uint globalIndex = dispatchThreadID.x;
+    int globalIndex = dispatchThreadID.x;
     
     if (globalIndex >= ParticleCount)
         return;

@@ -1,11 +1,9 @@
 #include "../CascadedShadowMap.h"
 #include "../../Base/Application.h"
-#include "../../Base/DescriptorHeaps.h"
+#include "../../Graphics/DescriptorHeaps.h"
 
-void CascadedShadowMap::Create()
+void CascadedShadowMap::Create(ComPtr<ID3D12Device2> device)
 {
-	ComPtr<ID3D12Device2> device = Application::Get().GetPrimaryDevice();
-
 	const float splits[CASCADES_COUNT] = { 0.15f, 0.3f, 0.6f, 1.0f };
 
 	LPCWSTR names[] =	//for debug
@@ -20,7 +18,7 @@ void CascadedShadowMap::Create()
 	{
 		m_Cascades[i].ShadowMapTexture = new ShadowMap(device, width, height);
 		m_Cascades[i].ShadowMapTexture->Resource()->SetName(names[i]);
-		m_Cascades[i].Radius = sqrtf(maxRadius * splits[i] * maxRadius * splits[i] * 2.0);
+		m_Cascades[i].Radius = sqrtf(maxRadius * splits[i] * maxRadius * splits[i] * 2.0f);
 	}
 }
 
@@ -75,4 +73,11 @@ Matrix CascadedShadowMap::GetShadowViewProj(int index)
 	return m_Cascades[index].ShadowViewProj;
 }
 
-
+void CascadedShadowMap::Destroy()
+{
+	for (auto cascade : m_Cascades)
+	{
+		cascade.ShadowMapTexture->Destroy();
+		cascade.ShadowMapTexture = nullptr;
+	}
+}
