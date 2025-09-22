@@ -188,7 +188,7 @@ float3 CalcSpotLight(SpotLight sLight, float3 normal, float3 worldPos)
         pointLight.Position = sLight.Position;
         pointLight.Color = sLight.Color;
         pointLight.Intensity = sLight.Intensity;
-        pointLight.AttenuationConstant = sLight.AttenuationConstant;
+        pointLight.AttenuationConstant = sLight.AttenuationConstant;  
         pointLight.AttenuationLinear = sLight.AttenuationLinear;
         pointLight.AttenuationExp = sLight.AttenuationExp;
         

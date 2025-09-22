@@ -1,4 +1,4 @@
-#include "../JsonScene.h"
+#include "../SceneJsonSerializer.h"
 #include "../json.hpp"
 #include "../../Graphics/ResourceStorage.h"
 #include <fstream>
@@ -7,7 +7,7 @@
 
 using json = nlohmann::json;
 
-void JsonScene::Save(std::map<std::string, Object3DEntity>& objects)
+void SceneJsonSerializer::Save(std::map<std::string, Object3DEntity*>& objects)
 {
 	std::ofstream out;
 	out.open(path);
@@ -16,12 +16,13 @@ void JsonScene::Save(std::map<std::string, Object3DEntity>& objects)
 	for (auto obj : objects)
 	{
 		json entity;	
+		
 		entity["name"] = obj.first;
-		entity["path"] = ResourceStorage::GetObject3D(obj.second.GetId())->ResourcePath;
+		entity["path"] = ResourceStorage::GetObject3D(obj.second->GetId())->ResourcePath;
 
-		auto pos = obj.second.Transform.GetPosition();
-		auto rot = obj.second.Transform.GetRotation();
-		auto scl = obj.second.Transform.GetScale();
+		auto pos = obj.second->Transform.GetPosition();
+		auto rot = obj.second->Transform.GetRotation();
+		auto scl = obj.second->Transform.GetScale();
 
 		entity["posX"] = pos.x;
 		entity["posY"] = pos.y;
@@ -40,7 +41,7 @@ void JsonScene::Save(std::map<std::string, Object3DEntity>& objects)
 	out.close();
 }
 
-void JsonScene::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<std::string, Object3DEntity>& objects)
+void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<std::string, Object3DEntity*>& objects)
 {
 	std::ifstream in;
 	in.open(path);
@@ -57,7 +58,9 @@ void JsonScene::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<st
 		std::string name = it->at("name");
 		if (objects.find(name) != objects.end()) { continue; }
 
-		objects.insert({ name, Object3DEntity() });
+		Object3DEntity* obj = name == "player" ? new ThirdPersonPlayer() : new Object3DEntity();
+
+		objects.insert({ name, obj });
 		std::string modelPath = it->at("path");
 
 		if (modelPath != prevPath)
@@ -68,11 +71,11 @@ void JsonScene::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<st
 			prevPath = modelPath;
 		}
 
-		objects[name].OnLoad(commandList, modelPath);
+		objects[name]->OnLoad(commandList, modelPath);
 
-		objects[name].Transform.SetPosition(DirectX::SimpleMath::Vector3(it->at("posX"), it->at("posY"), it->at("posZ")));
-		objects[name].Transform.SetRotation(DirectX::SimpleMath::Vector3(it->at("rotX"), it->at("rotY"), it->at("rotZ")));
-		objects[name].Transform.SetScale(DirectX::SimpleMath::Vector3(it->at("sclX"), it->at("sclY"), it->at("sclZ")));
+		objects[name]->Transform.SetPosition(DirectX::SimpleMath::Vector3(it->at("posX"), it->at("posY"), it->at("posZ")));
+		objects[name]->Transform.SetRotation(DirectX::SimpleMath::Vector3(it->at("rotX"), it->at("rotY"), it->at("rotZ")));
+		objects[name]->Transform.SetScale(DirectX::SimpleMath::Vector3(it->at("sclX"), it->at("sclY"), it->at("sclZ")));
 	}
 
 	auto end = std::chrono::steady_clock::now();

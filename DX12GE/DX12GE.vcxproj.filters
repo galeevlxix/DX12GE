@@ -78,10 +78,10 @@
     <ClCompile Include="DX12GE.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Game\KatamariGame.cpp">
+    <ClCompile Include="Game\GameSample.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Player.cpp">
+    <ClCompile Include="Game\ThirdPersonPlayer.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp">
@@ -198,7 +198,7 @@
     <ClCompile Include="Engine\Graphics\src\TransformComponent.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Base\src\JsonScene.cpp">
+    <ClCompile Include="Engine\Base\src\SceneJsonSerializer.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Base\src\CommandExecutor.cpp">
@@ -213,9 +213,6 @@
     <ClCompile Include="Engine\Graphics\src\SSRCrossAdapterResources.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\MultiGpuGame.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\SingleGpuGame.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
@@ -224,10 +221,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game\KatamariGame.h">
+    <ClInclude Include="Game\GameSample.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Player.h">
+    <ClInclude Include="Game\ThirdPersonPlayer.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h">
@@ -282,9 +279,6 @@
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Base\KeyCodes.h">
-      <Filter>Файлы заголовков\Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Base\resource (2).h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Base\resource.h">
@@ -368,7 +362,7 @@
     <ClInclude Include="Engine\Base\json.hpp">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Base\JsonScene.h">
+    <ClInclude Include="Engine\Base\SceneJsonSerializer.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Base\CommandExecutor.h">
@@ -383,14 +377,14 @@
     <ClInclude Include="Engine\Graphics\SSRCrossAdapterResources.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\MultiGpuGame.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\SingleGpuGame.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\DescriptorHeaps.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\InputSystem.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -403,9 +397,6 @@
       <Filter>Файлы ресурсов</Filter>
     </Image>
     <Image Include="icon1.ico">
-      <Filter>Файлы ресурсов</Filter>
-    </Image>
-    <Image Include="Resources\BE_ICON2.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>

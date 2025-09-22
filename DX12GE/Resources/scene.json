@@ -546,6 +546,19 @@
         "sclZ": -3.0
     },
     {
+        "name": "player",
+        "path": "../../DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
+        "posX": -30.618989944458008,
+        "posY": 7.833827018737793,
+        "posZ": 54.4373664855957,
+        "rotX": 0.0,
+        "rotY": 3.089993476867676,
+        "rotZ": 0.0,
+        "sclX": 1.0,
+        "sclY": 1.0,
+        "sclZ": 1.0
+    },
+    {
         "name": "police1",
         "path": "../../DX12GE/Resources/Models/cars/police/scene.gltf",
         "posX": -35.0,

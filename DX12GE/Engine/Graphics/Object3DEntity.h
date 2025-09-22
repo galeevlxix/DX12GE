@@ -9,14 +9,19 @@
 class Object3DEntity
 {
 public:
-    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath);
-    void OnUpdate(double deltaTime);
-    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
-    uint32_t GetId();
-    
     TransformComponent Transform;
-
+    
 private:
-    void SetConstBuffers(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
     uint32_t ObjectId;
+
+public:
+    virtual void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath);
+    virtual void OnUpdate(const double& deltaTime);
+    void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, const XMMATRIX& viewProjMatrix);
+    virtual void Destroy();
+    uint32_t GetId();
+
+protected:
+    void SetConstBuffers(ComPtr<ID3D12GraphicsCommandList2> commandList, const XMMATRIX& viewProjMatrix);
+    
 };

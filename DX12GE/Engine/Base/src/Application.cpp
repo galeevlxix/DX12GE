@@ -39,6 +39,12 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
     debugInterface->EnableDebugLayer();
 #endif
 
+    HICON loadedIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(APP_ICON));
+    if (!loadedIcon) 
+    {
+        MessageBoxW(nullptr, L"Icon not found!", L"Error", MB_OK);
+    }
+
     WNDCLASSEXW wndClass = { 0 };
 
     wndClass.cbSize = sizeof(WNDCLASSEX);
@@ -46,11 +52,11 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
     wndClass.lpfnWndProc = &WndProc;
     wndClass.hInstance = m_hInstance;
     wndClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wndClass.hIcon = LoadIcon(m_hInstance, MAKEINTRESOURCE(APP_ICON));
+    wndClass.hIcon = loadedIcon;
     wndClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wndClass.lpszMenuName = nullptr;
     wndClass.lpszClassName = WINDOW_CLASS_NAME;
-    wndClass.hIconSm = LoadIcon(m_hInstance, MAKEINTRESOURCE(APP_ICON));
+    wndClass.hIconSm = loadedIcon;
 
     if (!RegisterClassExW(&wndClass))
     {

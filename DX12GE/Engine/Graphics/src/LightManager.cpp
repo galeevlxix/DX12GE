@@ -15,9 +15,9 @@
 #define PURPLE_LIGHT	Vector3(0.54902f,	0.0f,		0.8549f)
 #define WHITE_LIGHT		Vector3(1.0f,		0.87059f,	0.71373f)
 
-void LightManager::Init(KatamariGame* game)
+void LightManager::Init(ThirdPersonPlayer* player)
 {
-	m_player = &game->player;
+	m_player = player;
 
 	// AmbientLight
 	ShaderResources::GetWorldCB()->AmbientLight.Color = COLOR_WHITE;
@@ -35,9 +35,9 @@ void LightManager::Init(KatamariGame* game)
 	m_SpotLights.push_back(SpotLight());
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Color = COLOR_WHITE;
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.BaseLightComponent.Intensity = defaultIntensity * 2.0f;
-	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = (*m_player).prince.Transform.GetPosition();
+	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.Position = m_player->Transform.GetPosition();
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
-	m_SpotLights[m_SpotLights.size() - 1].Direction = (*m_player).Direction;
+	m_SpotLights[m_SpotLights.size() - 1].Direction = m_player->m_Direction;
 	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.65f;
 
 	
@@ -141,7 +141,7 @@ void LightManager::Init(KatamariGame* game)
 		m_PointLights[i].MaxRadius = rad;
 	}
 
-	for (size_t i = 0; i < m_SpotLights.size(); i++)
+	for (size_t i = 0; i < m_SpotLights.size(); i++)  
 	{
 		auto pLight = m_SpotLights[i];
 		pLight.PointLightComponent.BaseLightComponent.Color.Normalize();
@@ -191,7 +191,7 @@ void LightManager::OnUpdate(float deltaTime)
 	ShaderResources::GetWorldCB()->DirLight.Direction.x = sin(path);
 	ShaderResources::GetWorldCB()->DirLight.Direction.z = cos(path);
 
-	m_SpotLights[0].PointLightComponent.Position = (*m_player).prince.Transform.GetPosition() + Vector3(0.0f, 2.0f, 0.0f);
-	m_SpotLights[0].Direction = (*m_player).Direction;
+	m_SpotLights[0].PointLightComponent.Position = m_player->Transform.GetPosition() + Vector3(0.0f, 2.0f, 0.0f);
+	m_SpotLights[0].Direction = m_player->m_Direction;
 	m_SpotLights[0].PointLightComponent.BaseLightComponent.Intensity = 5.0f;
 }

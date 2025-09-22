@@ -1,7 +1,3 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by DX12Lib.rc
-//
 #define APP_ICON                        5
 
 // Next default values for new objects

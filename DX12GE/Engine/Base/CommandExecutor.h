@@ -9,7 +9,7 @@
 #include <vector>
 #include <stack>
 
-#include "../../Game/KatamariGame.h"
+#include "../SingleGpuGame.h"
 
 class CommandExecutor
 {
@@ -22,8 +22,7 @@ private:
 		Vector3 undo_value;
 	};
 
-	std::string path = "../../DX12GE/Resources/commands.json";
-	KatamariGame* m_scene;
+	SingleGpuGame* m_scene;
 
 	void ProcessCommand(const std::string& line, std::string& output);
 
@@ -38,7 +37,7 @@ private:
 	void GetObjectInfo(const std::vector<std::string>& tokens, std::string& output);
 	
 public:
-	CommandExecutor(KatamariGame* scene);
+	CommandExecutor(SingleGpuGame* game);
 	void Exit();
 	void Update();
 private:

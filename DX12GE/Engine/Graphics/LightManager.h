@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ShaderResources.h"
-#include "../../Game/KatamariGame.h"
 #include <vector>
+#include "ShaderResources.h"
+#include "../../Game/ThirdPersonPlayer.h"
 
 using namespace std;
 
@@ -16,10 +16,10 @@ private:
 
 	void AddPLights(Vector3 start, Vector3 end);
 
-	Player* m_player;
+	ThirdPersonPlayer* m_player;
 
 public:
-	void Init(KatamariGame* game);
+	void Init(ThirdPersonPlayer* player);
 	void OnUpdate(float deltaTime);
 
 	vector<PointLight> m_PointLights;

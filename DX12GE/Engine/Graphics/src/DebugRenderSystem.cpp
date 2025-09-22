@@ -1,10 +1,4 @@
 #include "../DebugRenderSystem.h"
-#include "../../Base/Application.h"
-
-void DebugRenderSystem::Initialize(Camera* camera, ComPtr<ID3D12Device2> device)
-{
-	m_Camera = camera;
-}
 
 void DebugRenderSystem::Update(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
@@ -15,11 +9,11 @@ void DebugRenderSystem::Update(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	}
 }
 
-void DebugRenderSystem::Draw(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void DebugRenderSystem::Draw(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
-	if (m_Camera == nullptr || isLinesDirty || !canDraw) return;
+	if (isLinesDirty || !canDraw) return;
 
-	XMMATRIX mvpMatrix = XMMatrixMultiply(Matrix::Identity, m_Camera->GetViewProjMatrix());
+	XMMATRIX mvpMatrix = XMMatrixMultiply(Matrix::Identity, viewProjMatrix);
 	commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvpMatrix, 0);
 
 	m_Lines.OnRender(commandList, D3D_PRIMITIVE_TOPOLOGY_LINELIST);
@@ -276,5 +270,4 @@ void DebugRenderSystem::Destroy()
 	m_Quads.Destroy();
 	m_Meshes.Destroy();
 	Clear();
-	m_Camera = nullptr;
 }

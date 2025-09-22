@@ -15,12 +15,12 @@ void Object3DEntity::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, cons
     Transform.SetDefault(yOffset);
 }
 
-void Object3DEntity::OnUpdate(double deltaTime )
+void Object3DEntity::OnUpdate(const double& deltaTime)
 {
     if (ObjectId == -1) return;
 }
 
-void Object3DEntity::SetConstBuffers(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
+void Object3DEntity::SetConstBuffers(ComPtr<ID3D12GraphicsCommandList2> commandList, const  XMMATRIX& viewProjMatrix)
 {
     XMMATRIX wvp = Transform.GetWorldMatrix();
     XMMATRIX mvp = XMMatrixMultiply(wvp, viewProjMatrix);
@@ -38,7 +38,7 @@ void Object3DEntity::SetConstBuffers(ComPtr<ID3D12GraphicsCommandList2> commandL
     else {}
 }
 
-void Object3DEntity::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
+void Object3DEntity::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, const XMMATRIX& viewProjMatrix)
 {
     if (ObjectId == -1) return;
     SetConstBuffers(commandList, viewProjMatrix);
@@ -50,3 +50,7 @@ uint32_t Object3DEntity::GetId()
     return ObjectId;
 }
 
+void Object3DEntity::Destroy()
+{
+    ObjectId = -1;
+}

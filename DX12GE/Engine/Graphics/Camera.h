@@ -1,83 +1,11 @@
 #pragma once
-#include "../Base/Events.h"
+
 #include "DirectXMath.h"
-#include "../../Game/Player.h"
 
 using namespace DirectX;
 
-struct PressedKeyMonitor
-{
-	bool W = false;
-	bool S = false;
-	bool A = false;
-	bool D = false;
-	bool Q = false;
-	bool E = false;
-
-	bool Shift = false;
-	bool Ctrl = false;
-
-	bool LBC = false;
-	bool RBC = false;
-	bool MBC = false;
-};
-
-const static float slowSpeed = 6.0f;
-const static float normalSpeed = 12.0f;
-const static float fastSpeed = 24.0f;
-
 class Camera
 {
-private:
-	float speed = normalSpeed;
-
-	float sensitivity = 0.0075f;
-	float angle_h = 0.0f;
-	float angle_v = 0.0f;
-	int prevX;
-	int prevY;
-	int dx = 0;
-	int dy = 0;
-
-	float flyRadius = 15.0f;
-	PressedKeyMonitor monitor;
-	
-	bool testMode = false;
-	float step = 0.5;
-	
-	Vector2 MapMin = Vector2(-150.0f, -30.0f);
-	Vector2 MapMax = Vector2(30.0f, 90.0f);
-	
-	Vector3 playerPosInTest = Vector3(-90.0f, 8.0f, 24.0f);
-	Vector3 playerRotInTest = Vector3(0.0f, 1.57f, 0.0f);
-	Vector3 initPos;
-	Vector3 initTar; 
-	Vector3 initPosPlayer;
-	float initRotYPlayer;
-
-	struct TestPhase
-	{
-		bool enable = false;
-		Vector3 start;
-		Vector3 target;
-		Vector3 move_target;
-
-		TestPhase(Vector3 s, Vector3 t, Vector3 m) : start(s), target(t), move_target(m) { }
-	};
-
-	const static int max_phases = 6;
-	TestPhase phases[max_phases] =
-	{
-		TestPhase(Vector3(MapMax.x - 0.1f,	10.0f,	17.0f),				Vector3(-1.0f,	0.0f,	0.0f),		Vector3(-1.0f,	0.0f,	0.0f)),
-		TestPhase(Vector3(MapMin.x + 0.1f,	10.0f,	0.0f),				Vector3(1.0f,	-0.2f,	0.0f),		Vector3(1.0f,	0.0f,	0.0f)),
-		TestPhase(Vector3(MapMin.x + 0.1f,	12.0f,	42.0f),				Vector3(1.0f,	-0.15f, 0.0f),		Vector3(1.0f,	0.0f,	0.0f)),
-		TestPhase(Vector3(-42.0f,			10.0f,	MapMax.y - 0.1f),	Vector3(0.3f,	-0.2f,	-1.0f),		Vector3(0.0f,	0.0f,	-1.0f)),
-		TestPhase(Vector3(0.0f,				12.0f,	MapMin.y + 0.1f),	Vector3(0.0f,	0.0f,	1.0f),		Vector3(0.0f,	0.0f,	1.0f)),
-		TestPhase(Vector3(-93.0f,			12.0f,	-5.0f),				Vector3(-0.3f,	0.0f,	1.0f),		Vector3(0.0f,	0.0f,	1.0f)),
-	};
-
-	void TestProcess();
-
 public:
 	XMVECTOR Position;
 	XMVECTOR Target;  
@@ -88,10 +16,7 @@ public:
 	float ZNear;
 	float ZFar;
 
-	Player* player;
-
 	void OnLoad(
-		Player* l_player, 
 		XMVECTOR position = XMVectorSet(0.0f, 0.0f, -5.0f, 1.0f),
 		XMVECTOR target = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f),
 		XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
@@ -100,19 +25,8 @@ public:
 		float zNear = 0.1f, 
 		float zFar = 300.0f);
 
-	void OnUpdate(float deltaTime);
 	XMMATRIX GetViewProjMatrix();
-	XMMATRIX GetProjMatrix();
+	XMMATRIX GetProjMatrix();	
 
-	void OnMouseWheel(MouseWheelEventArgs& e);
-	void OnMouseMoved(MouseMotionEventArgs& e);
-	void OnKeyPressed(KeyEventArgs& e);
-	void OnKeyReleased(KeyEventArgs& e);
-	void OnMouseButtonPressed(MouseButtonEventArgs& e);
-	void OnMouseButtonReleased(MouseButtonEventArgs& e);
-
-	void StartTest();
-	bool IsTesting();
-
-	void OnUnload();
+	void Destroy();
 };

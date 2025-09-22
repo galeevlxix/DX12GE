@@ -118,9 +118,9 @@ public:
     bool IsInitialized();
 };
 ```
-В качестве сцены выступает класс игры `KatamariGame`. Он хранит объекты сцены и игрока.
+В качестве сцены выступает класс игры `GameSample`. Он хранит объекты сцены и игрока.
 ```c++
-class KatamariGame
+class GameSample
 {
 private:
 	map<string, Object3DEntity> m_objects;
@@ -138,7 +138,7 @@ private:
 ```
 В нем создаются, трансформируются, и отрисовываются все объекты.
 ```c++
-void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void GameSample::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	player.OnLoad(commandList);
 
@@ -167,7 +167,7 @@ void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	m_objects["scene5"].Transform.SetPosition(-150, 0, 75);
 }
 
-void KatamariGame::OnUpdate(float deltaTime)
+void GameSample::OnUpdate(float deltaTime)
 {
 	player.OnUpdate(deltaTime);
 
@@ -187,7 +187,7 @@ void KatamariGame::OnUpdate(float deltaTime)
 	}
 }
 
-void KatamariGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
+void GameSample::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
 	player.OnRender(commandList, viewProjMatrix);
 
@@ -197,7 +197,7 @@ void KatamariGame::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMA
 	}
 }
 
-void KatamariGame::Add(ComPtr<ID3D12GraphicsCommandList2> commandList, string name, string path)
+void GameSample::Add(ComPtr<ID3D12GraphicsCommandList2> commandList, string name, string path)
 {
 	if (m_objects.find(name) != m_objects.end()) { return; }
 
@@ -540,14 +540,14 @@ void JsonScene::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<st
 ```
 Теперь в методе `OnLoad` класса игры можно заменить ручную инициализацию всех объектов на загрузку из файла, так как все данные об объектах сохраняются при выходе из игры. 
 ```c++
-void KatamariGame::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void GameSample::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	player.OnLoad(commandList);
 
 	js.Load(commandList, m_objects);
 }
 
-void KatamariGame::OnExit()
+void GameSample::OnExit()
 {
 	js.Save(m_objects);
 }

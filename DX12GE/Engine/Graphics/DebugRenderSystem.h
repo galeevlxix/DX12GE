@@ -1,9 +1,9 @@
 #pragma once
 
+#include "Mesh3DComponent.h"
 #include "../Base/SimpleMath.h"
 #include "../Pipelines/SimplePipeline.h"
 #include "VertexStructures.h"
-#include "Camera.h"
 #include <vector>
 
 using namespace std;
@@ -20,17 +20,13 @@ private:
 	vector<VertexPositionColor> linesVertices;
 	vector<WORD> linesIndices;
 	bool isLinesDirty = true;
-	
-	Camera* m_Camera;
 
 	void CreateLine(const Vector3& pos0, const Vector3& pos1, const Color& color);
 public:
 	bool canDraw = true;
 
-	void Initialize(Camera* camera, ComPtr<ID3D12Device2> device);
-
 	void Update(ComPtr<ID3D12GraphicsCommandList2> commandList);
-	void Draw(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void Draw(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 	void Clear();
 
 	void DrawLine(const Vector3& pos0, const Vector3& pos1, const Color& color);

@@ -3,7 +3,7 @@
 #include <Shlwapi.h>
 
 #include "Engine/Base/Application.h"
-#include "Engine/SingleGpuGame.h"
+#include "Game/GameSample.h"
 
 #include <dxgidebug.h>
 
@@ -32,7 +32,7 @@ int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine,
 
     Application::Create(hInstance);
     {
-        std::shared_ptr<SingleGpuGame> demo = std::make_shared<SingleGpuGame>(L"Bian Game", 1920, 1080, false);
+        std::shared_ptr<GameSample> demo = std::make_shared<GameSample>(L"Bian Game", 1920, 1080, false);
         retCode = Application::Get().Run(demo);
         demo.reset();
     }

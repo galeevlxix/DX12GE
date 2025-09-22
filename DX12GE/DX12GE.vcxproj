@@ -139,7 +139,7 @@
     <ClCompile Include="Engine\Base\src\DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Base\src\Game.cpp" />
     <ClCompile Include="Engine\Base\src\HighResolutionClock.cpp" />
-    <ClCompile Include="Engine\Base\src\JsonScene.cpp" />
+    <ClCompile Include="Engine\Base\src\SceneJsonSerializer.cpp" />
     <ClCompile Include="Engine\Base\src\SimpleMath.cpp" />
     <ClCompile Include="Engine\Base\src\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Base\src\Window.cpp" />
@@ -167,7 +167,6 @@
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp" />
     <ClCompile Include="Engine\Graphics\src\TransformComponent.cpp" />
-    <ClCompile Include="Engine\MultiGpuGame.cpp" />
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\LightPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\MergingPipeline.cpp" />
@@ -179,8 +178,8 @@
     <ClCompile Include="Engine\Pipelines\src\SSRPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\TexturedPipeline.cpp" />
     <ClCompile Include="Engine\SingleGpuGame.cpp" />
-    <ClCompile Include="Game\KatamariGame.cpp" />
-    <ClCompile Include="Game\Player.cpp" />
+    <ClCompile Include="Game\GameSample.cpp" />
+    <ClCompile Include="Game\ThirdPersonPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Base\Application.h" />
@@ -192,10 +191,10 @@
     <ClInclude Include="Engine\Base\Game.h" />
     <ClInclude Include="Engine\Base\Helpers.h" />
     <ClInclude Include="Engine\Base\HighResolutionClock.h" />
+    <ClInclude Include="Engine\Base\InputSystem.h" />
     <ClInclude Include="Engine\Base\json.hpp" />
-    <ClInclude Include="Engine\Base\JsonScene.h" />
+    <ClInclude Include="Engine\Base\SceneJsonSerializer.h" />
     <ClInclude Include="Engine\Base\KeyCodes.h" />
-    <ClInclude Include="Engine\Base\resource (2).h" />
     <ClInclude Include="Engine\Base\resource.h" />
     <ClInclude Include="Engine\Base\SimpleMath.h" />
     <ClInclude Include="Engine\Base\UploadBuffer.h" />
@@ -225,7 +224,6 @@
     <ClInclude Include="Engine\Graphics\Texture3D.h" />
     <ClInclude Include="Engine\Graphics\TransformComponent.h" />
     <ClInclude Include="Engine\Graphics\VertexStructures.h" />
-    <ClInclude Include="Engine\MultiGpuGame.h" />
     <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\LightPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\MergingPipeline.h" />
@@ -237,8 +235,8 @@
     <ClInclude Include="Engine\Pipelines\SSRPipeline.h" />
     <ClInclude Include="Engine\Pipelines\TexturedPipeline.h" />
     <ClInclude Include="Engine\SingleGpuGame.h" />
-    <ClInclude Include="Game\KatamariGame.h" />
-    <ClInclude Include="Game\Player.h" />
+    <ClInclude Include="Game\GameSample.h" />
+    <ClInclude Include="Game\ThirdPersonPlayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc" />
@@ -246,7 +244,6 @@
   <ItemGroup>
     <Image Include="icon1.ico" />
     <Image Include="Resources\BE_ICON.ico" />
-    <Image Include="Resources\BE_ICON2.ico" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\GeometryPassPixelShader.hlsl">

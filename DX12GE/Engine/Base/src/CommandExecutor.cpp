@@ -1,8 +1,8 @@
 #include "../CommandExecutor.h"
 
-CommandExecutor::CommandExecutor(KatamariGame* scene)
+CommandExecutor::CommandExecutor(SingleGpuGame* game)
 {
-	m_scene = scene;
+	m_scene = game;
 	reader_thread = std::thread(&CommandExecutor::read_loop, this);
 }
 
@@ -55,7 +55,7 @@ void CommandExecutor::ProcessCommand(const std::string& line, std::string& outpu
 
 	if (tokens[0] == "set")
 		ProcessSet(tokens, output);
-	if (tokens[0] == "get")
+	else if (tokens[0] == "get")
 		GetObjectInfo(tokens, output);
 	else if (tokens[0] == "save")
 		ProcessSave(tokens, output);
@@ -212,7 +212,7 @@ void CommandExecutor::GetObjectInfo(const std::vector<std::string>& tokens, std:
 
 void CommandExecutor::ProcessSave(const std::vector<std::string>& tokens, std::string& output)
 {
-	m_scene->Save();
+	m_scene->SaveSceneToFile();
 	output = "—цена сохранена";
 }
 

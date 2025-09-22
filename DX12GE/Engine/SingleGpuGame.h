@@ -1,10 +1,12 @@
 #pragma once
 
+#include <map>
+
 #include "Base/Application.h"
 #include "Base/Game.h"
 #include "Base/Window.h"
 #include "Base/CommandQueue.h"
-#include "Base/CommandExecutor.h"
+#include "Base/SceneJsonSerializer.h"
 
 #include "Pipelines/Pipeline.h"
 #include "Pipelines/ShadowMapPipeline.h"
@@ -17,7 +19,7 @@
 
 #include "Graphics/DescriptorHeaps.h"
 #include "Graphics/ShaderResources.h"
-
+#include "Graphics/Object3DEntity.h"
 #include "Graphics/DebugRenderSystem.h"
 #include "Graphics/CascadedShadowMap.h"
 #include "Graphics/Camera.h" 
@@ -26,8 +28,6 @@
 #include "Graphics/Texture3D.h"
 #include "Graphics/TextureBuffer.h"
 #include "Graphics/SSRCrossAdapterResources.h"
-
-#include "../Game/KatamariGame.h" 
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -41,16 +41,14 @@ public:
     SingleGpuGame(const wstring& name, int width, int height, bool vSync = false);
     ~SingleGpuGame();
 
-    virtual bool Initialize() override;
+    virtual bool Initialize() override final;
     virtual bool LoadContent() override;
     virtual void UnloadContent() override;
     virtual void Destroy() override;
 
-    Camera m_Camera;
-
 protected:
     virtual void OnUpdate(UpdateEventArgs& e) override;
-    virtual void OnRender(RenderEventArgs& e) override;
+    virtual void OnRender(RenderEventArgs& e) override final;
     virtual void OnKeyPressed(KeyEventArgs& e) override;
     virtual void OnKeyReleased(KeyEventArgs& e) override;
     virtual void OnMouseWheel(MouseWheelEventArgs& e) override;
@@ -58,6 +56,10 @@ protected:
     virtual void OnMouseButtonPressed(MouseButtonEventArgs& e) override;
     virtual void OnMouseButtonReleased(MouseButtonEventArgs& e) override;
     virtual void OnResize(ResizeEventArgs& e) override;
+
+public:
+    Object3DEntity* Get(std::string name);
+    void SaveSceneToFile();
 
 private:
     void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
@@ -69,6 +71,9 @@ private:
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
     void RefreshTitle(UpdateEventArgs& e);
+
+    void UpdateSceneObjects(float deltaTime);
+    void DrawSceneObjects(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
 private:
 
@@ -85,13 +90,16 @@ private:
     string m_TestTimeOutputFile = "../../DX12GE/Resources/single_gpu.txt";
     void TestTime(float elapsedTime);
 
-    CommandExecutor* executor;
-
     // SCENE
 
-    bool shouldAddDebugObjects = false;
+    Camera* m_Camera;
+    map<string, Object3DEntity*> m_Objects;
+    ThirdPersonPlayer* m_Player;
+    SceneJsonSerializer m_SceneSerializer;
+    bool m_SerializeSceneOnExit = false;
+
+    bool m_ShouldAddDebugObjects = false;
     DebugRenderSystem m_DebugSystem;
-    KatamariGame m_KatamariScene;  
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;
 
@@ -103,10 +111,10 @@ private:
     // PARTICLES
 
     ParticleSystem m_ParticleSystem;
-    Texture3D tex3d;
-    bool stopParticles = false;
-    Vector3 boxPosition = Vector3(50, 0, -15);
-    Vector3 boxSize = Vector3(30, 30, 30);
+    Texture3D m_tex3d;
+    bool m_stopParticles = false;
+    Vector3 m_boxPosition = Vector3(50, 0, -15);
+    Vector3 m_boxSize = Vector3(30, 30, 30);
 
     // PIPELINES
 
@@ -117,6 +125,5 @@ private:
     GeometryPassPipeline m_GeometryPassPipeline;
     SSRPipeline m_SSRPipeline;
     MergingPipeline m_MergingPipeline;
-    LightPassPipeline m_LightPassPipeline;
+    LightPassPipeline m_LightPassPipeline;    
 };
-
