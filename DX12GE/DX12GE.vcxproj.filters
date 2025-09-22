@@ -219,6 +219,9 @@
     <ClCompile Include="Engine\Graphics\src\DescriptorHeaps.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\MultiGpuGame.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\GameSample.h">
@@ -385,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="Engine\Base\InputSystem.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\MultiGpuGame.h">
+      <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

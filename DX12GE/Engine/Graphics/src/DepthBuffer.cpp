@@ -23,7 +23,7 @@ void DepthBuffer::Destroy()
 }
 
 // Resize the depth buffer to match the size of the client area.
-void DepthBuffer::ResizeDepthBuffer(int width, int height)
+void DepthBuffer::Resize(int width, int height)
 {
     if (dsvCpuHandleIndex == -1) return;
 

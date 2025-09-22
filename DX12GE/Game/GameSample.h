@@ -5,6 +5,8 @@
 class GameSample : public SingleGpuGame
 {
 public:
+    using super = SingleGpuGame;
+
 	GameSample(const wstring& name, int width, int height, bool vSync = false);
 	~GameSample();
 

@@ -1,11 +1,12 @@
 #pragma once
 
+#include <map>
+
 #include "Base/Application.h"
 #include "Base/Game.h"
 #include "Base/Window.h"
 #include "Base/CommandQueue.h"
-#include "Graphics/DescriptorHeaps.h"
-#include "Base/CommandExecutor.h"
+#include "Base/SceneJsonSerializer.h"
 
 #include "Pipelines/Pipeline.h"
 #include "Pipelines/ShadowMapPipeline.h"
@@ -16,18 +17,17 @@
 #include "Pipelines/SSRPipeline.h"
 #include "Pipelines/MergingPipeline.h"
 
+#include "Graphics/DescriptorHeaps.h"
 #include "Graphics/ShaderResources.h"
-
+#include "Graphics/Object3DEntity.h"
 #include "Graphics/DebugRenderSystem.h"
 #include "Graphics/CascadedShadowMap.h"
-
 #include "Graphics/Camera.h" 
 #include "Graphics/LightManager.h"
 #include "Graphics/ParticleSystem.h"
 #include "Graphics/Texture3D.h"
 #include "Graphics/TextureBuffer.h"
 #include "Graphics/SSRCrossAdapterResources.h"
-#include "../Game/KatamariGame.h" 
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -44,8 +44,7 @@ public:
     virtual bool Initialize() override;
     virtual bool LoadContent() override;
     virtual void UnloadContent() override;
-
-    Camera m_Camera;
+    virtual void Destroy() override;
 
 protected:
     virtual void OnUpdate(UpdateEventArgs& e) override;
@@ -63,60 +62,57 @@ private:
     void DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void DrawSSR(
-        ComPtr<ID3D12GraphicsCommandList2> commandList,
-        GraphicsAdapter graphicsAdapter,
-        shared_ptr<DepthBuffer> depthBuffer,
-        std::shared_ptr<GBuffer> gBuffer,
-        std::shared_ptr<TextureBuffer> lightPassResult,
-        std::shared_ptr<TextureBuffer> ssrResult,
-        std::shared_ptr<SSRPipeline> ssrPipeline);
+    void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
-    void DrawSingleGpu();
-    void DrawMultiGpuTest();
-    void DrawMultiGpu();
-
     void RefreshTitle(UpdateEventArgs& e);
-    void DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
-    ComPtr<ID3D12Device2> PrimaryDevice;
-    ComPtr<ID3D12Device2> SecondDevice;
+    void UpdateSceneObjects(float deltaTime);
+    void DrawSceneObjects(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
+
+public:
+    Object3DEntity* Get(std::string name);
+    void SaveSceneToFile();
+
+private:
+
+    ComPtr<ID3D12Device2> m_PrimaryDevice;
+    ComPtr<ID3D12Device2> m_SecondDevice;
 
     uint64_t m_FenceValues[Window::BufferCount] = {};
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
     bool m_Initialized = false;
-    
-    bool m_IsMultiGpuRender = false;
     bool m_IsFirstFrame = true;
 
-    bool IsTesting = false;
-    vector<float> elapsed;
-    void TestTime(string outputFile, float elapsedTime);
-
-    CommandExecutor* executor;
+    bool m_IsTesting = false;
+    vector<float> m_ElapsedTimeArray;
+    const string m_TestTimeOutputFile = "../../DX12GE/Resources/multi_gpu.txt";
+    void TestTime(float elapsedTime);    
 
     // SCENE
 
-    DebugRenderSystem debug;
-    bool shouldAddDebugObjects = false;
+    Camera* m_Camera;
+    map<string, Object3DEntity*> m_Objects;
+    ThirdPersonPlayer* m_Player;
+    SceneJsonSerializer m_SceneSerializer;
+    bool m_SerializeSceneOnExit = false;
 
-    KatamariGame katamariScene;  
-    LightManager lights;
-
+    bool m_ShouldAddDebugObjects = false;
+    DebugRenderSystem m_DebugSystem;
+    LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;
-
-    CrossAdapterTextureResources CATR;
+    CrossAdapterTextureResources m_CATR;
 
     // PARTICLES
 
-    ParticleSystem particles;
-    Texture3D tex3d;
-    bool stopParticles = false;
-    Vector3 boxPosition = Vector3(50, 0, -15);
-    Vector3 boxSize = Vector3(30, 30, 30);
+    ParticleSystem m_ParticleSystem;
+    Texture3D m_tex3d;
+    bool m_stopParticles = false;
+    Vector3 m_boxPosition = Vector3(50, 0, -15);
+    Vector3 m_boxSize = Vector3(30, 30, 30);
 
     // PIPELINES
 
@@ -125,8 +121,7 @@ private:
     SimplePipeline m_SimplePipeline;
     ShadowMapPipeline m_ShadowMapPipeline;
     GeometryPassPipeline m_GeometryPassPipeline;
-    std::shared_ptr<SSRPipeline> m_SSRPipelinePrimaryDevice;
-    std::shared_ptr<SSRPipeline> m_SSRPipelineSecondDevice;
+    SSRPipeline m_SecondDevice_SSRPipeline;
     MergingPipeline m_MergingPipeline;
     LightPassPipeline m_LightPassPipeline;
 };

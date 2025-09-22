@@ -48,7 +48,7 @@ bool SingleGpuGame::Initialize()
 
     m_DepthBuffer = std::make_shared<DepthBuffer>();
     m_DepthBuffer->Init(GraphicAdapterPrimary);
-    m_DepthBuffer->ResizeDepthBuffer(GetClientWidth(), GetClientHeight());
+    m_DepthBuffer->Resize(GetClientWidth(), GetClientHeight());
     
     return true;
 }
@@ -312,7 +312,7 @@ void SingleGpuGame::OnRender(RenderEventArgs& e)
 
 void SingleGpuGame::TestTime(float elapsedTime)
 {
-    if (!IsTesting) return;
+    if (!m_IsTesting) return;
 
     if (m_Player->IsTesting())
     {
@@ -320,7 +320,7 @@ void SingleGpuGame::TestTime(float elapsedTime)
     }
     else
     {
-        IsTesting = false;
+        m_IsTesting = false;
         ofstream out(m_TestTimeOutputFile);
         for (size_t i = 0; i < m_ElapsedTimeArray.size(); i++)
         {
@@ -360,7 +360,7 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
         break;    
     case KeyCode::T:
         m_Player->StartTest();
-        IsTesting = true;
+        m_IsTesting = true;
         break;    
     case KeyCode::R:
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
@@ -403,7 +403,7 @@ void SingleGpuGame::OnResize(ResizeEventArgs& e)
     
     super::OnResize(e);
     m_Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(e.Width), static_cast<float>(e.Height));
-    m_DepthBuffer->ResizeDepthBuffer(e.Width, e.Height);
+    m_DepthBuffer->Resize(e.Width, e.Height);
     m_GBuffer.Resize(e.Width, e.Height);
     m_LightPassBuffer->Resize(e.Width, e.Height);
     m_SSRBuffer->Resize(e.Width, e.Height);

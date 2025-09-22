@@ -55,8 +55,8 @@ void CrossAdapterTextureResources::CopySharedMemoryDataToSecondDevice(ComPtr<ID3
 
 void CrossAdapterTextureResources::Resize(UINT width, UINT height)
 {
-    PrimaryDepthBuffer->ResizeDepthBuffer(width, height);
-    SecondDepthBuffer->ResizeDepthBuffer(width, height);
+    PrimaryDepthBuffer->Resize(width, height);
+    SecondDepthBuffer->Resize(width, height);
 
     PrimaryGBuffer->Resize(width, height);
     PrimarySSRResult->Resize(width, height);
