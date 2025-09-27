@@ -15,7 +15,7 @@ private:
 
 	DXGI_FORMAT m_Format;
 
-	ComPtr<ID3D12Resource> m_Buffer;
+	ComPtr<ID3D12Resource> m_Resource;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE m_CpuRtvHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE m_CpuSrvHandle;
@@ -47,7 +47,7 @@ public:
 
 	void SetGraphicsRootDescriptorTable(int slot, ComPtr<ID3D12GraphicsCommandList2> commandList);
 
-	ComPtr<ID3D12Resource> GetResource() { return m_Buffer; }
+	ComPtr<ID3D12Resource> GetResource() { return m_Resource; }
 	ComPtr<ID3D12Device2> GetDevice() { return m_Device; }
 	void SetName(LPCWSTR name) { m_Name = name; }
 	wstring GetName() { return m_Name; }

@@ -34,18 +34,18 @@ void TextureBuffer::Init(ComPtr<ID3D12Device2> device, D3D12_RESOURCE_DESC& reso
             &resourceDesc,
             m_CurrentState,
             nullptr,
-            IID_PPV_ARGS(&m_Buffer)
+            IID_PPV_ARGS(&m_Resource)
         )
     );
 
     m_Name = name.c_str();
-    m_Buffer->SetName(m_Name);
+    m_Resource->SetName(m_Name);
 }
 
 void TextureBuffer::Destroy()
 {
-	m_Buffer.Reset();
-    m_Buffer = nullptr;
+	m_Resource.Reset();
+    m_Resource = nullptr;
 
     m_Device.Reset();
     m_Device = nullptr;
@@ -56,7 +56,9 @@ void TextureBuffer::Resize(UINT width, UINT height)
     if ((width == m_Width && height == m_Height) || width == 0 || height == 0 || m_Device == nullptr )
 		return;
 
-	Destroy();
+    m_Resource.Reset();
+    m_Resource = nullptr;
+
     Init(m_Device, m_Adapter, width, height, m_Format);
 }
 
@@ -67,14 +69,14 @@ void TextureBuffer::BindRenderTarget(ComPtr<ID3D12GraphicsCommandList2> commandL
 
 void TextureBuffer::SetToWriteAndClear(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    TransitionResource(commandList, m_Buffer, m_CurrentState, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    TransitionResource(commandList, m_Resource, m_CurrentState, D3D12_RESOURCE_STATE_RENDER_TARGET);
     m_CurrentState = D3D12_RESOURCE_STATE_RENDER_TARGET;
     commandList->ClearRenderTargetView(m_CpuRtvHandle, clearColor, 0, nullptr);
 }
 
 void TextureBuffer::SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	TransitionResource(commandList, m_Buffer, m_CurrentState, D3D12_RESOURCE_STATE_GENERIC_READ);
+	TransitionResource(commandList, m_Resource, m_CurrentState, D3D12_RESOURCE_STATE_GENERIC_READ);
     m_CurrentState = D3D12_RESOURCE_STATE_GENERIC_READ;
 }
 
@@ -82,7 +84,7 @@ void TextureBuffer::SetToCopyDest(ComPtr<ID3D12GraphicsCommandList2> commandList
 {
     if (m_CurrentState == D3D12_RESOURCE_STATE_COPY_DEST) return;
 
-    TransitionResource(commandList, m_Buffer, m_CurrentState, D3D12_RESOURCE_STATE_COPY_DEST);
+    TransitionResource(commandList, m_Resource, m_CurrentState, D3D12_RESOURCE_STATE_COPY_DEST);
     m_CurrentState = D3D12_RESOURCE_STATE_COPY_DEST;
 }
 
@@ -90,14 +92,14 @@ void TextureBuffer::SetToCopySource(ComPtr<ID3D12GraphicsCommandList2> commandLi
 {
     if (m_CurrentState == D3D12_RESOURCE_STATE_COPY_SOURCE) return;
 
-    TransitionResource(commandList, m_Buffer, m_CurrentState, D3D12_RESOURCE_STATE_COPY_SOURCE);
+    TransitionResource(commandList, m_Resource, m_CurrentState, D3D12_RESOURCE_STATE_COPY_SOURCE);
     m_CurrentState = D3D12_RESOURCE_STATE_COPY_SOURCE;
 }
 
 void TextureBuffer::SetToState(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_RESOURCE_STATES newState)
 {
     if (m_CurrentState == newState) return;
-    TransitionResource(commandList, m_Buffer, m_CurrentState, newState);
+    TransitionResource(commandList, m_Resource, m_CurrentState, newState);
     m_CurrentState = newState;
 }
 
@@ -136,11 +138,11 @@ void TextureBuffer::BuildResource()
         &texDesc,
         m_CurrentState,
         &clearValue,
-        IID_PPV_ARGS(&m_Buffer)
+        IID_PPV_ARGS(&m_Resource)
     );
 
     if (m_Name != L"") 
-        m_Buffer->SetName(m_Name);
+        m_Resource->SetName(m_Name);
 }
 
 void TextureBuffer::BuildDescriptors()
@@ -152,13 +154,13 @@ void TextureBuffer::BuildDescriptors()
     m_CpuSrvHandle = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_SrvHeapIndex, m_Adapter);
     m_GpuSrvHandle = DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_SrvHeapIndex, m_Adapter);
 
-    m_Device->CreateRenderTargetView(m_Buffer.Get(), nullptr, m_CpuRtvHandle);
+    m_Device->CreateRenderTargetView(m_Resource.Get(), nullptr, m_CpuRtvHandle);
 
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    srvDesc.Format = m_Buffer->GetDesc().Format;
+    srvDesc.Format = m_Resource->GetDesc().Format;
     srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srvDesc.Texture2D.MipLevels = 1;
 
-    m_Device->CreateShaderResourceView(m_Buffer.Get(), &srvDesc, m_CpuSrvHandle);
+    m_Device->CreateShaderResourceView(m_Resource.Get(), &srvDesc, m_CpuSrvHandle);
 }
