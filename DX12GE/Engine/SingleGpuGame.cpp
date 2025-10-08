@@ -32,6 +32,7 @@ bool SingleGpuGame::Initialize()
     m_ShadowMapPipeline.Initialize(m_Device);
     m_SSRPipeline.Initialize(m_Device);
     m_MergingPipeline.Initialize(m_Device);
+    m_SkyboxPipeline.Initialize(m_Device);
 
     // 3D SCENE
     m_CascadedShadowMap.Create(m_Device);
@@ -69,9 +70,11 @@ bool SingleGpuGame::LoadContent()
     m_ParticleSystem.OnLoad(commandList);
     m_Lights.Init(m_Player);
 
+    m_Skybox.OnLoad(commandList);
+
     ShaderResources::GetSSRCB()->MaxDistance = 32.0f;
-    ShaderResources::GetSSRCB()->RayStep = 0.03f;
-    ShaderResources::GetSSRCB()->Thickness = 0.0275f;
+    ShaderResources::GetSSRCB()->RayStep = 0.5f;
+    ShaderResources::GetSSRCB()->Thickness = 0.25f;
 
     // DRAW THE CUBE
     m_DebugSystem.DrawPoint(m_boxPosition, 2.0f);
@@ -204,6 +207,7 @@ void SingleGpuGame::LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandLi
 
     DrawDebugObjects(commandList);
     DrawParticlesForward(commandList);
+    DrawSkybox(commandList);
 
     m_LightPassBuffer->SetToRead(commandList);
 }
@@ -228,6 +232,7 @@ void SingleGpuGame::DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList)
     m_GBuffer.SetGraphicsRootDescriptorTable(2, GBuffer::NORMAL,    commandList);
     m_GBuffer.SetGraphicsRootDescriptorTable(3, GBuffer::ORM,       commandList);
     commandList->SetGraphicsRootDescriptorTable(4, m_LightPassBuffer->SrvGPU());
+    m_Skybox.RenderTexture(commandList, 5);
 
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
@@ -255,6 +260,7 @@ void SingleGpuGame::MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
     commandList->SetGraphicsRootDescriptorTable(0, m_LightPassBuffer->SrvGPU());
     commandList->SetGraphicsRootDescriptorTable(1, m_SSRBuffer->SrvGPU());
+    m_GBuffer.SetGraphicsRootDescriptorTable(2, GBuffer::ORM, commandList);
 
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
@@ -276,6 +282,14 @@ void SingleGpuGame::DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> comm
     m_ParticlePipeline.Set(commandList);
     ShaderResources::SetGraphicsWorldCB(commandList, 2);
     m_ParticleSystem.OnRender(commandList);
+}
+
+void SingleGpuGame::DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList)
+{
+    CurrentPass::Set(CurrentPass::Skybox);
+
+    m_SkyboxPipeline.Set(commandList);
+    m_Skybox.OnRender(commandList, m_Camera->GetViewProjMatrixNoTranslation());
 }
 
 void SingleGpuGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList)

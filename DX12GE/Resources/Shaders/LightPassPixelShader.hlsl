@@ -70,6 +70,7 @@ Texture2D<float4> gPosition : register(t0);
 Texture2D<float4> gNormal   : register(t1);  
 Texture2D<float4> gDiffuse  : register(t2); 
 Texture2D<float4> gEmissive : register(t9);
+//Texture2D<float4> gORM      : register(t10);
 
 StructuredBuffer<PointLight> PointLightsSB : register(t3);
 StructuredBuffer<SpotLight> SpotLightsSB : register(t4);
@@ -85,9 +86,9 @@ SamplerState ShadowSampler : register(s1);
 // 0.15f, 0.3f, 0.6f, 1.0f
 static float splitDistances[3] = { 37.5, 75, 140 };
 
-static bool fogEnable = false;
+static bool fogEnable = true;
 static float fogStart = 35;
-static float fogDistance = 115;         //fogEnd - fogStart
+static float fogDistance = 115 * 2;         //fogEnd - fogStart
 
 float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
 {
@@ -96,8 +97,8 @@ float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
     ProjCoords.y = -ProjCoords.y;
     ProjCoords.xy = 0.5 * ProjCoords.xy + 0.5;
     
-    uint width, height, numMips;
-    ShadowMapSB.GetDimensions(0, width, height, numMips);
+    uint width, height;
+    ShadowMapSB.GetDimensions(width, height);
 
     // Texel size.
     float dx = 1.0f / (float) width;
@@ -132,16 +133,16 @@ float CalcShadowCascade(float3 worldPos, float Distance)
         return CalcShadowFactor(mul(ShadowMapTransform3, float4(worldPos, 1.0)), ShadowMapSB3);
 }
 
-float4 DebugShadowCascade(float3 WorldPos, float Distance)
+float3 DebugShadowCascade(float3 WorldPos, float Distance)
 {
     if (Distance < splitDistances[0])
-        return float4(1.5f, 1, 1, 1);
+        return float3(1.5f, 1, 1);
     else if (Distance < splitDistances[1])
-        return float4(1, 1.5f, 1, 1);
+        return float3(1, 1.5f, 1);
     else if (Distance < splitDistances[2])
-        return float4(1, 1, 1.5f, 1);
+        return float3(1, 1, 1.5f);
     else
-        return float4(1, 1.5f, 1.5f, 1);
+        return float3(1, 1.5f, 1.5f);
 }
 
 float3 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, float3 Normal, float3 WorldPos)
@@ -161,7 +162,7 @@ float3 CalcLightInternal(float3 Color, float Intensity, float3 pLightDirection, 
         SpecularFactor = pow(SpecularFactor, LightPropertiesCB.MaterialPower);
         if (SpecularFactor > 0)
         {
-            SpecularColor = Color * 2.0 * SpecularFactor;
+            SpecularColor = Color * SpecularFactor;
         }
     }
     
@@ -232,7 +233,7 @@ float4 main(PSInput input) : SV_Target
             worldPos);
     
     float shadowFactor = CalcShadowCascade(worldPos, cameraPixelDistance);
-    float3 lightingResult = ambient + diffuse * shadowFactor; // * DebugShadowCascade(worldPos).xyz;
+    float3 lightingResult = ambient + diffuse * shadowFactor;// * DebugShadowCascade(worldPos, cameraPixelDistance).xyz;
     
     // Pointlights
     for (int pIndex = 0; pIndex < LightPropertiesCB.PointLightsCount; pIndex++)

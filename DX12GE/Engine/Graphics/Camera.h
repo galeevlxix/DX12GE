@@ -26,7 +26,7 @@ public:
 		float zFar = 300.0f);
 
 	XMMATRIX GetViewProjMatrix();
-	XMMATRIX GetProjMatrix();	
+	XMMATRIX GetViewProjMatrixNoTranslation();
 
 	void Destroy();
 };

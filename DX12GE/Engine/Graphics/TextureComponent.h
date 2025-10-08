@@ -49,6 +49,8 @@ private:
 
 public:
     void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, string path);
+    void OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandList, string path);
+
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot);
     void Destroy();
 

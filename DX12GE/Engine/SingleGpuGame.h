@@ -16,6 +16,7 @@
 #include "Pipelines/LightPassPipeline.h"
 #include "Pipelines/SSRPipeline.h"
 #include "Pipelines/MergingPipeline.h"
+#include "Pipelines/SkyboxPipeline.h"
 
 #include "Graphics/DescriptorHeaps.h"
 #include "Graphics/ShaderResources.h"
@@ -29,6 +30,7 @@
 #include "Graphics/TextureBuffer.h"
 #include "Graphics/DepthBuffer.h"
 #include "Graphics/GBuffer.h"
+#include "Graphics/Skybox.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -63,6 +65,7 @@ public:
     void SaveSceneToFile();
 
 private:
+    void DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList);
@@ -109,6 +112,8 @@ private:
     std::shared_ptr<TextureBuffer> m_LightPassBuffer;
     std::shared_ptr<TextureBuffer> m_SSRBuffer;
 
+    Skybox m_Skybox;
+
     // PARTICLES
 
     ParticleSystem m_ParticleSystem;
@@ -127,4 +132,5 @@ private:
     SSRPipeline m_SSRPipeline;
     MergingPipeline m_MergingPipeline;
     LightPassPipeline m_LightPassPipeline;    
+    SkyboxPipeline m_SkyboxPipeline;
 };

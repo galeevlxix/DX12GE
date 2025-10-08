@@ -110,8 +110,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)Windows\lib\assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Windows\dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(SolutionDir)Windows\lib\assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Windows\dll;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,6 +162,7 @@
     <ClCompile Include="Engine\Graphics\src\ShaderResources.cpp" />
     <ClCompile Include="Engine\Graphics\src\ShadowMap.cpp" />
     <ClCompile Include="Engine\Graphics\src\SharedMemory.cpp" />
+    <ClCompile Include="Engine\Graphics\src\Skybox.cpp" />
     <ClCompile Include="Engine\Graphics\src\SSRCrossAdapterResources.cpp" />
     <ClCompile Include="Engine\Graphics\src\TextureBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="Engine\Pipelines\src\Pipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\ShadowMapPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\SimplePipeline.cpp" />
+    <ClCompile Include="Engine\Pipelines\src\SkyboxPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\SSRPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\TexturedPipeline.cpp" />
     <ClCompile Include="Engine\SingleGpuGame.cpp" />
@@ -219,6 +221,7 @@
     <ClInclude Include="Engine\Graphics\ShaderResources.h" />
     <ClInclude Include="Engine\Graphics\ShadowMap.h" />
     <ClInclude Include="Engine\Graphics\SharedMemory.h" />
+    <ClInclude Include="Engine\Graphics\Skybox.h" />
     <ClInclude Include="Engine\Graphics\SSRCrossAdapterResources.h" />
     <ClInclude Include="Engine\Graphics\TextureBuffer.h" />
     <ClInclude Include="Engine\Graphics\TextureComponent.h" />
@@ -234,6 +237,7 @@
     <ClInclude Include="Engine\Pipelines\Pipeline.h" />
     <ClInclude Include="Engine\Pipelines\ShadowMapPipeline.h" />
     <ClInclude Include="Engine\Pipelines\SimplePipeline.h" />
+    <ClInclude Include="Engine\Pipelines\SkyboxPipeline.h" />
     <ClInclude Include="Engine\Pipelines\SSRPipeline.h" />
     <ClInclude Include="Engine\Pipelines\TexturedPipeline.h" />
     <ClInclude Include="Engine\SingleGpuGame.h" />
@@ -330,6 +334,16 @@
     <FxCompile Include="Resources\Shaders\SimpleVertexShader.hlsl">
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
       <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\SkyboxPixelShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\SkyboxVertexShader.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
     </FxCompile>

@@ -18,6 +18,7 @@ Texture2D<float4> gPosition : register(t0);
 Texture2D<float4> gNormal   : register(t1);
 Texture2D<float4> gORM      : register(t2);
 Texture2D<float4> gColor    : register(t3);
+TextureCube<float4> SkyboxCubemap : register(t4);
 
 SamplerState gSampler : register(s0);
 
@@ -37,7 +38,7 @@ float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
         float2 uv = clipPos.xy * 0.5 + 0.5;
         
         if (uv.x < 0 || uv.y < 0 || uv.x > 1 || uv.y > 1)
-            return float3(0, 0, 0);
+            return SkyboxCubemap.Sample(gSampler, reflectionDir).rgb;
         
         float3 gBufferWorldPos = gPosition.SampleLevel(gSampler, uv, 0).xyz;
         float depthDiff = length(currentPos - gBufferWorldPos);
@@ -46,27 +47,30 @@ float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
         {
             float3 normal = gNormal.Sample(gSampler, uv).xyz;
             if (dot(reflectionDir, normal) > 0)
-                return float3(0, 0, 0);
+                return SkyboxCubemap.Sample(gSampler, reflectionDir).rgb;
             
-            return gColor.Sample(gSampler, uv).rgb;
+            float3 color = gColor.Sample(gSampler, uv).rgb;
+            color = pow(color, 2.2);            
+            return color;
         }
     }
     
-    return float3(0, 0, 0);
+    return SkyboxCubemap.Sample(gSampler, reflectionDir).rgb;
 }
 
 float4 main(PSInput input) : SV_Target
 {
     float4 orm = gORM.Sample(gSampler, input.TexCoord);
-    if (orm.b < 0.25)
+    if (orm.b < 0.1)
         return float4(0.0, 0.0, 0.0, 0.0);
     
     float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
     float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
     float3 cameraPixelVector = worldPos - CameraPos.xyz;
     
-    float f0 = 0.04;
-    float fresnel = saturate(f0 + (1 - f0) * pow(1 - dot(normal, normalize(-cameraPixelVector)), 2));
+    float f0 = 0.04; //lerp(0.04, 1.0, orm.b);
+    float NdotV = dot(normal, normalize(-cameraPixelVector));
+    float fresnel = saturate(f0 + (1 - f0) * pow(1 - NdotV, 5));
     
     float3 cameraPixelDirection = normalize(cameraPixelVector.xyz);    
     float3 reflectDir = normalize(reflect(cameraPixelDirection, normal));

@@ -19,9 +19,9 @@ XMMATRIX Camera::GetViewProjMatrix()
 	return XMMatrixMultiply(XMMatrixLookAtLH(Position, Position + Target, Up), XMMatrixPerspectiveFovLH(XMConvertToRadians(Fov), Ratio, ZNear, ZFar));
 }
 
-XMMATRIX Camera::GetProjMatrix()
+XMMATRIX Camera::GetViewProjMatrixNoTranslation()
 {
-    return XMMatrixMultiply(XMMatrixLookAtLH(Position, Position + XMVectorSet(0, 0, -1, 0), Up), XMMatrixPerspectiveFovLH(XMConvertToRadians(Fov), Ratio, ZNear, ZFar));
+	return XMMatrixMultiply(XMMatrixLookAtLH(XMVectorZero(), Target, Up), XMMatrixPerspectiveFovLH(XMConvertToRadians(Fov), Ratio, ZNear, 1000));
 }
 
 void Camera::Destroy()

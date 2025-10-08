@@ -97,11 +97,8 @@ bool MultiGpuGame::LoadContent()
     m_Lights.Init(m_Player);
 
     ShaderResources::GetSSRCB()->MaxDistance = 32.0f;
-    ShaderResources::GetSSRCB()->RayStep = 0.1f;
-    ShaderResources::GetSSRCB()->Thickness = 0.08f;
-
-    /*ShaderResources::GetSSRCB()->RayStep = 0.03f;
-    ShaderResources::GetSSRCB()->Thickness = 0.0275f;*/
+    ShaderResources::GetSSRCB()->RayStep = 0.5f;
+    ShaderResources::GetSSRCB()->Thickness = 0.25f;
     
     // DRAW THE CUBE
     m_DebugSystem.DrawPoint(m_boxPosition, 2.0f);

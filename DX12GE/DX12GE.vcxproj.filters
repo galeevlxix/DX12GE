@@ -73,6 +73,9 @@
     <Filter Include="Файлы ресурсов\Shaders\Merging">
       <UniqueIdentifier>{9459a864-b609-4743-ac58-5ccaf7c3c5fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\Shaders\Skybox">
+      <UniqueIdentifier>{45e57c06-7f23-49e0-b921-5ad529d33b48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX12GE.cpp">
@@ -221,6 +224,12 @@
     </ClCompile>
     <ClCompile Include="Engine\MultiGpuGame.cpp">
       <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Graphics\src\Skybox.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\SkyboxPipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -392,6 +401,12 @@
     <ClInclude Include="Engine\MultiGpuGame.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\Skybox.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipelines\SkyboxPipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc">
@@ -469,6 +484,12 @@
     </FxCompile>
     <FxCompile Include="Resources\Shaders\SSRVertexShader.hlsl">
       <Filter>Файлы ресурсов\Shaders\SSR</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\SkyboxVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Skybox</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\SkyboxPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Skybox</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

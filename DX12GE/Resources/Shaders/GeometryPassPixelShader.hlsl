@@ -4,8 +4,8 @@ struct PSInput
     float4 Normal :     NORMAL;
     float2 TextCoord :  TEXCOORD;
     float4 WorldPos :   POSITION0;
-    float4 Tangent : TANGENT;
-    float4 Bitangent : BITANGENT;
+    float4 Tangent :    TANGENT;
+    float4 Bitangent :  BITANGENT;
 };
 
 struct PSOutput

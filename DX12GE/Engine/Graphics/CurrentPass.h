@@ -12,7 +12,8 @@ public:
 		Merging = 4,
 		TransparentParticles = 5,
 		Debug = 6,
-		None = 7
+		Skybox = 7,
+		None = 8
 	};
 
 	static EPass Get();

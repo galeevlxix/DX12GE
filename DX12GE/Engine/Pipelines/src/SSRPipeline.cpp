@@ -32,7 +32,7 @@ void SSRPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
 	D3D12_ROOT_SIGNATURE_FLAGS m_RootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	CD3DX12_ROOT_PARAMETER1 rootParameters[5];
+	CD3DX12_ROOT_PARAMETER1 rootParameters[6];
 
 	rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_PIXEL);   // ssr const buffer
 
@@ -47,6 +47,9 @@ void SSRPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
 
 	const CD3DX12_DESCRIPTOR_RANGE1 colTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
 	rootParameters[4].InitAsDescriptorTable(1, &colTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	const CD3DX12_DESCRIPTOR_RANGE1 skyTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4);
+	rootParameters[5].InitAsDescriptorTable(1, &skyTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
 
     const CD3DX12_STATIC_SAMPLER_DESC samplers[1] =
     {
