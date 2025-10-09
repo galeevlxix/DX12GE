@@ -3,9 +3,17 @@
 1) В терминале:
 ```
 cd path/to/your/folder
+```
+При клонировании репозитория из GitHub:
+```
 git clone https://github.com/galeevlxix/DX12GE.git
 ```
-2) Открыть файл решения `path/to/your/folder/DX12GE/DX12GE.sln`
+При клонировании репозитория из частного GitLab (для команды ИТМО):
+```
+git clone http://serv:8080/galeevlxix/GameEngineDev.git
+```
+
+2) Открыть файл решения `DX12GE.sln`
 3) Собрать решение и запустить проект
 # Nau Engine Test  
 В качестве основы для прохождения тестового задания я использую собственный движок на DX12.  
