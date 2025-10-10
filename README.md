@@ -1,4 +1,4 @@
-# DirectX 12 Game Engine
+# DirectX 12 Game Engine - Real Engine
 ### Инструкция по сборке и запуску проекта:
 1) В терминале:
 ```
