@@ -17,8 +17,6 @@ SingleGpuGame::SingleGpuGame(const wstring& name, int width, int height, bool vS
 
 bool SingleGpuGame::Initialize()
 {
-    if(!super::Initialize()) return false;
-
     m_Device = Application::Get().GetPrimaryDevice();
     
     // INITIALIZE
@@ -52,6 +50,12 @@ bool SingleGpuGame::Initialize()
     m_DepthBuffer = std::make_shared<DepthBuffer>();
     m_DepthBuffer->Init(GraphicAdapterPrimary);
     m_DepthBuffer->Resize(GetClientWidth(), GetClientHeight());
+
+    m_Camera = new Camera();
+    m_Camera->OnLoad();
+    m_Camera->Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
+
+    if (!super::Initialize()) return false;
     
     return true;
 }
@@ -60,10 +64,6 @@ bool SingleGpuGame::LoadContent()
 {
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-
-    m_Camera = new Camera();
-    m_Camera->OnLoad();
-    m_Camera->Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
 
     m_SceneSerializer.Load(commandList, m_Objects);
     m_Player = dynamic_cast<ThirdPersonPlayer*>(m_Objects["player"]);
