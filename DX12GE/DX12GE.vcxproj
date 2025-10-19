@@ -70,6 +70,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>D:\Real Engine\GameEngineDev\Lua;D:\Real Engine\GameEngineDev\Lua\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Real Engine\GameEngineDev\Lua;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>D:\Real Engine\GameEngineDev\Lua;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -110,8 +117,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)Windows\lib\assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Windows\dll;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(SolutionDir)Windows\lib\assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;DirectXTex.lib;lua54.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Real Engine\GameEngineDev\Lua;..\Windows\dll;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -132,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Lua\LuaManager.cpp" />
     <ClCompile Include="DX12GE.cpp" />
     <ClCompile Include="Engine\Base\src\Application.cpp" />
     <ClCompile Include="Engine\Base\src\CommandExecutor.cpp" />
@@ -185,6 +193,7 @@
     <ClCompile Include="Game\ThirdPersonPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Lua\LuaManager.h" />
     <ClInclude Include="Engine\Base\Application.h" />
     <ClInclude Include="Engine\Base\CommandExecutor.h" />
     <ClInclude Include="Engine\Base\CommandQueue.h" />
@@ -383,6 +392,9 @@
     <None Include="Engine\Base\SimpleMath.inl" />
     <None Include="packages.config" />
     <None Include="Resources\scene.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Lua\scripts\TestScript.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -76,6 +76,12 @@
     <Filter Include="Файлы ресурсов\Shaders\Skybox">
       <UniqueIdentifier>{45e57c06-7f23-49e0-b921-5ad529d33b48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Engine\Lua">
+      <UniqueIdentifier>{43627609-ce85-4e0b-a1a7-fbc618dd303f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Lua\scripts">
+      <UniqueIdentifier>{8e12bf99-bc8f-4671-8b7a-0cdceb28242b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX12GE.cpp">
@@ -230,6 +236,9 @@
     </ClCompile>
     <ClCompile Include="Engine\Pipelines\src\SkyboxPipeline.cpp">
       <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Lua\LuaManager.cpp">
+      <Filter>Исходные файлы\Engine\Lua</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -407,6 +416,9 @@
     <ClInclude Include="Engine\Pipelines\SkyboxPipeline.h">
       <Filter>Файлы заголовков\Engine\Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\Lua\LuaManager.h">
+      <Filter>Исходные файлы\Engine\Lua</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc">
@@ -501,5 +513,10 @@
     <None Include="Resources\scene.json">
       <Filter>Файлы ресурсов</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Lua\scripts\TestScript.lua">
+      <Filter>Исходные файлы\Engine\Lua\scripts</Filter>
+    </Text>
   </ItemGroup>
 </Project>

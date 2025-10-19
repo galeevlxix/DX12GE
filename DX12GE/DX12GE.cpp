@@ -4,6 +4,7 @@
 
 #include "Engine/Base/Application.h"
 #include "Game/GameSample.h"
+#include "LuaManager.h"
 
 #include <dxgidebug.h>
 
@@ -20,6 +21,7 @@ int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine,
 {
     int retCode = 0;
     setlocale(LC_ALL, "Russian");
+    auto manager = LuaManager::GetInstance();
 
     // Set the working directory to the path of the executable.
     WCHAR path[MAX_PATH];
@@ -40,6 +42,5 @@ int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine,
     Application::Destroy();
 
     //atexit(&ReportLiveObjects);
-
     return retCode;
 }
