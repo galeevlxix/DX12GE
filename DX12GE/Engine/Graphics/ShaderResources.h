@@ -119,7 +119,7 @@ struct SSRConstantBuffer
 class ShaderResources
 {
 public:
-	static void Create();
+	static void Create(bool singleGpu);
 	static ObjectConstantBuffer* GetObjectCB();
 	static ShadowConstantBuffer* GetShadowCB();
 	static WorldConstantBuffer* GetWorldCB();

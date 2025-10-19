@@ -18,7 +18,7 @@ bool MultiGpuGame::Initialize()
     m_SecondDevice = Application::Get().GetSecondDevice();
 
     // INITIALIZE
-    ShaderResources::Create();
+    ShaderResources::Create(false);
     DescriptorHeaps::OnInit(m_PrimaryDevice, GraphicAdapterPrimary);
     DescriptorHeaps::OnInit(m_SecondDevice, GraphicAdapterSecond);
 

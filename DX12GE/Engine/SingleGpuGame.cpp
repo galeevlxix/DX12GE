@@ -20,7 +20,7 @@ bool SingleGpuGame::Initialize()
     m_Device = Application::Get().GetPrimaryDevice();
     
     // INITIALIZE
-    ShaderResources::Create();
+    ShaderResources::Create(true);
     DescriptorHeaps::OnInit(m_Device, GraphicAdapterPrimary);
 
     // PIPELINES
@@ -312,6 +312,8 @@ void SingleGpuGame::OnRender(RenderEventArgs& e)
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
     UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
+
+    ShaderResources::GetUploadBuffer()->Reset();
 
     DrawSceneToShadowMaps(commandList);
     DrawSceneToGBuffer(commandList);

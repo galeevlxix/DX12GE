@@ -30,53 +30,24 @@ static const UINT BcbSize = sizeof(BitonicSortConstantBuffer);
 static const UINT McbSize = sizeof(MaterialConstantBuffer);
 static const UINT SSRcbSize = sizeof(SSRConstantBuffer);
 
-void ShaderResources::Create()
+void ShaderResources::Create(bool singleGpu)
 {
 	if (!mPrimaryDeviceUploadBuffer || !mSecondDeviceUploadBuffer)
 	{
 		mPrimaryDeviceUploadBuffer = new UploadBuffer();
-		mSecondDeviceUploadBuffer = new UploadBuffer(2 * 1024 * 1024, GraphicAdapterSecond);
+		mSecondDeviceUploadBuffer = new UploadBuffer(_2MB, GraphicAdapterSecond);
 	}
 
-	if (!ObjectCB)
-	{
-		ObjectCB = new ObjectConstantBuffer();
-	}
+	ObjectCB =			!ObjectCB ?				new ObjectConstantBuffer() :			ObjectCB;
+	ShadowCB =			!ShadowCB ?				new ShadowConstantBuffer() :			ShadowCB;
+	WorldCB =			!WorldCB  ?				new WorldConstantBuffer()  :			WorldCB;
+	ParticleCB =		!ParticleCB ?			new ParticleConstantBuffer() :			ParticleCB;
+	ComputeConstantCB = !ComputeConstantCB ?	new ParticleComputeConstantBuffer() :	ComputeConstantCB;
+	BitonicCB =			!BitonicCB ?			new BitonicSortConstantBuffer() :		BitonicCB;
+	MaterialCB =		!MaterialCB ?			new MaterialConstantBuffer() :			MaterialCB;
+	SSRCB =				!SSRCB ?				new SSRConstantBuffer() :				SSRCB;
 
-	if (!ShadowCB)
-	{
-		ShadowCB = new ShadowConstantBuffer();
-	}
 
-	if (!WorldCB)
-	{
-		WorldCB = new WorldConstantBuffer();
-	}
-
-	if (!ParticleCB)
-	{
-		ParticleCB = new ParticleConstantBuffer();
-	}
-
-	if (!ComputeConstantCB)
-	{
-		ComputeConstantCB = new ParticleComputeConstantBuffer();
-	}
-
-	if (!BitonicCB)
-	{
-		BitonicCB = new BitonicSortConstantBuffer();
-	}
-
-	if (!MaterialCB)
-	{
-		MaterialCB = new MaterialConstantBuffer();
-	}
-
-	if (!SSRCB)
-	{
-		SSRCB = new SSRConstantBuffer();
-	}
 }
 
 ObjectConstantBuffer* ShaderResources::GetObjectCB()
@@ -175,14 +146,9 @@ void ShaderResources::SetMaterialCB(ComPtr<ID3D12GraphicsCommandList2> commandLi
 
 void ShaderResources::SetSSRCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, GraphicsAdapter graphicsAdapter)
 {
-	if (graphicsAdapter == GraphicAdapterPrimary)
-	{
-		SSRcbAllocation = mPrimaryDeviceUploadBuffer->Allocate(SSRcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-	}
-	else
-	{
-		SSRcbAllocation = mSecondDeviceUploadBuffer->Allocate(SSRcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-	}
+	SSRcbAllocation = graphicsAdapter == GraphicAdapterPrimary ? 
+		mPrimaryDeviceUploadBuffer->Allocate(SSRcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT) :
+		mSecondDeviceUploadBuffer->Allocate(SSRcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 	
 	memcpy(SSRcbAllocation.CPU, SSRCB, SSRcbSize);
 	commandList->SetGraphicsRootConstantBufferView(slot, SSRcbAllocation.GPU);
