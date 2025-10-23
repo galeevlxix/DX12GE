@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Real Engine\GameEngineDev\Lua;D:\Real Engine\GameEngineDev\Lua\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Real Engine\GameEngineDev\DX12GE\Engine;D:\Real Engine\GameEngineDev\Lua;D:\Real Engine\GameEngineDev\Lua\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Real Engine\GameEngineDev\Lua;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

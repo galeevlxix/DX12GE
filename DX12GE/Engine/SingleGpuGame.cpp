@@ -1,14 +1,14 @@
 #include "SingleGpuGame.h"
 #include "Graphics/ResourceStorage.h"
 #include "Base/CommandExecutor.h"
-
+#include "LuaManager.h"
 #include <sstream>
 #include <string>
 #include <chrono>
 #include <fstream>
 
 //test
-
+LuaManager* manager;
 CommandExecutor* executor;
 
 SingleGpuGame::SingleGpuGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
@@ -96,6 +96,7 @@ bool SingleGpuGame::LoadContent()
     commandQueue->WaitForFenceValue(fenceValue);    
 
     executor = new CommandExecutor(this);
+    LuaManager::SetScene(this);
     m_Initialized = true;
 
     return true;
@@ -350,8 +351,8 @@ void SingleGpuGame::TestTime(float elapsedTime)
 void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
 {
     super::OnKeyPressed(e);
-    m_Player->OnKeyPressed(e);
-    
+  //  m_Player->OnKeyPressed(e);
+    LuaManager::ProceedKeyBoardInput(e, true);
     switch (e.Key)
     {
     case KeyCode::Escape:
@@ -390,27 +391,32 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
 
 void SingleGpuGame::OnKeyReleased(KeyEventArgs& e)
 {
-    m_Player->OnKeyReleased(e);
+    LuaManager::ProceedKeyBoardInput(e, false);
+   // m_Player->OnKeyReleased(e);
 }
 
 void SingleGpuGame::OnMouseWheel(MouseWheelEventArgs& e)
 {
-    m_Player->OnMouseWheel(e);
+    //m_Player->OnMouseWheel(e);
+    LuaManager::ProceedMouseWheelInput(e);
 }
 
 void SingleGpuGame::OnMouseMoved(MouseMotionEventArgs& e)
 {
-    m_Player->OnMouseMoved(e);
+    LuaManager::ProceedMouseMovementInput(e);
+  //  m_Player->OnMouseMoved(e);
 }
 
 void SingleGpuGame::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
-    m_Player->OnMouseButtonPressed(e);
+    //m_Player->OnMouseButtonPressed(e);
+    LuaManager::ProceedMouseClickInput(e, true);
 }
 
 void SingleGpuGame::OnMouseButtonReleased(MouseButtonEventArgs& e)
 {
-    m_Player->OnMouseButtonReleased(e);
+   // m_Player->OnMouseButtonReleased(e);
+    LuaManager::ProceedMouseClickInput(e, false);
 }
 
 void SingleGpuGame::OnResize(ResizeEventArgs& e)

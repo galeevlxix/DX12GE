@@ -1,4 +1,5 @@
 #include "ThirdPersonPlayer.h"
+#include "LuaManager.h"
 #include "../Engine/Base/InputSystem.h"
 
 #define PI 3.1415926535f
@@ -20,6 +21,7 @@ void ThirdPersonPlayer::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, c
 void ThirdPersonPlayer::OnUpdate(const double& deltaTime)
 {
 	Object3DEntity::OnUpdate(deltaTime);
+    LuaManager::PerformUpdate();
 
     if (m_test_Enabled)
     {
@@ -89,6 +91,7 @@ void ThirdPersonPlayer::OnUpdate(const double& deltaTime)
 void ThirdPersonPlayer::SetCamera(Camera* camera)
 {
     m_Camera = camera;
+    LuaManager::SetCamera(camera);
 
     if (XMVectorGetZ(camera->Target) >= 0.0f)
     {

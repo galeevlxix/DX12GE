@@ -1,4 +1,5 @@
 #pragma once
+#include "SingleGpuGame.h"
 
 extern "C"
 {
@@ -47,7 +48,6 @@ private:
 	std::string ReadUserDataFromTable(std::string tableName, std::string keyName);
 	static lua_State* L;
 	static LuaManager* p_instance;
-
 public:
 	static LuaManager* GetInstance() {
 		if (p_instance == nullptr)
@@ -57,6 +57,13 @@ public:
 		return p_instance;
 	};
 
+	static void SetScene(SingleGpuGame* scene);
+	static void ProceedMouseMovementInput(MouseMotionEventArgs&);
+	static void ProceedMouseClickInput(MouseButtonEventArgs& e, bool pressed);
+	static void ProceedMouseWheelInput(MouseWheelEventArgs& e);
+	static void ProceedKeyBoardInput(KeyEventArgs& e, bool pressed);
+	static void PerformUpdate();
+	static void SetCamera(Camera* camera);
 	static void CLose() {
 		lua_close(L);
 	}
