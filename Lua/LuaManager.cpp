@@ -3,11 +3,15 @@
 #include <string>
 #include "SingleGpuGame.h"
 #include "LuaManager.h"
+#define SOL_ALL_SAFETIES_ON 0
+
 
 lua_State* LuaManager::L = nullptr;
 LuaManager* LuaManager::p_instance = nullptr;
 std::string const luaSciptsFolder = "../Lua/scripts/";
 static SingleGpuGame* p_scene;
+static std::vector<std::string> lua_classes;
+static sol::state lua;
 static Camera* p_camera;
 
 //////////////////////////////////////////////////////////////////////
@@ -22,13 +26,10 @@ int lua_Foo(lua_State* L)
 	return 1;
 }
 
-int lua_get_object_on_scene(lua_State* L)
+Object3DEntity* lua_get_object_on_scene(std::string name)
 {
-	std::string name = lua_tostring(L, 1);
 	const auto object = p_scene->Get(name);
-	lua_pushlightuserdata(L, object);
-
-	return 1;
+	return object;
 }
 
 int lua_move_object_to_position(lua_State* L)
@@ -79,31 +80,36 @@ int lua_set_camera_target(lua_State* L)
 
 	return 1;
 }
+
+int lua_register_class(std::string id)
+{
+	lua_classes.push_back(id);
+	std::cout << "registered  " << id << std::endl;
+	return 1;
+}
 //LUA API ZONE END
 //////////////////////////////////////////////////////////////////////
 
 LuaManager::LuaManager()
 {
-	L = luaL_newstate();
-	luaL_openlibs(L);
-	const int r = luaL_dofile(L, (luaSciptsFolder + "TestScript.lua").c_str());
+	//sol::state lua;
+	lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
 
+	lua.set_function("Register", &lua_register_class);
+	lua.set_function("GetObjectOnScene", &lua_get_object_on_scene);
 
-	if (CheckLua(L, r))
-	{
-		lua_register(L, "Foo", lua_Foo);
-		lua_register(L, "get_object_on_scene", lua_get_object_on_scene);
-		lua_register(L, "move_object_to_position", lua_move_object_to_position);
-		lua_register(L, "rotate_object_by_rotator", lua_rotate_object_by_rotator);
-		lua_register(L, "get_camera", lua_get_camera);
-		lua_register(L, "set_camera_target", lua_set_camera_target);
-	}
+	lua.unsafe_script_file(luaSciptsFolder + "Core.lua");
+	lua.unsafe_script_file(luaSciptsFolder + "Player.lua");
+	lua.unsafe_script_file(luaSciptsFolder + "TestScript.lua");
+	lua.unsafe_script_file(luaSciptsFolder + "TestScript2.lua");
+	
 }
 
 LuaManager::~LuaManager()
 {
 }
 
+///////////////////////////////////////////////////////////////// ABOUT TO BE CUTTED
 bool LuaManager::CheckLua(lua_State* L, int r)
 {
 	if (r != LUA_OK)
@@ -223,43 +229,59 @@ std::string LuaManager::ReadUserDataFromTable(std::string tableName, std::string
 {
 	return std::string();
 }
+///////////////////////////////////////////////////////////////// ABOUT TO BE CUTTED END ZONE
+
 
 void LuaManager::SetScene(SingleGpuGame* scene)
 {
 	p_scene = scene;
 	const auto tuple = std::make_tuple(1, 2.5f, "dodik");
-	p_instance->CallLuaFunction("DoThing", tuple, 1);
+	//p_instance->CallLuaFunction("DoThing", tuple, 1);
 }
 
 void LuaManager::ProceedMouseMovementInput(MouseMotionEventArgs& e)
 {
-	const auto tuple = std::make_tuple(e.X, e.Y);
-	p_instance->CallLuaFunction("OnMouseMovementInputReceived", tuple, 1);
+	for (const auto& lua_class : lua_classes)
+	{
+		sol::table temp_class = lua[lua_class];
+		temp_class["OnMouseMovementInputReceived"](temp_class, e);
+	};;
 }
 
 void LuaManager::ProceedMouseClickInput(MouseButtonEventArgs& e, bool pressed)
 {
-	const auto tuple = std::make_tuple(e, pressed);
-	p_instance->CallLuaFunction("OnMouseClickInputReceived", tuple, 1);
+	for (const auto& lua_class : lua_classes)
+	{
+		sol::table temp_class = lua[lua_class];
+		temp_class["OnMouseClickInput"](temp_class, e, pressed);
+	};
 }
 
 void LuaManager::ProceedMouseWheelInput(MouseWheelEventArgs& e)
 {
-	const auto tuple = std::make_tuple(e);
-	p_instance->CallLuaFunction("OnMouseWheelInputReceived", tuple, 1);
+	for (const auto& lua_class : lua_classes)
+	{
+		sol::table temp_class = lua[lua_class];
+		temp_class["OnMouseWheelInput"](temp_class, e);
+	};
 }
 
 void LuaManager::ProceedKeyBoardInput(KeyEventArgs& e, bool pressed)
 {
-	const auto tuple = std::make_tuple(e, pressed);
-	p_instance->CallLuaFunction("OnKeyBoardInputReceived", tuple, 1);
+	for (const auto& lua_class : lua_classes)
+	{
+		sol::table temp_class = lua[lua_class];
+		temp_class["OnKeyBoardInput"](temp_class, e, pressed);
+	};
 }
 
 void LuaManager::PerformUpdate()
 {
-	const std::string name = "Update";
-	lua_getglobal(L, name.c_str());
-	lua_pcall(L, 0, 0, 0);
+	for (const auto& lua_class : lua_classes)
+	{
+		sol::table temp_class = lua[lua_class];
+		temp_class["Update"](temp_class);
+	}
 }
 
 void LuaManager::SetCamera(Camera* camera)
