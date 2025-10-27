@@ -35,3 +35,25 @@ protected:
 };
 
 using BehaviorPtr = std::unique_ptr<Behavior>;
+
+class Condition : public Behavior {
+protected:
+    std::function<bool(Object3DEntity*)> m_Check;
+    bool m_Negate = false;
+    bool m_Monitor = false;
+
+    Status update(float dt, Object3DEntity* owner) override {
+        bool result = m_Check(owner);
+        if (m_Negate) result = !result;
+
+        if (m_Monitor) {
+            return result ? Status::RUNNING : Status::FAILURE;
+        } else {
+            return result ? Status::SUCCESS : Status::FAILURE;
+        }
+    }
+
+public:
+    Condition(std::function<bool(Object3DEntity*)> check, bool negate = false, bool monitor = false)
+        : m_Check(check), m_Negate(negate), m_Monitor(monitor) {}
+};

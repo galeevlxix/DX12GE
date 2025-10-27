@@ -7,7 +7,12 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::sequence() {
 }
 
 BehaviorTreeBuilder& BehaviorTreeBuilder::selector() {
-    stack.emplace(BuilderContext{{}, false});
+    stack.emplace(BuilderContext{{}, false, false});  // Not active
+    return *this;
+}
+
+BehaviorTreeBuilder& BehaviorTreeBuilder::activeSelector() {
+    stack.emplace(BuilderContext{{}, false, true});  // isActive = true
     return *this;
 }
 
@@ -16,6 +21,11 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::action(Behavior* b) {
         stack.emplace();
     }
     stack.top().children.emplace_back(b);
+    return *this;
+}
+
+BehaviorTreeBuilder& BehaviorTreeBuilder::condition(Condition* c) {
+    stack.top().children.emplace_back(c);  // Treat as Behavior
     return *this;
 }
 
@@ -28,6 +38,8 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::end() {
     Composite* node = nullptr;
     if (current.isSequence) {
         node = new Sequence();
+    } else if (current.isActive) {
+        node = new ActiveSelector();
     } else {
         node = new Selector();
     }

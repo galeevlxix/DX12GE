@@ -9,6 +9,7 @@
 struct BuilderContext {
     std::vector<BehaviorPtr> children;
     bool isSequence = false;
+    bool isActive = false;
 };
 
 class BehaviorTreeBuilder {
@@ -19,7 +20,9 @@ public:
 
     BehaviorTreeBuilder& sequence();
     BehaviorTreeBuilder& selector();
+    BehaviorTreeBuilder& activeSelector();
     BehaviorTreeBuilder& action(Behavior* b);
+    BehaviorTreeBuilder& condition(Condition* c);
     BehaviorTreeBuilder& end();
 
     BehaviorPtr build();

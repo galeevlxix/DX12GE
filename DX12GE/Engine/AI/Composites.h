@@ -90,3 +90,25 @@ protected:
 public:
     Selector() = default;
 };
+
+class ActiveSelector : public Selector {
+protected:
+    size_t m_PreviousChildIndex = 0;
+
+    Status update(float dt, Object3DEntity* owner) override {
+        size_t prevIndex = m_CurrentChildIndex;
+        
+        onInitialize();
+        
+        Status result = Selector::update(dt, owner);
+        
+        if (prevIndex != m_CurrentChildIndex && prevIndex < m_Children.size()) {
+            m_Children[prevIndex]->abort();
+        }
+
+        return result;
+    }
+
+public:
+    ActiveSelector() = default;
+};
