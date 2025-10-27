@@ -6,6 +6,10 @@
 #include "../ShaderResources.h"
 #include "../ResourceStorage.h"
 
+void Object3DEntity::AttachAI(AIComponent* ai) {
+    m_AIComponent.reset(ai);
+}
+
 void Object3DEntity::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
     AssimpModelLoader modelLoader;
@@ -18,6 +22,9 @@ void Object3DEntity::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, cons
 void Object3DEntity::OnUpdate(const double& deltaTime)
 {
     if (ObjectId == -1) return;
+    if (m_AIComponent) {
+        m_AIComponent->Update(static_cast<float>(deltaTime), this);
+    }
 }
 
 void Object3DEntity::SetConstBuffers(ComPtr<ID3D12GraphicsCommandList2> commandList, const  XMMATRIX& viewProjMatrix)
