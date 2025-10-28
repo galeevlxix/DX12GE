@@ -4,7 +4,11 @@
 
 uint32_t MaterialEntity::AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, std::string& path)
 {
-    if (NotFoundFile(path.c_str())) return -1;
+    if (NotFoundFile(path.c_str()))
+    {
+        path = "empty";
+        return -1;
+    }
 
     int id = ResourceStorage::AddTexture(path);
     auto texture = ResourceStorage::GetTexture(id);

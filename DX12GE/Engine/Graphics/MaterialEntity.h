@@ -8,13 +8,13 @@
 class MaterialEntity
 {
 private:
-    uint32_t m_DiffuseTextureId;
-    uint32_t m_EmissiveTextureId;
-    uint32_t m_NormalTextureId;
-    uint32_t m_MetallicTextureId;
-    uint32_t m_RoughnessTextureId;
-    uint32_t m_GltfMetallicRoughnessTextureId;
-    uint32_t m_AOTextureId;
+    uint32_t m_DiffuseTextureId = -1;
+    uint32_t m_EmissiveTextureId = -1;
+    uint32_t m_NormalTextureId = -1;
+    uint32_t m_MetallicTextureId = -1;
+    uint32_t m_RoughnessTextureId = -1;
+    uint32_t m_GltfMetallicRoughnessTextureId = -1;
+    uint32_t m_AOTextureId = -1;
 
     bool DrawIt = true;
 

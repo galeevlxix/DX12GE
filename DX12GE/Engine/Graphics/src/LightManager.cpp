@@ -25,11 +25,11 @@ void LightManager::Init(ThirdPersonPlayer* player)
 
 	// Specular
 	ShaderResources::GetWorldCB()->LightProps.SpecularIntensity = 1.0f;
-	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 32.0f;
+	ShaderResources::GetWorldCB()->LightProps.MaterialPower = 64.0f;
 
 	// DirectionalLight
 	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Color = COLOR_WHITE;
-	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 0.5f;
+	ShaderResources::GetWorldCB()->DirLight.BaseLightComponent.Intensity = 1.0f;
 	ShaderResources::GetWorldCB()->DirLight.Direction = Vector4(1.0f, -1.0f, -1.0f, 1.0f);
 
 	m_SpotLights.push_back(SpotLight());
@@ -39,7 +39,6 @@ void LightManager::Init(ThirdPersonPlayer* player)
 	m_SpotLights[m_SpotLights.size() - 1].PointLightComponent.AttenuationComponent = m_DefaultAttenuation;
 	m_SpotLights[m_SpotLights.size() - 1].Direction = m_player->m_Direction;
 	m_SpotLights[m_SpotLights.size() - 1].Cutoff = 0.65f;
-
 	
 	{
 		// white

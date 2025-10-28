@@ -67,11 +67,13 @@ public:
 private:
     void DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawParticles(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawForwardObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
+
     void DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void DrawParticlesForward(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
     void RefreshTitle(UpdateEventArgs& e);

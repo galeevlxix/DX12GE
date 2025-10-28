@@ -9,7 +9,6 @@ cbuffer SSRCB : register(b0)
     matrix ViewProjection;
     float4 CameraPos;
     float RayStepLength;
-    //int MaxSteps;
     float MaxDistance;
     float Thickness;
 };
@@ -22,8 +21,37 @@ TextureCube<float4> SkyboxCubemap : register(t4);
 
 SamplerState gSampler : register(s0);
 
-float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
+float3 FetchReflectionColor(float2 uv, float roughness)
 {
+    // if surface is smooth
+    if (roughness < 0.1)
+    {
+        return gColor.Sample(gSampler, uv).rgb;
+    }
+    
+    float3 color = 0.0;
+    float totalWeight = 0.0;
+    float kernelSize = roughness * 8.0;
+    
+    float2 textureSize;
+    gColor.GetDimensions(textureSize.x, textureSize.y);
+        
+    for (float x = -kernelSize; x <= kernelSize; x++)
+    {
+        for (float y = -kernelSize; y <= kernelSize; y++)
+        {
+            float2 offset = float2(x, y) / textureSize;
+            float weight = exp(-(x * x + y * y) / (2.0 * kernelSize * kernelSize));
+            color += gColor.Sample(gSampler, uv + offset).rgb * weight;
+            totalWeight += weight;
+        }
+    }
+
+    return color / totalWeight;
+}
+
+float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
+{    
     float3 rayStep = reflectionDir * RayStepLength;
     float3 currentPos = worldPos;
     
@@ -50,7 +78,6 @@ float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
                 return SkyboxCubemap.Sample(gSampler, reflectionDir).rgb;
             
             float3 color = gColor.Sample(gSampler, uv).rgb;
-            color = pow(color, 2.2);            
             return color;
         }
     }
@@ -61,20 +88,18 @@ float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
 float4 main(PSInput input) : SV_Target
 {
     float4 orm = gORM.Sample(gSampler, input.TexCoord);
-    if (orm.b < 0.1)
+    if (orm.b < 0.16)
         return float4(0.0, 0.0, 0.0, 0.0);
     
-    float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
     float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
-    float3 cameraPixelVector = worldPos - CameraPos.xyz;
+    float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz + normal * 0.001;
+    float3 cameraPixelVector = normalize(worldPos - CameraPos.xyz);
     
-    float f0 = 0.04; //lerp(0.04, 1.0, orm.b);
-    float NdotV = dot(normal, normalize(-cameraPixelVector));
+    float f0 = 0.04;
+    float NdotV = dot(normal, -cameraPixelVector);
     float fresnel = saturate(f0 + (1 - f0) * pow(1 - NdotV, 5));
-    
-    float3 cameraPixelDirection = normalize(cameraPixelVector.xyz);    
-    float3 reflectDir = normalize(reflect(cameraPixelDirection, normal));
-    
+   
+    float3 reflectDir = normalize(reflect(cameraPixelVector, normal));
     float3 reflectionColor = TraceScreenSpaceReflection(worldPos, reflectDir);
     
     return float4(reflectionColor, fresnel);
