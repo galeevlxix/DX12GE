@@ -112,3 +112,60 @@ protected:
 public:
     ActiveSelector() = default;
 };
+
+enum class Policy { RequireOne, RequireAll };
+
+class Parallel : public Composite {
+protected:
+    Policy m_eSuccessPolicy;
+    Policy m_eFailurePolicy;
+
+    void onInitialize() override {}
+
+    Status update(float dt, Object3DEntity* owner) override {
+        size_t successCount = 0, failureCount = 0;
+        size_t size = m_Children.size();
+        for (size_t i = 0; i < size; ++i) {
+            Behavior* b = m_Children[i].get();
+            if (b->m_Status != Status::SUCCESS && b->m_Status != Status::FAILURE) {
+                b->tick(dt, owner);
+            }
+            if (b->m_Status == Status::SUCCESS) {
+                ++successCount;
+                if (m_eSuccessPolicy == Policy::RequireOne) return Status::SUCCESS;
+            }
+            if (b->m_Status == Status::FAILURE) {
+                ++failureCount;
+                if (m_eFailurePolicy == Policy::RequireOne) return Status::FAILURE;
+            }
+        }
+        if (m_eFailurePolicy == Policy::RequireAll && failureCount == size) return Status::FAILURE;
+        if (m_eSuccessPolicy == Policy::RequireAll && successCount == size) return Status::SUCCESS;
+        return Status::RUNNING;
+    }
+
+    void onTerminate(Status status) override {
+        for (auto& child : m_Children) {
+            if (child->m_Status == Status::RUNNING) {
+                child->abort();
+            }
+        }
+    }
+
+public:
+    Parallel(Policy success, Policy failure)
+        : m_eSuccessPolicy(success), m_eFailurePolicy(failure) {}
+};
+
+class Monitor : public Parallel {
+public:
+    Monitor() : Parallel(Policy::RequireAll, Policy::RequireOne) {}
+
+    void addCondition(Behavior* condition) {
+        m_Children.insert(m_Children.begin(), BehaviorPtr(condition));
+    }
+
+    void addAction(Behavior* action) {
+        m_Children.emplace_back(action);
+    }
+};

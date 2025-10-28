@@ -26,6 +26,7 @@ public:
         onTerminate(Status::ABORTED);
         m_Status = Status::INVALID;
     }
+    Status m_Status = Status::INVALID;
 protected:
     Status m_Status = Status::INVALID;
 

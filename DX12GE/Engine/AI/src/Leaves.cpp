@@ -33,3 +33,8 @@ Status MoveToSpawn::update(float dt, Object3DEntity* owner) {
     owner->Transform.SetRotation(0.f, yaw, 0.f);
     return Status::RUNNING;
 }
+
+Status DebugACtion::update(float dt, Object3DEntity* owner) {
+    std::cout << "Debug Action Triggered" << std::endl;
+    return Status::SUCCESS;
+}

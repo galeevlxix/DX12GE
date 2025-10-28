@@ -1,15 +1,38 @@
-﻿// BehaviorTreeBuilder.h
-#pragma once
+﻿#pragma once
 #include "Behavior.h"
 #include "Composites.h"
 #include <stack>
 #include <vector>
 #include <memory>
 
+enum class NodeType { Sequence, Selector, ActiveSelector, Parallel, Monitor };
+
 struct BuilderContext {
     std::vector<BehaviorPtr> children;
-    bool isSequence = false;
-    bool isActive = false;
+    NodeType type = NodeType::Selector;
+    Policy successPolicy = Policy::RequireAll;
+    Policy failurePolicy = Policy::RequireOne;
+
+    BuilderContext() = default;
+    
+    BuilderContext(BuilderContext&& other) noexcept
+        : children(std::move(other.children)),
+          type(other.type),
+          successPolicy(other.successPolicy),
+          failurePolicy(other.failurePolicy) {}
+
+    BuilderContext& operator=(BuilderContext&& other) noexcept {
+        if (this != &other) {
+            children = std::move(other.children);
+            type = other.type;
+            successPolicy = other.successPolicy;
+            failurePolicy = other.failurePolicy;
+        }
+        return *this;
+    }
+
+    BuilderContext(const BuilderContext&) = delete;
+    BuilderContext& operator=(const BuilderContext&) = delete;
 };
 
 class BehaviorTreeBuilder {
@@ -21,6 +44,8 @@ public:
     BehaviorTreeBuilder& sequence();
     BehaviorTreeBuilder& selector();
     BehaviorTreeBuilder& activeSelector();
+    BehaviorTreeBuilder& parallel(Policy success = Policy::RequireAll, Policy failure = Policy::RequireOne);
+    BehaviorTreeBuilder& monitor();
     BehaviorTreeBuilder& action(Behavior* b);
     BehaviorTreeBuilder& condition(Condition* c);
     BehaviorTreeBuilder& end();

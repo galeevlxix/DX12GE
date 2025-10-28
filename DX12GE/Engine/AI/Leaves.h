@@ -24,6 +24,13 @@ protected:
     Status update(float dt, Object3DEntity* owner) override;
 };
 
+class DebugACtion : public Behavior {
+public:
+    DebugACtion() {}
+protected:
+    Status update(float dt, Object3DEntity* owner) override;
+};
+
 class IsTargetVisible : public Condition {
 public:
     IsTargetVisible(Object3DEntity* t, bool negate = false, bool monitor = false)

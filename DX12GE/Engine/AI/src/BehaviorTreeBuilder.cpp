@@ -2,23 +2,47 @@
 #include "../Composites.h"
 
 BehaviorTreeBuilder& BehaviorTreeBuilder::sequence() {
-    stack.emplace(BuilderContext{{}, true});
+    BuilderContext ctx;
+    ctx.type = NodeType::Sequence;
+    stack.emplace(std::move(ctx));
     return *this;
 }
 
 BehaviorTreeBuilder& BehaviorTreeBuilder::selector() {
-    stack.emplace(BuilderContext{{}, false, false});  // Not active
+    BuilderContext ctx;
+    ctx.type = NodeType::Selector;
+    stack.emplace(std::move(ctx));
     return *this;
 }
 
 BehaviorTreeBuilder& BehaviorTreeBuilder::activeSelector() {
-    stack.emplace(BuilderContext{{}, false, true});  // isActive = true
+    BuilderContext ctx;
+    ctx.type = NodeType::ActiveSelector;
+    stack.emplace(std::move(ctx));
+    return *this;
+}
+
+BehaviorTreeBuilder& BehaviorTreeBuilder::parallel(Policy success, Policy failure) {
+    BuilderContext ctx;
+    ctx.type = NodeType::Parallel;
+    ctx.successPolicy = success;
+    ctx.failurePolicy = failure;
+    stack.emplace(std::move(ctx));
+    return *this;
+}
+
+BehaviorTreeBuilder& BehaviorTreeBuilder::monitor() {
+    BuilderContext ctx;
+    ctx.type = NodeType::Monitor;
+    ctx.successPolicy = Policy::RequireAll;
+    ctx.failurePolicy = Policy::RequireOne;
+    stack.emplace(std::move(ctx));
     return *this;
 }
 
 BehaviorTreeBuilder& BehaviorTreeBuilder::action(Behavior* b) {
     if (stack.empty()) {
-        stack.emplace();
+        stack.emplace();  // Ensure a context if stack is empty
     }
     stack.top().children.emplace_back(b);
     return *this;
@@ -35,19 +59,31 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::end() {
     BuilderContext current = std::move(stack.top());
     stack.pop();
 
-    Composite* node = nullptr;
-    if (current.isSequence) {
-        node = new Sequence();
-    } else if (current.isActive) {
-        node = new ActiveSelector();
-    } else {
-        node = new Selector();
+    BehaviorPtr nodePtr;
+    switch (current.type) {
+    case NodeType::Sequence:
+        nodePtr = std::make_unique<Sequence>();
+        break;
+    case NodeType::Selector:
+        nodePtr = std::make_unique<Selector>();
+        break;
+    case NodeType::ActiveSelector:
+        nodePtr = std::make_unique<ActiveSelector>();
+        break;
+    case NodeType::Parallel:
+        nodePtr = std::make_unique<Parallel>(current.successPolicy, current.failurePolicy);
+        break;
+    case NodeType::Monitor:
+        nodePtr = std::make_unique<Monitor>();
+        break;
     }
+    
+    Composite* node = static_cast<Composite*>(nodePtr.get());
     for (auto& child : current.children) {
         node->addChild(std::move(child));
     }
 
-    stack.top().children.emplace_back(node);
+    stack.top().children.emplace_back(std::move(nodePtr));
     return *this;
 }
 
