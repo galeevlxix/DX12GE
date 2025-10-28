@@ -14,7 +14,6 @@ struct BuilderContext {
     Policy failurePolicy = Policy::RequireOne;
 
     BuilderContext() = default;
-    
     BuilderContext(BuilderContext&& other) noexcept
         : children(std::move(other.children)),
           type(other.type),
@@ -39,7 +38,7 @@ class BehaviorTreeBuilder {
     std::stack<BuilderContext> stack;
 
 public:
-    BehaviorTreeBuilder() { stack.emplace(); }
+    BehaviorTreeBuilder() { stack.emplace(); }  // Dummy root context
 
     BehaviorTreeBuilder& sequence();
     BehaviorTreeBuilder& selector();

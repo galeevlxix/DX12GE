@@ -30,7 +30,7 @@ protected:
 
 class Sequence : public Composite {
 protected:
-    size_t m_CurrentChildIndex = 0;
+    size_t m_CurrentChildIndex = 0;  // Tracks running child across ticks
 
     virtual void onInitialize() {
         m_CurrentChildIndex = 0;
@@ -40,14 +40,15 @@ protected:
         while (m_CurrentChildIndex < m_Children.size()) {
             Status s = m_Children[m_CurrentChildIndex]->tick(dt, owner);
             if (s != Status::SUCCESS) {
-                return s;
+                return s;  // Propagate FAILURE or RUNNING
             }
             m_CurrentChildIndex++;
         }
-        return Status::SUCCESS;
+        return Status::SUCCESS;  // Only if all children succeeded
     }
 
     virtual void onTerminate(Status status) {
+        // Reset for next execution; abort running children
         m_CurrentChildIndex = 0;
         if (status == Status::ABORTED) {
             for (size_t i = m_CurrentChildIndex; i < m_Children.size(); ++i) {
@@ -93,15 +94,17 @@ public:
 
 class ActiveSelector : public Selector {
 protected:
-    size_t m_PreviousChildIndex = 0;
+    size_t m_PreviousChildIndex = 0;  // To track previous for abort
 
     Status update(float dt, Object3DEntity* owner) override {
         size_t prevIndex = m_CurrentChildIndex;
-        
+
+        // Reset to start from first child each tick
         onInitialize();
         
         Status result = Selector::update(dt, owner);
-        
+
+        // If switched to different child, abort the previous
         if (prevIndex != m_CurrentChildIndex && prevIndex < m_Children.size()) {
             m_Children[prevIndex]->abort();
         }

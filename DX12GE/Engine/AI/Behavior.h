@@ -28,8 +28,6 @@ public:
     }
     Status m_Status = Status::INVALID;
 protected:
-    Status m_Status = Status::INVALID;
-
     virtual void onInitialize() {}
     virtual Status update(float dt, Object3DEntity* owner) = 0;
     virtual void onTerminate(Status status) {}
@@ -39,7 +37,7 @@ using BehaviorPtr = std::unique_ptr<Behavior>;
 
 class Condition : public Behavior {
 protected:
-    std::function<bool(Object3DEntity*)> m_Check;
+    std::function<bool(Object3DEntity*)> m_Check;  // Callback for condition test
     bool m_Negate = false;
     bool m_Monitor = false;
 

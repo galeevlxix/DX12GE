@@ -49,7 +49,7 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::action(Behavior* b) {
 }
 
 BehaviorTreeBuilder& BehaviorTreeBuilder::condition(Condition* c) {
-    stack.top().children.emplace_back(c);  // Treat as Behavior
+    stack.top().children.emplace_back(c);  // Practically same as Behavior, use for visibility
     return *this;
 }
 
@@ -77,7 +77,6 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::end() {
         nodePtr = std::make_unique<Monitor>();
         break;
     }
-    
     Composite* node = static_cast<Composite*>(nodePtr.get());
     for (auto& child : current.children) {
         node->addChild(std::move(child));
@@ -89,9 +88,9 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::end() {
 
 BehaviorPtr BehaviorTreeBuilder::build() {
     while (stack.size() > 1) {
-        end();
+        end();  // Auto-close all open levels
     }
     auto& rootChildren = stack.top().children;
     if (rootChildren.empty()) return nullptr;
-    return std::move(rootChildren[0]);
+    return std::move(rootChildren[0]);  // Return the root BehaviorPtr
 }
