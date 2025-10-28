@@ -10,6 +10,8 @@ Texture2D<float4> gORM : register(t2);      // RGBA8_UNORM
 
 SamplerState gSampler : register(s0);
 
+// test
+
 float4 SsrGaussianBlur(float2 uv, int radius)
 {
     if (radius == 0) 
