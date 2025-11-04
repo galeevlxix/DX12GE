@@ -2,6 +2,7 @@
 #include "../resource.h"
 #include "../Window.h"
 #include "../CommandQueue.h"
+#include "LuaManager.h"
 #include "../Game.h"
 
 constexpr wchar_t WINDOW_CLASS_NAME[] = L"DX12RenderWindowClass";
@@ -347,6 +348,7 @@ int Application::Run(std::shared_ptr<Game> pGame)
     if (!pGame->LoadContent()) return 2;
 
     MSG msg = { 0 };
+    LuaManager::Start();
     while (msg.message != WM_QUIT)
     {
         if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))

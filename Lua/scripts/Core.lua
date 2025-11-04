@@ -34,6 +34,9 @@ end
 
 ]]
 
+Transform   = "transfrom"
+Physics     = "physics"
+
 
 function Class(child, parent)
     setmetatable(child, {__index = parent})
@@ -44,18 +47,27 @@ GameObject = {}
 function GameObject:new( id )
     local obj = {}
     obj.id = id
+    obj.components = {}
     Register(id)
 
+    function GameObject:Start()
+	     obj.object = GetObjectOnScene(obj.id)
+
+         for _, component in pairs(self.components) do
+            --component:SetParent(self.object)
+         end
+         print("start")
+         self.transform:SetParent(self.object)    end
+
     function GameObject:Update()
+        for _, component in ipairs(obj.components) do
+            component:Update()
+        end
      --   print("update")
     end
 
     function GameObject:Remove()
        -- print("Remove")
-    end
-
-    function GameObject:MoveTo( x, y, z )
-	 --   print("Move")
     end
 
     function GameObject:OnCollisionEnter( other )
@@ -78,6 +90,50 @@ function GameObject:new( id )
      --   print("click")
     end
 
+    function GameObject:AddComponent( component )
+        local componentName = string.lower(component)
+
+        if not self.components then self.components = {} end
+
+	    if componentName == Transform then
+            self.transform = TransformComponent:Add( obj.id )
+            self.components[self.transform] = self.transform
+        end
+
+        if componentName == Physics then
+            self.components[#self.components] = TransformComponent:Add( self.object )
+            self.transform = self.components[#self.components - 1]
+        end
+    end
+
     setmetatable(obj, self)
     self.__index = self; return obj
 end
+
+TransformComponent = {}
+
+function TransformComponent:Add( object )
+	local obj = {}
+    obj.id = object
+
+    function TransformComponent:MoveTo( x, y, z )
+        assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
+
+        TranslateTo(obj.object, x, y, z)
+	end
+
+    function TransformComponent:SetParent( parent )
+	    obj.object = parent
+    end
+
+    function TransformComponent:Update()
+        print("transform update")
+	end
+
+
+    setmetatable(obj, self)
+    self.__index = self; return obj
+end
+
+PhysicsComponent = {}
+

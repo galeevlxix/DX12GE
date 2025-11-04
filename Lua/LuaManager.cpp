@@ -16,49 +16,23 @@ static Camera* p_camera;
 
 //////////////////////////////////////////////////////////////////////
 //LUA API ZONE
-int lua_Foo(lua_State* L)
-{
-	const float a = (float)lua_tonumber(L, 1);
-	const float b = (float)lua_tonumber(L, 2);
-	std::cout << "Foo called" << std::endl;
-	const float c = a * b;
-	lua_pushnumber(L, c);
-	return 1;
-}
-
 Object3DEntity* lua_get_object_on_scene(std::string name)
 {
 	const auto object = p_scene->Get(name);
 	return object;
 }
 
-int lua_move_object_to_position(lua_State* L)
+int lua_rotate_object_by_rotator(Object3DEntity* object, float y, float p, float r)
 {
-	const auto& object = static_cast<Object3DEntity*>(lua_touserdata(L, 1));
-	const float x = (float)lua_tonumber(L, 2);
-	const float y = (float)lua_tonumber(L, 3);
-	const float z = (float)lua_tonumber(L, 4);
-	object->Transform.SetPosition(DirectX::SimpleMath::Vector3(x, y, z));
-
-	return 1;
-}
-
-int lua_rotate_object_by_rotator(lua_State* L)
-{
-	const auto& object = static_cast<Object3DEntity*>(lua_touserdata(L, 1));
-	const float y = (float)lua_tonumber(L, 2);
-	const float p = (float)lua_tonumber(L, 3);
-	const float r = (float)lua_tonumber(L, 4);
-
+	assert(object != nullptr, "Attemp to call rotate on null object!");
 	object->Transform.SetRotation(DirectX::SimpleMath::Vector3(y, p, r));
 
 	return 1;
 }
 
-int lua_get_camera(lua_State* L) 
+Camera* lua_get_camera() 
 {
-	lua_pushlightuserdata(L, p_camera);
-	return 1;
+	return p_camera;
 }
 
 int lua_set_camera_target(lua_State* L)
@@ -81,8 +55,29 @@ int lua_set_camera_target(lua_State* L)
 	return 1;
 }
 
+int lua_transform_move_to(Object3DEntity* object, float x, float y, float z)
+{
+	assert(object != nullptr, "Attemp to call move to on null object!");
+
+	object->Transform.SetPosition(DirectX::SimpleMath::Vector3(x, y, z));
+
+	return 1;
+}
+
+int lua_load_object_with_model(std::string path)
+{
+	shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+	ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+	return 1;
+}
+
 int lua_register_class(std::string id)
 {
+	for (const auto& element : lua_classes)
+	{
+		assert(element != id, "Attemp to register class that already registered!");
+	}
+
 	lua_classes.push_back(id);
 	std::cout << "registered  " << id << std::endl;
 	return 1;
@@ -94,14 +89,18 @@ LuaManager::LuaManager()
 {
 	//sol::state lua;
 	lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
-
+	
 	lua.set_function("Register", &lua_register_class);
+	lua.set_function("LoadObjectWithModel", &lua_load_object_with_model);
+	lua.set_function("GetCamera", &lua_get_camera);
+	lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
+	lua.set_function("TranslateTo", &lua_transform_move_to);
 	lua.set_function("GetObjectOnScene", &lua_get_object_on_scene);
 
-	lua.unsafe_script_file(luaSciptsFolder + "Core.lua");
-	lua.unsafe_script_file(luaSciptsFolder + "Player.lua");
-	lua.unsafe_script_file(luaSciptsFolder + "TestScript.lua");
-	lua.unsafe_script_file(luaSciptsFolder + "TestScript2.lua");
+	lua.safe_script_file(luaSciptsFolder + "Core.lua");
+	lua.safe_script_file(luaSciptsFolder + "Player.lua");
+	lua.safe_script_file(luaSciptsFolder + "TestScript.lua");
+	lua.safe_script_file(luaSciptsFolder + "TestScript2.lua");
 	
 }
 
@@ -244,7 +243,7 @@ void LuaManager::ProceedMouseMovementInput(MouseMotionEventArgs& e)
 	for (const auto& lua_class : lua_classes)
 	{
 		sol::table temp_class = lua[lua_class];
-		temp_class["OnMouseMovementInputReceived"](temp_class, e);
+		temp_class["OnMouseMovementInputReceived"](temp_class, e.X, e.Y);
 	};;
 }
 
@@ -281,6 +280,15 @@ void LuaManager::PerformUpdate()
 	{
 		sol::table temp_class = lua[lua_class];
 		temp_class["Update"](temp_class);
+	}
+}
+
+void LuaManager::Start()
+{
+	for (const auto& lua_class : lua_classes)
+	{
+		sol::table temp_class = lua[lua_class];
+		temp_class["Start"](temp_class);
 	}
 }
 

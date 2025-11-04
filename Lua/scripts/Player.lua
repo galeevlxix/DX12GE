@@ -14,5 +14,15 @@ function Player:OnMouseClickInput( k, pressed )
 	return GameObject.OnMouseClickInput(self, k, pressed)
 end
 
+function Player:OnMouseMovementInputReceived( x, y )
+	if self.transform then
+		self.transform:MoveTo(x/100, 0, y/100)
+	end
+end
+
+
 player = Player:new("player")
+player:AddComponent(Transform)
+--player.transform:MoveTo(100, 200, 300)
+--print(player.transform)
 player:Update()
