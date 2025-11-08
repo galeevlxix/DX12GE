@@ -24,10 +24,21 @@ Object3DEntity* lua_get_object_on_scene(std::string name)
 
 int lua_rotate_object_by_rotator(Object3DEntity* object, float y, float p, float r)
 {
-	assert(object != nullptr, "Attemp to call rotate on null object!");
+	assert(object != nullptr, "Attempt to call rotate on null object!");
 	object->Transform.SetRotation(DirectX::SimpleMath::Vector3(y, p, r));
 
 	return 1;
+}
+
+std::map<std::string, float> lua_get_object_pos(Object3DEntity* object)
+{
+	assert(object != nullptr, "Attempt to call get position on null object!");
+	const auto pos = object->Transform.GetPosition();
+	std::map<std::string, float> posMap;
+	posMap.insert({ "x", pos.x });
+	posMap.insert({ "y", pos.y });
+	posMap.insert({ "z", pos.z });
+	return posMap;
 }
 
 Camera* lua_get_camera() 
@@ -55,19 +66,42 @@ int lua_set_camera_target(lua_State* L)
 	return 1;
 }
 
+sol::table get_lua_class(std::string name)
+{
+	return lua[name];
+}
+
 int lua_transform_move_to(Object3DEntity* object, float x, float y, float z)
 {
-	assert(object != nullptr, "Attemp to call move to on null object!");
+	assert(object != nullptr, "Attempt to call move to on null object!");
 
 	object->Transform.SetPosition(DirectX::SimpleMath::Vector3(x, y, z));
 
 	return 1;
 }
 
-int lua_load_object_with_model(std::string path)
+int lua_transform_move_by(Object3DEntity* object, float x, float y, float z)
 {
-	shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-	ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+	assert(object != nullptr, "Attempt to call move to on null object!");
+
+	object->Transform.Move(DirectX::SimpleMath::Vector3(x, y, z));
+
+	return 1;
+}
+
+int lua_load_object_with_model(std::string name)
+{
+	p_scene->AddObjectOnScene(name);
+	std::string highCaseName = name;
+	std::transform(highCaseName.begin(), highCaseName.end(), highCaseName.begin(), ::toupper);
+	lua.safe_script("if " + name + " ~= nil then return end \n" + highCaseName + " = {}\n" + "Class(" + highCaseName + ", GameObject)\n" + name + " = " + highCaseName + ":new(\"" + name + "\")" +
+		"\n" + name + ":AddComponent(Transform)\n" + name + ":Start()\n");
+
+	if (std::find(lua_classes.begin(), lua_classes.end(), name) == lua_classes.end())
+	{
+		lua_classes.push_back(name);
+	}
+
 	return 1;
 }
 
@@ -75,7 +109,7 @@ int lua_register_class(std::string id)
 {
 	for (const auto& element : lua_classes)
 	{
-		assert(element != id, "Attemp to register class that already registered!");
+		assert(element != id, "Attempt to register class that already registered!");
 	}
 
 	lua_classes.push_back(id);
@@ -96,6 +130,10 @@ LuaManager::LuaManager()
 	lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
 	lua.set_function("TranslateTo", &lua_transform_move_to);
 	lua.set_function("GetObjectOnScene", &lua_get_object_on_scene);
+	lua.set_function("GetTransfromPosition", &lua_get_object_pos);
+	lua.set_function("GetClass", &get_lua_class);
+	lua.set_function("TranslateBy", &lua_transform_move_by);
+
 
 	lua.safe_script_file(luaSciptsFolder + "Core.lua");
 	lua.safe_script_file(luaSciptsFolder + "Player.lua");

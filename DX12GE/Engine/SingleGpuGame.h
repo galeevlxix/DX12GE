@@ -46,6 +46,8 @@ public:
 
     virtual bool Initialize() override final;
     virtual bool LoadContent() override;
+    virtual void RemoveObjectFromScene(std::string name);
+    virtual void AddObjectOnScene(std::string name);
     virtual void UnloadContent() override;
     virtual void Destroy() override;
 

@@ -6,23 +6,47 @@ function Player:Update()
 end
 
 function Player:OnMouseClickInput( k, pressed )
-	local s = GetObjectOnScene("player")
-	print(k)
-	print(pressed)
-	print(s)
+	LoadObjectWithModel("ddd")
+	--print("OnMouseClickInput")
+	local pos = self.transform:GetPosition()
+	--local object = GetClass("ddd")
+	if object ~= nil then
+		if object.transform == nil then
+			--object:AddComponent(Transform)
+			print("inited on ddd")
+		end
+		print(object.transform)
+		--object.transform:MoveTo(pos.x + 10, pos.y, pos.z + 10)
+	end
+	--ddd:AddComponent(Transform)
+	--ddd.transform:MoveTo(pos.x + 2, pos.y, pos.z + 2)
+	--print(pos.x + 10, pos.y, pos.z + 10)
+	--print(ddd ~- nil)
 
-	return GameObject.OnMouseClickInput(self, k, pressed)
+	return GameObject.OnMouseClickInput(self, k, pressed )
 end
 
 function Player:OnMouseMovementInputReceived( x, y )
 	if self.transform then
-		self.transform:MoveTo(x/100, 0, y/100)
+		
+		self.transform:MoveTo(x/100, 10, y/100)
+		if object ~= nil then
+			if object.transform == nil then
+	--			object:AddComponent(Transform)
+				
+			end
+		--	print(pos.x, pos.y, pos.z)
+		end
 	end
+	local object = GetClass("ddd")
+	object.transform:MoveTo(x/100, 10, y/100)
+	return GameObject.OnMouseMovementInputReceived(self, x, y)
 end
+
 
 
 player = Player:new("player")
 player:AddComponent(Transform)
 --player.transform:MoveTo(100, 200, 300)
 --print(player.transform)
-player:Update()
+--player:Update()

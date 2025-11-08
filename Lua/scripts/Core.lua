@@ -51,16 +51,17 @@ function GameObject:new( id )
     Register(id)
 
     function GameObject:Start()
-	     obj.object = GetObjectOnScene(obj.id)
+	     self.object = GetObjectOnScene(self.id)
 
          for _, component in pairs(self.components) do
             --component:SetParent(self.object)
          end
-         print("start")
-         self.transform:SetParent(self.object)    end
+
+         self.transform:SetParent(self.object)    
+    end
 
     function GameObject:Update()
-        for _, component in ipairs(obj.components) do
+        for _, component in ipairs(self.components) do
             component:Update()
         end
      --   print("update")
@@ -87,7 +88,7 @@ function GameObject:new( id )
     end
 
     function GameObject:OnMouseClickInput( k, pressed )
-     --   print("click")
+    --    print("click")
     end
 
     function GameObject:AddComponent( component )
@@ -96,7 +97,8 @@ function GameObject:new( id )
         if not self.components then self.components = {} end
 
 	    if componentName == Transform then
-            self.transform = TransformComponent:Add( obj.id )
+            print("component added for id ", obj.id)
+            self.transform = TransformComponent:Add( self.id )
             self.components[self.transform] = self.transform
         end
 
@@ -119,17 +121,30 @@ function TransformComponent:Add( object )
     function TransformComponent:MoveTo( x, y, z )
         assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
 
-        TranslateTo(obj.object, x, y, z)
+        TranslateTo(self.object, x, y, z)
+	end
+
+    function TransformComponent:MoveTo( x, y, z )
+        assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
+
+        TranslateBy(self.object, x, y, z)
 	end
 
     function TransformComponent:SetParent( parent )
-	    obj.object = parent
+        assert(obj.object ~= nil, "Attemp to call SetParent to on empty object, call SetParent to set object!")
+
+	    self.object = parent
     end
 
     function TransformComponent:Update()
         print("transform update")
 	end
 
+    function TransformComponent:GetPosition( )
+        if self.object ~= nil then
+            return GetTransfromPosition(obj.object)
+        end
+    end
 
     setmetatable(obj, self)
     self.__index = self; return obj
