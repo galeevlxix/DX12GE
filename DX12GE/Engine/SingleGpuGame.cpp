@@ -76,7 +76,7 @@ bool SingleGpuGame::LoadContent()
 
     ShaderResources::GetSSRCB()->MaxDistance = 32.0f;
     ShaderResources::GetSSRCB()->RayStep = 0.1f;
-    ShaderResources::GetSSRCB()->Thickness = 0.095f;
+    ShaderResources::GetSSRCB()->Thickness = 0.0999f;
 
     // DRAW THE CUBE
     m_DebugSystem.DrawPoint(m_boxPosition, 2.0f);

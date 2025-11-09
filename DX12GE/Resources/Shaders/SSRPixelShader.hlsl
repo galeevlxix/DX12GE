@@ -21,35 +21,6 @@ TextureCube<float4> SkyboxCubemap : register(t4);
 
 SamplerState gSampler : register(s0);
 
-float3 FetchReflectionColor(float2 uv, float roughness)
-{
-    // if surface is smooth
-    if (roughness < 0.1)
-    {
-        return gColor.Sample(gSampler, uv).rgb;
-    }
-    
-    float3 color = 0.0;
-    float totalWeight = 0.0;
-    float kernelSize = roughness * 8.0;
-    
-    float2 textureSize;
-    gColor.GetDimensions(textureSize.x, textureSize.y);
-        
-    for (float x = -kernelSize; x <= kernelSize; x++)
-    {
-        for (float y = -kernelSize; y <= kernelSize; y++)
-        {
-            float2 offset = float2(x, y) / textureSize;
-            float weight = exp(-(x * x + y * y) / (2.0 * kernelSize * kernelSize));
-            color += gColor.Sample(gSampler, uv + offset).rgb * weight;
-            totalWeight += weight;
-        }
-    }
-
-    return color / totalWeight;
-}
-
 float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
 {    
     float3 rayStep = reflectionDir * RayStepLength;
