@@ -1,11 +1,16 @@
 #include "../SceneJsonSerializer.h"
-#include "../json.hpp"
+
+#include "../../../Game/ThirdPersonPlayer.h"
 #include "../../Graphics/ResourceStorage.h"
+
+#include "../json.hpp"
 #include <fstream>
 #include <iostream>
 #include <chrono>
 
 using json = nlohmann::json;
+
+static const std::string path = "../../DX12GE/Resources/scene.json";
 
 void SceneJsonSerializer::Save(std::map<std::string, Object3DEntity*>& objects)
 {

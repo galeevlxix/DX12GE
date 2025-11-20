@@ -12,7 +12,8 @@ public:
 		NORMAL = 1,
 		DIFFUSE = 2,
 		EMISSIVE = 3,
-		ORM = 4
+		ORM = 4,
+		ID = 5
 	};
 
 	void Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter, UINT width, UINT height);

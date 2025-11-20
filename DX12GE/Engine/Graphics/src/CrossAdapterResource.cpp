@@ -40,11 +40,11 @@ CrossAdapterResource::CrossAdapterResource(
     ThrowIfFailed(openSharedHandleResult);
 
     m_PrimeResource = std::make_shared<TextureBuffer>();
-    m_PrimeResource->Init(primaryDevice, resourceDesc, crossAdapterResourceHeap[0], name);
+    m_PrimeResource->Init(primaryDevice, resourceDesc, crossAdapterResourceHeap[0], name, false);
     m_PrimeResource->SetAdapter(GraphicAdapterPrimary);
 
     m_SharedResource = std::make_shared<TextureBuffer>();
-    m_SharedResource->Init(secondDevice, resourceDesc, crossAdapterResourceHeap[1], name + L" Shared");
+    m_SharedResource->Init(secondDevice, resourceDesc, crossAdapterResourceHeap[1], name + L" Shared", false);
     m_SharedResource->SetAdapter(GraphicAdapterSecond);
 
     isInit = true;
@@ -78,14 +78,16 @@ void CrossAdapterResource::Resize(const UINT newWidth, const UINT newHeight)
         m_PrimeResource->GetDevice(), 
         desc, 
         crossAdapterResourceHeap[0], 
-        m_PrimeResource->GetName());
+        m_PrimeResource->GetName(), 
+        false);
 
     m_SharedResource->Destroy();
     m_SharedResource->Init(
         m_SharedResource->GetDevice(), 
         desc, 
         crossAdapterResourceHeap[1], 
-        m_SharedResource->GetName());
+        m_SharedResource->GetName(), 
+        false);
 }
 
 void CrossAdapterResource::Destroy()

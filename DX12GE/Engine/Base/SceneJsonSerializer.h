@@ -1,14 +1,12 @@
 #pragma once
+
 #include "../Graphics/Object3DEntity.h"
-#include "../../Game/ThirdPersonPlayer.h"
 #include <string>
 #include <map>
 
 class SceneJsonSerializer
 {
-private:
-	const std::string path = "../../DX12GE/Resources/scene.json";
 public:
-	void Save(std::map<std::string, Object3DEntity*>& objects);
-	void Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<std::string, Object3DEntity*>& objects);
+	static void Save(std::map<std::string, Object3DEntity*>& objects);
+	static void Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<std::string, Object3DEntity*>& objects);
 };

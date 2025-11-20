@@ -15,12 +15,14 @@ struct PSOutput
     float4 Diffuse :    SV_Target2;
     float4 Emissive :   SV_Target3;
     float4 ORM :        SV_Target4;
+    uint   ObjectId :   SV_Target5;
 };
 
-cbuffer MCB : register(b1)
+cbuffer GeometryPassData : register(b1)
 {
     float4 HasDiffuseNormalEmissive;
     float4 HasOcclusionRoughnessMetallicCombined;
+    uint ObjectId;
 };
 
 Texture2D DiffuseTextureSB :    register(t0);
@@ -40,7 +42,7 @@ float4 CalculateNormalMap(float3 Normal0, float3 Tangent0, float3 Bitangent0, fl
     normalMap = normalMap * 2.0f - float3(1.0f, 1.0f, 1.0f);
     float3x3 TBN = float3x3(normalize(Tangent0), normalize(Bitangent0), normalize(Normal0));
     float3 newNorm = normalize(mul(normalMap, TBN));
-    return float4(newNorm, 0.0);
+    return float4(newNorm, 0.0f);
 }
 
 PSOutput main(PSInput IN)
@@ -48,9 +50,9 @@ PSOutput main(PSInput IN)
     PSOutput OUT;
     
     OUT.Position = IN.WorldPos;
-    OUT.Diffuse = HasDiffuseNormalEmissive.x > 0.5f ? DiffuseTextureSB.Sample(StaticSampler, IN.TextCoord) : float4(1, 1, 1, 1);
+    OUT.Diffuse = HasDiffuseNormalEmissive.x > 0.5f ? DiffuseTextureSB.Sample(StaticSampler, IN.TextCoord) : float4(1.0f, 1.0f, 1.0f, 1.0f);
     OUT.Normal = HasDiffuseNormalEmissive.y > 0.5f ? CalculateNormalMap(IN.Normal.rgb, IN.Tangent.rgb, IN.Bitangent.rgb, IN.TextCoord) : IN.Normal;    
-    OUT.Emissive = HasDiffuseNormalEmissive.z > 0.5f ? EmissiveTextureSB.Sample(StaticSampler, IN.TextCoord) : float4(0, 0, 0, 1.0);
+    OUT.Emissive = HasDiffuseNormalEmissive.z > 0.5f ? EmissiveTextureSB.Sample(StaticSampler, IN.TextCoord) : float4(0.0f, 0.0f, 0.0f, 1.0f);
     
     float occlusion = HasOcclusionRoughnessMetallicCombined.x > 0.5f ? OcclusionTextureSB.Sample(StaticSampler, IN.TextCoord).r : 0.0f;
     float roughness = 0.0f, metallic = 0.0f;
@@ -68,6 +70,7 @@ PSOutput main(PSInput IN)
     }
     
     OUT.ORM = float4(occlusion, roughness, metallic, 1.0f);
+    OUT.ObjectId = ObjectId;
     
     return OUT;
 }

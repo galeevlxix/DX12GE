@@ -1,8 +1,6 @@
 #include "ThirdPersonPlayer.h"
 #include "../Engine/Base/InputSystem.h"
 
-#define PI 3.1415926535f
-
 const static float slowSpeed = 6.0f;
 const static float normalSpeed = 12.0f;
 const static float fastSpeed = 24.0f;
@@ -47,6 +45,8 @@ void ThirdPersonPlayer::OnUpdate(const double& deltaTime)
 
     XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 
+    if (!is.RBC) return;
+
     m_Speed = is.Shift ? slowSpeed : normalSpeed;
     m_Speed = is.Ctrl ? fastSpeed : normalSpeed;
 
@@ -54,35 +54,35 @@ void ThirdPersonPlayer::OnUpdate(const double& deltaTime)
     {
         m_Direction = Vector3(m_Camera->Target.m128_f32[0], 0.0f, m_Camera->Target.m128_f32[2]);
         m_Direction.Normalize();
-        Transform.Move(m_Direction * m_Speed * deltaTime);
+        Transform.Move(m_Direction * m_Speed * static_cast<float>(deltaTime));
         Transform.SetRotationY(-PI / 2.0f - m_angle_h);
     }
     if (is.S)
     {
         m_Direction = -Vector3(m_Camera->Target.m128_f32[0], 0.0f, m_Camera->Target.m128_f32[2]);
         m_Direction.Normalize();
-        Transform.Move(m_Direction * m_Speed * deltaTime);
+        Transform.Move(m_Direction * m_Speed * static_cast<float>(deltaTime));
         Transform.SetRotationY(PI / 2.0f - m_angle_h);
     }
     if (is.A)
     {
         m_Direction = left;
-        Transform.Move(m_Direction * m_Speed * deltaTime);
+        Transform.Move(m_Direction * m_Speed * static_cast<float>(deltaTime));
         Transform.SetRotationY(-PI - m_angle_h);
     }
     if (is.D)
     {
         m_Direction = -left;
-        Transform.Move(m_Direction * m_Speed * deltaTime);
+        Transform.Move(m_Direction * m_Speed * static_cast<float>(deltaTime));
         Transform.SetRotationY(-m_angle_h);
     }
     if (is.E)
     {
-        Transform.Move(m_Camera->Up * m_Speed * deltaTime);
+        Transform.Move(m_Camera->Up * m_Speed * static_cast<float>(deltaTime));
     }
     if (is.Q)
     {
-        Transform.Move(-m_Camera->Up * m_Speed * deltaTime);
+        Transform.Move(-m_Camera->Up * m_Speed * static_cast<float>(deltaTime));
     }
 }
 
@@ -135,6 +135,7 @@ void ThirdPersonPlayer::OnMouseMoved(MouseMotionEventArgs& e)
 void ThirdPersonPlayer::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
     is.OnMouseButtonPressed(e);
+
     if (e.Button == 2) //Right mouse
     {
         m_prevX = e.X;

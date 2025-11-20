@@ -12,10 +12,12 @@ private:
 
 	ComPtr<ID3D12Device2> m_Device;
 	GraphicsAdapter m_Adapter;
-
+	
 	DXGI_FORMAT m_Format;
-
+	bool m_CreateReadback;
+	
 	ComPtr<ID3D12Resource> m_Resource;
+	ComPtr<ID3D12Resource> m_ReadbackBuffer;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE m_CpuRtvHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE m_CpuSrvHandle;
@@ -30,8 +32,8 @@ private:
 
 public:
 	TextureBuffer();
-	void Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter, UINT width, UINT height, DXGI_FORMAT format);
-	void Init(ComPtr<ID3D12Device2> device, D3D12_RESOURCE_DESC& resourceDesc, ComPtr<ID3D12Heap> heap, const std::wstring& name);
+	void Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter, UINT width, UINT height, DXGI_FORMAT format, bool createReadback);
+	void Init(ComPtr<ID3D12Device2> device, D3D12_RESOURCE_DESC& resourceDesc, ComPtr<ID3D12Heap> heap, const std::wstring& name, bool createReadback);
 	void Destroy();
 	void Resize(UINT width, UINT height);
 	void BindRenderTarget(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle);
@@ -48,11 +50,14 @@ public:
 	void SetGraphicsRootDescriptorTable(int slot, ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 	ComPtr<ID3D12Resource> GetResource() { return m_Resource; }
+	ComPtr<ID3D12Resource> GetReadbackBuffer() { return m_ReadbackBuffer; }
 	ComPtr<ID3D12Device2> GetDevice() { return m_Device; }
 	void SetName(LPCWSTR name) { m_Name = name; }
 	wstring GetName() { return m_Name; }
 	D3D12_RESOURCE_STATES GetResourceState() { return m_CurrentState; }
 	void SetAdapter(GraphicsAdapter graphicsAdapter) { m_Adapter = graphicsAdapter; }
+	UINT GetWidth() { return m_Width; }
+	UINT GetHeight() { return m_Height; }
 
 private:
 

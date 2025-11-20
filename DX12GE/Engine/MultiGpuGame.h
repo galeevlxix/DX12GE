@@ -100,7 +100,6 @@ private:
     SceneJsonSerializer m_SceneSerializer;
     bool m_SerializeSceneOnExit = false;
 
-    bool m_ShouldAddDebugObjects = false;
     DebugRenderSystem m_DebugSystem;
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;

@@ -10,7 +10,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 const int CASCADES_COUNT = 4;
-const int GBUFFER_COUNT = 5;
+const int GBUFFER_COUNT = 6;
 
 // LIGHTS
 
@@ -100,10 +100,11 @@ struct BitonicSortConstantBuffer
 	Vector4 CameraPos;
 };
 
-struct MaterialConstantBuffer
+struct GeometryPassConstantBuffer
 {
 	Vector4 HasDiffuseNormalEmissive;
 	Vector4 HasOcclusionRoughnessMetallicCombined;
+	UINT ObjectId;
 };
 
 struct SSRConstantBuffer
@@ -125,7 +126,7 @@ public:
 	static ParticleConstantBuffer* GetParticleCB();
 	static ParticleComputeConstantBuffer* GetParticleComputeCB();
 	static BitonicSortConstantBuffer* GetBitonicSortCB();
-	static MaterialConstantBuffer* GetMaterialCB();
+	static GeometryPassConstantBuffer* GetGeometryPassCB();
 	static SSRConstantBuffer* GetSSRCB();
 
 	static UploadBuffer* GetUploadBuffer();
@@ -138,7 +139,7 @@ public:
 	static void SetGraphicsParticleCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetParticleComputeCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetBitonicSortCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
-	static void SetMaterialCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
+	static void SetGeometryPassCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot);
 	static void SetSSRCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, GraphicsAdapter graphicsAdapter);
 };
 

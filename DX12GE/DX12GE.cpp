@@ -32,7 +32,7 @@ int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine,
 
     Application::Create(hInstance);
     {
-        std::shared_ptr<GameSample> demo = std::make_shared<GameSample>(L"Bian Game", 1920, 1080, false);
+        std::shared_ptr<GameSample> demo = std::make_shared<GameSample>(L"Bian Game", 1280, 720, false);
         retCode = Application::Get().Run(demo);
         demo.reset();
     }

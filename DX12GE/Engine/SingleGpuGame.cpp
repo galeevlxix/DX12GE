@@ -1,5 +1,8 @@
 #include "SingleGpuGame.h"
+
+#include "Base/SceneJsonSerializer.h"
 #include "Graphics/ResourceStorage.h"
+#include "Graphics/ShaderResources.h"
 #include "Base/CommandExecutor.h"
 
 #include <sstream>
@@ -7,9 +10,7 @@
 #include <chrono>
 #include <fstream>
 
-//test
-
-CommandExecutor* executor;
+static CommandExecutor* executor;
 
 SingleGpuGame::SingleGpuGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
     , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
@@ -41,11 +42,11 @@ bool SingleGpuGame::Initialize()
 
     m_SSRBuffer = std::make_shared<TextureBuffer>();
     m_SSRBuffer->SetName(L"SSRResult");
-    m_SSRBuffer->Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
+    m_SSRBuffer->Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, false);
 
     m_LightPassBuffer = std::make_shared<TextureBuffer>();
     m_LightPassBuffer->SetName(L"LightPass");
-    m_LightPassBuffer->Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
+    m_LightPassBuffer->Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, false);
 
     m_DepthBuffer = std::make_shared<DepthBuffer>();
     m_DepthBuffer->Init(GraphicAdapterPrimary);
@@ -54,6 +55,9 @@ bool SingleGpuGame::Initialize()
     m_Camera = new Camera();
     m_Camera->OnLoad();
     m_Camera->Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
+
+    m_DebugSystem = std::make_shared<DebugRenderSystem>();
+    m_SelectionSystem = std::make_shared<SelectionSystem>(m_Objects, m_DebugSystem, m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
 
     if (!super::Initialize()) return false;
     
@@ -65,7 +69,7 @@ bool SingleGpuGame::LoadContent()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-    m_SceneSerializer.Load(commandList, m_Objects);
+    SceneJsonSerializer::Load(commandList, m_Objects);
     m_Player = dynamic_cast<ThirdPersonPlayer*>(m_Objects["player"]);
     m_Player->SetCamera(m_Camera);
 
@@ -79,13 +83,7 @@ bool SingleGpuGame::LoadContent()
     ShaderResources::GetSSRCB()->Thickness = 0.0999f;
 
     // DRAW THE CUBE
-    m_DebugSystem.DrawPoint(m_boxPosition, 2.0f);
-
-    BoundingBox box(m_boxPosition + m_boxSize * 0.5f, m_boxSize * 0.5f);
-    m_DebugSystem.DrawBoundingBox(box);
-
-    m_DebugSystem.Update(commandList);
-
+    
     ShaderResources::GetParticleComputeCB()->BoxPosition = m_boxPosition;
     ShaderResources::GetParticleComputeCB()->BoxSize = Vector3(m_boxSize);
 
@@ -101,31 +99,26 @@ bool SingleGpuGame::LoadContent()
     return true;
 }
 
-Object3DEntity* SingleGpuGame::Get(std::string name)
-{
-    if (m_Objects.find(name) == m_Objects.end()) return nullptr;
-    return m_Objects[name];
-}
-
-void SingleGpuGame::SaveSceneToFile()
-{
-    m_SceneSerializer.Save(m_Objects);
-}
-
 void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 {
     if (!m_Initialized) return;
     super::OnUpdate(e);
+    executor->Update();
+
     float elapsedTime = static_cast<float>(e.ElapsedTime);
-    UpdateSceneObjects(elapsedTime);
+
+    for (auto obj : m_Objects) obj.second->OnUpdate(elapsedTime);
+    
+    m_SelectionSystem->Update();
+
     m_Lights.OnUpdate(elapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera->Position;
     ShaderResources::GetSSRCB()->ViewProjection = m_Camera->GetViewProjMatrix();
     ShaderResources::GetSSRCB()->CameraPos = m_Camera->Position;
     m_ParticleSystem.OnUpdate(elapsedTime, m_stopParticles, m_Camera->GetViewProjMatrix(), m_Camera->Position);
-    RefreshTitle(e);
     m_CascadedShadowMap.Update(m_Camera->Position, ShaderResources::GetWorldCB()->DirLight.Direction);
-    executor->Update();
+    
+    RefreshTitle(e);
 }
 
 void SingleGpuGame::DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -149,7 +142,7 @@ void SingleGpuGame::DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> com
         commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
         commandList->OMSetRenderTargets(0, nullptr, false, &dsv);
 
-        DrawSceneObjects(commandList, m_CascadedShadowMap.GetShadowViewProj(i));
+        DrawSceneObjectsForward(commandList, m_CascadedShadowMap.GetShadowViewProj(i));
 
         TransitionResource(commandList, shadowMap->Resource(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
     }
@@ -173,7 +166,7 @@ void SingleGpuGame::DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> comman
     ShaderResources::SetGraphicsWorldCB(commandList, 0);
     commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap(GraphicAdapterPrimary).GetAddressOf());
 
-    DrawSceneObjects(commandList, m_Camera->GetViewProjMatrix());
+    DrawSceneObjectsForward(commandList, m_Camera->GetViewProjMatrix());
 
     m_GBuffer.SetToRead(commandList);
 }
@@ -297,8 +290,8 @@ void SingleGpuGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandL
 {
     CurrentPass::Set(CurrentPass::Debug);
 
-    m_SimplePipeline.Set(commandList);
-    m_DebugSystem.Draw(commandList, m_Camera->GetViewProjMatrix());
+    m_SimplePipeline.Set(commandList);    
+    m_DebugSystem->OnRender(commandList, m_Camera->GetViewProjMatrix());
 }
 
 void SingleGpuGame::DrawForwardObjects(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -375,10 +368,6 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::V:
         m_pWindow->ToggleVSync();
         break;
-    case KeyCode::X:
-        m_DebugSystem.canDraw = !m_DebugSystem.canDraw;
-        m_ShouldAddDebugObjects = true;
-        break;
     case KeyCode::P:
         m_stopParticles = !m_stopParticles;
         break;    
@@ -414,6 +403,7 @@ void SingleGpuGame::OnMouseMoved(MouseMotionEventArgs& e)
 void SingleGpuGame::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
     m_Player->OnMouseButtonPressed(e);
+    m_SelectionSystem->OnMouseButtonPressed(e);
 }
 
 void SingleGpuGame::OnMouseButtonReleased(MouseButtonEventArgs& e)
@@ -433,6 +423,93 @@ void SingleGpuGame::OnResize(ResizeEventArgs& e)
     m_SSRBuffer->Resize(e.Width, e.Height);
     m_Camera->Ratio = static_cast<float>(e.Width) / static_cast<float>(e.Height);
 }
+
+void SingleGpuGame::UpdateSceneObjects(float deltaTime)
+{
+    for (auto obj : m_Objects)
+    {
+        obj.second->OnUpdate(deltaTime);
+    }
+}
+
+void SingleGpuGame::DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
+{
+    UINT index = 1;
+    for (auto obj : m_Objects)
+    {
+        if (CurrentPass::Get() == CurrentPass::Geometry)
+        {
+            ShaderResources::GetGeometryPassCB()->ObjectId = index++;
+        }
+        obj.second->OnRender(commandList, viewProjMatrix);
+    }
+}
+
+Object3DEntity* SingleGpuGame::GetSceneEntity(std::string name)
+{
+    if (m_Objects.find(name) == m_Objects.end()) return nullptr;
+    return m_Objects[name];
+}
+
+std::map<std::string, Object3DEntity*>::iterator SingleGpuGame::GetSceneEntity(int index)
+{
+    if (index >= m_Objects.size() || index < 0) return {};
+    return std::next(m_Objects.begin(), index);
+}
+
+void SingleGpuGame::SaveSceneToFile()
+{
+    SceneJsonSerializer::Save(m_Objects);
+}
+
+void SingleGpuGame::UnloadContent()
+{
+    if (m_SerializeSceneOnExit)
+        SaveSceneToFile();
+}
+
+void SingleGpuGame::Destroy()
+{
+    super::Destroy();
+
+    executor->Exit();
+
+    m_DebugSystem->Destroy();
+    m_CascadedShadowMap.Destroy();
+
+    m_DepthBuffer->Destroy();
+    m_DepthBuffer.reset();
+    m_DepthBuffer = nullptr;
+
+    m_GBuffer.Destroy();
+
+    m_LightPassBuffer->Destroy();
+    m_LightPassBuffer.reset();
+    m_LightPassBuffer = nullptr;
+
+    m_SSRBuffer->Destroy();
+    m_SSRBuffer.reset();
+    m_SSRBuffer = nullptr;
+
+    m_ParticleSystem.Destroy();
+    m_tex3d.Destroy();
+
+    m_ParticlePipeline.Destroy();
+    m_ParticleComputePipeline.Destroy();
+    m_SimplePipeline.Destroy();
+    m_ShadowMapPipeline.Destroy();
+    m_GeometryPassPipeline.Destroy();
+    m_SSRPipeline.Destroy();
+    m_MergingPipeline.Destroy();
+    m_LightPassPipeline.Destroy();
+
+    ShaderResources::Destroy();
+    DescriptorHeaps::DestroyAll();
+
+    m_Device.Reset();
+    m_Device = nullptr;
+}
+
 
 void SingleGpuGame::RefreshTitle(UpdateEventArgs& e)
 {
@@ -471,70 +548,6 @@ void SingleGpuGame::RefreshTitle(UpdateEventArgs& e)
         frameCounter++;
         timer += e.ElapsedTime;
     }
-}
-
-void SingleGpuGame::UpdateSceneObjects(float deltaTime)
-{
-    for (auto obj : m_Objects)
-    {
-        obj.second->OnUpdate(deltaTime);
-    }
-}
-
-void SingleGpuGame::DrawSceneObjects(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
-{
-    for (auto obj : m_Objects)
-    {
-        obj.second->OnRender(commandList, viewProjMatrix);
-    }
-}
-
-void SingleGpuGame::UnloadContent()
-{
-    if (m_SerializeSceneOnExit)
-        SaveSceneToFile();
-}
-
-void SingleGpuGame::Destroy()
-{
-    super::Destroy();
-
-    executor->Exit();
-
-    m_DebugSystem.Destroy();
-    m_CascadedShadowMap.Destroy();
-
-    m_DepthBuffer->Destroy();
-    m_DepthBuffer.reset();
-    m_DepthBuffer = nullptr;
-
-    m_GBuffer.Destroy();
-
-    m_LightPassBuffer->Destroy();
-    m_LightPassBuffer.reset();
-    m_LightPassBuffer = nullptr;
-
-    m_SSRBuffer->Destroy();
-    m_SSRBuffer.reset();
-    m_SSRBuffer = nullptr;
-
-    m_ParticleSystem.Destroy();
-    m_tex3d.Destroy();
-
-    m_ParticlePipeline.Destroy();
-    m_ParticleComputePipeline.Destroy();
-    m_SimplePipeline.Destroy();
-    m_ShadowMapPipeline.Destroy();
-    m_GeometryPassPipeline.Destroy();
-    m_SSRPipeline.Destroy();
-    m_MergingPipeline.Destroy();
-    m_LightPassPipeline.Destroy();
-
-    ShaderResources::Destroy();
-    DescriptorHeaps::DestroyAll();
-
-    m_Device.Reset();
-    m_Device = nullptr;
 }
 
 SingleGpuGame::~SingleGpuGame()

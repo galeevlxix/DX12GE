@@ -2,7 +2,7 @@
 
 CommandExecutor::CommandExecutor(SingleGpuGame* game)
 {
-	m_scene = game;
+	m_Game = game;
 	reader_thread = std::thread(&CommandExecutor::read_loop, this);
 }
 
@@ -91,14 +91,22 @@ void CommandExecutor::ProcessObject(const std::vector<std::string>& tokens, std:
 
 	ActionCommand command;
 
-
 	std::string name = tokens[2];
-	command.obj = m_scene->Get(name);
-	if (!command.obj)
+
+	if (name == "selected_entities_in_scene")
 	{
-		output = "Ошибка Set Object: Объект по имени " + name + " не найден";
-		return;
+		command.objects = m_Game->m_SelectionSystem->GetSelected();
 	}
+	else
+	{
+		command.objects = { m_Game->GetSceneEntity(name) };
+	}
+
+	if (command.objects.size() == 0)
+	{
+		output = "Ошибка Set Object: Объект(ы) не найдены (" + name + ")";
+		return;
+	}	
 
 	command.action = tokens[3];
 
@@ -132,40 +140,43 @@ bool CommandExecutor::ProcessObjectAction(ActionCommand& command, std::string& o
 		return false;
 	}
 
-	if (command.action == "pos" || command.action == "position")
+	for (auto obj : command.objects)
 	{
-		command.undo_value = command.obj->Transform.GetPosition();
-		command.obj->Transform.SetPosition(command.value);
-	}
-	else if (command.action == "rot" || command.action == "rotation")
-	{
-		command.undo_value = command.obj->Transform.GetRotationDegrees();
-		command.obj->Transform.SetRotationDegrees(command.value);
-	}
-	else if (command.action == "scl" || command.action == "scale")
-	{
-		command.undo_value = command.obj->Transform.GetScale();
-		command.obj->Transform.SetScale(command.value);
-	}
-	else if (command.action == "move")
-	{
-		command.undo_value = -command.value;
-		command.obj->Transform.Move(command.value);
-	}
-	else if (command.action == "rotate")
-	{
-		command.undo_value = -command.value;
-		command.obj->Transform.RotateDegrees(command.value);
-	}
-	else if (command.action == "expand")
-	{
-		command.undo_value = 1.0 / command.value;
-		command.obj->Transform.Expand(command.value.x, command.value.y, command.value.z);
-	}
-	else
-	{
-		output = "Ошибка Set Object: Неизвестное действие " + command.action;
-		return false;
+		if (command.action == "pos" || command.action == "position")
+		{
+			command.undo_value = obj->Transform.GetPosition();
+			obj->Transform.SetPosition(command.value);
+		}
+		else if (command.action == "rot" || command.action == "rotation")
+		{
+			command.undo_value = obj->Transform.GetRotationDegrees();
+			obj->Transform.SetRotationDegrees(command.value);
+		}
+		else if (command.action == "scl" || command.action == "scale")
+		{
+			command.undo_value = obj->Transform.GetScale();
+			obj->Transform.SetScale(command.value);
+		}
+		else if (command.action == "move")
+		{
+			command.undo_value = -command.value;
+			obj->Transform.Move(command.value);
+		}
+		else if (command.action == "rotate")
+		{
+			command.undo_value = -command.value;
+			obj->Transform.RotateDegrees(command.value);
+		}
+		else if (command.action == "expand")
+		{
+			command.undo_value = 1.0 / command.value;
+			obj->Transform.Expand(command.value.x, command.value.y, command.value.z);
+		}
+		else
+		{
+			output = "Ошибка Set Object: Неизвестное действие " + command.action;
+			return false;
+		}
 	}
 
 	return true;
@@ -184,8 +195,8 @@ void CommandExecutor::GetObjectInfo(const std::vector<std::string>& tokens, std:
 		ActionCommand command; 
 
 		std::string name = tokens[2];
-		command.obj = m_scene->Get(name);
-		if (!command.obj)
+		command.objects = { m_Game->GetSceneEntity(name) };
+		if (!command.objects[0])
 		{
 			output = "Ошибка Set Object: Объект по имени " + name + " не найден";
 			return;
@@ -212,7 +223,7 @@ void CommandExecutor::GetObjectInfo(const std::vector<std::string>& tokens, std:
 
 void CommandExecutor::ProcessSave(const std::vector<std::string>& tokens, std::string& output)
 {
-	m_scene->SaveSceneToFile();
+	m_Game->SaveSceneToFile();
 	output = "Сцена сохранена";
 }
 

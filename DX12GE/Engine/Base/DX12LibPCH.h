@@ -57,3 +57,5 @@ enum GraphicsAdapter : UINT
 	GraphicAdapterPrimary = 0,
 	GraphicAdapterSecond = 1
 };
+
+#define PI 3.1415926535f

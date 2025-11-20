@@ -55,9 +55,9 @@ void MaterialEntity::RenderTexture(ComPtr<ID3D12GraphicsCommandList2> commandLis
 
 void MaterialEntity::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    ShaderResources::GetMaterialCB()->HasDiffuseNormalEmissive = HasDiffuseNormalEmissive;
-    ShaderResources::GetMaterialCB()->HasOcclusionRoughnessMetallicCombined = HasOcclusionRoughnessMetallicCombined;
-    ShaderResources::SetMaterialCB(commandList, 1);
+    ShaderResources::GetGeometryPassCB()->HasDiffuseNormalEmissive = HasDiffuseNormalEmissive;
+    ShaderResources::GetGeometryPassCB()->HasOcclusionRoughnessMetallicCombined = HasOcclusionRoughnessMetallicCombined;
+    ShaderResources::SetGeometryPassCB(commandList, 1);
 
     RenderTexture(commandList, 2, m_DiffuseTextureId,     HasDiffuseNormalEmissive.x);
     RenderTexture(commandList, 3, m_NormalTextureId,      HasDiffuseNormalEmissive.y);

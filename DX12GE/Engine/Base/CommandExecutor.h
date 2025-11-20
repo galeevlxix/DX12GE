@@ -16,13 +16,13 @@ class CommandExecutor
 private:
 	struct ActionCommand
 	{
-		Object3DEntity* obj;
+		std::vector<Object3DEntity*> objects;
 		std::string action;
 		Vector3 value;
 		Vector3 undo_value;
 	};
 
-	SingleGpuGame* m_scene;
+	SingleGpuGame* m_Game;
 
 	void ProcessCommand(const std::string& line, std::string& output);
 
@@ -40,6 +40,7 @@ public:
 	CommandExecutor(SingleGpuGame* game);
 	void Exit();
 	void Update();
+
 private:
 	std::atomic<bool> stop_flag;
 	std::thread reader_thread;

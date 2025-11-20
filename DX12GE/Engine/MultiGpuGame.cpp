@@ -44,11 +44,11 @@ bool MultiGpuGame::Initialize()
 
     m_CATR.PrimarySSRResult = std::make_shared<TextureBuffer>();
     m_CATR.PrimarySSRResult->SetName(L"SSRResultPrimaryResource");
-    m_CATR.PrimarySSRResult->Init(m_PrimaryDevice, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
+    m_CATR.PrimarySSRResult->Init(m_PrimaryDevice, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, false);
 
     m_CATR.PrimaryLightPassResult = std::make_shared<TextureBuffer>();
     m_CATR.PrimaryLightPassResult->SetName(L"LightPassPrimaryResource");
-    m_CATR.PrimaryLightPassResult->Init(m_PrimaryDevice, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
+    m_CATR.PrimaryLightPassResult->Init(m_PrimaryDevice, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, false);
 
     m_CATR.PrimaryDepthBuffer = std::make_shared<DepthBuffer>();
     m_CATR.PrimaryDepthBuffer->Init(GraphicAdapterPrimary);
@@ -63,11 +63,11 @@ bool MultiGpuGame::Initialize()
 
     m_CATR.SecondSSRResult = std::make_shared<TextureBuffer>();
     m_CATR.SecondSSRResult->SetName(L"SSRResultSecondResource");
-    m_CATR.SecondSSRResult->Init(m_SecondDevice, GraphicAdapterSecond, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
+    m_CATR.SecondSSRResult->Init(m_SecondDevice, GraphicAdapterSecond, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, false);
 
     m_CATR.SecondLightPassResult = std::make_shared<TextureBuffer>();
     m_CATR.SecondLightPassResult->SetName(L"LightPassSecondResource");
-    m_CATR.SecondLightPassResult->Init(m_SecondDevice, GraphicAdapterSecond, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM);
+    m_CATR.SecondLightPassResult->Init(m_SecondDevice, GraphicAdapterSecond, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, false);
 
     m_CATR.SecondDepthBuffer = std::make_shared<DepthBuffer>();
     m_CATR.SecondDepthBuffer->Init(GraphicAdapterSecond);
@@ -105,8 +105,6 @@ bool MultiGpuGame::LoadContent()
 
     BoundingBox box(m_boxPosition + m_boxSize * 0.5f, m_boxSize * 0.5f);
     m_DebugSystem.DrawBoundingBox(box);
-
-    m_DebugSystem.Update(commandList);
 
     ShaderResources::GetParticleComputeCB()->BoxPosition = m_boxPosition;
     ShaderResources::GetParticleComputeCB()->BoxSize = Vector3(m_boxSize);
@@ -306,7 +304,7 @@ void MultiGpuGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandLi
     CurrentPass::Set(CurrentPass::Debug);
 
     m_SimplePipeline.Set(commandList);
-    m_DebugSystem.Draw(commandList, m_Camera->GetViewProjMatrix());
+    m_DebugSystem.OnRender(commandList, m_Camera->GetViewProjMatrix());
 }
 
 
@@ -400,8 +398,7 @@ void MultiGpuGame::OnKeyPressed(KeyEventArgs& e)
         m_pWindow->ToggleVSync();
         break;
     case KeyCode::X:
-        m_DebugSystem.canDraw = !m_DebugSystem.canDraw;
-        m_ShouldAddDebugObjects = true;
+        m_DebugSystem.Clear();
         break;
     case KeyCode::P:
         m_stopParticles = !m_stopParticles;

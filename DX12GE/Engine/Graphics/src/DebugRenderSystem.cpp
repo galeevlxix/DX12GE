@@ -1,28 +1,20 @@
 #include "../DebugRenderSystem.h"
+#include "../../Base/Application.h"
 
-void DebugRenderSystem::Update(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void DebugRenderSystem::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
+	if (linesVertices.size() == 0) return;
+
 	if (isLinesDirty)
 	{
-		m_Lines.OnLoad<VertexPositionColor>(commandList, linesVertices, linesIndices);
+		m_Lines.OnLoad<VertexPositionColor>(commandList, linesVertices, linesIndices, true);
 		isLinesDirty = false;
 	}
-}
-
-void DebugRenderSystem::Draw(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
-{
-	if (isLinesDirty || !canDraw) return;
 
 	XMMATRIX mvpMatrix = XMMatrixMultiply(Matrix::Identity, viewProjMatrix);
 	commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvpMatrix, 0);
 
 	m_Lines.OnRender(commandList, D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-}
-
-void DebugRenderSystem::Clear()
-{
-	linesVertices.clear();
-	linesIndices.clear();
 }
 
 void DebugRenderSystem::CreateLine(const Vector3& pos0, const Vector3& pos1, const Color& color)
@@ -106,48 +98,9 @@ void DebugRenderSystem::DrawArrow(const Vector3& p0, const Vector3& p1, const Co
 
 void DebugRenderSystem::DrawPoint(const Vector3& pos, const float& size)
 {
-	Vector3 red(1.0f, 0.0f, 0.0f);
-	Vector3 green(0.0f, 1.0f, 0.0f);
-	Vector3 blue(0.0f, 0.0f, 1.0f);
-
-	linesVertices.emplace_back(VertexPositionColor
-		{
-			Vector3(pos.x + size, pos.y, pos.z),
-			red
-		});
-	linesIndices.emplace_back(linesVertices.size() - 1);
-	linesVertices.emplace_back(VertexPositionColor
-		{
-			Vector3(pos.x - size, pos.y, pos.z),
-			red
-		});
-	linesIndices.emplace_back(linesVertices.size() - 1);
-	linesVertices.emplace_back(VertexPositionColor
-		{
-			Vector3(pos.x, pos.y + size, pos.z),
-			green
-		});
-	linesIndices.emplace_back(linesVertices.size() - 1);
-	linesVertices.emplace_back(VertexPositionColor
-		{
-			Vector3(pos.x, pos.y - size, pos.z),
-			green
-		});
-	linesIndices.emplace_back(linesVertices.size() - 1);
-	linesVertices.emplace_back(VertexPositionColor
-		{
-			Vector3(pos.x, pos.y, pos.z + size),
-			blue
-		});
-	linesIndices.emplace_back(linesVertices.size() - 1);
-	linesVertices.emplace_back(VertexPositionColor
-		{
-			Vector3(pos.x, pos.y, pos.z - size),
-			blue
-		});
-	linesIndices.emplace_back(linesVertices.size() - 1);
-
-	isLinesDirty = true;
+	CreateLine(Vector3(pos.x + size, pos.y, pos.z), Vector3(pos.x - size, pos.y, pos.z), Color(1.0f, 0.0f, 0.0f));
+	CreateLine(Vector3(pos.x, pos.y + size, pos.z), Vector3(pos.x, pos.y - size, pos.z), Color(0.0f, 1.0f, 0.0f));
+	CreateLine(Vector3(pos.x, pos.y, pos.z + size), Vector3(pos.x, pos.y, pos.z - size), Color(0.0f, 0.0f, 1.0f));
 }
 
 void DebugRenderSystem::DrawCircle(const double& radius, const Color& color, const Matrix& transform, int density)
@@ -264,10 +217,22 @@ void DebugRenderSystem::DrawFrustrum(const DirectX::SimpleMath::Matrix& view, co
 	DrawLine(ToVec3(corners[3]), ToVec3(corners[7]), Vector4(0.5f, 0.0f, 0.0f, 1.0f));
 }
 
+void DebugRenderSystem::DrawBoundingBox(const CollisionBox& box, const Matrix& transform)
+{
+	Vector3 center((box.x_max + box.x_min) / 2.0f, (box.y_max + box.y_min) / 2.0f, (box.z_max + box.z_min) / 2.0f);
+	Vector3 extents((box.x_max - box.x_min) / 2.0f, (box.y_max - box.y_min) / 2.0f, (box.z_max - box.z_min) / 2.0f);
+	BoundingBox bounding(center, extents);
+	DrawBoundingBox(bounding, transform);
+}
+
+void DebugRenderSystem::Clear()
+{
+	linesVertices.clear();
+	linesIndices.clear();
+}
+
 void DebugRenderSystem::Destroy()
 {
-	m_Lines.Destroy();
-	m_Quads.Destroy();
-	m_Meshes.Destroy();
 	Clear();
+	m_Lines.Destroy();
 }

@@ -231,6 +231,9 @@
     <ClCompile Include="Engine\Pipelines\src\SkyboxPipeline.cpp">
       <Filter>Исходные файлы\Engine\Pipelines</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Base\src\SelectionSystem.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\GameSample.h">
@@ -406,6 +409,12 @@
     </ClInclude>
     <ClInclude Include="Engine\Pipelines\SkyboxPipeline.h">
       <Filter>Файлы заголовков\Engine\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\SelectionSystem.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\CollisionBox.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

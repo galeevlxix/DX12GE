@@ -12,7 +12,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     if (NotFoundFile(filePath.c_str())) return -1;
 
     int id = ResourceStorage::AddObject3D(filePath);
-    auto object = ResourceStorage::GetObject3D(id);
+    std::shared_ptr<Object3DComponent> object = ResourceStorage::GetObject3D(id);
 
     if (object->IsInitialized())
         return id;
@@ -107,6 +107,8 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
                 XMFLOAT2(pTexCoord->x, pTexCoord->y),
                 XMFLOAT3(pTangent->x, pTangent->y, pTangent->z),
                 XMFLOAT3(pBitangent->x, pBitangent->y, pBitangent->z)});
+
+            object->Box.Add(v.Position);
 
             yOffset = pPos->y < yOffset ? pPos->y : yOffset;
 

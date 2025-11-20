@@ -4,22 +4,34 @@
 
 void GBuffer::Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter, UINT width, UINT height)
 {
-    static const DXGI_FORMAT formats[GBUFFER_COUNT] =
+    static const DXGI_FORMAT formats[] =
     {
         DXGI_FORMAT_R32G32B32A32_FLOAT, // Position
         DXGI_FORMAT_R16G16B16A16_FLOAT, // Normal
         DXGI_FORMAT_R8G8B8A8_UNORM,     // Diffuse
         DXGI_FORMAT_R8G8B8A8_UNORM,     // Emissive
-        DXGI_FORMAT_R8G8B8A8_UNORM      // ORM
+        DXGI_FORMAT_R8G8B8A8_UNORM,     // ORM
+        DXGI_FORMAT_R32_UINT            // ObjectId
     };
 
-    LPCWSTR names[GBUFFER_COUNT]
+    LPCWSTR names[]
     {
         graphicsAdapter == GraphicAdapterPrimary ? L"GBufferPositionPrimaryResource" : L"GBufferPositionSecondResource",
         graphicsAdapter == GraphicAdapterPrimary ? L"GBufferNormalPrimaryResource"  : L"GBufferNormalSecondResource",
         graphicsAdapter == GraphicAdapterPrimary ? L"GBufferDiffusePrimaryResource" : L"GBufferDiffuseSecondResource",
         graphicsAdapter == GraphicAdapterPrimary ? L"GBufferEmissivePrimaryResource" : L"GBufferEmissiveSecondResource",
         graphicsAdapter == GraphicAdapterPrimary ? L"GBufferORMPrimaryResource"     : L"GBufferORMSecondResource",
+        graphicsAdapter == GraphicAdapterPrimary ? L"GBufferObjectIDPrimaryResource" : L"GBufferObjectIDSecondResource",
+    };
+
+    bool createReadback[]
+    {
+        false,  // Position
+        false,  // Normal
+        false,  // Diffuse
+        false,  // Emissive
+        false,  // ORM
+        true    // ObjectId
     };
 
     for (int i = 0; i < GBUFFER_COUNT; i++)
@@ -27,7 +39,8 @@ void GBuffer::Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter
         m_Targets[i] = std::make_shared<TextureBuffer>();
         
         m_Targets[i]->SetName(names[i]);
-        m_Targets[i]->Init(device, graphicsAdapter, width, height, formats[i]);
+
+        m_Targets[i]->Init(device, graphicsAdapter, width, height, formats[i], createReadback[i]);
     }
 }
 
@@ -57,6 +70,7 @@ void GBuffer::BindRenderTargets(ComPtr<ID3D12GraphicsCommandList2> commandList, 
         m_Targets[2]->RtvCPU(),
         m_Targets[3]->RtvCPU(),
         m_Targets[4]->RtvCPU(),
+        m_Targets[5]->RtvCPU(),
     };
 
     commandList->OMSetRenderTargets(GBUFFER_COUNT, rtvs, FALSE, &dsvHandle);

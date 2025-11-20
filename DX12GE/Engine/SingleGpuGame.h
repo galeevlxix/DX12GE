@@ -5,8 +5,8 @@
 #include "Base/Application.h"
 #include "Base/Game.h"
 #include "Base/Window.h"
+#include "Base/SelectionSystem.h"
 #include "Base/CommandQueue.h"
-#include "Base/SceneJsonSerializer.h"
 
 #include "Pipelines/Pipeline.h"
 #include "Pipelines/ShadowMapPipeline.h"
@@ -19,7 +19,6 @@
 #include "Pipelines/SkyboxPipeline.h"
 
 #include "Graphics/DescriptorHeaps.h"
-#include "Graphics/ShaderResources.h"
 #include "Graphics/Object3DEntity.h"
 #include "Graphics/DebugRenderSystem.h"
 #include "Graphics/CascadedShadowMap.h"
@@ -60,27 +59,21 @@ protected:
     virtual void OnMouseButtonReleased(MouseButtonEventArgs& e) override;
     virtual void OnResize(ResizeEventArgs& e) override;
 
-public:
-    Object3DEntity* Get(std::string name);
-    void SaveSceneToFile();
-
 private:
     void DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawParticles(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawForwardObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
-
     void DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
-    void RefreshTitle(UpdateEventArgs& e);
-
     void UpdateSceneObjects(float deltaTime);
-    void DrawSceneObjects(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
+    void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
+    void RefreshTitle(UpdateEventArgs& e);
 private:
 
     ComPtr<ID3D12Device2> m_Device;
@@ -101,11 +94,11 @@ private:
     Camera* m_Camera;
     map<string, Object3DEntity*> m_Objects;
     ThirdPersonPlayer* m_Player;
-    SceneJsonSerializer m_SceneSerializer;
     bool m_SerializeSceneOnExit = false;
 
-    bool m_ShouldAddDebugObjects = false;
-    DebugRenderSystem m_DebugSystem;
+    std::shared_ptr<DebugRenderSystem> m_DebugSystem;
+   
+
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;
 
@@ -135,4 +128,12 @@ private:
     MergingPipeline m_MergingPipeline;
     LightPassPipeline m_LightPassPipeline;    
     SkyboxPipeline m_SkyboxPipeline;
+
+public:
+    std::shared_ptr<SelectionSystem> m_SelectionSystem;
+
+    Object3DEntity* GetSceneEntity(std::string name);
+    std::map<std::string, Object3DEntity*>::iterator GetSceneEntity(int index);
+
+    void SaveSceneToFile();
 };

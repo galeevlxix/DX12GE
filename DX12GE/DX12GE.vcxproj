@@ -140,6 +140,7 @@
     <ClCompile Include="Engine\Base\src\Game.cpp" />
     <ClCompile Include="Engine\Base\src\HighResolutionClock.cpp" />
     <ClCompile Include="Engine\Base\src\SceneJsonSerializer.cpp" />
+    <ClCompile Include="Engine\Base\src\SelectionSystem.cpp" />
     <ClCompile Include="Engine\Base\src\SimpleMath.cpp" />
     <ClCompile Include="Engine\Base\src\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Base\src\Window.cpp" />
@@ -186,6 +187,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Base\Application.h" />
+    <ClInclude Include="Engine\Base\CollisionBox.h" />
     <ClInclude Include="Engine\Base\CommandExecutor.h" />
     <ClInclude Include="Engine\Base\CommandQueue.h" />
     <ClInclude Include="Engine\Base\d3dx12.h" />
@@ -199,6 +201,7 @@
     <ClInclude Include="Engine\Base\SceneJsonSerializer.h" />
     <ClInclude Include="Engine\Base\KeyCodes.h" />
     <ClInclude Include="Engine\Base\resource.h" />
+    <ClInclude Include="Engine\Base\SelectionSystem.h" />
     <ClInclude Include="Engine\Base\SimpleMath.h" />
     <ClInclude Include="Engine\Base\UploadBuffer.h" />
     <ClInclude Include="Engine\Base\Window.h" />

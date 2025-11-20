@@ -6,7 +6,7 @@ static WorldConstantBuffer* WorldCB = nullptr;
 static ParticleConstantBuffer* ParticleCB = nullptr;
 static ParticleComputeConstantBuffer* ComputeConstantCB = nullptr;
 static BitonicSortConstantBuffer* BitonicCB = nullptr;
-static MaterialConstantBuffer* MaterialCB = nullptr;
+static GeometryPassConstantBuffer* GeometryPassCB = nullptr;
 static SSRConstantBuffer* SSRCB = nullptr;
 
 static UploadBuffer* mPrimaryDeviceUploadBuffer = nullptr;
@@ -18,7 +18,7 @@ static UploadBuffer::Allocation ScbAllocation;
 static UploadBuffer::Allocation PcbAllocation;
 static UploadBuffer::Allocation CcbAllocation;
 static UploadBuffer::Allocation BcbAllocation;
-static UploadBuffer::Allocation McbAllocation;
+static UploadBuffer::Allocation GpcbAllocation;
 static UploadBuffer::Allocation SSRcbAllocation;
 
 static const UINT OcbSize = sizeof(ObjectConstantBuffer);
@@ -27,7 +27,7 @@ static const UINT WcbSize = sizeof(WorldConstantBuffer);
 static const UINT PcbSize = sizeof(ParticleConstantBuffer);
 static const UINT CcbSize = sizeof(ParticleComputeConstantBuffer);
 static const UINT BcbSize = sizeof(BitonicSortConstantBuffer);
-static const UINT McbSize = sizeof(MaterialConstantBuffer);
+static const UINT GpcbSize = sizeof(GeometryPassConstantBuffer);
 static const UINT SSRcbSize = sizeof(SSRConstantBuffer);
 
 void ShaderResources::Create(bool singleGpu)
@@ -44,10 +44,8 @@ void ShaderResources::Create(bool singleGpu)
 	ParticleCB =		!ParticleCB ?			new ParticleConstantBuffer() :			ParticleCB;
 	ComputeConstantCB = !ComputeConstantCB ?	new ParticleComputeConstantBuffer() :	ComputeConstantCB;
 	BitonicCB =			!BitonicCB ?			new BitonicSortConstantBuffer() :		BitonicCB;
-	MaterialCB =		!MaterialCB ?			new MaterialConstantBuffer() :			MaterialCB;
+	GeometryPassCB =	!GeometryPassCB ?		new GeometryPassConstantBuffer() :		GeometryPassCB;
 	SSRCB =				!SSRCB ?				new SSRConstantBuffer() :				SSRCB;
-
-
 }
 
 ObjectConstantBuffer* ShaderResources::GetObjectCB()
@@ -80,9 +78,9 @@ BitonicSortConstantBuffer* ShaderResources::GetBitonicSortCB()
 	return BitonicCB;
 }
 
-MaterialConstantBuffer* ShaderResources::GetMaterialCB()
+GeometryPassConstantBuffer* ShaderResources::GetGeometryPassCB()
 {
-	return MaterialCB;
+	return GeometryPassCB;
 }
 
 SSRConstantBuffer* ShaderResources::GetSSRCB()
@@ -137,11 +135,11 @@ void ShaderResources::SetBitonicSortCB(ComPtr<ID3D12GraphicsCommandList2> comman
 	commandList->SetComputeRootConstantBufferView(slot, BcbAllocation.GPU);
 }
 
-void ShaderResources::SetMaterialCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
+void ShaderResources::SetGeometryPassCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot)
 {
-	McbAllocation = mPrimaryDeviceUploadBuffer->Allocate(McbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-	memcpy(McbAllocation.CPU, MaterialCB, McbSize);
-	commandList->SetGraphicsRootConstantBufferView(slot, McbAllocation.GPU);
+	GpcbAllocation = mPrimaryDeviceUploadBuffer->Allocate(GpcbSize, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+	memcpy(GpcbAllocation.CPU, GeometryPassCB, GpcbSize);
+	commandList->SetGraphicsRootConstantBufferView(slot, GpcbAllocation.GPU);
 }
 
 void ShaderResources::SetSSRCB(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, GraphicsAdapter graphicsAdapter)
@@ -174,8 +172,8 @@ void ShaderResources::Destroy()
 	delete BitonicCB;
 	BitonicCB = nullptr;
 
-	delete MaterialCB;
-	MaterialCB = nullptr;
+	delete GeometryPassCB;
+	GeometryPassCB = nullptr;
 
 	delete SSRCB;
 	SSRCB = nullptr;
