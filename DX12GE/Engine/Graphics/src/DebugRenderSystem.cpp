@@ -127,6 +127,18 @@ void DebugRenderSystem::DrawPoint(const Vector3& pos, const float& size, const V
 	DrawPoint(pos, size, Color(color.x, color.y, color.z));
 }
 
+void DebugRenderSystem::DrawPoint(const Vector3& pos, const float& size, const Color& color)
+{
+	CreateLine(Vector3(pos.x + size, pos.y, pos.z), Vector3(pos.x - size, pos.y, pos.z), color);
+	CreateLine(Vector3(pos.x, pos.y + size, pos.z), Vector3(pos.x, pos.y - size, pos.z), color);
+	CreateLine(Vector3(pos.x, pos.y, pos.z + size), Vector3(pos.x, pos.y, pos.z - size), color);
+}
+
+void DebugRenderSystem::DrawPoint(const Vector3& pos, const float& size, const Vector3& color)
+{
+	DrawPoint(pos, size, Color(color.x, color.y, color.z));
+}
+
 void DebugRenderSystem::DrawCircle(const double& radius, const Color& color, const Matrix& transform, int density)
 {
 	double angleStep = DirectX::XM_PI * 2 / density;
