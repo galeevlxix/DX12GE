@@ -11,18 +11,19 @@
 
 class SelectionSystem
 {
+public:
+	SelectionSystem(std::map<std::string, Object3DEntity*>& objects, std::shared_ptr<TextureBuffer> idTextureBuffer);
+
 private:
 	std::vector<Object3DEntity*> m_Selected;
 
 	std::map<std::string, Object3DEntity*>& m_Objects;
-	std::shared_ptr<DebugRenderSystem> m_DebugSystem;
-	shared_ptr<TextureBuffer> m_IdTextureBuffer;
+	std::shared_ptr<TextureBuffer> m_IdTextureBuffer;
 
 	void GetObjectIdAt(UINT x, UINT y, UINT* outObjectID);
 
 public:
-	SelectionSystem(std::map<std::string, Object3DEntity*>& objects, std::shared_ptr<DebugRenderSystem> debugSystem, shared_ptr<TextureBuffer> idTextureBuffer);
-	void Update();
+	void DrawDebug(std::shared_ptr<DebugRenderSystem> debugSystem);
 	void OnMouseButtonPressed(MouseButtonEventArgs& e);
 
 	std::vector<Object3DEntity*>& GetSelected() { return m_Selected; }

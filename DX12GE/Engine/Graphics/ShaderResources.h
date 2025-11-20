@@ -47,7 +47,6 @@ struct PointLight
 	BaseLight BaseLightComponent;
 	Vector3 Position;
 	Attenuation AttenuationComponent;
-	float MaxRadius;
 };
 
 struct SpotLight

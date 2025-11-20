@@ -3,10 +3,9 @@
 #include "../CommandQueue.h"
 #include "../../Graphics/ResourceStorage.h"
 
-SelectionSystem::SelectionSystem(std::map<std::string, Object3DEntity*>& objects, std::shared_ptr<DebugRenderSystem> debugSystem, shared_ptr<TextureBuffer> idTextureBuffer) :
-    m_Objects(objects),
-    m_DebugSystem(debugSystem),
-    m_IdTextureBuffer(idTextureBuffer) { }
+SelectionSystem::SelectionSystem(std::map<std::string, Object3DEntity*>& objects, std::shared_ptr<TextureBuffer> idTextureBuffer) : m_Objects(objects), m_IdTextureBuffer (idTextureBuffer)
+{
+}
 
 void SelectionSystem::GetObjectIdAt(UINT x, UINT y, UINT* outObjectID)
 {
@@ -66,14 +65,13 @@ void SelectionSystem::GetObjectIdAt(UINT x, UINT y, UINT* outObjectID)
     m_IdTextureBuffer->GetReadbackBuffer()->Unmap(0, &writeRange);
 }
 
-void SelectionSystem::Update()
+void SelectionSystem::DrawDebug(std::shared_ptr<DebugRenderSystem> debugSystem)
 {
-    m_DebugSystem->Clear();
     for (Object3DEntity* obj : m_Selected)
     {
         CollisionBox box = ResourceStorage::GetObject3D(obj->GetId())->Box;
         Matrix transform = obj->Transform.GetWorldMatrix();
-        m_DebugSystem->DrawBoundingBox(box, transform);
+        debugSystem->DrawBoundingBox(box, transform);
     }
 }
 

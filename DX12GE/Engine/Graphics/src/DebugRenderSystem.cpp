@@ -96,11 +96,28 @@ void DebugRenderSystem::DrawArrow(const Vector3& p0, const Vector3& p1, const Co
 	CreateLine(a - side, p1, color);
 }
 
+void DebugRenderSystem::DrawArrow(const Vector3& p0, const Vector3& p1, const Vector3& color, const Vector3& n)
+{
+	DrawArrow(p0, p1, Color(color.x, color.y, color.z), n);
+}
+
 void DebugRenderSystem::DrawPoint(const Vector3& pos, const float& size)
 {
 	CreateLine(Vector3(pos.x + size, pos.y, pos.z), Vector3(pos.x - size, pos.y, pos.z), Color(1.0f, 0.0f, 0.0f));
 	CreateLine(Vector3(pos.x, pos.y + size, pos.z), Vector3(pos.x, pos.y - size, pos.z), Color(0.0f, 1.0f, 0.0f));
 	CreateLine(Vector3(pos.x, pos.y, pos.z + size), Vector3(pos.x, pos.y, pos.z - size), Color(0.0f, 0.0f, 1.0f));
+}
+
+void DebugRenderSystem::DrawPoint(const Vector3& pos, const float& size, const Color& color)
+{
+	CreateLine(Vector3(pos.x + size, pos.y, pos.z), Vector3(pos.x - size, pos.y, pos.z), color);
+	CreateLine(Vector3(pos.x, pos.y + size, pos.z), Vector3(pos.x, pos.y - size, pos.z), color);
+	CreateLine(Vector3(pos.x, pos.y, pos.z + size), Vector3(pos.x, pos.y, pos.z - size), color);
+}
+
+void DebugRenderSystem::DrawPoint(const Vector3& pos, const float& size, const Vector3& color)
+{
+	DrawPoint(pos, size, Color(color.x, color.y, color.z));
 }
 
 void DebugRenderSystem::DrawCircle(const double& radius, const Color& color, const Matrix& transform, int density)
@@ -156,7 +173,6 @@ void DebugRenderSystem::DrawPlane(const Vector4& p, const Color& color, float si
 	CreateLine(leftPoint - up * sizeWidth, rightPoint - up * sizeWidth, color);
 	CreateLine(downPoint - right * sizeWidth, upPoint - right * sizeWidth, color);
 	CreateLine(downPoint + right * sizeWidth, upPoint + right * sizeWidth, color);
-
 
 	if (drawCenterCross) {
 		CreateLine(leftPoint, rightPoint, color);

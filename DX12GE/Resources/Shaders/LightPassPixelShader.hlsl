@@ -34,7 +34,6 @@ struct PointLight
     float AttenuationConstant;
     float AttenuationLinear;
     float AttenuationExp;
-    float MaxRadius;
 };
 
 struct SpotLight
@@ -45,7 +44,6 @@ struct SpotLight
     float AttenuationConstant;
     float AttenuationLinear;
     float AttenuationExp;
-    float MaxRadius;
     float3 Direction;
     float Cutoff;
 };
@@ -269,19 +267,13 @@ float4 main(PSInput input) : SV_Target
     // Pointlights
     for (int pIndex = 0; pIndex < LightPropertiesCB.PointLightsCount; pIndex++)
     {
-        if (length(worldPos - PointLightsSB[pIndex].Position) < PointLightsSB[pIndex].MaxRadius)
-        {
-            lightingResult += CalcPointLight(PointLightsSB[pIndex], worldPos, normal, albedo, roughness, metalness);
-        }
+        lightingResult += CalcPointLight(PointLightsSB[pIndex], worldPos, normal, albedo, roughness, metalness);
     }
     
     // Spotlights
     for (int sIndex = 0; sIndex < LightPropertiesCB.SpotLightsCount; sIndex++)
     {
-        if (length(worldPos - SpotLightsSB[sIndex].Position) < SpotLightsSB[sIndex].MaxRadius)
-        {
-            lightingResult += CalcSpotLight(SpotLightsSB[sIndex], worldPos, normal, albedo, roughness, metalness);
-        }
+        lightingResult += CalcSpotLight(SpotLightsSB[sIndex], worldPos, normal, albedo, roughness, metalness);
     }
     
     float3 outputPixelColor = lightingResult + emissive.rgb;

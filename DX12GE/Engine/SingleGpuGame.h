@@ -63,7 +63,7 @@ private:
     void DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawParticles(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void DrawForwardObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawForwardOther(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
@@ -96,8 +96,7 @@ private:
     ThirdPersonPlayer* m_Player;
     bool m_SerializeSceneOnExit = false;
 
-    std::shared_ptr<DebugRenderSystem> m_DebugSystem;
-   
+    std::shared_ptr<DebugRenderSystem> m_DebugSystem;  
 
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;

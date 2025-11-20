@@ -30,7 +30,10 @@ public:
 	void DrawBoundingBox(const BoundingBox& box, const Matrix& transform);
 	void DrawBoundingBox(const CollisionBox& box, const Matrix& transform);
 	void DrawArrow(const Vector3& p0, const Vector3& p1, const Color& color, const Vector3& n);
+	void DrawArrow(const Vector3& p0, const Vector3& p1, const Vector3& color, const Vector3& n);
 	void DrawPoint(const Vector3& pos, const float& size);
+	void DrawPoint(const Vector3& pos, const float& size, const Color& color);
+	void DrawPoint(const Vector3& pos, const float& size, const Vector3& color);
 	void DrawCircle(const double& radius, const Color& color, const Matrix& transform, int density);
 	void DrawSphere(const double& radius, const Color& color, const Matrix& transform, int density);
 	void DrawPlane(const Vector4& p, const Color& color, float sizeWidth, float sizeNormal, bool drawCenterCross);

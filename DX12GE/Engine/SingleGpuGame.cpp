@@ -57,7 +57,7 @@ bool SingleGpuGame::Initialize()
     m_Camera->Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
 
     m_DebugSystem = std::make_shared<DebugRenderSystem>();
-    m_SelectionSystem = std::make_shared<SelectionSystem>(m_Objects, m_DebugSystem, m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
+    m_SelectionSystem = std::make_shared<SelectionSystem>(m_Objects, m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
 
     if (!super::Initialize()) return false;
     
@@ -91,7 +91,7 @@ bool SingleGpuGame::LoadContent()
     m_tex3d.Load(commandList, static_cast<int>(m_boxSize.x), static_cast<int>(m_boxSize.y), static_cast<int>(m_boxSize.z));
 
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);    
+    commandQueue->WaitForFenceValue(fenceValue);
 
     executor = new CommandExecutor(this);
     m_Initialized = true;
@@ -103,21 +103,26 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 {
     if (!m_Initialized) return;
     super::OnUpdate(e);
+
     executor->Update();
 
     float elapsedTime = static_cast<float>(e.ElapsedTime);
 
-    for (auto obj : m_Objects) obj.second->OnUpdate(elapsedTime);
-    
-    m_SelectionSystem->Update();
+    for (auto obj : m_Objects) 
+        obj.second->OnUpdate(elapsedTime);
 
     m_Lights.OnUpdate(elapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera->Position;
     ShaderResources::GetSSRCB()->ViewProjection = m_Camera->GetViewProjMatrix();
     ShaderResources::GetSSRCB()->CameraPos = m_Camera->Position;
+
     m_ParticleSystem.OnUpdate(elapsedTime, m_stopParticles, m_Camera->GetViewProjMatrix(), m_Camera->Position);
     m_CascadedShadowMap.Update(m_Camera->Position, ShaderResources::GetWorldCB()->DirLight.Direction);
     
+    m_DebugSystem->Clear();
+    m_SelectionSystem->DrawDebug(m_DebugSystem);
+    m_Lights.DrawDebug(m_DebugSystem);  
+
     RefreshTitle(e);
 }
 
@@ -201,7 +206,7 @@ void SingleGpuGame::LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandLi
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
 
-    DrawForwardObjects(commandList);
+    DrawForwardOther(commandList);
 
     m_LightPassBuffer->SetToRead(commandList);
 }
@@ -294,7 +299,7 @@ void SingleGpuGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandL
     m_DebugSystem->OnRender(commandList, m_Camera->GetViewProjMatrix());
 }
 
-void SingleGpuGame::DrawForwardObjects(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void SingleGpuGame::DrawForwardOther(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
     DrawDebugObjects(commandList);
     DrawSkybox(commandList);
@@ -374,7 +379,10 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::T:
         m_Player->StartTest();
         m_IsTesting = true;
-        break;    
+        break;   
+    case KeyCode::X:
+        m_Lights.AddPointLight(m_Player->Transform.GetPosition(), Vector3(1.0f, 1.0f, 1.0f), 5.0f);
+        break;
     case KeyCode::R:
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         auto commandList = commandQueue->GetCommandList();
