@@ -5,13 +5,14 @@
 #include <vector>
 #include <memory>
 
-enum class NodeType { Sequence, Selector, ActiveSelector, Parallel, Monitor };
+enum class NodeType { Sequence, Selector, ActiveSelector, Parallel, Monitor, Repeat, Invert, UntilFail };
 
 struct BuilderContext {
     std::vector<BehaviorPtr> children;
     NodeType type = NodeType::Selector;
     Policy successPolicy = Policy::RequireAll;
     Policy failurePolicy = Policy::RequireOne;
+    int decoratorLimit = 2;
 
     BuilderContext() = default;
     BuilderContext(BuilderContext&& other) noexcept
@@ -47,6 +48,9 @@ public:
     BehaviorTreeBuilder& monitor();
     BehaviorTreeBuilder& action(Behavior* b);
     BehaviorTreeBuilder& condition(Condition* c);
+    BehaviorTreeBuilder& repeat(int limit);
+    BehaviorTreeBuilder& invert();
+    BehaviorTreeBuilder& untilFail();
     BehaviorTreeBuilder& end();
 
     BehaviorPtr build();

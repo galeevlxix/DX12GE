@@ -1,5 +1,6 @@
 ﻿#include "../BehaviorTreeBuilder.h"
 #include "../Composites.h"
+#include "../Decorators.h"
 
 BehaviorTreeBuilder& BehaviorTreeBuilder::sequence() {
     BuilderContext ctx;
@@ -53,6 +54,28 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::condition(Condition* c) {
     return *this;
 }
 
+BehaviorTreeBuilder& BehaviorTreeBuilder::repeat(int limit) {
+    BuilderContext ctx;
+    ctx.type = NodeType::Repeat;
+    ctx.decoratorLimit = limit;
+    stack.emplace(std::move(ctx));
+    return *this;
+}
+
+BehaviorTreeBuilder& BehaviorTreeBuilder::invert() {
+    BuilderContext ctx;
+    ctx.type = NodeType::Invert;
+    stack.emplace(std::move(ctx));
+    return *this;
+}
+
+BehaviorTreeBuilder& BehaviorTreeBuilder::untilFail() {
+    BuilderContext ctx;
+    ctx.type = NodeType::UntilFail;
+    stack.emplace(std::move(ctx));
+    return *this;
+}
+
 BehaviorTreeBuilder& BehaviorTreeBuilder::end() {
     if (stack.size() <= 1) return *this;
 
@@ -76,12 +99,28 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::end() {
     case NodeType::Monitor:
         nodePtr = std::make_unique<Monitor>();
         break;
+    case NodeType::Repeat:
+        nodePtr = std::make_unique<Repeat>(current.decoratorLimit);
+        break;
+    case NodeType::Invert:
+        nodePtr = std::make_unique<Invert>();
+        break;
+    case NodeType::UntilFail:
+        nodePtr = std::make_unique<UntilFail>();
+        break;
     }
-    Composite* node = static_cast<Composite*>(nodePtr.get());
-    for (auto& child : current.children) {
-        node->addChild(std::move(child));
+    
+    if (dynamic_cast<Decorator*>(nodePtr.get())) {
+        Decorator* decorator = static_cast<Decorator*>(nodePtr.get());
+        if (!current.children.empty()) {
+            decorator->setChild(std::move(current.children[0]));
+        }
+    } else if (dynamic_cast<Composite*>(nodePtr.get())) {
+        Composite* composite = static_cast<Composite*>(nodePtr.get());
+        for (auto& child : current.children) {
+            composite->addChild(std::move(child));
+        }
     }
-
     stack.top().children.emplace_back(std::move(nodePtr));
     return *this;
 }
