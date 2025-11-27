@@ -10,7 +10,7 @@ protected:
     Behaviors m_Children;
 
 public:
-    void addChild(BehaviorPtr child) {
+    virtual void addChild(BehaviorPtr child) {
         m_Children.push_back(std::move(child));
     }
 
@@ -164,11 +164,36 @@ class Monitor : public Parallel {
 public:
     Monitor() : Parallel(Policy::RequireAll, Policy::RequireOne) {}
 
-    void addCondition(Behavior* condition) {
-        m_Children.insert(m_Children.begin(), BehaviorPtr(condition));
+    int numConditions = 0;
+
+    void addChild(BehaviorPtr child) override {
+        if (dynamic_cast<Condition*>(child.get())) {
+            m_Children.insert(m_Children.begin(), std::move(child));
+            numConditions++;
+        } else {
+            m_Children.emplace_back(std::move(child));
+        }
     }
 
-    void addAction(Behavior* action) {
-        m_Children.emplace_back(action);
+    Status update(float dt, Object3DEntity* owner) override {
+        size_t successCount = 0, failureCount = 0;
+        size_t size = m_Children.size();
+        for (size_t i = 0; i < size; ++i) {
+            Behavior* b = m_Children[i].get();
+            if ((b->m_Status != Status::SUCCESS && b->m_Status != Status::FAILURE) || i < numConditions) {
+                b->tick(dt, owner);
+            }
+            if (b->m_Status == Status::SUCCESS) {
+                ++successCount;
+                if (m_eSuccessPolicy == Policy::RequireOne) return Status::SUCCESS;
+            }
+            if (b->m_Status == Status::FAILURE) {
+                ++failureCount;
+                if (m_eFailurePolicy == Policy::RequireOne) return Status::FAILURE;
+            }
+        }
+        if (m_eFailurePolicy == Policy::RequireAll && failureCount == size) return Status::FAILURE;
+        if (m_eSuccessPolicy == Policy::RequireAll && successCount == size) return Status::SUCCESS;
+        return Status::RUNNING;
     }
 };
