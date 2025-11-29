@@ -111,7 +111,7 @@ float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
         float2(-dx, +dx),   float2(0.0f, +dx),  float2(dx, +dx)
     };
     
-    float shadow = 0.0;
+    float shadow = 0.0f;
     [unroll]
     for (int i = 0; i < 9; ++i)
     {
@@ -130,8 +130,8 @@ float CalcShadowCascade(float3 worldPos, float Distance)
         return CalcShadowFactor(mul(ShadowMapTransform1, float4(worldPos, 1.0)), ShadowMapSB1);
     else if (Distance < splitDistances[2])
         return CalcShadowFactor(mul(ShadowMapTransform2, float4(worldPos, 1.0)), ShadowMapSB2);
-    else
-        return CalcShadowFactor(mul(ShadowMapTransform3, float4(worldPos, 1.0)), ShadowMapSB3);
+ 
+    return CalcShadowFactor(mul(ShadowMapTransform3, float4(worldPos, 1.0)), ShadowMapSB3);
 }
 
 float3 DebugShadowCascade(float3 WorldPos, float Distance)
@@ -262,7 +262,7 @@ float4 main(PSInput input) : SV_Target
             worldPos, normal, albedo, roughness, metalness);
     
     float shadowFactor = CalcShadowCascade(worldPos, cameraPixelDistance);
-    float3 lightingResult = ambient + diffuse * shadowFactor;// * DebugShadowCascade(worldPos, cameraPixelDistance).xyz;
+    float3 lightingResult = ambient + diffuse * shadowFactor * DebugShadowCascade(worldPos, cameraPixelDistance).xyz;
     
     // Pointlights
     for (int pIndex = 0; pIndex < LightPropertiesCB.PointLightsCount; pIndex++)

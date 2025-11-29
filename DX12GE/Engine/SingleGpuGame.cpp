@@ -322,7 +322,7 @@ void SingleGpuGame::OnRender(RenderEventArgs& e)
     DrawSceneToShadowMaps(commandList);
     DrawSceneToGBuffer(commandList);
     LightPassRender(commandList);
-    DrawSSR(commandList);
+    //DrawSSR(commandList);
     MergeResults(commandList);
 
     m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);

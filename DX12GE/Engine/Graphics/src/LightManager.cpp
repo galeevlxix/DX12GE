@@ -94,8 +94,8 @@ void LightManager::OnUpdate(float deltaTime)
 	path += PI / 4.0f * deltaTime;
 	if (path >= 2.0f * PI) path -= 2.0f * PI;
 
-	ShaderResources::GetWorldCB()->DirLight.Direction.x = sin(path);
-	ShaderResources::GetWorldCB()->DirLight.Direction.z = cos(path);
+	//ShaderResources::GetWorldCB()->DirLight.Direction.x = sin(path);
+	//ShaderResources::GetWorldCB()->DirLight.Direction.z = cos(path);
 
 	m_SpotLights[0].PointLightComponent.Position = m_player->Transform.GetPosition() + Vector3(0.0f, 2.0f, 0.0f);
 	m_SpotLights[0].Direction = m_player->m_Direction;
