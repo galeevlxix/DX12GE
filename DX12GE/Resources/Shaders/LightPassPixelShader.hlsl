@@ -262,7 +262,7 @@ float4 main(PSInput input) : SV_Target
             worldPos, normal, albedo, roughness, metalness);
     
     float shadowFactor = CalcShadowCascade(worldPos, cameraPixelDistance);
-    float3 lightingResult = ambient + diffuse * shadowFactor * DebugShadowCascade(worldPos, cameraPixelDistance).xyz;
+    float3 lightingResult = ambient + diffuse * shadowFactor;// * DebugShadowCascade(worldPos, cameraPixelDistance).xyz;
     
     // Pointlights
     for (int pIndex = 0; pIndex < LightPropertiesCB.PointLightsCount; pIndex++)
