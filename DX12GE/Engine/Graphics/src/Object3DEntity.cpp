@@ -4,12 +4,12 @@
 #include "../VertexStructures.h"
 #include "../AssimpModelLoader.h"
 #include "../ShaderResources.h"
+#include "LuaManager.h"
 #include "../ResourceStorage.h"
 
 void Object3DEntity::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
     AssimpModelLoader modelLoader;
-
     float yOffset;
     ObjectId = modelLoader.LoadModelData(commandList, filePath, yOffset);
     Transform.SetDefault(yOffset);
@@ -48,6 +48,17 @@ void Object3DEntity::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, co
 uint32_t Object3DEntity::GetId()
 {
     return ObjectId;
+}
+
+void Object3DEntity::AddScriptComponent(std::string className)
+{
+    std::string classN = LuaManager::CreateValidClass(className, "player");
+    _luaClasses.push_back(classN);
+}
+
+std::vector<std::string>& Object3DEntity::GetEntityScripts()
+{
+    return _luaClasses;
 }
 
 void Object3DEntity::Destroy()

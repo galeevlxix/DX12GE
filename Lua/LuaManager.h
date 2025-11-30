@@ -71,5 +71,8 @@ public:
 	static void CLose() {
 		lua_close(L);
 	}
+	static std::string CreateValidClass(std::string className, std::string objId);
+	static void StartScript(std::string className);
+	static void UpdateScript(std::string script);
 };
 

@@ -135,7 +135,8 @@ bool SingleGpuGame::LoadContent()
 
 Object3DEntity* SingleGpuGame::Get(std::string name)
 {
-    if (m_Objects.find(name) == m_Objects.end()) return nullptr;
+    if (!m_Objects.contains(name)) return nullptr;
+
     return m_Objects[name];
 }
 

@@ -21,7 +21,22 @@ void ThirdPersonPlayer::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, c
 void ThirdPersonPlayer::OnUpdate(const double& deltaTime)
 {
 	Object3DEntity::OnUpdate(deltaTime);
-    LuaManager::PerformUpdate();
+
+    if (!_isInited)
+    {
+        AddScriptComponent("player");
+
+        for (const auto& script : _luaClasses)
+        {
+            LuaManager::StartScript(script);
+        }
+        _isInited = true;
+    }
+
+    for (const auto& script : _luaClasses)
+    {
+        LuaManager::UpdateScript(script);
+    }
 
     if (m_test_Enabled)
     {

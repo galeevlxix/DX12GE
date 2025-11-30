@@ -3,14 +3,16 @@
 #include <string>
 #include "SingleGpuGame.h"
 #include "LuaManager.h"
-#define SOL_ALL_SAFETIES_ON 0
+//#define SOL_ALL_SAFETIES_ON 0
 
+#define TEST
 
 lua_State* LuaManager::L = nullptr;
 LuaManager* LuaManager::p_instance = nullptr;
 std::string const luaSciptsFolder = "../Lua/scripts/";
 static SingleGpuGame* p_scene;
-static std::vector<std::string> lua_classes;
+static std::vector<std::string> lua_classes_vector;
+static std::map<std::string, std::vector<std::string>> lua_classes_map;
 static sol::state lua;
 static Camera* p_camera;
 
@@ -19,6 +21,8 @@ static Camera* p_camera;
 Object3DEntity* lua_get_object_on_scene(std::string name)
 {
 	const auto object = p_scene->Get(name);
+	//object->AddScriptComponent();
+
 	return object;
 }
 
@@ -95,11 +99,13 @@ int lua_load_object_with_model(std::string name)
 	std::string highCaseName = name;
 	std::transform(highCaseName.begin(), highCaseName.end(), highCaseName.begin(), ::toupper);
 	lua.safe_script("if " + name + " ~= nil then return end \n" + highCaseName + " = {}\n" + "Class(" + highCaseName + ", GameObject)\n" + name + " = " + highCaseName + ":new(\"" + name + "\")" +
-		"\n" + name + ":AddComponent(Transform)\n" + name + ":Start()\n");
+		"\n" + name + ":SetEntityName(\"" + name + "\")\n" + name + ":Start()\n" + name + ":AddComponent(Transform)\n");
 
-	if (std::find(lua_classes.begin(), lua_classes.end(), name) == lua_classes.end())
+	if (lua_classes_map.find(name) == lua_classes_map.end())
 	{
-		lua_classes.push_back(name);
+		std::string className = std::format("{}{}", className, lua_classes_map[name].size());
+		lua_classes_map[name].emplace_back(name);
+		lua_classes_vector.emplace_back(name);
 	}
 
 	return 1;
@@ -107,12 +113,12 @@ int lua_load_object_with_model(std::string name)
 
 int lua_register_class(std::string id)
 {
-	for (const auto& element : lua_classes)
+	for (const auto& element : lua_classes_vector)
 	{
 		assert(element != id, "Attempt to register class that already registered!");
 	}
 
-	lua_classes.push_back(id);
+	lua_classes_vector.push_back(id);
 	std::cout << "registered  " << id << std::endl;
 	return 1;
 }
@@ -134,11 +140,24 @@ LuaManager::LuaManager()
 	lua.set_function("GetClass", &get_lua_class);
 	lua.set_function("TranslateBy", &lua_transform_move_by);
 
-
+#ifdef TEST
 	lua.safe_script_file(luaSciptsFolder + "Core.lua");
 	lua.safe_script_file(luaSciptsFolder + "Player.lua");
-	lua.safe_script_file(luaSciptsFolder + "TestScript.lua");
-	lua.safe_script_file(luaSciptsFolder + "TestScript2.lua");
+//	lua.safe_script_file(luaSciptsFolder + "TestScript.lua");
+	//lua.safe_script_file(luaSciptsFolder + "TestScript2.lua");
+#else
+	lua.safe_script_file("Core.lua");
+	lua.safe_script_file("Player.lua");
+	//lua.safe_script_file("TestScript.lua");
+	//lua.safe_script_file("TestScript2.lua");
+#endif // TEST
+
+	/*/
+
+	//lua_classes_vector.emplace_back("Player");
+	//*
+
+	//*/
 	
 }
 
@@ -278,7 +297,7 @@ void LuaManager::SetScene(SingleGpuGame* scene)
 
 void LuaManager::ProceedMouseMovementInput(MouseMotionEventArgs& e)
 {
-	for (const auto& lua_class : lua_classes)
+	for (const auto& lua_class : lua_classes_vector)
 	{
 		sol::table temp_class = lua[lua_class];
 		temp_class["OnMouseMovementInputReceived"](temp_class, e.X, e.Y);
@@ -287,7 +306,7 @@ void LuaManager::ProceedMouseMovementInput(MouseMotionEventArgs& e)
 
 void LuaManager::ProceedMouseClickInput(MouseButtonEventArgs& e, bool pressed)
 {
-	for (const auto& lua_class : lua_classes)
+	for (const auto& lua_class : lua_classes_vector)
 	{
 		sol::table temp_class = lua[lua_class];
 		temp_class["OnMouseClickInput"](temp_class, e, pressed);
@@ -296,7 +315,7 @@ void LuaManager::ProceedMouseClickInput(MouseButtonEventArgs& e, bool pressed)
 
 void LuaManager::ProceedMouseWheelInput(MouseWheelEventArgs& e)
 {
-	for (const auto& lua_class : lua_classes)
+	for (const auto& lua_class : lua_classes_vector)
 	{
 		sol::table temp_class = lua[lua_class];
 		temp_class["OnMouseWheelInput"](temp_class, e);
@@ -305,16 +324,18 @@ void LuaManager::ProceedMouseWheelInput(MouseWheelEventArgs& e)
 
 void LuaManager::ProceedKeyBoardInput(KeyEventArgs& e, bool pressed)
 {
-	for (const auto& lua_class : lua_classes)
+	for (const auto& lua_class : lua_classes_vector)
 	{
 		sol::table temp_class = lua[lua_class];
 		temp_class["OnKeyBoardInput"](temp_class, e, pressed);
 	};
 }
 
+
+
 void LuaManager::PerformUpdate()
 {
-	for (const auto& lua_class : lua_classes)
+	for (const auto& lua_class : lua_classes_vector)
 	{
 		sol::table temp_class = lua[lua_class];
 		temp_class["Update"](temp_class);
@@ -323,7 +344,7 @@ void LuaManager::PerformUpdate()
 
 void LuaManager::Start()
 {
-	for (const auto& lua_class : lua_classes)
+	for (const auto& lua_class : lua_classes_vector)
 	{
 		sol::table temp_class = lua[lua_class];
 		temp_class["Start"](temp_class);
@@ -335,4 +356,32 @@ void LuaManager::SetCamera(Camera* camera)
 	p_camera = camera;
 }
 
+std::string LuaManager::CreateValidClass(std::string className, std::string objId)
+{
+	if (lua_classes_map.find(className) == lua_classes_map.end())
+	{
+		lua_classes_map.insert({ className, std::vector<std::string>() });
+	}
 
+	int index = lua_classes_map[className].size();
+	std::string actualName = std::format("{}{}", className, index);
+	lua_classes_map[className].emplace_back(actualName);
+	std::string highCaseName = className;
+	std::transform(highCaseName.begin(), highCaseName.end(), highCaseName.begin(), ::toupper);
+	lua.safe_script("if " + actualName + " ~= nil then return end \n" + actualName + " = " + highCaseName + ":new(\"" + actualName + "\")" +
+		"\n" + actualName + ":SetEntityName(\"" + objId + "\")\n" + actualName + ":AddComponent(Transform)\n");
+
+	return actualName;
+}
+
+void LuaManager::StartScript(std::string className)
+{
+	sol::table temp_class = lua[className];
+	temp_class["Start"](temp_class);
+}
+
+void LuaManager::UpdateScript(std::string script)
+{
+	sol::table temp_class = lua[script];
+	temp_class["Update"](temp_class);
+}
