@@ -2,7 +2,7 @@
 #include "../ShaderResources.h"
 #include "../ResourceStorage.h"
 
-uint32_t MaterialEntity::AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, std::string& path)
+uint64_t MaterialEntity::AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, std::string& path)
 {
     if (NotFoundFile(path.c_str()))
     {
@@ -19,7 +19,7 @@ uint32_t MaterialEntity::AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandLi
     return id;
 }
 
-int IsNotNull(uint32_t id)
+int IsNotNull(uint64_t id)
 {
     return id == -1 ? 0 : 1;
 }
@@ -48,7 +48,7 @@ void MaterialEntity::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
     }
 }
 
-void MaterialEntity::RenderTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot, uint32_t textureId, float mask)
+void MaterialEntity::RenderTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot, uint64_t textureId, float mask)
 {
     if (mask > 0.5f) ResourceStorage::GetTexture(textureId)->OnRender(commandList, slot);
 }

@@ -183,7 +183,7 @@ float3 CalculatePBRLight(float3 Color, float Intensity, float3 LightDirection, f
 {
     float3 PixelToEye = normalize(LightPropertiesCB.CameraPos.xyz - worldPos);
     
-    float3 H = normalize(PixelToEye + LightDirection);
+    float3 H = normalize(PixelToEye + LightDirection);    
     float3 F0 = lerp(0.04, albedo.rgb, metalness);
     
     float NDF = DistributionGGX(normal, H, roughness);
