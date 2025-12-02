@@ -27,6 +27,7 @@ public:
         m_Status = Status::INVALID;
     }
     Status m_Status = Status::INVALID;
+    virtual std::unique_ptr<Behavior> Clone() const = 0;
 protected:
     virtual void onInitialize() {}
     virtual Status update(float dt, Object3DEntity* owner) = 0;

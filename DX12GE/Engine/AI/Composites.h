@@ -59,6 +59,13 @@ protected:
 
 public:
     Sequence() = default;
+    BehaviorPtr Clone() const override {
+        auto clone = std::make_unique<Sequence>();
+        for (const auto& child : m_Children) {
+            clone->addChild(child->Clone());
+        }
+        return clone;
+    }
 };
 
 
@@ -90,6 +97,13 @@ protected:
 
 public:
     Selector() = default;
+    BehaviorPtr Clone() const override {
+        auto clone = std::make_unique<Selector>();
+        for (const auto& child : m_Children) {
+            clone->addChild(child->Clone());
+        }
+        return clone;
+    }
 };
 
 class ActiveSelector : public Selector {
@@ -114,6 +128,13 @@ protected:
 
 public:
     ActiveSelector() = default;
+    BehaviorPtr Clone() const override {
+        auto clone = std::make_unique<ActiveSelector>();
+        for (const auto& child : m_Children) {
+            clone->addChild(child->Clone());
+        }
+        return clone;
+    }
 };
 
 enum class Policy { RequireOne, RequireAll };
@@ -158,11 +179,28 @@ protected:
 public:
     Parallel(Policy success, Policy failure)
         : m_eSuccessPolicy(success), m_eFailurePolicy(failure) {}
+    
+    BehaviorPtr Clone() const override {
+        auto clone = std::make_unique<Parallel>(m_eSuccessPolicy, m_eFailurePolicy);
+        for (const auto& child : m_Children) {
+            clone->addChild(child->Clone());
+        }
+        return clone;
+    }
 };
 
 class Monitor : public Parallel {
 public:
     Monitor() : Parallel(Policy::RequireAll, Policy::RequireOne) {}
+
+    BehaviorPtr Clone() const override {
+        auto clone = std::make_unique<Monitor>();
+        for (const auto& child : m_Children) {
+            clone->addChild(child->Clone());
+        }
+        clone->numConditions = numConditions;
+        return clone;
+    }
 
     int numConditions = 0;
 

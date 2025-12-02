@@ -26,6 +26,11 @@ private:
 
 public:
     Repeat(int limit) : m_Limit(limit) {}
+    BehaviorPtr Clone() const override {
+        auto clone = std::make_unique<Repeat>(m_Limit);
+        if (m_Child) clone->setChild(m_Child->Clone());
+        return clone;
+    }
 
 protected:
     void onInitialize() override {
@@ -50,6 +55,12 @@ protected:
 };
 
 class Invert : public Decorator {
+public:
+    BehaviorPtr Clone() const override {
+        auto clone = std::make_unique<Invert>();
+        if (m_Child) clone->setChild(m_Child->Clone());
+        return clone;
+    }
 protected:
     Status update(float dt, Object3DEntity* owner) override {
         Status s = m_Child->tick(dt, owner);
@@ -60,6 +71,12 @@ protected:
 };
 
 class UntilFail : public Decorator {
+public:
+    BehaviorPtr Clone() const override {
+        auto clone = std::make_unique<UntilFail>();
+        if (m_Child) clone->setChild(m_Child->Clone());
+        return clone;
+    }
 protected:
     Status update(float dt, Object3DEntity* owner) override {
         Status s = m_Child->tick(dt, owner);
