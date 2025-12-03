@@ -43,9 +43,9 @@ protected:
         }
     }
 
-    Status update(float dt, Object3DEntity* owner) override {
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
         while (true) {
-            m_Child->tick(dt, owner);
+            m_Child->tick(dt, owner, blackboard);
             if (m_Child->m_Status == Status::RUNNING) return Status::RUNNING;
             if (m_Child->m_Status == Status::FAILURE) return Status::FAILURE;
             if (++m_Counter == m_Limit) return Status::SUCCESS;
@@ -62,8 +62,8 @@ public:
         return clone;
     }
 protected:
-    Status update(float dt, Object3DEntity* owner) override {
-        Status s = m_Child->tick(dt, owner);
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
+        Status s = m_Child->tick(dt, owner, blackboard);
         if (s == Status::SUCCESS) return Status::FAILURE;
         if (s == Status::FAILURE) return Status::SUCCESS;
         return s;
@@ -78,8 +78,8 @@ public:
         return clone;
     }
 protected:
-    Status update(float dt, Object3DEntity* owner) override {
-        Status s = m_Child->tick(dt, owner);
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
+        Status s = m_Child->tick(dt, owner, blackboard);
         if (s == Status::FAILURE) return Status::SUCCESS;
         if (s == Status::SUCCESS) m_Child->reset();
         return Status::RUNNING;

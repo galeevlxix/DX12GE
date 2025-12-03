@@ -36,9 +36,9 @@ protected:
         m_CurrentChildIndex = 0;
     }
 
-    virtual Status update(float dt, Object3DEntity* owner) {
+    virtual Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) {
         while (m_CurrentChildIndex < m_Children.size()) {
-            Status s = m_Children[m_CurrentChildIndex]->tick(dt, owner);
+            Status s = m_Children[m_CurrentChildIndex]->tick(dt, owner, blackboard);
             if (s != Status::SUCCESS) {
                 return s;  // Propagate FAILURE or RUNNING
             }
@@ -77,9 +77,9 @@ protected:
         m_CurrentChildIndex = 0;
     }
 
-    Status update(float dt, Object3DEntity* owner) override {
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
         while (m_CurrentChildIndex < m_Children.size()) {
-            Status s = m_Children[m_CurrentChildIndex]->tick(dt, owner);
+            Status s = m_Children[m_CurrentChildIndex]->tick(dt, owner, blackboard);
             if (s != Status::FAILURE) return s;
             m_CurrentChildIndex++;
         }
@@ -110,13 +110,13 @@ class ActiveSelector : public Selector {
 protected:
     size_t m_PreviousChildIndex = 0;  // To track previous for abort
 
-    Status update(float dt, Object3DEntity* owner) override {
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
         size_t prevIndex = m_CurrentChildIndex;
 
         // Reset to start from first child each tick
         onInitialize();
         
-        Status result = Selector::update(dt, owner);
+        Status result = Selector::update(dt, owner, blackboard);
 
         // If switched to different child, abort the previous
         if (prevIndex != m_CurrentChildIndex && prevIndex < m_Children.size()) {
@@ -146,13 +146,13 @@ protected:
 
     void onInitialize() override {}
 
-    Status update(float dt, Object3DEntity* owner) override {
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
         size_t successCount = 0, failureCount = 0;
         size_t size = m_Children.size();
         for (size_t i = 0; i < size; ++i) {
             Behavior* b = m_Children[i].get();
             if (b->m_Status != Status::SUCCESS && b->m_Status != Status::FAILURE) {
-                b->tick(dt, owner);
+                b->tick(dt, owner, blackboard);
             }
             if (b->m_Status == Status::SUCCESS) {
                 ++successCount;
@@ -213,13 +213,13 @@ public:
         }
     }
 
-    Status update(float dt, Object3DEntity* owner) override {
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
         size_t successCount = 0, failureCount = 0;
         size_t size = m_Children.size();
         for (size_t i = 0; i < size; ++i) {
             Behavior* b = m_Children[i].get();
             if ((b->m_Status != Status::SUCCESS && b->m_Status != Status::FAILURE) || i < numConditions) {
-                b->tick(dt, owner);
+                b->tick(dt, owner, blackboard);
             }
             if (b->m_Status == Status::SUCCESS) {
                 ++successCount;

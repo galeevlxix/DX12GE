@@ -3,6 +3,7 @@
 #include <vector>
 #include <functional>
 #include <DirectXMath.h>
+#include "Blackboard.h"
 
 class Object3DEntity;
 
@@ -11,11 +12,11 @@ enum class Status { INVALID = -1, SUCCESS, FAILURE, RUNNING, ABORTED };
 class Behavior {
 public:
     virtual ~Behavior() = default;
-    Status tick(float dt, Object3DEntity* owner) {
+    Status tick(float dt, Object3DEntity* owner, Blackboard& blackboard) {
         if (m_Status == Status::INVALID) {
             onInitialize();
         }
-        m_Status = update(dt, owner);
+        m_Status = update(dt, owner, blackboard);
         if (m_Status != Status::RUNNING) {
             onTerminate(m_Status);
         }
@@ -30,7 +31,7 @@ public:
     virtual std::unique_ptr<Behavior> Clone() const = 0;
 protected:
     virtual void onInitialize() {}
-    virtual Status update(float dt, Object3DEntity* owner) = 0;
+    virtual Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) = 0;
     virtual void onTerminate(Status status) {}
 };
 
@@ -42,7 +43,7 @@ protected:
     bool m_Negate = false;
     bool m_Monitor = false;
 
-    Status update(float dt, Object3DEntity* owner) override {
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
         bool result = m_Check(owner);
         if (m_Negate) result = !result;
 

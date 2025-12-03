@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <iostream>
+
 #include "Behavior.h"
 #include "../Graphics/Object3DEntity.h"
 using namespace DirectX::SimpleMath;
@@ -14,7 +16,7 @@ public:
         return std::make_unique<MoveToTarget>(target, speed, stopDist);
     }
 protected:
-    Status update(float dt, Object3DEntity* owner) override;
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
 };
 
 class MoveToSpawn : public Behavior {
@@ -27,7 +29,7 @@ public:
         return std::make_unique<MoveToSpawn>(speed, stopDist);
     }
 protected:
-    Status update(float dt, Object3DEntity* owner) override;
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
 };
 
 class DebugACtion : public Behavior {
@@ -37,7 +39,7 @@ public:
         return std::make_unique<DebugACtion>();
     }
 protected:
-    Status update(float dt, Object3DEntity* owner) override;
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
 };
 
 class IsTargetVisible : public Condition {
@@ -70,7 +72,7 @@ protected:
         m_Elapsed = 0.0f;
     }
 
-    Status update(float dt, Object3DEntity* owner) override;
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
 
     BehaviorPtr Clone() const override {
         return std::make_unique<Wait>(m_Duration);
@@ -93,7 +95,7 @@ public:
         : m_Target(point), m_Speed(speed), m_StopDist(stop) {}
 
 protected:
-    Status update(float dt, Object3DEntity* owner) override;
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
 
     BehaviorPtr Clone() const override {
         return std::make_unique<MoveToPoint>(m_Target, m_Speed, m_StopDist);
@@ -117,7 +119,7 @@ protected:
         m_PointGenerated = false;
     }
 
-    Status update(float dt, Object3DEntity* owner) override;
+    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
 
     BehaviorPtr Clone() const override {
         return std::make_unique<RandomPointMove>(m_Radius, m_Speed, m_StopDist);

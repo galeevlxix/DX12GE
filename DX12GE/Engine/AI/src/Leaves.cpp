@@ -1,7 +1,7 @@
 ﻿#include "../Leaves.h"
 using namespace DirectX::SimpleMath;
 
-Status MoveToTarget::update(float dt, Object3DEntity* owner) {
+Status MoveToTarget::update(float dt, Object3DEntity* owner, Blackboard& blackboard) {
     if (!target) return Status::FAILURE;
     Vector3 to = target->Transform.GetPosition();
     Vector3 from = owner->Transform.GetPosition();
@@ -18,7 +18,8 @@ Status MoveToTarget::update(float dt, Object3DEntity* owner) {
     return Status::RUNNING;
 }
 
-Status MoveToSpawn::update(float dt, Object3DEntity* owner) {
+Status MoveToSpawn::update(float dt, Object3DEntity* owner, Blackboard& blackboard) {
+    std::cout << "MoveToSpawn Action Triggered" << std::endl;
     Vector3 to = Vector3(-50.0f, 7.0f, 50.0f);
     Vector3 from = owner->Transform.GetPosition();
     Vector3 dir = to - from;
@@ -34,19 +35,19 @@ Status MoveToSpawn::update(float dt, Object3DEntity* owner) {
     return Status::RUNNING;
 }
 
-Status DebugACtion::update(float dt, Object3DEntity* owner) {
+Status DebugACtion::update(float dt, Object3DEntity* owner, Blackboard& blackboard) {
     std::cout << "Debug Action Triggered" << std::endl;
     return Status::SUCCESS;
 }
 
-Status Wait::update(float dt, Object3DEntity* owner)
+Status Wait::update(float dt, Object3DEntity* owner, Blackboard& blackboard)
 {
     m_Elapsed += dt;
     if (m_Elapsed >= m_Duration) return Status::SUCCESS;
     return Status::RUNNING;
 }
 
-Status MoveToPoint::update(float dt, Object3DEntity* owner)
+Status MoveToPoint::update(float dt, Object3DEntity* owner, Blackboard& blackboard)
 {
     Vector3 from = owner->Transform.GetPosition();
     Vector3 dir = m_Target - from;
@@ -62,7 +63,7 @@ Status MoveToPoint::update(float dt, Object3DEntity* owner)
     return Status::RUNNING;
 }
 
-Status RandomPointMove::update(float dt, Object3DEntity* owner)
+Status RandomPointMove::update(float dt, Object3DEntity* owner, Blackboard& blackboard)
 {
     if (!m_PointGenerated) {
         Vector3 center = owner->Transform.GetPosition();
