@@ -56,4 +56,8 @@ protected:
 public:
     Condition(std::function<bool(Object3DEntity*)> check, bool negate = false, bool monitor = false)
         : m_Check(check), m_Negate(negate), m_Monitor(monitor) {}
+
+    BehaviorPtr Clone() const override {
+        return std::make_unique<Condition>(m_Check, m_Negate, m_Monitor);
+    }
 };

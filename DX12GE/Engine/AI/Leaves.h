@@ -56,3 +56,76 @@ public:
         return std::make_unique<IsTargetVisible>(target, m_Negate, m_Monitor);
     }
 };
+
+class Wait : public Behavior {
+private:
+    float m_Duration;
+    float m_Elapsed = 0.0f;
+
+public:
+    Wait(float seconds) : m_Duration(seconds) {}
+
+protected:
+    void onInitialize() override {
+        m_Elapsed = 0.0f;
+    }
+
+    Status update(float dt, Object3DEntity* owner) override;
+
+    BehaviorPtr Clone() const override {
+        return std::make_unique<Wait>(m_Duration);
+    }
+
+    void onTerminate(Status status) override
+    {
+        m_Elapsed = 0.0f;
+    }
+};
+
+class MoveToPoint : public Behavior {
+private:
+    Vector3 m_Target;
+    float m_Speed = 15.0f;
+    float m_StopDist = 5.0f;
+
+public:
+    MoveToPoint(Vector3 point, float speed = 15.0f, float stop = 5.0f)
+        : m_Target(point), m_Speed(speed), m_StopDist(stop) {}
+
+protected:
+    Status update(float dt, Object3DEntity* owner) override;
+
+    BehaviorPtr Clone() const override {
+        return std::make_unique<MoveToPoint>(m_Target, m_Speed, m_StopDist);
+    }
+};
+
+class RandomPointMove : public Behavior {
+private:
+    float m_Radius;
+    float m_Speed = 15.0f;
+    float m_StopDist = 5.0f;
+    Vector3 m_RandomPoint;
+    bool m_PointGenerated = false;
+
+public:
+    RandomPointMove(float radius, float speed = 15.0f, float stop = 5.0f)
+        : m_Radius(radius), m_Speed(speed), m_StopDist(stop) {}
+
+protected:
+    void onInitialize() override {
+        m_PointGenerated = false;
+    }
+
+    Status update(float dt, Object3DEntity* owner) override;
+
+    BehaviorPtr Clone() const override {
+        return std::make_unique<RandomPointMove>(m_Radius, m_Speed, m_StopDist);
+    }
+
+    void onTerminate(Status status) override
+    {
+        m_PointGenerated = false;
+    }
+    
+};

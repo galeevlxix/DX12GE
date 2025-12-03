@@ -38,3 +38,50 @@ Status DebugACtion::update(float dt, Object3DEntity* owner) {
     std::cout << "Debug Action Triggered" << std::endl;
     return Status::SUCCESS;
 }
+
+Status Wait::update(float dt, Object3DEntity* owner)
+{
+    m_Elapsed += dt;
+    if (m_Elapsed >= m_Duration) return Status::SUCCESS;
+    return Status::RUNNING;
+}
+
+Status MoveToPoint::update(float dt, Object3DEntity* owner)
+{
+    Vector3 from = owner->Transform.GetPosition();
+    Vector3 dir = m_Target - from;
+    float dist = dir.Length();
+    if (dist <= m_StopDist) return Status::SUCCESS;
+
+    dir.Normalize();
+    from += dir * m_Speed * dt;
+    owner->Transform.SetPosition(from);
+
+    float yaw = atan2f(dir.x, dir.z);
+    owner->Transform.SetRotation(0.0f, yaw, 0.0f);
+    return Status::RUNNING;
+}
+
+Status RandomPointMove::update(float dt, Object3DEntity* owner)
+{
+    if (!m_PointGenerated) {
+        Vector3 center = owner->Transform.GetPosition();
+        float angle = static_cast<float>(rand()) / RAND_MAX * 2 * XM_PI;
+        float dist = static_cast<float>(rand()) / RAND_MAX * m_Radius;
+        m_RandomPoint = center + Vector3(dist * sin(angle), 0.0f, dist * cos(angle));
+        m_PointGenerated = true;
+    }
+
+    Vector3 from = owner->Transform.GetPosition();
+    Vector3 dir = m_RandomPoint - from;
+    float dist = dir.Length();
+    if (dist <= m_StopDist) return Status::SUCCESS;
+
+    dir.Normalize();
+    from += dir * m_Speed * dt;
+    owner->Transform.SetPosition(from);
+
+    float yaw = atan2f(dir.x, dir.z);
+    owner->Transform.SetRotation(0.0f, yaw, 0.0f);
+    return Status::RUNNING;
+}
