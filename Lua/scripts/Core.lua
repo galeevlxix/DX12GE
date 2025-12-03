@@ -46,25 +46,35 @@ GameObject = {}
 
 function GameObject:new( id )
     local obj = {}
+    obj.entity = nil
     obj.id = id
     obj.components = {}
-    Register(id)
+    obj.object = nil
+    obj.transform = nil
+
+    function GameObject:SetEntityName( entity )
+        print("56", entity)
+        obj.entity = entity
+        Register(entity)
+    end
+
 
     function GameObject:Start()
-	     self.object = GetObjectOnScene(self.id)
-
-         for _, component in pairs(self.components) do
-            --component:SetParent(self.object)
-         end
-
-         self.transform:SetParent(self.object)    
+        --print("obj.id ", obj.id)  
+        print("start self.id", obj.id)
+	     obj.object = GetObjectOnScene(obj.entity)
+        print("64")
+        print("65")
+        if  obj.transform ~= nil and obj.object ~= nil then
+            obj.transform:SetParent(obj.object )
+        end
+        print("69")
     end
 
     function GameObject:Update()
-        for _, component in ipairs(self.components) do
-            component:Update()
-        end
-     --   print("update")
+     --   for _, component in ipairs(obj.components) do
+     --       component:Update()
+     --   end
     end
 
     function GameObject:Remove()
@@ -92,19 +102,20 @@ function GameObject:new( id )
     end
 
     function GameObject:AddComponent( component )
-        local componentName = string.lower(component)
-
-        if not self.components then self.components = {} end
+    print("106")
+      local componentName = string.lower(component)
+        
+        if not obj.components then obj.components = {} end
 
 	    if componentName == Transform then
             print("component added for id ", obj.id)
-            self.transform = TransformComponent:Add( self.id )
-            self.components[self.transform] = self.transform
+             obj.transform = TransformComponent:Add( obj.id )
+            obj.components[obj.transform] = obj.transform
         end
 
         if componentName == Physics then
-            self.components[#self.components] = TransformComponent:Add( self.object )
-            self.transform = self.components[#self.components - 1]
+            obj.components[#obj.components] = TransformComponent:Add( obj.object )
+            obj.transform = obj.components[#obj.components - 1]
         end
     end
 
@@ -114,26 +125,29 @@ end
 
 TransformComponent = {}
 
-function TransformComponent:Add( object )
+function TransformComponent:Add( id )
 	local obj = {}
-    obj.id = object
-
+    obj.id = id
+    obj.object = nil
+    print("131")
     function TransformComponent:MoveTo( x, y, z )
         assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
-
-        TranslateTo(self.object, x, y, z)
+        print("move to")
+        TranslateTo(obj.object, x, y, z)
 	end
 
-    function TransformComponent:MoveTo( x, y, z )
+    function TransformComponent:MoveBy( x, y, z )
         assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
-
-        TranslateBy(self.object, x, y, z)
+        print("move by")
+        TranslateBy(obj.object, x, y, z)
 	end
 
     function TransformComponent:SetParent( parent )
+    print("145")
         assert(obj.object ~= nil, "Attemp to call SetParent to on empty object, call SetParent to set object!")
-
-	    self.object = parent
+            print("147")
+	    obj.object = parent
+         print("149")
     end
 
     function TransformComponent:Update()
@@ -141,7 +155,8 @@ function TransformComponent:Add( object )
 	end
 
     function TransformComponent:GetPosition( )
-        if self.object ~= nil then
+    print("157")
+        if obj.object ~= nil then
             return GetTransfromPosition(obj.object)
         end
     end
