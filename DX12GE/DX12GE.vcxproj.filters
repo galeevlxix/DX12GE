@@ -234,6 +234,9 @@
     <ClCompile Include="Engine\Base\src\SelectionSystem.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Physics\PhysicsManager.cpp">
+      <Filter>Исходные файлы\Engine\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\GameSample.h">
@@ -415,6 +418,9 @@
     </ClInclude>
     <ClInclude Include="Engine\Base\CollisionBox.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Physics\PhysicsManager.h">
+      <Filter>Файлы заголовков\Engine\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
