@@ -10,6 +10,8 @@ class Object3DEntity
 {
 public:
     TransformComponent Transform;
+    std::vector<std::string> _luaClasses;
+    bool _isInited = false;
     
 private:
     uint32_t ObjectId;
@@ -20,6 +22,8 @@ public:
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, const XMMATRIX& viewProjMatrix);
     virtual void Destroy();
     uint32_t GetId();
+    void AddScriptComponent(std::string className);
+    std::vector<std::string>& GetEntityScripts();
 
 protected:
     void SetConstBuffers(ComPtr<ID3D12GraphicsCommandList2> commandList, const XMMATRIX& viewProjMatrix);
