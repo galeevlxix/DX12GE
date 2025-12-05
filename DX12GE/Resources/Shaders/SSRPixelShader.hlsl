@@ -71,6 +71,7 @@ float4 main(PSInput input) : SV_Target
     float fresnel = saturate(f0 + (1 - f0) * pow(1 - NdotV, 5));
    
     float3 reflectDir = normalize(reflect(cameraPixelVector, normal));
+    
     float3 reflectionColor = TraceScreenSpaceReflection(worldPos, reflectDir);
     
     return float4(reflectionColor, fresnel);

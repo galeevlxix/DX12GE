@@ -314,20 +314,30 @@ void SingleGpuGame::OnRender(RenderEventArgs& e)
     TestTime(static_cast<float>(e.ElapsedTime));
 
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
     UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
-
     ShaderResources::GetUploadBuffer()->Reset();
 
-    DrawSceneToShadowMaps(commandList);
-    DrawSceneToGBuffer(commandList);
-    LightPassRender(commandList);
-    DrawSSR(commandList);
-    MergeResults(commandList);
+    {
+        ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-    m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
-    currentBackBufferIndex = m_pWindow->Present();
-    commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
+        DrawSceneToShadowMaps(commandList);
+        DrawSceneToGBuffer(commandList);
+        LightPassRender(commandList);
+
+        uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+        commandQueue->WaitForFenceValue(fenceValue);
+    }
+
+    {
+        ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+
+        DrawSSR(commandList);
+        MergeResults(commandList);
+
+        m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
+        currentBackBufferIndex = m_pWindow->Present();
+        commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
+    }
 
     CurrentPass::Set(CurrentPass::None);
 }
@@ -363,13 +373,9 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::Escape:
         Application::Get().Quit(0);
         break;
-    case KeyCode::Enter:
-        if (e.Alt)
-        {
     case KeyCode::F11:
         m_pWindow->ToggleFullscreen();
         break;
-        }
     case KeyCode::V:
         m_pWindow->ToggleVSync();
         break;
