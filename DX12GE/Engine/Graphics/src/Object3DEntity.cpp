@@ -4,7 +4,7 @@
 #include "../VertexStructures.h"
 #include "../AssimpModelLoader.h"
 #include "../ShaderResources.h"
-#include "LuaManager.h"
+#include "../DX12GE/Engine/Lua/LuaManager.h"
 #include "../ResourceStorage.h"
 
 void Object3DEntity::AttachAI(AIComponent* ai) {

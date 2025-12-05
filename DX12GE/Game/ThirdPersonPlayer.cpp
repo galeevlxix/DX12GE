@@ -1,5 +1,5 @@
 #include "ThirdPersonPlayer.h"
-#include "LuaManager.h"
+#include "../Engine/Lua/LuaManager.h"
 #include "../Engine/Base/InputSystem.h"
 
 const static float slowSpeed = 6.0f;
@@ -43,7 +43,7 @@ void ThirdPersonPlayer::OnUpdate(const double& deltaTime)
     }
 
     ////////////////////////////////
-    // ÊÀÌÅÐÀ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     Vector3 playerPos = Transform.GetPosition() + Vector3(0.0f, 2.0f, 0.0f);
     float xTar = cos(m_angle_h) * sin(PI / 2.0f - m_angle_v);
     float yTar = cos(PI / 2.0f - m_angle_v);
@@ -56,7 +56,7 @@ void ThirdPersonPlayer::OnUpdate(const double& deltaTime)
     m_Camera->Target = XMVectorSet(razn.x, razn.y, razn.z, 1.0f);
 
     ////////////////////////////////////
-    //// ÈÃÐÎÊ
+    //// ï¿½ï¿½ï¿½ï¿½ï¿½
     XMVECTOR left = XMVector3Cross(Vector3(m_Camera->Target.m128_f32[0], 0.0f, m_Camera->Target.m128_f32[2]), m_Camera->Up);
     left = XMVector3Normalize(left);
 

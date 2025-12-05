@@ -99,6 +99,14 @@ bool SingleGpuGame::LoadContent()
     return true;
 }
 
+void SingleGpuGame::RemoveObjectFromScene(std::string name)
+{
+}
+
+void SingleGpuGame::AddObjectOnScene(std::string name)
+{
+}
+
 void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 {
     if (!m_Initialized) return;

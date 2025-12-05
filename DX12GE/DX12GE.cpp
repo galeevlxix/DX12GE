@@ -4,7 +4,7 @@
 
 #include "Engine/Base/Application.h"
 #include "Game/GameSample.h"
-#include "LuaManager.h"
+#include "Engine/Lua/LuaManager.h"
 
 #include <dxgidebug.h>
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <string>
-#include "SingleGpuGame.h"
+#include "../SingleGpuGame.h"
 #include "LuaManager.h"
 //#define SOL_ALL_SAFETIES_ON 0
 
@@ -9,7 +9,7 @@
 
 lua_State* LuaManager::L = nullptr;
 LuaManager* LuaManager::p_instance = nullptr;
-std::string const luaSciptsFolder = "../Lua/scripts/";
+std::string const luaSciptsFolder = "Engine/Lua/scripts/";
 static SingleGpuGame* p_scene;
 static std::vector<std::string> lua_classes_vector;
 static std::map<std::string, std::vector<std::string>> lua_classes_map;
@@ -20,7 +20,7 @@ static Camera* p_camera;
 //LUA API ZONE
 Object3DEntity* lua_get_object_on_scene(std::string name)
 {
-	const auto object = p_scene->Get(name);
+	const auto object = p_scene->GetSceneEntity(name);
 	//object->AddScriptComponent();
 
 	return object;
@@ -98,8 +98,8 @@ int lua_load_object_with_model(std::string name)
 	p_scene->AddObjectOnScene(name);
 	std::string highCaseName = name;
 	std::transform(highCaseName.begin(), highCaseName.end(), highCaseName.begin(), ::toupper);
-	lua.safe_script("if " + name + " ~= nil then return end \n" + highCaseName + " = {}\n" + "Class(" + highCaseName + ", GameObject)\n" + name + " = " + highCaseName + ":new(\"" + name + "\")" +
-		"\n" + name + ":SetEntityName(\"" + name + "\")\n" + name + ":Start()\n" + name + ":AddComponent(Transform)\n");
+	/*lua.safe_script("if " + name + " ~= nil then return end \n" + highCaseName + " = {}\n" + "Class(" + highCaseName + ", GameObject)\n" + name + " = " + highCaseName + ":new(\"" + name + "\")" +
+		"\n" + name + ":SetEntityName(\"" + name + "\")\n" + name + ":Start()\n" + name + ":AddComponent(Transform)\n");*/
 
 	if (lua_classes_map.find(name) == lua_classes_map.end())
 	{
@@ -141,13 +141,13 @@ LuaManager::LuaManager()
 	lua.set_function("TranslateBy", &lua_transform_move_by);
 
 #ifdef TEST
-	lua.safe_script_file(luaSciptsFolder + "Core.lua");
-	lua.safe_script_file(luaSciptsFolder + "Player.lua");
+	//lua.safe_script_file(luaSciptsFolder + "Core.lua");
+	//lua.safe_script_file(luaSciptsFolder + "Player.lua");
 //	lua.safe_script_file(luaSciptsFolder + "TestScript.lua");
 	//lua.safe_script_file(luaSciptsFolder + "TestScript2.lua");
 #else
-	lua.safe_script_file("Core.lua");
-	lua.safe_script_file("Player.lua");
+	//lua.safe_script_file("Core.lua");
+	//lua.safe_script_file("Player.lua");
 	//lua.safe_script_file("TestScript.lua");
 	//lua.safe_script_file("TestScript2.lua");
 #endif // TEST
@@ -368,20 +368,20 @@ std::string LuaManager::CreateValidClass(std::string className, std::string objI
 	lua_classes_map[className].emplace_back(actualName);
 	std::string highCaseName = className;
 	std::transform(highCaseName.begin(), highCaseName.end(), highCaseName.begin(), ::toupper);
-	lua.safe_script("if " + actualName + " ~= nil then return end \n" + actualName + " = " + highCaseName + ":new(\"" + actualName + "\")" +
-		"\n" + actualName + ":SetEntityName(\"" + objId + "\")\n" + actualName + ":AddComponent(Transform)\n");
+	/*lua.safe_script("if " + actualName + " ~= nil then return end \n" + actualName + " = " + highCaseName + ":new(\"" + actualName + "\")" +
+		"\n" + actualName + ":SetEntityName(\"" + objId + "\")\n" + actualName + ":AddComponent(Transform)\n");*/
 
 	return actualName;
 }
 
 void LuaManager::StartScript(std::string className)
 {
-	sol::table temp_class = lua[className];
-	temp_class["Start"](temp_class);
+	//sol::table temp_class = lua[className];
+	//temp_class["Start"](temp_class);
 }
 
 void LuaManager::UpdateScript(std::string script)
 {
-	sol::table temp_class = lua[script];
-	temp_class["Update"](temp_class);
+	//sol::table temp_class = lua[script];
+	//temp_class["Update"](temp_class);
 }
