@@ -469,6 +469,13 @@ void SingleGpuGame::OnResize(ResizeEventArgs& e)
     m_Camera->Ratio = static_cast<float>(e.Width) / static_cast<float>(e.Height);
 }
 
+Object3DEntity* SingleGpuGame::Get(std::string name)
+{
+    if (!m_Objects.contains(name)) return nullptr;
+
+    return m_Objects[name];
+}
+
 void SingleGpuGame::UpdateSceneObjects(float deltaTime)
 {
     for (auto obj : m_Objects)
