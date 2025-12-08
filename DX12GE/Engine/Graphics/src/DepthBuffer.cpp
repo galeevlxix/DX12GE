@@ -64,6 +64,9 @@ void DepthBuffer::Resize(int width, int height)
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, dsvCpuHandleIndex, Adapter));
     device->CreateDepthStencilView(DepthBufferTexture.m_Resource.Get(), &dsvDesc, dsvHandle);
+
+    device.Reset();
+    device = nullptr;
 }
 
 void DepthBuffer::ClearDepth(ComPtr<ID3D12GraphicsCommandList2> commandList, FLOAT depth)

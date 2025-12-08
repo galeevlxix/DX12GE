@@ -2,8 +2,7 @@
 
 #include <vector>
 #include "ShaderResources.h"
-#include "../../Game/ThirdPersonPlayer.h"
-#include "DebugRenderSystem.h"
+#include "../Base/Singleton.h"
 
 using namespace std;
 
@@ -16,12 +15,12 @@ public:
 private:
 	Attenuation m_DefaultAttenuation = { 1.0f, 0.09f, 0.032f };
 	float defaultIntensity = 0.75;
-	ThirdPersonPlayer* m_player;
+	ThirdPersonPlayerNode* m_player;
 
 public:
-	void Init(ThirdPersonPlayer* player);
+	void Init(ThirdPersonPlayerNode* player);
 	void OnUpdate(float deltaTime);
-	void DrawDebug(std::shared_ptr<DebugRenderSystem> debugRender);
+	void DrawDebug();
 
 	void AddPointLight(Vector3 pos, Vector3 color, float intensity = 1.0f, float AttenConst = 1.0f, float AttenLinear = 0.09f, float AttenExp = 0.032f);
 	void AddPointLight(Vector3 pos, Vector3 color, float intensity, Attenuation atten);

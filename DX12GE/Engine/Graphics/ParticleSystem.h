@@ -2,7 +2,6 @@
 #include "../Base/DX12LibPCH.h"
 #include "../Base/SimpleMath.h"
 #include "TextureComponent.h"
-#include "Object3DEntity.h"
 #include "VertexStructures.h"
 
 #include <vector>

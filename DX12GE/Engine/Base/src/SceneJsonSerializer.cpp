@@ -1,33 +1,76 @@
 #include "../SceneJsonSerializer.h"
-
-#include "../../../Game/ThirdPersonPlayer.h"
 #include "../../Graphics/ResourceStorage.h"
-
+#include "../Singleton.h"
+#include <string>
 #include "../json.hpp"
 #include <fstream>
-#include <iostream>
-#include <chrono>
 
 using json = nlohmann::json;
+using Vector3 = DirectX::SimpleMath::Vector3;
 
-static const std::string path = "../../DX12GE/Resources/scene.json";
+static const std::string path = "../../DX12GE/Resources/scene lite.json";
 
-void SceneJsonSerializer::Save(std::map<std::string, Object3DEntity*>& objects)
+struct ParsedNodePath
+{
+	std::string name;
+	std::string parrentNodePath;
+};
+
+struct NodeData
+{
+	std::string nodePath;
+	std::string type;
+	std::string filePath;
+
+	Vector3 pos;
+	Vector3 rot;
+	Vector3 scl;
+};
+
+static const ParsedNodePath ParseNodePath(const std::string& nodePath)
+{
+	ParsedNodePath output;
+
+	const size_t last_slash_idx = nodePath.rfind('/');
+	if (last_slash_idx != string::npos)
+	{
+		output.name = nodePath.substr(last_slash_idx + 1);
+		output.parrentNodePath = nodePath.substr(0, last_slash_idx);
+	}
+	else
+	{
+		output.name = nodePath;
+		output.parrentNodePath = "";
+	}
+
+	return output;
+}
+
+void SceneJsonSerializer::Save()
 {
 	std::ofstream out;
 	out.open(path);
 	json scene;
 
-	for (auto obj : objects)
+	for (auto obj : Singleton::GetNodeGraph()->GetAllNodes())
 	{
-		json entity;	
-		
-		entity["name"] = obj.first;
-		entity["path"] = ResourceStorage::GetObject3D(obj.second->GetId())->ResourcePath;
+		json entity;
 
-		auto pos = obj.second->Transform.GetPosition();
-		auto rot = obj.second->Transform.GetRotation();
-		auto scl = obj.second->Transform.GetScale();
+		entity["node_path"] = obj->GetNodePath();
+		entity["type"] = obj->GetType();
+
+		if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(obj))
+		{
+			entity["file_path"] = obj3D->GetObjectFilePath();
+		}
+		else
+		{
+			entity["file_path"] = "";
+		}	
+
+		auto pos = obj->Transform.GetPosition();
+		auto rot = obj->Transform.GetRotation();
+		auto scl = obj->Transform.GetScale();
 
 		entity["posX"] = pos.x;
 		entity["posY"] = pos.y;
@@ -46,7 +89,7 @@ void SceneJsonSerializer::Save(std::map<std::string, Object3DEntity*>& objects)
 	out.close();
 }
 
-void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<std::string, Object3DEntity*>& objects)
+void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	std::ifstream in;
 	in.open(path);
@@ -54,38 +97,87 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, s
 	json scene;
 	in >> scene;
 
-	std::string prevPath = "";
 	std::cout << "Начало загрузки объектов сцены из файла " + path << std::endl;
-	auto start = std::chrono::steady_clock::now();
-	
+
+	std::vector<NodeData> nodesData;
+
 	for (json::iterator it = scene.begin(); it != scene.end(); ++it)
 	{
-		std::string name = it->at("name");
-		if (objects.find(name) != objects.end()) { continue; }
-
-		Object3DEntity* obj = name == "player" ? new ThirdPersonPlayer() : new Object3DEntity();
-
-		objects.insert({ name, obj });
-		std::string modelPath = it->at("path");
-
-		if (modelPath != prevPath)
-		{
-			float progress = (float)(it - scene.begin()) / (float)(scene.end() - scene.begin());
-			std::cout << (int)(progress * 100) << "%: Загрузка компонента " + modelPath << std::endl;
-
-			prevPath = modelPath;
-		}
-
-		objects[name]->OnLoad(commandList, modelPath);
-
-		objects[name]->Transform.SetPosition(DirectX::SimpleMath::Vector3(it->at("posX"), it->at("posY"), it->at("posZ")));
-		objects[name]->Transform.SetRotation(DirectX::SimpleMath::Vector3(it->at("rotX"), it->at("rotY"), it->at("rotZ")));
-		objects[name]->Transform.SetScale(DirectX::SimpleMath::Vector3(it->at("sclX"), it->at("sclY"), it->at("sclZ")));
+		NodeData newNode;
+		newNode.nodePath = it->at("node_path");
+		newNode.type = it->at("type");
+		newNode.filePath = it->at("file_path");
+		newNode.pos = Vector3(it->at("posX"), it->at("posY"), it->at("posZ"));
+		newNode.rot = Vector3(it->at("rotX"), it->at("rotY"), it->at("rotZ"));
+		newNode.scl = Vector3(it->at("sclX"), it->at("sclY"), it->at("sclZ"));
+		nodesData.push_back(newNode);
 	}
 
-	auto end = std::chrono::steady_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-	std::cout << "Конец загрузки объектов сцены. Затраченное время: " << duration << "s" << std::endl;
+	for (int i = 0; i < nodesData.size() - 1; ++i)
+	{
+		for (int j = 0; j < nodesData.size() - i - 1; ++j)
+		{
+			if (std::count(nodesData[j].nodePath.begin(), nodesData[j].nodePath.end(), '/') >
+				std::count(nodesData[j + 1].nodePath.begin(), nodesData[j + 1].nodePath.end(), '/'))
+			{
+				std::swap(nodesData[j], nodesData[j + 1]);
+			}
+		}
+	}
+
+	std::map<std::string, Node3D*> createdNodes;
+
+	if (nodesData[0].type == "Node3D" && nodesData[0].nodePath == "root")
+	{
+		createdNodes["root"] = Singleton::GetNodeGraph()->GetRoot();
+	}
+	else
+	{
+		throw "Ошибка! Файл поврежден! Файл сцены не содержит коренвой узел";
+	}	
+
+	for (int i = 1; i < nodesData.size(); ++i)
+	{
+		NodeData nodeData = nodesData[i];
+		ParsedNodePath parsed = ParseNodePath(nodeData.nodePath);
+
+		Node3D* node;
+
+		if (nodeData.type == "Node3D")
+		{
+			node = new Node3D();
+			node->OnLoad();
+		}
+		else if (nodeData.type == "Object3DNode" || nodeData.type == "ThirdPersonPlayerNode")
+		{
+			Object3DNode* obj3D = nodeData.type == "ThirdPersonPlayerNode" ? new ThirdPersonPlayerNode() : new Object3DNode();
+			std::string modelPath = nodeData.filePath;
+			obj3D->Create(commandList, modelPath);
+			node = obj3D;
+		}
+		else
+		{
+			throw "Ошибка! Данный тип узла не поддерживается";
+		}
+
+		node->Transform.SetPosition(nodeData.pos);
+		node->Transform.SetRotation(nodeData.rot);
+		node->Transform.SetScale(nodeData.scl);
+
+		auto parrent = createdNodes.find(parsed.parrentNodePath);
+		if (parrent != createdNodes.end())
+		{
+			node->Rename(parsed.name);
+			parrent->second->AddChild(node);
+			createdNodes[nodeData.nodePath] = node;
+		}
+		else
+		{
+			throw "Ошибка! Файл сцены поврежден!";
+		}
+	}
+
+	std::cout << "Конец загрузки объектов сцены." << std::endl;
 
 	in.close();
 }

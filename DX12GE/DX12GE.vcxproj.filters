@@ -76,15 +76,18 @@
     <Filter Include="Файлы ресурсов\Shaders\Skybox">
       <UniqueIdentifier>{45e57c06-7f23-49e0-b921-5ad529d33b48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Engine\NodeGraph">
+      <UniqueIdentifier>{76915497-05de-4cb3-b70d-73f56c1d4831}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\NodeGraph">
+      <UniqueIdentifier>{6d1d8e36-d9d2-417f-b9c3-ecfb75a793f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX12GE.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Game\GameSample.cpp">
-      <Filter>Исходные файлы\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\ThirdPersonPlayer.cpp">
       <Filter>Исходные файлы\Game</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp">
@@ -165,9 +168,6 @@
     <ClCompile Include="Engine\Graphics\src\Mesh3DComponent.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\src\Object3DEntity.cpp">
-      <Filter>Исходные файлы\Engine\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Graphics\src\ParticleSystem.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
@@ -222,9 +222,6 @@
     <ClCompile Include="Engine\Graphics\src\DescriptorHeaps.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\MultiGpuGame.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Graphics\src\Skybox.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
@@ -234,12 +231,42 @@
     <ClCompile Include="Engine\Base\src\SelectionSystem.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\CameraNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\DirectionalLightNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\EnvironmentNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\Node3D.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\Object3DNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\PointLightNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\SpotLightNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\ParticlesNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\Singleton.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\NodeGraphSystem.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\ThirdPersonPlayerNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\GameSample.h">
-      <Filter>Файлы заголовков\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\ThirdPersonPlayer.h">
       <Filter>Файлы заголовков\Game</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h">
@@ -335,9 +362,6 @@
     <ClInclude Include="Engine\Graphics\Mesh3DComponent.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\Object3DEntity.h">
-      <Filter>Файлы заголовков\Engine\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Graphics\ParticleSystem.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
@@ -401,9 +425,6 @@
     <ClInclude Include="Engine\Base\InputSystem.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\MultiGpuGame.h">
-      <Filter>Файлы заголовков\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Graphics\Skybox.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
@@ -415,6 +436,39 @@
     </ClInclude>
     <ClInclude Include="Engine\Base\CollisionBox.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\CameraNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\DirectionalLightNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\EnvironmentNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\Node3D.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\Object3DNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\PointLightNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\SpotLightNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\ParticlesNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Singleton.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\NodeGraphSystem.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\ThirdPersonPlayerNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

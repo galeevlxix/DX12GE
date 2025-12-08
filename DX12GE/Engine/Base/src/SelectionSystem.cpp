@@ -1,11 +1,10 @@
-#include "../SelectionSystem.h"
 #include "../Application.h"
 #include "../CommandQueue.h"
+#include "../Singleton.h"
 #include "../../Graphics/ResourceStorage.h"
 
-SelectionSystem::SelectionSystem(std::map<std::string, Object3DEntity*>& objects, std::shared_ptr<TextureBuffer> idTextureBuffer) : m_Objects(objects), m_IdTextureBuffer (idTextureBuffer)
-{
-}
+SelectionSystem::SelectionSystem() : m_IdTextureBuffer (nullptr)
+{ }
 
 void SelectionSystem::GetObjectIdAt(UINT x, UINT y, UINT* outObjectID)
 {
@@ -65,13 +64,16 @@ void SelectionSystem::GetObjectIdAt(UINT x, UINT y, UINT* outObjectID)
     m_IdTextureBuffer->GetReadbackBuffer()->Unmap(0, &writeRange);
 }
 
-void SelectionSystem::DrawDebug(std::shared_ptr<DebugRenderSystem> debugSystem)
+void SelectionSystem::DrawDebug()
 {
-    for (Object3DEntity* obj : m_Selected)
+    for (Node3D* obj : m_Selected)
     {
-        CollisionBox box = ResourceStorage::GetObject3D(obj->GetId())->Box;
-        Matrix transform = obj->Transform.GetWorldMatrix();
-        debugSystem->DrawBoundingBox(box, transform);
+        if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(obj))
+        {
+            const CollisionBox& box = obj3D->GetCollisionBox();
+            Matrix transform = obj->GetWorldMatrix();
+            Singleton::GetDebugRender()->DrawBoundingBox(box, transform);
+        }       
     }
 }
 
@@ -81,20 +83,22 @@ void SelectionSystem::OnMouseButtonPressed(MouseButtonEventArgs& e)
 	{
 		if (!e.Control)
 		{
-            m_Selected.clear();
+            DeselectAll();
 		}
 
         UINT id = 0;
         GetObjectIdAt(e.X, e.Y, &id);
         id--;
 
-        if (id >= m_Objects.size() || id < 0)
+        auto objects = Singleton::GetNodeGraph()->GetAll3DObjects();
+
+        if (id >= objects.size() || id < 0)
         {
             m_Selected.clear();
             return;
         }
 
-        auto obj = std::next(m_Objects.begin(), id);
+        auto obj = std::next(objects.begin(), id);
 
         bool hasEntity = false;
         for (auto selected : m_Selected)
@@ -110,4 +114,16 @@ void SelectionSystem::OnMouseButtonPressed(MouseButtonEventArgs& e)
 
         m_Selected.push_back(obj->second);
 	}
+}
+
+void SelectionSystem::DeselectAll()
+{
+    m_Selected.clear();
+}
+
+void SelectionSystem::Destroy()
+{
+    DeselectAll();
+    m_IdTextureBuffer.reset();
+    m_IdTextureBuffer = nullptr;
 }

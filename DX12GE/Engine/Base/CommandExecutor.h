@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -9,20 +11,18 @@
 #include <vector>
 #include <stack>
 
-#include "../SingleGpuGame.h"
+#include "../NodeGraph/Node3D.h"
 
 class CommandExecutor
 {
 private:
 	struct ActionCommand
 	{
-		std::vector<Object3DEntity*> objects;
+		std::vector<Node3D*> nodes;
 		std::string action;
 		Vector3 value;
 		Vector3 undo_value;
 	};
-
-	SingleGpuGame* m_Game;
 
 	void ProcessCommand(const std::string& line, std::string& output);
 
@@ -37,7 +37,7 @@ private:
 	void GetObjectInfo(const std::vector<std::string>& tokens, std::string& output);
 	
 public:
-	CommandExecutor(SingleGpuGame* game);
+	CommandExecutor();
 	void Exit();
 	void Update();
 

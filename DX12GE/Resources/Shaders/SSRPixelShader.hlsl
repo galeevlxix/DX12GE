@@ -33,11 +33,13 @@ float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
         
         float4 clipPos = mul(ViewProjection, float4(currentPos, 1.0));
         clipPos.xyz /= clipPos.w;
-        clipPos.y = -clipPos.y;
-        float2 uv = clipPos.xy * 0.5 + 0.5;
         
-        if (uv.x < 0 || uv.y < 0 || uv.x > 1 || uv.y > 1)
-            return SkyboxCubemap.Sample(gSampler, reflectionDir).rgb;
+        if (clipPos.x < -1.0 || clipPos.x > 1.0 ||
+            clipPos.y < -1.0 || clipPos.y > 1.0 ||
+            clipPos.z < 0.0 || clipPos.z > 1.0)
+            break;
+        
+        float2 uv = float2(clipPos.x * 0.5 + 0.5, -clipPos.y * 0.5 + 0.5);
         
         float3 gBufferWorldPos = gPosition.SampleLevel(gSampler, uv, 0).xyz;
         float depthDiff = length(currentPos - gBufferWorldPos);
@@ -46,7 +48,7 @@ float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
         {
             float3 normal = gNormal.Sample(gSampler, uv).xyz;
             if (dot(reflectionDir, normal) > 0)
-                return SkyboxCubemap.Sample(gSampler, reflectionDir).rgb;
+                break;
             
             float3 color = gColor.Sample(gSampler, uv).rgb;
             return color;
@@ -63,7 +65,7 @@ float4 main(PSInput input) : SV_Target
         return float4(0.0, 0.0, 0.0, 0.0);
     
     float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
-    float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz + normal * 0.001;
+    float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
     float3 cameraPixelVector = normalize(worldPos - CameraPos.xyz);
     
     float f0 = 0.04;

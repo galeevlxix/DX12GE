@@ -142,6 +142,7 @@
     <ClCompile Include="Engine\Base\src\SceneJsonSerializer.cpp" />
     <ClCompile Include="Engine\Base\src\SelectionSystem.cpp" />
     <ClCompile Include="Engine\Base\src\SimpleMath.cpp" />
+    <ClCompile Include="Engine\Base\src\Singleton.cpp" />
     <ClCompile Include="Engine\Base\src\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Base\src\Window.cpp" />
     <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp" />
@@ -156,7 +157,6 @@
     <ClCompile Include="Engine\Graphics\src\LightManager.cpp" />
     <ClCompile Include="Engine\Graphics\src\MaterialEntity.cpp" />
     <ClCompile Include="Engine\Graphics\src\Mesh3DComponent.cpp" />
-    <ClCompile Include="Engine\Graphics\src\Object3DEntity.cpp" />
     <ClCompile Include="Engine\Graphics\src\Object3DComponent.cpp" />
     <ClCompile Include="Engine\Graphics\src\ParticleSystem.cpp" />
     <ClCompile Include="Engine\Graphics\src\ResourceStorage.cpp" />
@@ -169,7 +169,16 @@
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp" />
     <ClCompile Include="Engine\Graphics\src\TransformComponent.cpp" />
-    <ClCompile Include="Engine\MultiGpuGame.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\CameraNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\DirectionalLightNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\EnvironmentNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\Node3D.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\NodeGraphSystem.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\Object3DNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\ParticlesNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\PointLightNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\SpotLightNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\ThirdPersonPlayerNode.cpp" />
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\LightPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\MergingPipeline.cpp" />
@@ -183,7 +192,6 @@
     <ClCompile Include="Engine\Pipelines\src\TexturedPipeline.cpp" />
     <ClCompile Include="Engine\SingleGpuGame.cpp" />
     <ClCompile Include="Game\GameSample.cpp" />
-    <ClCompile Include="Game\ThirdPersonPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Base\Application.h" />
@@ -203,6 +211,7 @@
     <ClInclude Include="Engine\Base\resource.h" />
     <ClInclude Include="Engine\Base\SelectionSystem.h" />
     <ClInclude Include="Engine\Base\SimpleMath.h" />
+    <ClInclude Include="Engine\Base\Singleton.h" />
     <ClInclude Include="Engine\Base\UploadBuffer.h" />
     <ClInclude Include="Engine\Base\Window.h" />
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h" />
@@ -217,7 +226,6 @@
     <ClInclude Include="Engine\Graphics\LightManager.h" />
     <ClInclude Include="Engine\Graphics\MaterialEntity.h" />
     <ClInclude Include="Engine\Graphics\Mesh3DComponent.h" />
-    <ClInclude Include="Engine\Graphics\Object3DEntity.h" />
     <ClInclude Include="Engine\Graphics\Object3DComponent.h" />
     <ClInclude Include="Engine\Graphics\ParticleSystem.h" />
     <ClInclude Include="Engine\Graphics\ResourceStorage.h" />
@@ -231,7 +239,16 @@
     <ClInclude Include="Engine\Graphics\Texture3D.h" />
     <ClInclude Include="Engine\Graphics\TransformComponent.h" />
     <ClInclude Include="Engine\Graphics\VertexStructures.h" />
-    <ClInclude Include="Engine\MultiGpuGame.h" />
+    <ClInclude Include="Engine\NodeGraph\CameraNode.h" />
+    <ClInclude Include="Engine\NodeGraph\DirectionalLightNode.h" />
+    <ClInclude Include="Engine\NodeGraph\EnvironmentNode.h" />
+    <ClInclude Include="Engine\NodeGraph\Node3D.h" />
+    <ClInclude Include="Engine\NodeGraph\NodeGraphSystem.h" />
+    <ClInclude Include="Engine\NodeGraph\Object3DNode.h" />
+    <ClInclude Include="Engine\NodeGraph\ParticlesNode.h" />
+    <ClInclude Include="Engine\NodeGraph\PointLightNode.h" />
+    <ClInclude Include="Engine\NodeGraph\SpotLightNode.h" />
+    <ClInclude Include="Engine\NodeGraph\ThirdPersonPlayerNode.h" />
     <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\LightPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\MergingPipeline.h" />
@@ -245,7 +262,6 @@
     <ClInclude Include="Engine\Pipelines\TexturedPipeline.h" />
     <ClInclude Include="Engine\SingleGpuGame.h" />
     <ClInclude Include="Game\GameSample.h" />
-    <ClInclude Include="Game\ThirdPersonPlayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc" />

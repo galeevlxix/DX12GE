@@ -4,41 +4,47 @@ using namespace DirectX::SimpleMath;
 
 class TransformComponent
 {
-public:
-    DirectX::XMMATRIX GetWorldMatrix();
-    DirectX::XMMATRIX GetInverseMatrix();
+    DirectX::XMMATRIX m_LocalMatrixCache;
+    bool m_CacheIsDirty = true;
 
-    void SetDefault(float yOffset = 0);
-    
+    Vector3 m_Position;
+    Vector3 m_Rotation;
+    Vector3 m_Scale;
+
+    friend void SetTransformCacheStatus(TransformComponent& transform, bool cacheIsDirty);
     static float ToDegrees(float radians);
     static float ToRadians(float degrees);
 
-    void SetPosition(float x, float y, float z);
+public:
+    const DirectX::XMMATRIX& GetLocalMatrix();
+
+    void SetDefault(float yOffset = 0.0f);
+
     void SetPosition(Vector3 PositionVector);
-    void Move(float dx, float dy, float dz);
+    void SetPosition(float x, float y, float z);
     void Move(Vector3 MoveVector);
-    void SetRotation(float x, float y, float z);
+    void Move(float dx, float dy, float dz);
+
     void SetRotation(Vector3 RotationVector);
     void SetRotationDegrees(Vector3 RotationVector);
+    void SetRotation(float x, float y, float z);
     void SetRotationX(float value);
     void SetRotationY(float value);
     void SetRotationZ(float value);
     void Rotate(Vector3 RotateVector);
     void RotateDegrees(Vector3 RotateVector);
     void Rotate(float dx, float dy, float dz);
+
+    void SetScale(Vector3 ScaleVector);
     void SetScale(float x, float y, float z);
     void SetScale(float value);
-    void SetScale(Vector3 ScaleVector);
     void Expand(float ExpandValue);
     void Expand(float dx, float dy, float dz);
 
-    Vector3 GetPosition();
-    Vector3 GetRotation();
-    Vector3 GetRotationDegrees();
-    Vector3 GetScale();
+    const Vector3& GetPosition();
+    const Vector3& GetRotation();
+    const Vector3& GetRotationDegrees();
+    const Vector3& GetScale();
 
-private:
-    Vector3 m_Position;
-    Vector3 m_Rotation;
-    Vector3 m_Scale;    
+    bool IsCacheDirty() { return m_CacheIsDirty; }
 };

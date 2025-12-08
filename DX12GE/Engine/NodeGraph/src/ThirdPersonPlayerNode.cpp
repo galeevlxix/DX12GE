@@ -1,5 +1,5 @@
-#include "ThirdPersonPlayer.h"
-#include "../Engine/Base/InputSystem.h"
+#include "../ThirdPersonPlayerNode.h"
+#include "../../Base/InputSystem.h"
 
 const static float slowSpeed = 6.0f;
 const static float normalSpeed = 12.0f;
@@ -7,17 +7,17 @@ const static float fastSpeed = 24.0f;
 
 static inputs is;
 
-void ThirdPersonPlayer::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
+ThirdPersonPlayerNode::ThirdPersonPlayerNode() : Object3DNode()
 {
-	Object3DEntity::OnLoad(commandList, filePath);
-	Transform.SetPosition(-6.7f, 13.3f, 43.0f);
+	Rename("ThirdPersonPlayerNode");
 	m_Direction = Vector3(0.0f, 0.0f, -1.0f);
 	m_Speed = normalSpeed;
+	m_Camera = nullptr;
 }
 
-void ThirdPersonPlayer::OnUpdate(const double& deltaTime)
+void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
 {
-	Object3DEntity::OnUpdate(deltaTime);
+    Object3DNode::OnUpdate(deltaTime);
 
     if (m_test_Enabled)
     {
@@ -86,7 +86,13 @@ void ThirdPersonPlayer::OnUpdate(const double& deltaTime)
     }
 }
 
-void ThirdPersonPlayer::SetCamera(Camera* camera)
+void ThirdPersonPlayerNode::Destroy(bool keepComponent)
+{
+	m_Camera = nullptr;
+	Object3DNode::Destroy(keepComponent);
+}
+
+void ThirdPersonPlayerNode::SetCamera(Camera* camera)
 {
     m_Camera = camera;
 
@@ -101,24 +107,32 @@ void ThirdPersonPlayer::SetCamera(Camera* camera)
     m_angle_v = asin(XMVectorGetY(camera->Target));
 }
 
-void ThirdPersonPlayer::OnKeyPressed(KeyEventArgs& e)
+void ThirdPersonPlayerNode::OnKeyPressed(KeyEventArgs& e)
 {
+    Object3DNode::OnKeyPressed(e);
+
     is.OnKeyPressed(e);
 }
 
-void ThirdPersonPlayer::OnKeyReleased(KeyEventArgs& e)
+void ThirdPersonPlayerNode::OnKeyReleased(KeyEventArgs& e)
 {
+    Object3DNode::OnKeyReleased(e);
+
     is.OnKeyReleased(e);
 }
 
-void ThirdPersonPlayer::OnMouseWheel(MouseWheelEventArgs& e)
+void ThirdPersonPlayerNode::OnMouseWheel(MouseWheelEventArgs& e)
 {
+    Object3DNode::OnMouseWheel(e);
+
     m_FlyRadius -= e.WheelDelta;
-    m_FlyRadius = clamp(m_FlyRadius, 5.0f, 40.0f);
+    m_FlyRadius = std::clamp(m_FlyRadius, 5.0f, 40.0f);
 }
 
-void ThirdPersonPlayer::OnMouseMoved(MouseMotionEventArgs& e)
+void ThirdPersonPlayerNode::OnMouseMoved(MouseMotionEventArgs& e)
 {
+    Object3DNode::OnMouseMoved(e);
+
     if (!is.RBC) return;
 
     m_dx = e.X - m_prevX;
@@ -132,8 +146,10 @@ void ThirdPersonPlayer::OnMouseMoved(MouseMotionEventArgs& e)
     m_prevY = e.Y;
 }
 
-void ThirdPersonPlayer::OnMouseButtonPressed(MouseButtonEventArgs& e)
+void ThirdPersonPlayerNode::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
+    Object3DNode::OnMouseButtonPressed(e);
+
     is.OnMouseButtonPressed(e);
 
     if (e.Button == 2) //Right mouse
@@ -143,8 +159,10 @@ void ThirdPersonPlayer::OnMouseButtonPressed(MouseButtonEventArgs& e)
     }
 }
 
-void ThirdPersonPlayer::OnMouseButtonReleased(MouseButtonEventArgs& e)
+void ThirdPersonPlayerNode::OnMouseButtonReleased(MouseButtonEventArgs& e)
 {
+    Object3DNode::OnMouseButtonReleased(e);
+
     is.OnMouseButtonReleased(e);
     if (e.Button == 2) //Right mouse
     {
@@ -152,16 +170,7 @@ void ThirdPersonPlayer::OnMouseButtonReleased(MouseButtonEventArgs& e)
     }
 }
 
-void ThirdPersonPlayer::Destroy()
-{
-    Object3DEntity::Destroy();
-    m_Camera = nullptr;
-}
-
-//////////////////////////////////
-// TESTING MODE
-
-void ThirdPersonPlayer::TestProcess()
+void ThirdPersonPlayerNode::TestProcess()
 {
     for (size_t i = 0; i < m_test_MaxPhases; i++)
     {
@@ -182,7 +191,7 @@ void ThirdPersonPlayer::TestProcess()
                 Transform.SetPosition(m_test_InitPosPlayer);
                 Transform.SetRotationY(m_test_InitRotYPlayer);
             }
-            else  
+            else
             {
                 m_test_Phases[i + 1].enable = true;
                 m_Camera->Position = m_test_Phases[i + 1].start;
@@ -192,7 +201,7 @@ void ThirdPersonPlayer::TestProcess()
     }
 }
 
-void ThirdPersonPlayer::StartTest()
+void ThirdPersonPlayerNode::StartTest()
 {
     m_test_Enabled = true;
 
@@ -208,7 +217,7 @@ void ThirdPersonPlayer::StartTest()
     m_Camera->Target = m_test_Phases[0].target;
 }
 
-bool ThirdPersonPlayer::IsTesting()
+bool ThirdPersonPlayerNode::IsTesting()
 {
     return m_test_Enabled;
 }

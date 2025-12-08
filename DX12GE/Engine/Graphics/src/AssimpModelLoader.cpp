@@ -32,11 +32,8 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     if (!pScene)
     {
         printf("Error parsing '%s': '%s'\n", filePath.c_str(), importer.GetErrorString());
-        return false;
+        return -1;
     }
-
-    int meshesCount = pScene->mNumMeshes;
-    int materialsCount = pScene->mNumMaterials;
 
     const size_t last_slash_idx = filePath.rfind('/');
     string directory;
@@ -45,15 +42,15 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
         directory = filePath.substr(0, last_slash_idx);
     }
 
-    if(!(meshesCount > 0 && materialsCount > 0)) 
+    if(!(pScene->mNumMeshes > 0 && pScene->mNumMaterials > 0))
     {
         printf("Error parsing '%s': '%s'\n", filePath.c_str(), importer.GetErrorString());
-        return false;
+        return -1;
     }
 
     std::vector<MaterialEntity*> materials;
 
-    for (int i = 0; i < materialsCount; i++)
+    for (int i = 0; i < pScene->mNumMaterials; i++)
     {
         materials.push_back(new MaterialEntity());
 
@@ -78,7 +75,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
 
     float yOffset = 0.0f;
 
-    for (int i = 0; i < meshesCount; i++)
+    for (int i = 0; i < pScene->mNumMeshes; i++)
     {
         meshes.push_back(new Mesh3DComponent());
 

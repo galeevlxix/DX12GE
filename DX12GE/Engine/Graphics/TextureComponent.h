@@ -41,7 +41,7 @@ class TextureComponent
 {
 public:
     ComPtr<ID3D12Resource> m_Resource;
-    int m_SRVHeapIndex;
+    int m_SRVHeapIndex = -1;
 
 private:
     ComPtr<ID3D12Resource> m_UploadBuffer;

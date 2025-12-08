@@ -15,7 +15,7 @@
 #define PURPLE_LIGHT	Vector3(0.54902f,	0.0f,		0.8549f)
 #define WHITE_LIGHT		Vector3(1.0f,		0.87059f,	0.71373f)
 
-void LightManager::Init(ThirdPersonPlayer* player)
+void LightManager::Init(ThirdPersonPlayerNode* player)
 {
 	m_player = player;
 
@@ -137,17 +137,17 @@ void LightManager::AddSpotLight(Vector3 pos, Vector3 color, Vector3 dir, float c
 	AddSpotLight(pos, color, dir, cutoff, intensity, atten.Constant, atten.Linear, atten.Exp);
 }
 
-void LightManager::DrawDebug(std::shared_ptr<DebugRenderSystem> debugRender)
+void LightManager::DrawDebug()
 {
 	for (auto pLight : m_PointLights)
 	{
-		debugRender->DrawPoint(pLight.Position, 1.0f, pLight.BaseLightComponent.Color);
+		Singleton::GetDebugRender()->DrawPoint(pLight.Position, 1.0f, pLight.BaseLightComponent.Color);
 	}
 
 	for (auto sLight : m_SpotLights)
 	{
-		debugRender->DrawPoint(sLight.PointLightComponent.Position, 1.0f, sLight.PointLightComponent.BaseLightComponent.Color);
-		debugRender->DrawArrow(
+		Singleton::GetDebugRender()->DrawPoint(sLight.PointLightComponent.Position, 1.0f, sLight.PointLightComponent.BaseLightComponent.Color);
+		Singleton::GetDebugRender()->DrawArrow(
 			sLight.PointLightComponent.Position,
 			sLight.PointLightComponent.Position + sLight.Direction * 2.0f,
 			sLight.PointLightComponent.BaseLightComponent.Color,

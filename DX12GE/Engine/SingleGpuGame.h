@@ -5,8 +5,8 @@
 #include "Base/Application.h"
 #include "Base/Game.h"
 #include "Base/Window.h"
-#include "Base/SelectionSystem.h"
 #include "Base/CommandQueue.h"
+#include "Base/Singleton.h"
 
 #include "Pipelines/Pipeline.h"
 #include "Pipelines/ShadowMapPipeline.h"
@@ -19,8 +19,6 @@
 #include "Pipelines/SkyboxPipeline.h"
 
 #include "Graphics/DescriptorHeaps.h"
-#include "Graphics/Object3DEntity.h"
-#include "Graphics/DebugRenderSystem.h"
 #include "Graphics/CascadedShadowMap.h"
 #include "Graphics/Camera.h" 
 #include "Graphics/LightManager.h"
@@ -38,8 +36,9 @@ using namespace std;
 class SingleGpuGame : public Game
 {
 public:
+
     using super = Game;
-    
+
     SingleGpuGame(const wstring& name, int width, int height, bool vSync = false);
     ~SingleGpuGame();
 
@@ -48,33 +47,9 @@ public:
     virtual void UnloadContent() override;
     virtual void Destroy() override;
 
-protected:
-    virtual void OnUpdate(UpdateEventArgs& e) override;
-    virtual void OnRender(RenderEventArgs& e) override final;
-    virtual void OnKeyPressed(KeyEventArgs& e) override;
-    virtual void OnKeyReleased(KeyEventArgs& e) override;
-    virtual void OnMouseWheel(MouseWheelEventArgs& e) override;
-    virtual void OnMouseMoved(MouseMotionEventArgs& e) override;
-    virtual void OnMouseButtonPressed(MouseButtonEventArgs& e) override;
-    virtual void OnMouseButtonReleased(MouseButtonEventArgs& e) override;
-    virtual void OnResize(ResizeEventArgs& e) override;
-
 private:
-    void DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void DrawParticles(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void DrawForwardOther(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
-    void UpdateSceneObjects(float deltaTime);
-    void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
-
-    void RefreshTitle(UpdateEventArgs& e);
-private:
+    // API
 
     ComPtr<ID3D12Device2> m_Device;
 
@@ -83,7 +58,7 @@ private:
     D3D12_RECT m_ScissorRect;
 
     bool m_Initialized = false;
-    
+
     bool m_IsTesting = false;
     vector<float> m_ElapsedTimeArray;
     const string m_TestTimeOutputFile = "../../DX12GE/Resources/single_gpu.txt";
@@ -92,11 +67,7 @@ private:
     // SCENE
 
     Camera* m_Camera;
-    map<string, Object3DEntity*> m_Objects;
-    ThirdPersonPlayer* m_Player;
-    bool m_SerializeSceneOnExit = false;
-
-    std::shared_ptr<DebugRenderSystem> m_DebugSystem;  
+    ThirdPersonPlayerNode* m_Player;
 
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;
@@ -125,14 +96,33 @@ private:
     GeometryPassPipeline m_GeometryPassPipeline;
     SSRPipeline m_SSRPipeline;
     MergingPipeline m_MergingPipeline;
-    LightPassPipeline m_LightPassPipeline;    
+    LightPassPipeline m_LightPassPipeline;
     SkyboxPipeline m_SkyboxPipeline;
 
-public:
-    std::shared_ptr<SelectionSystem> m_SelectionSystem;
+protected:
+    virtual void OnUpdate(UpdateEventArgs& e) override;
+    virtual void OnRender(RenderEventArgs& e) override final;
 
-    Object3DEntity* GetSceneEntity(std::string name);
-    std::map<std::string, Object3DEntity*>::iterator GetSceneEntity(int index);
+    virtual void OnKeyPressed(KeyEventArgs& e) override;
+    virtual void OnKeyReleased(KeyEventArgs& e) override;
+    virtual void OnMouseWheel(MouseWheelEventArgs& e) override;
+    virtual void OnMouseMoved(MouseMotionEventArgs& e) override;
+    virtual void OnMouseButtonPressed(MouseButtonEventArgs& e) override;
+    virtual void OnMouseButtonReleased(MouseButtonEventArgs& e) override;
+    virtual void OnResize(ResizeEventArgs& e) override;
 
-    void SaveSceneToFile();
+private:
+    void DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawParticles(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawForwardOther(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
+
+    void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
+
+    void RefreshTitle(UpdateEventArgs& e);
 };

@@ -14,5 +14,11 @@ public:
 	static std::shared_ptr<Object3DComponent> GetObject3DByName(const std::string& name);
 	static std::shared_ptr<TextureComponent> GetTextureByName(const std::string& name);
 
+	static void DeleteObject3DComponentForever(uint32_t id);
+	static void DeleteTextureComponentForever(uint32_t id);
+
+	static size_t ObjectsCount();
+	static size_t TexturesCount();
+
 	static void Destroy();
 };

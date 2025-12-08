@@ -8,27 +8,29 @@
 class MaterialEntity
 {
 private:
-    uint64_t m_DiffuseTextureId = -1;
-    uint64_t m_EmissiveTextureId = -1;
-    uint64_t m_NormalTextureId = -1;
-    uint64_t m_MetallicTextureId = -1;
-    uint64_t m_RoughnessTextureId = -1;
-    uint64_t m_GltfMetallicRoughnessTextureId = -1;
-    uint64_t m_AOTextureId = -1;
+    uint32_t m_DiffuseTextureId = -1;
+    uint32_t m_EmissiveTextureId = -1;
+    uint32_t m_NormalTextureId = -1;
+    uint32_t m_MetallicTextureId = -1;
+    uint32_t m_RoughnessTextureId = -1;
+    uint32_t m_GltfMetallicRoughnessTextureId = -1;
+    uint32_t m_AOTextureId = -1;
 
-    bool DrawIt = true;
+    DirectX::SimpleMath::Vector4 m_HasDiffuseNormalEmissive = DirectX::SimpleMath::Vector4(0, 0, 0, 0);
+    DirectX::SimpleMath::Vector4 m_HasOcclusionRoughnessMetallicCombined = DirectX::SimpleMath::Vector4(0, 0, 0, 0);
 
-    DirectX::SimpleMath::Vector4 HasDiffuseNormalEmissive = DirectX::SimpleMath::Vector4(0, 0, 0, 0);
-    DirectX::SimpleMath::Vector4 HasOcclusionRoughnessMetallicCombined = DirectX::SimpleMath::Vector4(0, 0, 0, 0);
+    bool m_DrawIt = false;
 
-    uint64_t AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, std::string &path);
+    uint32_t AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, std::string &path);
+    void RenderTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot, uint32_t textureId, float mask);
+    void DestroyTexture(uint32_t textureId);
 
 public:
     map<TextureType, string> m_ImagePaths;
 
     void Load(ComPtr<ID3D12GraphicsCommandList2> commandList);
-    void RenderTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot, uint64_t textureId, float mask);
     void Render(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    bool CanDrawIt() { return m_DrawIt; }
 
-    bool CanDrawIt() { return DrawIt; }
+    void Destroy();
 };
