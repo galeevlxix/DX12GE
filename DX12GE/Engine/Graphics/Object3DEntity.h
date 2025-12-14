@@ -17,6 +17,7 @@ private:
 public:
     virtual void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath);
     virtual void OnUpdate(const double& deltaTime);
+    virtual void UpdateTransform(DirectX::SimpleMath::Matrix InTransform = DirectX::SimpleMath::Matrix());
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, const XMMATRIX& viewProjMatrix);
     virtual void Destroy();
     uint32_t GetId();

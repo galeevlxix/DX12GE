@@ -13,7 +13,7 @@ struct Cascade
 {
 	ShadowMap* ShadowMapTexture = nullptr;
 	float Radius = 0.0;
-	Matrix ShadowViewProj;
+	SimpleMath::Matrix ShadowViewProj;
 };
 
 class CascadedShadowMap
@@ -33,7 +33,7 @@ public:
 	void SetGraphicsRootDescriptorTables(int fromSlot, ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 	ShadowMap* GetShadowMap(int index);
-	Matrix GetShadowViewProj(int index);
+	SimpleMath::Matrix GetShadowViewProj(int index);
 
 	void Destroy();
 };

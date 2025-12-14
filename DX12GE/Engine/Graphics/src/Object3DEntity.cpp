@@ -20,6 +20,17 @@ void Object3DEntity::OnUpdate(const double& deltaTime)
     if (ObjectId == -1) return;
 }
 
+void Object3DEntity::UpdateTransform(DirectX::SimpleMath::Matrix InTransform)
+{
+    Vector3 scale, translation;
+    Quaternion rotation;
+    
+    InTransform.Decompose(scale, rotation, translation);
+    Transform.SetPosition(translation);
+    //Transform.SetScale(scale);
+    Transform.SetRotation(rotation.ToEuler());
+}
+
 void Object3DEntity::SetConstBuffers(ComPtr<ID3D12GraphicsCommandList2> commandList, const  XMMATRIX& viewProjMatrix)
 {
     XMMATRIX wvp = Transform.GetWorldMatrix();

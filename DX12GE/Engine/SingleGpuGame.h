@@ -6,6 +6,7 @@
 #include "Base/Game.h"
 #include "Base/Window.h"
 #include "Base/SelectionSystem.h"
+#include "../DX12GE/Engine/Physics/PhysicsManager.h"
 #include "Base/CommandQueue.h"
 
 #include "Pipelines/Pipeline.h"
@@ -70,6 +71,7 @@ private:
     void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
+    void CreateCollisions() const;
     void UpdateSceneObjects(float deltaTime);
     void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
@@ -97,6 +99,8 @@ private:
     bool m_SerializeSceneOnExit = false;
 
     std::shared_ptr<DebugRenderSystem> m_DebugSystem;  
+    
+    std::unique_ptr<Physics::PhysicsManager> m_PhysicsManager;
 
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;

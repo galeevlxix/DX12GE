@@ -1,5 +1,8 @@
 #pragma once
 
+//Engine includes
+#include "../Base/SimpleMath.h"
+
 // Jolt includes
 #include <Jolt/Jolt.h>
 #include <Jolt/RegisterTypes.h>
@@ -9,11 +12,17 @@
 #include <Jolt/Physics/PhysicsSettings.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
+#include <Jolt/Geometry/Plane.h>
+#include <Jolt/Physics/Collision/Shape/PlaneShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
+#include <Jolt/Physics/SoftBody/SoftBodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 #include <Jolt/Physics/Body/BodyManager.h>
+
+//Custom files
+#include "PhysicsDataTypes.h"
 
 // Disable common warnings
 JPH_SUPPRESS_WARNINGS
@@ -58,6 +67,7 @@ using Microsoft::WRL::ComPtr;
 using namespace JPH;
 using namespace JPH::literals;
 using namespace std;
+using namespace DirectX::SimpleMath;
 
 // Layer that objects can be in, determines which other objects it can collide with
 // Typically you at least want to have 1 layer for moving bodies and 1 layer for static bodies, but you can have more
@@ -208,7 +218,19 @@ namespace Physics
     class PhysicsManager
     {
     public:
-        int Run();
+        void Initialize();
+        
+        void AddBoxCollision(uint32_t ObjectID, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
+        
+        map<uint32_t, DirectX::SimpleMath::Matrix> OnUpdate(float inDeltaTime);
+        
+        void PrePhysics(float inDeltaTime);
+        
+        void DuringPhysics(float inDeltaTime);
+        
+        map<uint32_t, DirectX::SimpleMath::Matrix> PostPhysics(float inDeltaTime);
+        
+        void OnDestroy();
         
     private:
         // This is the max amount of rigid bodies that you can add to the physics system. If you try to add more you'll get an error.
@@ -244,10 +266,18 @@ namespace Physics
         // Also have a look at ObjectLayerPairFilterTable or ObjectLayerPairFilterMask for a simpler interface.
         ObjectLayerPairFilterImpl object_vs_object_layer_filter;
         
-        unique_ptr<JPH::TempAllocatorImpl> m_pTempAllocator;
+        MyBodyActivationListener body_activation_listener;
+        
+		MyContactListener contact_listener;
+        
+        unique_ptr<TempAllocatorImpl> m_pTempAllocator;
         
         unique_ptr<JobSystemThreadPool> m_pJobSystem;
         
-        JPH::PhysicsSystem m_PhysicsSystem;
+        PhysicsSystem m_PhysicsSystem;
+        
+        unique_ptr<BodyInterface> m_BodyInterface;
+        
+        map<BodyID, uint32_t> BodiesMap;
     };
 }

@@ -58,7 +58,9 @@ bool SingleGpuGame::Initialize()
 
     m_DebugSystem = std::make_shared<DebugRenderSystem>();
     m_SelectionSystem = std::make_shared<SelectionSystem>(m_Objects, m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
-
+    m_PhysicsManager = std::make_unique<Physics::PhysicsManager>();
+    m_PhysicsManager->Initialize();
+    
     if (!super::Initialize()) return false;
     
     return true;
@@ -70,6 +72,7 @@ bool SingleGpuGame::LoadContent()
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
     SceneJsonSerializer::Load(commandList, m_Objects);
+    CreateCollisions();
     m_Player = dynamic_cast<ThirdPersonPlayer*>(m_Objects["player"]);
     m_Player->SetCamera(m_Camera);
 
@@ -110,7 +113,18 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 
     for (auto obj : m_Objects) 
         obj.second->OnUpdate(elapsedTime);
+    
+    map<uint32_t, DirectX::SimpleMath::Matrix> ObjectsTransforms = m_PhysicsManager->OnUpdate(elapsedTime);
 
+    for (const auto& transform : ObjectsTransforms)
+    {
+        for (auto obj : m_Objects) 
+            if (obj.second->GetId() == transform.first)
+            {
+                obj.second->UpdateTransform(transform.second);
+            }
+    }
+    
     m_Lights.OnUpdate(elapsedTime);
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera->Position;
     ShaderResources::GetSSRCB()->ViewProjection = m_Camera->GetViewProjMatrix();
@@ -265,6 +279,19 @@ void SingleGpuGame::MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList)
     commandList->DrawInstanced(3, 1, 0, 0);
 
     TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+}
+
+void SingleGpuGame::CreateCollisions() const
+{
+    for (auto obj : m_Objects)
+    {
+        EMotionType MotionType = EMotionType::Static;   
+        if (string(obj.first).find("gas") == -1)
+        {
+            MotionType = EMotionType::Dynamic;
+        }
+        m_PhysicsManager->AddBoxCollision(obj.second->GetId(), obj.second->Transform.GetPosition(), obj.second->Transform.GetRotation(), obj.second->Transform.GetScale(), MotionType);
+    }
 }
 
 void SingleGpuGame::DrawParticles(ComPtr<ID3D12GraphicsCommandList2> commandList)
