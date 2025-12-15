@@ -49,7 +49,7 @@ public:
     virtual Node3D* Get(std::string name);
     virtual void UnloadContent() override;
     virtual void Destroy() override;
-
+    
 private:
 
     // API

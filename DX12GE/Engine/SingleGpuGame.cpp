@@ -98,6 +98,7 @@ void SingleGpuGame::AddObjectOnScene(std::string name)
 {
 }
 
+
 // void SingleGpuGame::AddObjectOnScene(std::string name)
 // {
 //     if (!m_Objects.contains(name))
@@ -105,7 +106,7 @@ void SingleGpuGame::AddObjectOnScene(std::string name)
 //         shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
 //         ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 //
-//         Object3DEntity* entity = new Object3DEntity();
+//         Object3DNode* node = new Object3DNode();
 //
 //         std::string modelPath = "../../DX12GE/Resources/Models/cars/buchanka/scene.gltf";
 //
@@ -123,7 +124,7 @@ void SingleGpuGame::AddObjectOnScene(std::string name)
 // {
 //     if (m_Objects.contains(name))
 //     {
-//         Object3DEntity* entity = m_Objects[name];
+//         Object3DNode* entity = m_Objects[name];
 //         m_Objects.erase(name);
 //         entity->Destroy();
 //     }
@@ -574,12 +575,15 @@ void SingleGpuGame::Destroy()
     super::Destroy();
 }
 
-// Object3DEntity* SingleGpuGame::Get(std::string name)
+
+// Object3DNode* SingleGpuGame::Get(std::string name)
 // {
-//     if (!m_Objects.contains(name)) return nullptr;
+//     if (!m_Obbjects.contains(name)) return nullptr;
 //
 //     return m_Objects[name];
 // }
+
+
 
 SingleGpuGame::~SingleGpuGame()
 {
