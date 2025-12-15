@@ -4,7 +4,6 @@
 #include "../../Graphics/DescriptorHeaps.h"
 #include "../ShaderResources.h"
 #include "../GBuffer.h"
-#include "../Object3DEntity.h"
 #include <DirectXTex.h>
 
 using namespace DirectX;
@@ -109,6 +108,9 @@ void TextureComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, st
     );
 
     device->CreateShaderResourceView(m_Resource.Get(), &srvDesc, handle);
+
+    device.Reset();
+    device = nullptr;
 
     m_Initialized = true;
 }
@@ -243,6 +245,9 @@ void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandL
     );
 
     device->CreateShaderResourceView(m_Resource.Get(), &srvDesc, handle);
+
+    device.Reset();
+    device = nullptr;
 
     m_Initialized = true;
 }

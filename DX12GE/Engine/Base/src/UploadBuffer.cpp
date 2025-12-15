@@ -78,6 +78,9 @@ UploadBuffer::Page::Page(size_t sizeInBytes, GraphicsAdapter adapter)
         IID_PPV_ARGS(&m_d3d12Resource)
     ));
 
+    device.Reset();
+    device = nullptr;
+
     m_GPUPtr = m_d3d12Resource->GetGPUVirtualAddress();
     m_d3d12Resource->Map(0, nullptr, &m_CPUPtr);
 }

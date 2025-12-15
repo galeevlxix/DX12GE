@@ -3,6 +3,7 @@
 #include "../Base/DX12LibPCH.h"
 #include "../Base/SimpleMath.h"
 #include "../Base/UploadBuffer.h"
+#include "GraphicsComponents.h"
 #include <vector>
 
 using namespace std;
@@ -12,48 +13,16 @@ using namespace DirectX::SimpleMath;
 const int CASCADES_COUNT = 4;
 const int GBUFFER_COUNT = 6;
 
-// LIGHTS
+// GRAPHICS
 
-struct BaseLight
-{
-	Vector3 Color;
-	float Intensity;
-};
-
-struct DirectionalLight
-{
-	BaseLight BaseLightComponent;
-	Vector4 Direction;
-};
-
-struct LightProperties
+struct CommonLightProperties
 {
 	Vector4 CameraPos;
-	float SpecularIntensity;
-	float MaterialPower;
+	Vector4 FogColor;
 	float PointLightsCount;
 	float SpotlightsCount;
-};
-
-struct Attenuation
-{
-	float Constant;
-	float Linear;
-	float Exp;
-};
-
-struct PointLight
-{
-	BaseLight BaseLightComponent;
-	Vector3 Position;
-	Attenuation AttenuationComponent;
-};
-
-struct SpotLight
-{
-	PointLight PointLightComponent;
-	Vector3 Direction;
-	float Cutoff;
+	float FogStart;
+	float FogDistance;
 };
 
 // CONSTANT BUFFERS
@@ -71,9 +40,9 @@ struct ShadowConstantBuffer
 
 struct WorldConstantBuffer
 {
-	BaseLight AmbientLight;
-	DirectionalLight DirLight;
-	LightProperties LightProps;
+	BaseLightComponent AmbientLight;
+	DirectionalLightComponent DirLight;
+	CommonLightProperties LightProps;
 };
 
 struct ParticleConstantBuffer

@@ -135,6 +135,9 @@ void Texture3D::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, int width, 
 	);
 
 	device->CreateShaderResourceView(m_Resource.Get(), &srvDesc, handle);
+
+	device.Reset();
+	device = nullptr;
 }
 
 void Texture3D::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)

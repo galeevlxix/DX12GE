@@ -3,28 +3,29 @@
 #include <map>
 #include <string>
 
-#include "../Graphics/Object3DEntity.h"
-#include "../Graphics/DebugRenderSystem.h"
 #include "../Graphics/TextureBuffer.h"
-
+#include "../NodeGraph/Node3D.h"
 #include "Events.h"
 
 class SelectionSystem
 {
 public:
-	SelectionSystem(std::map<std::string, Object3DEntity*>& objects, std::shared_ptr<TextureBuffer> idTextureBuffer);
+	SelectionSystem();
+
+	void SetTextureBuffer(std::shared_ptr<TextureBuffer> idTextureBuffer) { m_IdTextureBuffer = idTextureBuffer; }
 
 private:
-	std::vector<Object3DEntity*> m_Selected;
-
-	std::map<std::string, Object3DEntity*>& m_Objects;
+	std::vector<Node3D*> m_Selected;
 	std::shared_ptr<TextureBuffer> m_IdTextureBuffer;
 
 	void GetObjectIdAt(UINT x, UINT y, UINT* outObjectID);
 
 public:
-	void DrawDebug(std::shared_ptr<DebugRenderSystem> debugSystem);
+	void DrawDebug();
 	void OnMouseButtonPressed(MouseButtonEventArgs& e);
 
-	std::vector<Object3DEntity*>& GetSelected() { return m_Selected; }
+	std::vector<Node3D*>& GetSelected() { return m_Selected; }
+	void DeselectAll();
+
+	void Destroy();
 };

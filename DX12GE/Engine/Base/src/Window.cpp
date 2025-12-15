@@ -337,6 +337,9 @@ void Window::UpdateRenderTargetViews()
 
         rtvHandle.Offset(m_RTVDescriptorSize);
     }
+
+    device.Reset();
+    device = nullptr;
 }
 
 void Window::UpdateWindowText(std::wstring newText)
