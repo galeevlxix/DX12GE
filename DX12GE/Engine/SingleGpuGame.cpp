@@ -90,6 +90,14 @@ bool SingleGpuGame::LoadContent()
     return true;
 }
 
+void SingleGpuGame::RemoveObjectFromScene(std::string name)
+{
+}
+
+void SingleGpuGame::AddObjectOnScene(std::string name)
+{
+}
+
 // void SingleGpuGame::AddObjectOnScene(std::string name)
 // {
 //     if (!m_Objects.contains(name))
@@ -511,6 +519,11 @@ void SingleGpuGame::RefreshTitle(UpdateEventArgs& e)
         frameCounter++;
         timer += e.ElapsedTime;
     }
+}
+
+Node3D* SingleGpuGame::Get(std::string name)
+{
+    return nullptr;
 }
 
 void SingleGpuGame::UnloadContent()

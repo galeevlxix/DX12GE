@@ -26,15 +26,15 @@ static Camera* p_camera;
 
 //////////////////////////////////////////////////////////////////////
 //LUA API ZONE
-Object3DEntity* lua_get_object_on_scene(std::string name)
+Node3D* lua_get_object_on_scene(std::string name)
 {
 	const auto object = p_scene->Get(name);
 	//object->AddScriptComponent();
 
-	return object;
+	return nullptr;
 }
 
-int lua_rotate_object_by_rotator(Object3DEntity* object, float y, float p, float r)
+int lua_rotate_object_by_rotator(Node3D* object, float y, float p, float r)
 {
 	assert(object != nullptr, "Attempt to call rotate on null object!");
 	object->Transform.SetRotation(DirectX::SimpleMath::Vector3(y, p, r));
@@ -42,7 +42,7 @@ int lua_rotate_object_by_rotator(Object3DEntity* object, float y, float p, float
 	return 1;
 }
 
-std::map<std::string, float> lua_get_object_pos(Object3DEntity* object)
+std::map<std::string, float> lua_get_object_pos(Node3D* object)
 {
 	assert(object != nullptr, "Attempt to call get position on null object!");
 	const auto pos = object->Transform.GetPosition();
@@ -60,7 +60,7 @@ Camera* lua_get_camera()
 
 int lua_set_camera_target(lua_State* L)
 {
-	const auto& target = static_cast<Object3DEntity*>(lua_touserdata(L, 1));
+	const auto& target = static_cast<Node3D*>(lua_touserdata(L, 1));
 	const Vector3 objectPos = target->Transform.GetPosition() + Vector3(0.0f, 2.0f, 0.0f);
 
 	const float x = (float)lua_tonumber(L, 2);
@@ -83,7 +83,7 @@ sol::table get_lua_class(std::string name)
 	return lua[name];
 }
 
-int lua_transform_move_to(Object3DEntity* object, float x, float y, float z)
+int lua_transform_move_to(Node3D* object, float x, float y, float z)
 {
 	assert(object != nullptr, "Attempt to call move to on null object!");
 
@@ -92,7 +92,7 @@ int lua_transform_move_to(Object3DEntity* object, float x, float y, float z)
 	return 1;
 }
 
-int lua_transform_move_by(Object3DEntity* object, float x, float y, float z)
+int lua_transform_move_by(Node3D* object, float x, float y, float z)
 {
 	assert(object != nullptr, "Attempt to call move to on null object!");
 

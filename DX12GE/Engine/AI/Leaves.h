@@ -1,8 +1,8 @@
-﻿#pragma once
+﻿/*#pragma once
 #include <iostream>
 
 #include "Behavior.h"
-#include "../Graphics/Object3DEntity.h"
+
 using namespace DirectX::SimpleMath;
 
 class MoveToTarget : public Behavior {
@@ -130,4 +130,4 @@ protected:
         m_PointGenerated = false;
     }
     
-};
+};*/

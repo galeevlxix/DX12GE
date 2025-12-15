@@ -1,4 +1,4 @@
-﻿#include "../Leaves.h"
+﻿/*#include "../Leaves.h"
 using namespace DirectX::SimpleMath;
 
 Status MoveToTarget::update(float dt, Object3DEntity* owner, Blackboard& blackboard) {
@@ -86,3 +86,4 @@ Status RandomPointMove::update(float dt, Object3DEntity* owner, Blackboard& blac
     owner->Transform.SetRotation(0.0f, yaw, 0.0f);
     return Status::RUNNING;
 }
+*/

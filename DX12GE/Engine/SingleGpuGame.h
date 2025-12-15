@@ -46,6 +46,7 @@ public:
     virtual bool LoadContent() override;
     virtual void RemoveObjectFromScene(std::string name);
     virtual void AddObjectOnScene(std::string name);
+    virtual Node3D* Get(std::string name);
     virtual void UnloadContent() override;
     virtual void Destroy() override;
 
