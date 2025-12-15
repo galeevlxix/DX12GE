@@ -1,52 +1,44 @@
-Player = {}
-Class(Player, GameObject)
+PLAYER = {}
+Class(PLAYER, GameObject)
 
-function Player:Update()
+function PLAYER:Update()
 	return GameObject.Update(self)
 end
 
-function Player:OnMouseClickInput( k, pressed )
-	LoadObjectWithModel("ddd")
-	--print("OnMouseClickInput")
-	local pos = self.transform:GetPosition()
-	--local object = GetClass("ddd")
-	if object ~= nil then
-		if object.transform == nil then
-			--object:AddComponent(Transform)
-			print("inited on ddd")
+function PLAYER:Start()
+	return GameObject.Start(self)
+end
+
+
+function PLAYER:OnMouseClickInput( k, pressed )
+	if self.transform ~= nil then
+		local pos = self.transform:GetPosition()
+
+		local object = LoadObjectWithModel("ddd")
+		if object ~= nil then
+			if object.transform == nil then
+				object:AddComponent(Transform)
+			end
+			object.transform:MoveTo(pos.x + 10, pos.y, pos.z + 10)
 		end
-		print(object.transform)
-		--object.transform:MoveTo(pos.x + 10, pos.y, pos.z + 10)
 	end
-	--ddd:AddComponent(Transform)
-	--ddd.transform:MoveTo(pos.x + 2, pos.y, pos.z + 2)
-	--print(pos.x + 10, pos.y, pos.z + 10)
-	--print(ddd ~- nil)
+	
 
 	return GameObject.OnMouseClickInput(self, k, pressed )
 end
 
-function Player:OnMouseMovementInputReceived( x, y )
+function PLAYER:OnMouseMovementInputReceived( x, y )
 	if self.transform then
-		
 		self.transform:MoveTo(x/100, 10, y/100)
+		local object = GetClass("ddd")
 		if object ~= nil then
 			if object.transform == nil then
-	--			object:AddComponent(Transform)
-				
+				object:AddComponent(Transform)		
 			end
-		--	print(pos.x, pos.y, pos.z)
+
+			object.transform:MoveTo(x/100, 10, y/100)
 		end
 	end
-	local object = GetClass("ddd")
-	object.transform:MoveTo(x/100, 10, y/100)
+		
 	return GameObject.OnMouseMovementInputReceived(self, x, y)
 end
-
-
-
-player = Player:new("player")
-player:AddComponent(Transform)
---player.transform:MoveTo(100, 200, 300)
---print(player.transform)
---player:Update()

@@ -494,6 +494,7 @@
     <Text Include="Engine\Lua\scripts\TestScript.lua" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Engine\Lua\LuaBuild.bat" />
     <Content Include="Engine\Lua\scripts\Core.lua" />
     <Content Include="Engine\Lua\scripts\Player.lua" />
     <Content Include="Engine\Lua\scripts\TestScript2.lua" />

@@ -49,6 +49,7 @@ public:
     virtual void AddObjectOnScene(std::string name);
     virtual void UnloadContent() override;
     virtual void Destroy() override;
+    virtual Object3DEntity* Get(std::string name);
 
 protected:
     virtual void OnUpdate(UpdateEventArgs& e) override;
