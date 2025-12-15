@@ -2,7 +2,6 @@
 
 #include "../Base/SimpleMath.h"
 #include "ShadowMap.h"
-#include "Object3DEntity.h"
 #include "ShaderResources.h"
 
 using namespace std;

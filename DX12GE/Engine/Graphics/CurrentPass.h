@@ -16,6 +16,9 @@ public:
 		None = 8
 	};
 
-	static EPass Get();
-	static void Set(EPass pass);
+	EPass Get();
+	void Set(EPass pass);
+
+private:
+	EPass Pass = CurrentPass::None;
 };

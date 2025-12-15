@@ -1,8 +1,8 @@
 #pragma once
-#include "SingleGpuGame.h"
-#include <sol/sol.hpp>
-#include <sol/config.hpp>
-#include <sol/forward.hpp>
+#include "../SingleGpuGame.h"
+#include "sol/sol.hpp"
+#include "sol/config.hpp"
+#include "sol/forward.hpp"
 
 extern "C"
 {

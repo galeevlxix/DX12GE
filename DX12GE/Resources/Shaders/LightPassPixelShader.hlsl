@@ -20,10 +20,11 @@ struct DirectionalLight
 struct LightProperties
 {
     float4 CameraPos;
-    float Intensity;
-    float MaterialPower;
+    float4 FogColor;
     float PointLightsCount;
     float SpotLightsCount;
+    float FogStart;
+    float FogDistance;
 };
 
 struct PointLight
@@ -84,10 +85,6 @@ SamplerState ShadowSampler : register(s1);
 
 // 0.15f, 0.3f, 0.6f, 1.0f
 static float splitDistances[3] = { 37.5, 75, 140 };
-
-static bool fogEnable = false;
-static float fogStart = 35;
-static float fogDistance = 115 * 2;         //fogEnd - fogStart
 
 static float PI = 3.14159265359;
 
@@ -279,12 +276,11 @@ float4 main(PSInput input) : SV_Target
     float3 outputPixelColor = lightingResult + emissive.rgb;
     
     // Fog
-    if (fogEnable)
+    if (LightPropertiesCB.FogColor.w > 0.5f)
     {
-        float fogFactor = 1.0f - (cameraPixelDistance - fogStart) / fogDistance;    
+        float fogFactor = 1.0f - (cameraPixelDistance - LightPropertiesCB.FogStart) / LightPropertiesCB.FogDistance;
         fogFactor = clamp(fogFactor, 0.0f, 1.0f);
-        float3 fogColor = float3(0.5f, 0.5f, 0.5f);
-        outputPixelColor = fogFactor * outputPixelColor + (1.0 - fogFactor) * fogColor;
+        outputPixelColor = fogFactor * outputPixelColor + (1.0 - fogFactor) * LightPropertiesCB.FogColor.rgb;
     }
     
     // Result

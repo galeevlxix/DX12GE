@@ -1,6 +1,6 @@
 #include "../Application.h"
 #include "../CommandQueue.h"
-#include "LuaManager.h"
+#include "../DX12GE/Engine/Lua/LuaManager.h"
 #include "../Window.h"
 #include "../Game.h"
 
@@ -337,6 +337,9 @@ void Window::UpdateRenderTargetViews()
 
         rtvHandle.Offset(m_RTVDescriptorSize);
     }
+
+    device.Reset();
+    device = nullptr;
 }
 
 void Window::UpdateWindowText(std::wstring newText)

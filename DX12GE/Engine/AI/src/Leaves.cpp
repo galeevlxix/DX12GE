@@ -1,7 +1,7 @@
-﻿#include "../Leaves.h"
+﻿/*#include "../Leaves.h"
 using namespace DirectX::SimpleMath;
 
-Status MoveToTarget::update(float dt, Object3DEntity* owner, Blackboard& blackboard) {
+Status MoveToTarget::update(float dt, Object3DNode* owner, Blackboard& blackboard) {
     if (!target) return Status::FAILURE;
     Vector3 to = target->Transform.GetPosition();
     Vector3 from = owner->Transform.GetPosition();
@@ -18,7 +18,7 @@ Status MoveToTarget::update(float dt, Object3DEntity* owner, Blackboard& blackbo
     return Status::RUNNING;
 }
 
-Status MoveToSpawn::update(float dt, Object3DEntity* owner, Blackboard& blackboard) {
+Status MoveToSpawn::update(float dt, Object3DNode* owner, Blackboard& blackboard) {
     std::cout << "MoveToSpawn Action Triggered" << std::endl;
     Vector3 to = Vector3(-50.0f, 7.0f, 50.0f);
     Vector3 from = owner->Transform.GetPosition();
@@ -35,19 +35,19 @@ Status MoveToSpawn::update(float dt, Object3DEntity* owner, Blackboard& blackboa
     return Status::RUNNING;
 }
 
-Status DebugACtion::update(float dt, Object3DEntity* owner, Blackboard& blackboard) {
+Status DebugACtion::update(float dt, Object3DNode* owner, Blackboard& blackboard) {
     std::cout << "Debug Action Triggered" << std::endl;
     return Status::SUCCESS;
 }
 
-Status Wait::update(float dt, Object3DEntity* owner, Blackboard& blackboard)
+Status Wait::update(float dt, Object3DNode* owner, Blackboard& blackboard)
 {
     m_Elapsed += dt;
     if (m_Elapsed >= m_Duration) return Status::SUCCESS;
     return Status::RUNNING;
 }
 
-Status MoveToPoint::update(float dt, Object3DEntity* owner, Blackboard& blackboard)
+Status MoveToPoint::update(float dt, Object3DNode* owner, Blackboard& blackboard)
 {
     Vector3 from = owner->Transform.GetPosition();
     Vector3 dir = m_Target - from;
@@ -63,11 +63,11 @@ Status MoveToPoint::update(float dt, Object3DEntity* owner, Blackboard& blackboa
     return Status::RUNNING;
 }
 
-Status RandomPointMove::update(float dt, Object3DEntity* owner, Blackboard& blackboard)
+Status RandomPointMove::update(float dt, Object3DNode* owner, Blackboard& blackboard)
 {
     if (!m_PointGenerated) {
         Vector3 center = owner->Transform.GetPosition();
-        float angle = static_cast<float>(rand()) / RAND_MAX * 2 * XM_PI;
+        float angle = static_cast<float>(rand()) / RAND_MAX * 2 * DirectX::XM_PI;
         float dist = static_cast<float>(rand()) / RAND_MAX * m_Radius;
         m_RandomPoint = center + Vector3(dist * sin(angle), 0.0f, dist * cos(angle));
         m_PointGenerated = true;
@@ -86,3 +86,4 @@ Status RandomPointMove::update(float dt, Object3DEntity* owner, Blackboard& blac
     owner->Transform.SetRotation(0.0f, yaw, 0.0f);
     return Status::RUNNING;
 }
+*/

@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Real Engine\GameEngineDev\Lua\sol2\include\sol;D:\Real Engine\GameEngineDev\DX12GE\Engine;D:\Real Engine\GameEngineDev\Lua;D:\Real Engine\GameEngineDev\Lua\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Real Engine\GameEngineDev\Lua;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Real Engine\GameEngineDev\Lua\sol2\include\sol;D:\Real Engine\GameEngineDev\DX12GE\Engine;D:\Real Engine\GameEngineDev\Lua;D:\Real Engine\GameEngineDev\Lua\include;$(SolutionDir)\Engine;$(SolutionDir)\Engine\Lua;$(SolutionDir)\Engine\Lua\include;$(SolutionDir)\Engine\Lua\sol2\include\sol;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Engine\Lua;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>D:\Real Engine\GameEngineDev\Lua;$(IncludePath)</IncludePath>
@@ -111,14 +111,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Include;$(SolutionDir)DX12GE\Engine\Lua</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)Windows\lib\assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;DirectXTex.lib;lua54.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Real Engine\GameEngineDev\Lua;..\Windows\dll;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(SolutionDir)Windows\lib\assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;DirectXTex.lib;$(SolutionDir)DX12GE\Engine\Lua\lua54.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)DX12GE\Engine\Lua;$(SolutionDir)\Windows\dll;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,8 +139,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Lua\LuaManager.cpp" />
     <ClCompile Include="DX12GE.cpp" />
+    <ClCompile Include="Engine\AI\src\AIComponent.cpp" />
+    <ClCompile Include="Engine\AI\src\Behavior.cpp" />
+    <ClCompile Include="Engine\AI\src\BehaviorTree.cpp" />
+    <ClCompile Include="Engine\AI\src\BehaviorTreeBuilder.cpp" />
+    <ClCompile Include="Engine\AI\src\Blackboard.cpp" />
+    <ClCompile Include="Engine\AI\src\Composites.cpp" />
+    <ClCompile Include="Engine\AI\src\Decorators.cpp" />
+    <ClCompile Include="Engine\AI\src\Leaves.cpp" />
     <ClCompile Include="Engine\Base\src\Application.cpp" />
     <ClCompile Include="Engine\Base\src\CommandExecutor.cpp" />
     <ClCompile Include="Engine\Base\src\CommandQueue.cpp" />
@@ -150,6 +157,7 @@
     <ClCompile Include="Engine\Base\src\SceneJsonSerializer.cpp" />
     <ClCompile Include="Engine\Base\src\SelectionSystem.cpp" />
     <ClCompile Include="Engine\Base\src\SimpleMath.cpp" />
+    <ClCompile Include="Engine\Base\src\Singleton.cpp" />
     <ClCompile Include="Engine\Base\src\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Base\src\Window.cpp" />
     <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp" />
@@ -164,7 +172,6 @@
     <ClCompile Include="Engine\Graphics\src\LightManager.cpp" />
     <ClCompile Include="Engine\Graphics\src\MaterialEntity.cpp" />
     <ClCompile Include="Engine\Graphics\src\Mesh3DComponent.cpp" />
-    <ClCompile Include="Engine\Graphics\src\Object3DEntity.cpp" />
     <ClCompile Include="Engine\Graphics\src\Object3DComponent.cpp" />
     <ClCompile Include="Engine\Graphics\src\ParticleSystem.cpp" />
     <ClCompile Include="Engine\Graphics\src\ResourceStorage.cpp" />
@@ -177,7 +184,92 @@
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp" />
     <ClCompile Include="Engine\Graphics\src\TransformComponent.cpp" />
-    <ClCompile Include="Engine\MultiGpuGame.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\CameraNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\DirectionalLightNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\EnvironmentNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\Node3D.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\NodeGraphSystem.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\Object3DNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\ParticlesNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\PointLightNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\SpotLightNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\ThirdPersonPlayerNode.cpp" />
+    <ClCompile Include="Engine\Lua\LuaManager.cpp">
+      <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+      <BrowseInformation>false</BrowseInformation>
+      <BrowseInformationFile>x64\Debug\</BrowseInformationFile>
+      <CompileAs>Default</CompileAs>
+      <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <ErrorReporting>Prompt</ErrorReporting>
+      <ExpandAttributedSource>false</ExpandAttributedSource>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableASAN>false</EnableASAN>
+      <EnableFuzzer>false</EnableFuzzer>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <EnableVectorLength>NotSet</EnableVectorLength>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <GenerateModuleDependencies>false</GenerateModuleDependencies>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ModuleDependenciesFile>x64\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>x64\Debug\</ModuleOutputFile>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <ObjectFileName>x64\Debug\</ObjectFileName>
+      <CallingConvention>Cdecl</CallingConvention>
+      <ProgramDataBaseFileName>x64\Debug\vc143.pdb</ProgramDataBaseFileName>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>x64\Debug\DX12GE.pch</PrecompiledHeaderOutputFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessKeepComments>false</PreprocessKeepComments>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+      <ShowIncludes>false</ShowIncludes>
+      <SourceDependenciesFile>x64\Debug\</SourceDependenciesFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <SpectreMitigation>false</SpectreMitigation>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <TrackerLogDirectory>x64\Debug\DX12GE.tlog\</TrackerLogDirectory>
+      <TranslateIncludes>false</TranslateIncludes>
+      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <XMLDocumentationFileName>x64\Debug\</XMLDocumentationFileName>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <IntelJCCErratum>false</IntelJCCErratum>
+      <BuildStlModules>false</BuildStlModules>
+      <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+      <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+      <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+      <PreprocessorDefinitions>HAS_DIRECTXTEX;_DEBUG;_CONSOLE;_UNICODE;UNICODE;</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\Code\GameEngineDev\packages\directxtex_desktop_2019.2024.10.29.1\build\native\..\..\include;..\Include;D:\Code\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
+      <LinkCompiled>true</LinkCompiled>
+    </ClCompile>
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\LightPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\MergingPipeline.cpp" />
@@ -191,10 +283,16 @@
     <ClCompile Include="Engine\Pipelines\src\TexturedPipeline.cpp" />
     <ClCompile Include="Engine\SingleGpuGame.cpp" />
     <ClCompile Include="Game\GameSample.cpp" />
-    <ClCompile Include="Game\ThirdPersonPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Lua\LuaManager.h" />
+    <ClInclude Include="Engine\AI\AIComponent.h" />
+    <ClInclude Include="Engine\AI\Behavior.h" />
+    <ClInclude Include="Engine\AI\BehaviorTree.h" />
+    <ClInclude Include="Engine\AI\BehaviorTreeBuilder.h" />
+    <ClInclude Include="Engine\AI\Blackboard.h" />
+    <ClInclude Include="Engine\AI\Composites.h" />
+    <ClInclude Include="Engine\AI\Decorators.h" />
+    <ClInclude Include="Engine\AI\Leaves.h" />
     <ClInclude Include="Engine\Base\Application.h" />
     <ClInclude Include="Engine\Base\CollisionBox.h" />
     <ClInclude Include="Engine\Base\CommandExecutor.h" />
@@ -212,6 +310,7 @@
     <ClInclude Include="Engine\Base\resource.h" />
     <ClInclude Include="Engine\Base\SelectionSystem.h" />
     <ClInclude Include="Engine\Base\SimpleMath.h" />
+    <ClInclude Include="Engine\Base\Singleton.h" />
     <ClInclude Include="Engine\Base\UploadBuffer.h" />
     <ClInclude Include="Engine\Base\Window.h" />
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h" />
@@ -223,10 +322,10 @@
     <ClInclude Include="Engine\Graphics\DepthBuffer.h" />
     <ClInclude Include="Engine\Graphics\DescriptorHeaps.h" />
     <ClInclude Include="Engine\Graphics\GBuffer.h" />
+    <ClInclude Include="Engine\Graphics\GraphicsComponents.h" />
     <ClInclude Include="Engine\Graphics\LightManager.h" />
     <ClInclude Include="Engine\Graphics\MaterialEntity.h" />
     <ClInclude Include="Engine\Graphics\Mesh3DComponent.h" />
-    <ClInclude Include="Engine\Graphics\Object3DEntity.h" />
     <ClInclude Include="Engine\Graphics\Object3DComponent.h" />
     <ClInclude Include="Engine\Graphics\ParticleSystem.h" />
     <ClInclude Include="Engine\Graphics\ResourceStorage.h" />
@@ -240,7 +339,21 @@
     <ClInclude Include="Engine\Graphics\Texture3D.h" />
     <ClInclude Include="Engine\Graphics\TransformComponent.h" />
     <ClInclude Include="Engine\Graphics\VertexStructures.h" />
-    <ClInclude Include="Engine\MultiGpuGame.h" />
+    <ClInclude Include="Engine\NodeGraph\CameraNode.h" />
+    <ClInclude Include="Engine\NodeGraph\DirectionalLightNode.h" />
+    <ClInclude Include="Engine\NodeGraph\EnvironmentNode.h" />
+    <ClInclude Include="Engine\NodeGraph\Node3D.h" />
+    <ClInclude Include="Engine\NodeGraph\NodeGraphSystem.h" />
+    <ClInclude Include="Engine\NodeGraph\Object3DNode.h" />
+    <ClInclude Include="Engine\NodeGraph\ParticlesNode.h" />
+    <ClInclude Include="Engine\NodeGraph\PointLightNode.h" />
+    <ClInclude Include="Engine\NodeGraph\SpotLightNode.h" />
+    <ClInclude Include="Engine\NodeGraph\ThirdPersonPlayerNode.h" />
+    <ClInclude Include="Engine\Lua\LuaManager.h" />
+    <ClInclude Include="Engine\Lua\include\lualib.h" />
+    <ClInclude Include="Engine\Lua\include\lua.h" />
+    <ClInclude Include="Engine\Lua\include\lauxlib.h" />
+    <ClInclude Include="Engine\Lua\include\luaconf.h" />
     <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\LightPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\MergingPipeline.h" />
@@ -254,7 +367,6 @@
     <ClInclude Include="Engine\Pipelines\TexturedPipeline.h" />
     <ClInclude Include="Engine\SingleGpuGame.h" />
     <ClInclude Include="Game\GameSample.h" />
-    <ClInclude Include="Game\ThirdPersonPlayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc" />
@@ -394,10 +506,18 @@
     <None Include="..\README.md" />
     <None Include="Engine\Base\SimpleMath.inl" />
     <None Include="packages.config" />
+    <None Include="Resources\scene lite.json" />
     <None Include="Resources\scene.json" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\Lua\scripts\TestScript.lua" />
+    <Text Include="Engine\Lua\scripts\TestScript.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Engine\Lua\LuaBuild.bat" />
+    <Content Include="Engine\Lua\scripts\Core.lua" />
+    <Content Include="Engine\Lua\scripts\Player.lua" />
+    <Content Include="Engine\Lua\scripts\TestScript2.lua" />
+    <Content Include="package.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

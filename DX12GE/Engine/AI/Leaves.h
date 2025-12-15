@@ -2,21 +2,21 @@
 #include <iostream>
 
 #include "Behavior.h"
-#include "../Graphics/Object3DEntity.h"
+#include "../NodeGraph/Object3DNode.h"
 using namespace DirectX::SimpleMath;
 
 class MoveToTarget : public Behavior {
-    Object3DEntity* target = nullptr;
+    Object3DNode* target = nullptr;
     float speed = 15.f;
     float stopDist = 5.f;
 public:
-    MoveToTarget(Object3DEntity* t, float s = 7.5f, float stop = 5.f)
+    MoveToTarget(Object3DNode* t, float s = 7.5f, float stop = 5.f)
         : target(t), speed(s), stopDist(stop) {}
     BehaviorPtr Clone() const override {
         return std::make_unique<MoveToTarget>(target, speed, stopDist);
     }
 protected:
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override;
 };
 
 class MoveToSpawn : public Behavior {
@@ -29,7 +29,7 @@ public:
         return std::make_unique<MoveToSpawn>(speed, stopDist);
     }
 protected:
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override;
 };
 
 class DebugACtion : public Behavior {
@@ -39,14 +39,14 @@ public:
         return std::make_unique<DebugACtion>();
     }
 protected:
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override;
 };
 
 class IsTargetVisible : public Condition {
 public:
-    Object3DEntity* target = nullptr;
-    IsTargetVisible(Object3DEntity* t, bool negate = false, bool monitor = false)
-        : target(t), Condition([this](Object3DEntity* owner) {
+    Object3DNode* target = nullptr;
+    IsTargetVisible(Object3DNode* t, bool negate = false, bool monitor = false)
+        : target(t), Condition([this](Object3DNode* owner) {
             if (!target) return false;
             Vector3 to = target->Transform.GetPosition();
             Vector3 from = owner->Transform.GetPosition();
@@ -72,7 +72,7 @@ protected:
         m_Elapsed = 0.0f;
     }
 
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override;
 
     BehaviorPtr Clone() const override {
         return std::make_unique<Wait>(m_Duration);
@@ -95,7 +95,7 @@ public:
         : m_Target(point), m_Speed(speed), m_StopDist(stop) {}
 
 protected:
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override;
 
     BehaviorPtr Clone() const override {
         return std::make_unique<MoveToPoint>(m_Target, m_Speed, m_StopDist);
@@ -119,7 +119,7 @@ protected:
         m_PointGenerated = false;
     }
 
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override;
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override;
 
     BehaviorPtr Clone() const override {
         return std::make_unique<RandomPointMove>(m_Radius, m_Speed, m_StopDist);
