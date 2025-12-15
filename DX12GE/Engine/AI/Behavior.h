@@ -5,14 +5,14 @@
 #include <DirectXMath.h>
 #include "Blackboard.h"
 
-class Object3DEntity;
+class Object3DNode;
 
 enum class Status { INVALID = -1, SUCCESS, FAILURE, RUNNING, ABORTED };
 
 class Behavior {
 public:
     virtual ~Behavior() = default;
-    Status tick(float dt, Object3DEntity* owner, Blackboard& blackboard) {
+    Status tick(float dt, Object3DNode* owner, Blackboard& blackboard) {
         if (m_Status == Status::INVALID) {
             onInitialize();
         }
@@ -31,7 +31,7 @@ public:
     virtual std::unique_ptr<Behavior> Clone() const = 0;
 protected:
     virtual void onInitialize() {}
-    virtual Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) = 0;
+    virtual Status update(float dt, Object3DNode* owner, Blackboard& blackboard) = 0;
     virtual void onTerminate(Status status) {}
 };
 
@@ -39,11 +39,11 @@ using BehaviorPtr = std::unique_ptr<Behavior>;
 
 class Condition : public Behavior {
 protected:
-    std::function<bool(Object3DEntity*)> m_Check;  // Callback for condition test
+    std::function<bool(Object3DNode*)> m_Check;  // Callback for condition test
     bool m_Negate = false;
     bool m_Monitor = false;
 
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override {
         bool result = m_Check(owner);
         if (m_Negate) result = !result;
 
@@ -55,7 +55,7 @@ protected:
     }
 
 public:
-    Condition(std::function<bool(Object3DEntity*)> check, bool negate = false, bool monitor = false)
+    Condition(std::function<bool(Object3DNode*)> check, bool negate = false, bool monitor = false)
         : m_Check(check), m_Negate(negate), m_Monitor(monitor) {}
 
     BehaviorPtr Clone() const override {

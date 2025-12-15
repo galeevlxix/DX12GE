@@ -36,7 +36,7 @@ protected:
         m_CurrentChildIndex = 0;
     }
 
-    virtual Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) {
+    virtual Status update(float dt, Object3DNode* owner, Blackboard& blackboard) {
         while (m_CurrentChildIndex < m_Children.size()) {
             Status s = m_Children[m_CurrentChildIndex]->tick(dt, owner, blackboard);
             if (s != Status::SUCCESS) {
@@ -77,7 +77,7 @@ protected:
         m_CurrentChildIndex = 0;
     }
 
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override {
         while (m_CurrentChildIndex < m_Children.size()) {
             Status s = m_Children[m_CurrentChildIndex]->tick(dt, owner, blackboard);
             if (s != Status::FAILURE) return s;
@@ -110,7 +110,7 @@ class ActiveSelector : public Selector {
 protected:
     size_t m_PreviousChildIndex = 0;  // To track previous for abort
 
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override {
         size_t prevIndex = m_CurrentChildIndex;
 
         // Reset to start from first child each tick
@@ -146,7 +146,7 @@ protected:
 
     void onInitialize() override {}
 
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override {
         size_t successCount = 0, failureCount = 0;
         size_t size = m_Children.size();
         for (size_t i = 0; i < size; ++i) {
@@ -213,7 +213,7 @@ public:
         }
     }
 
-    Status update(float dt, Object3DEntity* owner, Blackboard& blackboard) override {
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override {
         size_t successCount = 0, failureCount = 0;
         size_t size = m_Children.size();
         for (size_t i = 0; i < size; ++i) {

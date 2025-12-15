@@ -10,7 +10,7 @@ public:
     BehaviorTree* Clone() const {
         return new BehaviorTree(root->Clone());
     }
-    void tick(float dt, Object3DEntity* owner) {
+    void tick(float dt, Object3DNode* owner) {
         if (root) root->tick(dt, owner, *blackboard);
     }
 };
