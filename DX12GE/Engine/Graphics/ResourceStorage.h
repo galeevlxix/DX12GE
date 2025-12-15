@@ -5,6 +5,7 @@
 class ResourceStorage
 {
 public:
+
 	static uint32_t Find(const std::string& name);
 	static uint32_t AddObject3D(const std::string& name);
 	static uint32_t AddTexture(const std::string& name);

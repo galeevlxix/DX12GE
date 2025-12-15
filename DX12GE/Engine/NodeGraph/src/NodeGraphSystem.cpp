@@ -5,6 +5,9 @@ NodeGraphSystem::NodeGraphSystem()
 {
 	m_SceneRootNode = new Node3D();
 	m_SceneRootNode->Rename("root");
+
+	m_ActiveEnvironment = nullptr;
+	m_ActiveDirectionalLight = nullptr;
 }
 
 void NodeGraphSystem::Destroy()
@@ -14,50 +17,113 @@ void NodeGraphSystem::Destroy()
 	m_SceneRootNode = nullptr;	
 
 	m_All3DObjects.clear();
+	m_AllPointLights.clear();
+	m_AllSpotLights.clear();
+
+	m_ActiveEnvironment = nullptr;
+	m_ActiveDirectionalLight = nullptr;
 }
 
-void NodeGraphSystem::OnNodeAdded(Node3D* node)
+bool NodeGraphSystem::OnNodeAdded(Node3D* node)
 {
 	if (node->IsInsideTree())
 	{
-		Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node);
-		if (obj3D)
+		const std::string nodePath = node->GetNodePath();
+
+		if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
 		{
-			m_All3DObjects[obj3D->GetNodePath()] = obj3D;
+			m_All3DObjects[nodePath] = obj3D;
+
 		}
+		else if (EnvironmentNode* env = dynamic_cast<EnvironmentNode*>(node))
+		{
+			if (!m_ActiveEnvironment)
+			{
+				m_ActiveEnvironment = env;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (DirectionalLightNode* dirLight = dynamic_cast<DirectionalLightNode*>(node))
+		{
+			if (!m_ActiveDirectionalLight)
+			{
+				m_ActiveDirectionalLight = dirLight;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (PointLightNode* pLight = dynamic_cast<PointLightNode*>(node))
+		{
+			m_AllPointLights[nodePath] = pLight;
+		}
+		else if (SpotLightNode* sLight = dynamic_cast<SpotLightNode*>(node))
+		{
+			m_AllSpotLights[nodePath] = sLight;
+		}			
 
 		for (Node3D* child : node->GetChildren())
 		{
-			OnNodeAdded(child);
+			bool result = OnNodeAdded(child);
+			if (!result) 
+				return false;
 		}
 	}
+
+	return true;
 }
 
 void NodeGraphSystem::OnNodeRemoved(Node3D* node)
 {
 	if (node->IsInsideTree())
 	{
-		auto obj = m_All3DObjects.find(node->GetNodePath());
-		if (obj != m_All3DObjects.end())
+		const std::string nodePath = node->GetNodePath();
+
+		if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
 		{
-			m_All3DObjects.erase(obj->first);
+			if (m_All3DObjects.contains(nodePath))
+			{
+				m_All3DObjects.erase(nodePath);
+			}
 		}
+		else if (EnvironmentNode* env = dynamic_cast<EnvironmentNode*>(node))
+		{
+			if (env == m_ActiveEnvironment)
+			{
+				m_ActiveEnvironment = nullptr;
+			}
+		}
+		else if (DirectionalLightNode* dirLight = dynamic_cast<DirectionalLightNode*>(node))
+		{
+			if (dirLight == m_ActiveDirectionalLight)
+			{
+				m_ActiveDirectionalLight = nullptr;
+			}
+		}
+		else if (PointLightNode* pLight = dynamic_cast<PointLightNode*>(node))
+		{
+			if (m_AllPointLights.contains(nodePath))
+			{
+				m_AllPointLights.erase(nodePath);
+			}
+		}
+		else if (SpotLightNode* sLight = dynamic_cast<SpotLightNode*>(node))
+		{
+			if (m_AllSpotLights.contains(nodePath))
+			{
+				m_AllSpotLights.erase(nodePath);
+			}
+		}			
 
 		for (Node3D* child : node->GetChildren())
 		{
 			OnNodeRemoved(child);
 		}
 	}
-}
-
-const std::vector<Node3D*> NodeGraphSystem::GetAllNodes()
-{
-	return GetNodesRecursive(m_SceneRootNode);
-}
-
-const std::map<std::string, Object3DNode*>& NodeGraphSystem::GetAll3DObjects()
-{
-	return m_All3DObjects;
 }
 
 Node3D* NodeGraphSystem::GetNodeByPath(const std::string& nodePath)
@@ -112,6 +178,42 @@ const std::vector<Node3D*> NodeGraphSystem::GetNodesRecursive(Node3D* current)
 		}
 	}
 	return output;
+}
+
+void NodeGraphSystem::SetActiveEnvironmentExplicitly(EnvironmentNode* env)
+{
+	if (env->IsInsideTree())
+	{
+		m_ActiveEnvironment = env;
+	}
+}
+
+void NodeGraphSystem::SetActiveDirectionalLightExplicitly(DirectionalLightNode* dirLight)
+{
+	if (dirLight->IsInsideTree())
+	{
+		m_ActiveDirectionalLight = dirLight;
+	}
+}
+
+const std::vector<PointLightComponent> NodeGraphSystem::GetActivePointLightComponents()
+{
+	vector<PointLightComponent> result;
+	for (auto pLight : m_AllPointLights)
+	{
+		result.push_back(pLight.second->LightData);
+	}
+	return result;
+}
+
+const std::vector<SpotLightComponent> NodeGraphSystem::GetActiveSpotLightComponents()
+{
+	vector<SpotLightComponent> result;
+	for (auto sLight : m_AllSpotLights)
+	{
+		result.push_back(sLight.second->LightData);
+	}
+	return result;
 }
 
 void NodeGraphSystem::OnKeyPressed(KeyEventArgs& e) 

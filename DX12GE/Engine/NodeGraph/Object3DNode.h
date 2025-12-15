@@ -31,7 +31,7 @@ public:
 	const std::string GetObjectFilePath();
 	const CollisionBox& GetCollisionBox();
 
-protected:
+private:
 	// Возвращает true, если в дереве существует узел с таким же id компонента
 	// Если root определен, обход дерева начинается с него
 	bool TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current = nullptr);

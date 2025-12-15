@@ -145,7 +145,7 @@ const Vector3& TransformComponent::GetRotation()
     return m_Rotation;
 }
 
-const Vector3& TransformComponent::GetRotationDegrees()
+const Vector3 TransformComponent::GetRotationDegrees()
 {
     return Vector3(ToDegrees(m_Rotation.x), ToDegrees(m_Rotation.y), ToDegrees(m_Rotation.z));
 }

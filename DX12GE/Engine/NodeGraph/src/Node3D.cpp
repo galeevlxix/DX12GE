@@ -3,8 +3,8 @@
 Node3D::Node3D() : m_Parrent(nullptr), m_ComponentId(-1)
 {
     m_WorldMatrixCache = DirectX::XMMATRIX();
-    Rename("Node3D");
     Transform.SetDefault();
+    Rename("Node3D");
 }
 
 const std::string Node3D::GetNodePath()
@@ -91,7 +91,11 @@ void Node3D::Rename(const std::string& name)
             newName = name + " " + std::to_string(number);
             number++;
         }
-        m_Parrent->RenameChild(m_Name, newName);
+
+        if (m_Parrent->GetChild(m_Name) == this)
+        {
+            m_Parrent->RenameChild(m_Name, newName);
+        }        
     } 
     m_Name = newName;
 }
@@ -182,13 +186,24 @@ bool Node3D::AddChild(Node3D* node)
 {
     if (!node || node == this || node->m_Parrent) return false;
 
+	const std::string name = node->GetName();
+
     node->m_Parrent = this;
-    if (HasChild(node->GetName()))
+    if (HasChild(name))
     {
-        node->Rename(node->GetName());
+        node->Rename(name);
     }
     m_Children[node->GetName()] = node;
-    Singleton::GetNodeGraph()->OnNodeAdded(node);
+
+    bool result = Singleton::GetNodeGraph()->OnNodeAdded(node);
+    if (!result)
+    {
+        m_Children.erase(node->GetName());
+        node->m_Parrent = nullptr;
+		node->Rename(name);
+        return false;
+	}
+
     return true;
 }
 
@@ -224,27 +239,30 @@ bool Node3D::Move(Node3D* newParrent)
         m_Parrent->RemoveChild(m_Name);
         m_Parrent = nullptr;
     }
-    newParrent->AddChild(this);
-    return true;
+    return newParrent->AddChild(this);
 }
 
-Node3D* Node3D::Clone(Node3D* newParrent, bool cloneChildrenRecursive)
+void Node3D::Clone(Node3D* cloneNode, Node3D* parrent, bool cloneChildrenRecursive)
 {
-    Node3D* newNode = new Node3D();
-
-    newNode->Rename(m_Name);
-
-    newNode->Transform.SetPosition(Transform.GetPosition());
-    newNode->Transform.SetRotation(Transform.GetRotation());
-    newNode->Transform.SetScale(Transform.GetScale());
-
-    newNode->m_ComponentId = m_ComponentId;
-
-    if (newParrent)
+    if (!cloneNode)
     {
-        if (!newParrent->AddChild(newNode))
+        cloneNode = new Node3D();
+    }
+
+    cloneNode->Rename(m_Name);
+
+    cloneNode->Transform.SetPosition(Transform.GetPosition());
+    cloneNode->Transform.SetRotation(Transform.GetRotation());
+    cloneNode->Transform.SetScale(Transform.GetScale());
+
+    cloneNode->m_ComponentId = m_ComponentId;
+
+    if (parrent)
+    {
+        if (!parrent->AddChild(cloneNode))
         {
-            return nullptr;
+            cloneNode = nullptr;
+            return;
         }
     }
 
@@ -252,11 +270,10 @@ Node3D* Node3D::Clone(Node3D* newParrent, bool cloneChildrenRecursive)
     {
         for (auto child : m_Children)
         {
-            newNode->AddChild(child.second->Clone());
+            Node3D* cloneChild = nullptr;
+            child.second->Clone(cloneChild, cloneNode, cloneChildrenRecursive);
         }
     }
-
-    return newNode;
 }
 
 void Node3D::OnKeyPressed(KeyEventArgs& e)

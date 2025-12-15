@@ -25,6 +25,22 @@ struct NodeData
 	Vector3 pos;
 	Vector3 rot;
 	Vector3 scl;
+
+	// lights
+	Vector3 lightColor;
+	float lightIntensity;
+	Vector3 lightAttenuation;
+	float lightCutoff;
+
+	//environment
+	bool envFogEnabled;
+	Vector3 envFogColor;
+	float envFogStart;
+	float envFogDistance;
+
+	float envSSRMaxDistance;
+	float envSSRStepLength;
+	float envSSRThickness;
 };
 
 static const ParsedNodePath ParseNodePath(const std::string& nodePath)
@@ -54,6 +70,8 @@ void SceneJsonSerializer::Save()
 
 	for (auto obj : Singleton::GetNodeGraph()->GetAllNodes())
 	{
+		if (obj == nullptr) continue;
+
 		json entity;
 
 		entity["node_path"] = obj->GetNodePath();
@@ -63,10 +81,62 @@ void SceneJsonSerializer::Save()
 		{
 			entity["file_path"] = obj3D->GetObjectFilePath();
 		}
-		else
+		else if (EnvironmentNode* env = dynamic_cast<EnvironmentNode*>(obj))
 		{
-			entity["file_path"] = "";
-		}	
+			auto color = env->AmbientLightColor;
+			entity["light_color_r"] = color.x;
+			entity["light_color_g"] = color.y;
+			entity["light_color_b"] = color.z;
+			entity["light_intensity"] = env->AmbientLightIntensity;
+
+			entity["fog_enabled"] = env->FogEnabled;
+			auto fogColor = env->FogColor;
+			entity["fog_color_r"] = fogColor.x;
+			entity["fog_color_g"] = fogColor.y;
+			entity["fog_color_b"] = fogColor.z;
+			entity["fog_start"] = env->FogStart;
+			entity["fog_distance"] = env->FogDistance;
+
+			entity["ssr_max_distance"] = env->SSRMaxDistance;
+			entity["ssr_step_length"] = env->SSRStepLength;
+			entity["ssr_thickness"] = env->SSRThickness;
+		}
+		else if (DirectionalLightNode* dLight = dynamic_cast<DirectionalLightNode*>(obj))
+		{
+			auto color = dLight->Color;
+			entity["light_color_r"] = color.x;
+			entity["light_color_g"] = color.y;
+			entity["light_color_b"] = color.z;
+			entity["light_intensity"] = dLight->Intensity;
+		}
+		else if (PointLightNode* pLight = dynamic_cast<PointLightNode*>(obj))
+		{
+			auto color = pLight->LightData.BaseLightProperties.Color;
+			entity["light_color_r"] = color.x;
+			entity["light_color_g"] = color.y;
+			entity["light_color_b"] = color.z;
+			entity["light_intensity"] = pLight->LightData.BaseLightProperties.Intensity;
+
+			auto atten = pLight->LightData.AttenuationProperties;
+			entity["light_atten_constant"] = atten.Constant;
+			entity["light_atten_linear"] = atten.Linear;
+			entity["light_atten_exp"] = atten.Exp;
+		}
+		else if (SpotLightNode* sLight = dynamic_cast<SpotLightNode*>(obj))
+		{
+			auto color = sLight->LightData.PointLightProperties.BaseLightProperties.Color;
+			entity["light_color_r"] = color.x;
+			entity["light_color_g"] = color.y;
+			entity["light_color_b"] = color.z;
+			entity["light_intensity"] = sLight->LightData.PointLightProperties.BaseLightProperties.Intensity;
+
+			auto atten = sLight->LightData.PointLightProperties.AttenuationProperties;
+			entity["light_atten_constant"] = atten.Constant;
+			entity["light_atten_linear"] = atten.Linear;
+			entity["light_atten_exp"] = atten.Exp;
+
+			entity["light_cutoff"] = sLight->LightData.Cutoff;
+		}
 
 		auto pos = obj->Transform.GetPosition();
 		auto rot = obj->Transform.GetRotation();
@@ -106,10 +176,70 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		NodeData newNode;
 		newNode.nodePath = it->at("node_path");
 		newNode.type = it->at("type");
-		newNode.filePath = it->at("file_path");
+
+		newNode.filePath = it->contains("file_path") ? it->at("file_path") : "";
+
 		newNode.pos = Vector3(it->at("posX"), it->at("posY"), it->at("posZ"));
 		newNode.rot = Vector3(it->at("rotX"), it->at("rotY"), it->at("rotZ"));
 		newNode.scl = Vector3(it->at("sclX"), it->at("sclY"), it->at("sclZ"));
+
+		// lights
+		if (it->contains("light_color_r") && it->contains("light_color_g") && it->contains("light_color_b"))
+		{
+			newNode.lightColor = Vector3(it->at("light_color_r"), it->at("light_color_g"), it->at("light_color_b"));
+		}
+		
+		if (it->contains("light_intensity"))
+		{
+			newNode.lightIntensity = it->at("light_intensity");
+		}
+		
+		if (it->contains("light_atten_constant") && it->contains("light_atten_linear") && it->contains("light_atten_exp"))
+		{
+			newNode.lightAttenuation = Vector3(it->at("light_atten_constant"), it->at("light_atten_linear"), it->at("light_atten_exp"));
+		}
+
+		if (it->contains("light_cutoff"))
+		{
+			newNode.lightCutoff = it->at("light_cutoff");
+		}
+		
+		//environment
+		if (it->contains("fog_enabled"))
+		{
+			newNode.envFogEnabled = it->at("fog_enabled");
+		}
+
+		if (it->contains("fog_start"))
+		{
+			newNode.envFogStart = it->at("fog_start");
+		}
+
+		if (it->contains("fog_distance"))
+		{
+			newNode.envFogDistance = it->at("fog_distance");
+		}
+
+		if (it->contains("fog_color_r") && it->contains("fog_color_g") && it->contains("fog_color_b"))
+		{
+			newNode.envFogColor = Vector3(it->at("fog_color_r"), it->at("fog_color_g"), it->at("fog_color_b"));
+		}
+
+		if (it->contains("ssr_max_distance"))
+		{
+			newNode.envSSRMaxDistance = it->at("ssr_max_distance");
+		}
+
+		if (it->contains("ssr_step_length"))
+		{
+			newNode.envSSRStepLength = it->at("ssr_step_length");
+		}
+
+		if (it->contains("ssr_thickness"))
+		{
+			newNode.envSSRThickness = it->at("ssr_thickness");
+		}
+
 		nodesData.push_back(newNode);
 	}
 
@@ -154,6 +284,50 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			std::string modelPath = nodeData.filePath;
 			obj3D->Create(commandList, modelPath);
 			node = obj3D;
+		}
+		else if (nodeData.type == "EnvironmentNode")
+		{
+			EnvironmentNode* env = new EnvironmentNode();
+			env->AmbientLightColor = nodeData.lightColor;
+			env->AmbientLightIntensity = nodeData.lightIntensity;
+			env->FogColor = nodeData.envFogColor;
+			env->FogEnabled = nodeData.envFogEnabled;
+			env->FogStart = nodeData.envFogStart;
+			env->FogDistance = nodeData.envFogDistance;
+
+			env->SSRMaxDistance = nodeData.envSSRMaxDistance;
+			env->SSRStepLength = nodeData.envSSRStepLength;
+			env->SSRThickness = nodeData.envSSRThickness;
+
+			node = env;
+		}
+		else if (nodeData.type == "DirectionalLightNode")
+		{
+			DirectionalLightNode* dLight = new DirectionalLightNode();
+			dLight->Color = nodeData.lightColor;
+			dLight->Intensity = nodeData.lightIntensity;
+			node = dLight;
+		}
+		else if (nodeData.type == "PointLightNode")
+		{
+			PointLightNode* pLight = new PointLightNode();
+			pLight->LightData.BaseLightProperties.Color = nodeData.lightColor;
+			pLight->LightData.BaseLightProperties.Intensity = nodeData.lightIntensity;
+			pLight->LightData.AttenuationProperties.Constant = nodeData.lightAttenuation.x;
+			pLight->LightData.AttenuationProperties.Linear = nodeData.lightAttenuation.y;
+			pLight->LightData.AttenuationProperties.Exp = nodeData.lightAttenuation.z;
+			node = pLight;
+		}
+		else if (nodeData.type == "SpotLightNode")
+		{
+			SpotLightNode* sLight = new SpotLightNode();
+			sLight->LightData.PointLightProperties.BaseLightProperties.Color = nodeData.lightColor;
+			sLight->LightData.PointLightProperties.BaseLightProperties.Intensity = nodeData.lightIntensity;
+			sLight->LightData.PointLightProperties.AttenuationProperties.Constant = nodeData.lightAttenuation.x;
+			sLight->LightData.PointLightProperties.AttenuationProperties.Linear = nodeData.lightAttenuation.y;
+			sLight->LightData.PointLightProperties.AttenuationProperties.Exp = nodeData.lightAttenuation.z;
+			sLight->LightData.Cutoff = nodeData.lightCutoff;
+			node = sLight;
 		}
 		else
 		{

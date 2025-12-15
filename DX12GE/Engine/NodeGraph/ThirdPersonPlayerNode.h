@@ -20,7 +20,7 @@ private:
 	int m_prevY = 0;
 	int m_dx = 0;
 	int m_dy = 0;
-	float m_FlyRadius = 15.0f;
+	float m_FlyRadius = 5.0f;
 
 	Camera* m_Camera;
 

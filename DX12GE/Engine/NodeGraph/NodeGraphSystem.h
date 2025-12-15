@@ -2,18 +2,21 @@
 
 #include "Object3DNode.h"
 #include "ThirdPersonPlayerNode.h"
-#include "ParticlesNode.h"
 #include "EnvironmentNode.h"
 #include "DirectionalLightNode.h"
 #include "PointLightNode.h"
 #include "SpotLightNode.h"
+#include "ParticlesNode.h"
 #include "CameraNode.h"
+
+#include "../Graphics/GraphicsComponents.h"
 
 #include <vector> 
 
 class NodeGraphSystem
 {
 	Node3D* m_SceneRootNode;
+
 	std::map<std::string, Object3DNode*> m_All3DObjects;
 
 public:
@@ -23,7 +26,7 @@ public:
 	Node3D* GetRoot() { return m_SceneRootNode; }
 	void Destroy();
 
-	void OnNodeAdded(Node3D* node);
+	bool OnNodeAdded(Node3D* node);
 	void OnNodeRemoved(Node3D* node);
 
 	void OnKeyPressed(KeyEventArgs& e);
@@ -34,8 +37,11 @@ public:
 	void OnMouseButtonReleased(MouseButtonEventArgs& e) { m_SceneRootNode->OnMouseButtonReleased(e); }
 	void OnResize(ResizeEventArgs& e) { m_SceneRootNode->OnWindowResize(e); }
 
-	const std::vector<Node3D*> GetAllNodes();
-	const std::map<std::string, Object3DNode*>& GetAll3DObjects();
+	// Возвращает все узлы сцены в виде массива
+	const std::vector<Node3D*> GetAllNodes() { return GetNodesRecursive(m_SceneRootNode); }
+
+	// Возвращает все 3Д объекты в сцене в виде словаря (путь к узлу -> указатель на узел)
+	const std::map<std::string, Object3DNode*>& GetAll3DObjects() { return m_All3DObjects; }
 
 	Node3D* GetNodeByPath(const std::string& nodePath);
 
@@ -44,4 +50,26 @@ public:
 private:
 	
 	const std::vector<Node3D*> GetNodesRecursive(Node3D* current);
+
+private:
+
+	EnvironmentNode* m_ActiveEnvironment;
+	DirectionalLightNode* m_ActiveDirectionalLight;
+
+	std::map<std::string, PointLightNode*> m_AllPointLights;
+	std::map<std::string, SpotLightNode*> m_AllSpotLights;
+
+public:
+
+	void SetActiveEnvironmentExplicitly(EnvironmentNode* env);
+	void SetActiveDirectionalLightExplicitly(DirectionalLightNode* dirLight);
+
+	EnvironmentNode* GetActiveEnvironment() { return m_ActiveEnvironment; }
+	DirectionalLightNode* GetActiveDirectionalLight() { return m_ActiveDirectionalLight; }
+
+	const std::vector<PointLightComponent> GetActivePointLightComponents();
+	const std::vector<SpotLightComponent> GetActiveSpotLightComponents();
+
+	const size_t GetPointLightsCount() { return m_AllPointLights.size(); }
+	const size_t GetSpotLightsCount() { return m_AllSpotLights.size(); }
 };

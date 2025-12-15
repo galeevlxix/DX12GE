@@ -23,7 +23,7 @@ public:
 
 	virtual const std::string GetType() { return "Node3D"; }
 
-	// Возвращает путь узла в дереве сцены от самого дальнего родителя без родителя до данного узла
+	// Возвращает путь узла в дереве сцены от самого дальнего родителя до данного узла
 	const std::string GetNodePath();
 
 	// Вызывается при создании узла
@@ -34,7 +34,7 @@ public:
 
 	// Уничтожает данный узел и всех потомков узла
 	// Узел также удаляется из списка потомков своего родителя
-	// При keepComponent = false из памяти также удаляется компонент с данными, если в дереве сцены нет других узлов, использующих этот компонент (распространяется на потомков)
+	// При keepComponent = false из памяти также удаляется компонент с данными, если в дереве сцены нет других узлов, использующих этот компонент (keepComponent распространяется на потомков)
 	virtual void Destroy(bool keepComponent = true);
     
 	const DirectX::XMMATRIX& GetWorldMatrix();
@@ -97,15 +97,17 @@ public:
 	// Возвращает true, если перемещение прошло успешно
 	bool Move(Node3D* newParrent);
 
-	// Клонирует данный узел, создавая новый с теми же данными и параметрами
-	// Если newParrent определен, новый узел добавится в узел этого родителя
+	// Клонирует данный узел, копируя данные и параметры в cloneNode
+	// Пример использования:
+	//		Node3D* newNode;
+	//		oldNode->Clone(newNode, someParrent);
+	// Если parrent определен, новый узел добавится в узел этого родителя
 	// Если cloneChildrenRecursive равен true, все потомки также склонируются
 	// Возвращает nullptr, если клонирование не прошло успешно
 	// Внимание! Данный метод может быть медленным!
-	virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false);
+	virtual void Clone(Node3D* cloneNode, Node3D* parrent = nullptr, bool cloneChildrenRecursive = false);
 
 private:
-
 	void NotifyParrentChanged();
 	void RenameChild(const std::string& oldName, const std::string& newName);
 	

@@ -470,6 +470,9 @@
     <ClInclude Include="Engine\NodeGraph\ThirdPersonPlayerNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\GraphicsComponents.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc">
@@ -562,6 +565,9 @@
     </None>
     <None Include="..\README.md" />
     <None Include="Resources\scene.json">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
+    <None Include="Resources\scene lite.json">
       <Filter>Файлы ресурсов</Filter>
     </None>
   </ItemGroup>

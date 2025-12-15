@@ -223,6 +223,7 @@
     <ClInclude Include="Engine\Graphics\DepthBuffer.h" />
     <ClInclude Include="Engine\Graphics\DescriptorHeaps.h" />
     <ClInclude Include="Engine\Graphics\GBuffer.h" />
+    <ClInclude Include="Engine\Graphics\GraphicsComponents.h" />
     <ClInclude Include="Engine\Graphics\LightManager.h" />
     <ClInclude Include="Engine\Graphics\MaterialEntity.h" />
     <ClInclude Include="Engine\Graphics\Mesh3DComponent.h" />
@@ -401,6 +402,7 @@
     <None Include="..\README.md" />
     <None Include="Engine\Base\SimpleMath.inl" />
     <None Include="packages.config" />
+    <None Include="Resources\scene lite.json" />
     <None Include="Resources\scene.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

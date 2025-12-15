@@ -1,9 +1,9 @@
 #include "../ThirdPersonPlayerNode.h"
 #include "../../Base/InputSystem.h"
 
-const static float slowSpeed = 6.0f;
-const static float normalSpeed = 12.0f;
-const static float fastSpeed = 24.0f;
+const static float slowSpeed = 2.0f;
+const static float normalSpeed = 4.0f;
+const static float fastSpeed = 8.0f;
 
 static inputs is;
 
@@ -27,7 +27,7 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
 
     ////////////////////////////////
     //  ¿Ã≈–¿
-    Vector3 playerPos = Transform.GetPosition() + Vector3(0.0f, 2.0f, 0.0f);
+    Vector3 playerPos = Transform.GetPosition();
     float xTar = cos(m_angle_h) * sin(PI / 2.0f - m_angle_v);
     float yTar = cos(PI / 2.0f - m_angle_v);
     float zTar = sin(m_angle_h) * sin(PI / 2.0f - m_angle_v);
@@ -47,8 +47,19 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
 
     if (!is.RBC) return;
 
-    m_Speed = is.Shift ? slowSpeed : normalSpeed;
-    m_Speed = is.Ctrl ? fastSpeed : normalSpeed;
+    
+    if (is.Shift)
+    {
+        m_Speed = slowSpeed;
+    }
+    else if (is.Ctrl)
+    {
+        m_Speed = fastSpeed;
+    }
+    else 
+    {
+        m_Speed = normalSpeed;
+    }
 
     if (is.W)
     {
@@ -126,7 +137,7 @@ void ThirdPersonPlayerNode::OnMouseWheel(MouseWheelEventArgs& e)
     Object3DNode::OnMouseWheel(e);
 
     m_FlyRadius -= e.WheelDelta;
-    m_FlyRadius = std::clamp(m_FlyRadius, 5.0f, 40.0f);
+    m_FlyRadius = std::clamp(m_FlyRadius, 1.3333f, 10.0f);
 }
 
 void ThirdPersonPlayerNode::OnMouseMoved(MouseMotionEventArgs& e)

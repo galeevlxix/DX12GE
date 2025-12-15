@@ -43,7 +43,7 @@ public:
 
     const Vector3& GetPosition();
     const Vector3& GetRotation();
-    const Vector3& GetRotationDegrees();
+    const Vector3 GetRotationDegrees();
     const Vector3& GetScale();
 
     bool IsCacheDirty() { return m_CacheIsDirty; }

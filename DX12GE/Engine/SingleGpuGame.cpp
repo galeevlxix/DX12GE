@@ -70,13 +70,8 @@ bool SingleGpuGame::LoadContent()
     m_Player->SetCamera(m_Camera);
 
     m_ParticleSystem.OnLoad(commandList);
-    m_Lights.Init(m_Player);
 
     m_Skybox.OnLoad(commandList);
-
-    ShaderResources::GetSSRCB()->MaxDistance = 64.0f;
-    ShaderResources::GetSSRCB()->RayStep = 0.1f;
-    ShaderResources::GetSSRCB()->Thickness = 0.0999f;
 
     // DRAW THE CUBE
     
@@ -105,7 +100,9 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     Singleton::GetNodeGraph()->GetRoot()->OnUpdate(e.ElapsedTime);
 
     m_Lights.OnUpdate(elapsedTime);
+
     ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera->Position;
+
     ShaderResources::GetSSRCB()->ViewProjection = m_Camera->GetViewProjMatrix();
     ShaderResources::GetSSRCB()->CameraPos = m_Camera->Position;
 
@@ -186,8 +183,8 @@ void SingleGpuGame::LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandLi
 
     ShaderResources::SetGraphicsWorldCB(commandList, 0);
     ShaderResources::SetGraphicsShadowCB(commandList, 1);
-    SetGraphicsDynamicStructuredBuffer(commandList, 2, m_Lights.m_PointLights);
-    SetGraphicsDynamicStructuredBuffer(commandList, 3, m_Lights.m_SpotLights);
+    SetGraphicsDynamicStructuredBuffer(commandList, 2, Singleton::GetNodeGraph()->GetActivePointLightComponents());
+    SetGraphicsDynamicStructuredBuffer(commandList, 3, Singleton::GetNodeGraph()->GetActiveSpotLightComponents());
     m_CascadedShadowMap.SetGraphicsRootDescriptorTables(4, commandList);
 
     m_GBuffer.SetGraphicsRootDescriptorTable(8,  GBuffer::POSITION, commandList);
@@ -312,11 +309,9 @@ void SingleGpuGame::OnRender(RenderEventArgs& e)
 
     {
         ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-
         DrawSceneToShadowMaps(commandList);
         DrawSceneToGBuffer(commandList);
         DrawSSR(commandList);
-
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
         commandQueue->WaitForFenceValue(fenceValue);
     }
@@ -378,9 +373,6 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
         m_Player->StartTest();
         m_IsTesting = true;
         break;   
-    case KeyCode::X:
-        m_Lights.AddPointLight(m_Player->Transform.GetPosition(), Vector3(1.0f, 1.0f, 1.0f), 5.0f);
-        break;
     case KeyCode::R:
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
         auto commandList = commandQueue->GetCommandList();
