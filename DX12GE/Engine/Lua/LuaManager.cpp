@@ -32,7 +32,7 @@ Node3D* lua_get_object_on_scene(std::string name)
 	const auto object = p_grapsh_system->GetNodeByPath(name);
 	//object->AddScriptComponent();
 
-	return object;
+	return nullptr;
 }
 
 int lua_rotate_object_by_rotator(Node3D* object, float y, float p, float r)
