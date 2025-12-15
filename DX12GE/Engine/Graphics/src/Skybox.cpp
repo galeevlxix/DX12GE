@@ -51,7 +51,7 @@ void Skybox::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 void Skybox::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, const DirectX::XMMATRIX& viewProjMatrix)
 {
-    XMMATRIX wvp = m_Transform.GetWorldMatrix();
+    XMMATRIX wvp = m_Transform.GetLocalMatrix();
     XMMATRIX mvp = XMMatrixMultiply(wvp, viewProjMatrix);    
     commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvp, 0);
 

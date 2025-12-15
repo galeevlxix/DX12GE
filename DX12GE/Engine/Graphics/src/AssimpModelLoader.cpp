@@ -32,11 +32,8 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     if (!pScene)
     {
         printf("Error parsing '%s': '%s'\n", filePath.c_str(), importer.GetErrorString());
-        return false;
+        return -1;
     }
-
-    int meshesCount = pScene->mNumMeshes;
-    int materialsCount = pScene->mNumMaterials;
 
     const size_t last_slash_idx = filePath.rfind('/');
     string directory;
@@ -45,15 +42,15 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
         directory = filePath.substr(0, last_slash_idx);
     }
 
-    if(!(meshesCount > 0 && materialsCount > 0)) 
+    if(!(pScene->mNumMeshes > 0 && pScene->mNumMaterials > 0))
     {
         printf("Error parsing '%s': '%s'\n", filePath.c_str(), importer.GetErrorString());
-        return false;
+        return -1;
     }
 
     std::vector<MaterialEntity*> materials;
 
-    for (int i = 0; i < materialsCount; i++)
+    for (unsigned int i = 0; i < pScene->mNumMaterials; i++)
     {
         materials.push_back(new MaterialEntity());
 
@@ -78,27 +75,27 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
 
     float yOffset = 0.0f;
 
-    for (int i = 0; i < meshesCount; i++)
+    for (unsigned int meshIndex = 0; meshIndex < pScene->mNumMeshes; meshIndex++)
     {
         meshes.push_back(new Mesh3DComponent());
 
-        const aiMesh* paiMesh = pScene->mMeshes[i];
+        const aiMesh* paiMesh = pScene->mMeshes[meshIndex];
 
         vector<VertexStruct> Vertices;
         vector<WORD> Indices;
 
         const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
-        for (unsigned int i = 0; i < paiMesh->mNumVertices; i++)
+        for (unsigned int vertexIndex = 0; vertexIndex < paiMesh->mNumVertices; vertexIndex++)
         {
-            const aiVector3D* pPos = &(paiMesh->mVertices[i]);
-            const aiVector3D* pNormal = paiMesh->HasNormals() ? &(paiMesh->mNormals[i]) : &Zero3D;
-            const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
+            const aiVector3D* pPos = &(paiMesh->mVertices[vertexIndex]);
+            const aiVector3D* pNormal = paiMesh->HasNormals() ? &(paiMesh->mNormals[vertexIndex]) : &Zero3D;
+            const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][vertexIndex]) : &Zero3D;
             const aiVector3D* pTangent = &Zero3D;
             const aiVector3D* pBitangent = &Zero3D;
             if (paiMesh->HasTangentsAndBitangents())
             {
-                pTangent = &(paiMesh->mTangents[i]);
-                pBitangent = &(paiMesh->mBitangents[i]);
+                pTangent = &(paiMesh->mTangents[vertexIndex]);
+                pBitangent = &(paiMesh->mBitangents[vertexIndex]);
             }
 
             VertexStruct v({
@@ -115,18 +112,18 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
             Vertices.push_back(v);
         }
 
-        meshes[i]->m_Material = materials[paiMesh->mMaterialIndex];
+        meshes[meshIndex]->m_Material = materials[paiMesh->mMaterialIndex];
 
-        for (unsigned int i = 0; i < paiMesh->mNumFaces; i++)
+        for (unsigned int faceIndex = 0; faceIndex < paiMesh->mNumFaces; faceIndex++)
         {
-            const aiFace& Face = paiMesh->mFaces[i];
+            const aiFace& Face = paiMesh->mFaces[faceIndex];
 
             Indices.push_back(Face.mIndices[0]);
             Indices.push_back(Face.mIndices[1]);
             Indices.push_back(Face.mIndices[2]);
         }
 
-        meshes[i]->OnLoad<VertexStruct>(commandList, Vertices, Indices);
+        meshes[meshIndex]->OnLoad<VertexStruct>(commandList, Vertices, Indices);
     }
 
     OutYOffset = yOffset;

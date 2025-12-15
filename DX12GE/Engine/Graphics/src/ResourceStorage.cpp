@@ -64,11 +64,38 @@ std::shared_ptr<TextureComponent> ResourceStorage::GetTextureByName(const std::s
     return nullptr;
 }
 
+void ResourceStorage::DeleteObject3DComponentForever(uint32_t id)
+{
+    if (!m_Objects[id]) return;
+    m_Objects[id]->Destroy();
+    m_Objects[id].reset();
+    m_Objects[id] = nullptr;
+}
+
+void ResourceStorage::DeleteTextureComponentForever(uint32_t id)
+{
+    if (!m_Textures[id]) return;
+    m_Textures[id]->Destroy();
+    m_Textures[id].reset();
+    m_Textures[id] = nullptr;
+}
+
+size_t ResourceStorage::ObjectsCount()
+{
+    return m_Objects.size();
+}
+
+size_t ResourceStorage::TexturesCount()
+{
+    return m_Textures.size();
+}
+
 void ResourceStorage::Destroy()
 {
     for (auto obj : m_Objects)
     {
         obj->Destroy();
+        obj.reset();
         obj = nullptr;
     }
     m_Objects.clear();
@@ -76,6 +103,7 @@ void ResourceStorage::Destroy()
     for (auto tex : m_Textures)
     {
         tex->Destroy();
+        tex.reset();
         tex = nullptr;
     }
     m_Textures.clear();

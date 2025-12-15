@@ -1,12 +1,11 @@
 #pragma once
-
-#include "../Graphics/Object3DEntity.h"
-#include <string>
-#include <map>
+#include "DX12LibPCH.h"
 
 class SceneJsonSerializer
 {
 public:
-	static void Save(std::map<std::string, Object3DEntity*>& objects);
-	static void Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<std::string, Object3DEntity*>& objects);
+	SceneJsonSerializer() {};
+
+	void Save();
+	void Load(ComPtr<ID3D12GraphicsCommandList2> commandList);
 };
