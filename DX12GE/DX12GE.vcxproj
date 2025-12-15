@@ -270,7 +270,6 @@
       <AdditionalIncludeDirectories>D:\Code\GameEngineDev\packages\directxtex_desktop_2019.2024.10.29.1\build\native\..\..\include;..\Include;D:\Code\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="Engine\MultiGpuGame.cpp" />
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\LightPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\MergingPipeline.cpp" />
@@ -355,7 +354,6 @@
     <ClInclude Include="Engine\Lua\include\lua.h" />
     <ClInclude Include="Engine\Lua\include\lauxlib.h" />
     <ClInclude Include="Engine\Lua\include\luaconf.h" />
-    <ClInclude Include="Engine\MultiGpuGame.h" />
     <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\LightPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\MergingPipeline.h" />
@@ -519,6 +517,7 @@
     <Content Include="Engine\Lua\scripts\Core.lua" />
     <Content Include="Engine\Lua\scripts\Player.lua" />
     <Content Include="Engine\Lua\scripts\TestScript2.lua" />
+    <Content Include="package.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
