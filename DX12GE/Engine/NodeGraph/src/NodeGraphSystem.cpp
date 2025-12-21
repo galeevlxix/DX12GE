@@ -1,10 +1,13 @@
 #include "../NodeGraphSystem.h"
 #include "../../Base/Singleton.h"
+#include "LuaManager.h"
 
 NodeGraphSystem::NodeGraphSystem()
 {
 	m_SceneRootNode = new Node3D();
 	m_SceneRootNode->Rename("root");
+
+	LuaManager::SetGraspSystem(this);
 
 	m_ActiveEnvironment = nullptr;
 	m_ActiveDirectionalLight = nullptr;

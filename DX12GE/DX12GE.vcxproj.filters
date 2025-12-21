@@ -234,9 +234,6 @@
     <ClCompile Include="Engine\Pipelines\src\SkyboxPipeline.cpp">
       <Filter>Исходные файлы\Engine\Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\Lua\LuaManager.cpp">
-      <Filter>Исходные файлы\Engine\Lua</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Base\src\SelectionSystem.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
@@ -272,6 +269,36 @@
     </ClCompile>
     <ClCompile Include="Engine\NodeGraph\src\ThirdPersonPlayerNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\AIComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Behavior.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\BehaviorTree.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\BehaviorTreeBuilder.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Blackboard.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Composites.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Decorators.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Leaves.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Lua\LuaManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineConfig.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -446,9 +473,6 @@
     <ClInclude Include="Engine\Base\CollisionBox.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lua\LuaManager.h">
-      <Filter>Исходные файлы\Engine\Lua</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\NodeGraph\CameraNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
@@ -484,6 +508,48 @@
     </ClInclude>
     <ClInclude Include="Engine\Graphics\GraphicsComponents.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\AIComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Behavior.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\BehaviorTree.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\BehaviorTreeBuilder.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Blackboard.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Composites.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Decorators.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Leaves.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\LuaManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lualib.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lua.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lauxlib.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\luaconf.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineConfig.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -584,8 +650,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\Lua\scripts\TestScript.lua">
-      <Filter>Исходные файлы\Engine\Lua\scripts</Filter>
-    </Text>
+    <Text Include="Engine\Lua\scripts\TestScript.lua" />
   </ItemGroup>
 </Project>

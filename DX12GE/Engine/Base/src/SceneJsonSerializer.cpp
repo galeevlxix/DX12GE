@@ -2,6 +2,7 @@
 #include "../../Graphics/ResourceStorage.h"
 #include "../Singleton.h"
 #include <string>
+#include "LuaManager.h"
 #include "../json.hpp"
 #include <fstream>
 
@@ -20,6 +21,7 @@ struct NodeData
 {
 	std::string nodePath;
 	std::string type;
+	std::vector<std::string> scripts;
 	std::string filePath;
 
 	Vector3 pos;
@@ -176,7 +178,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		NodeData newNode;
 		newNode.nodePath = it->at("node_path");
 		newNode.type = it->at("type");
-
+		newNode.scripts = it->at("scripts");
 		newNode.filePath = it->contains("file_path") ? it->at("file_path") : "";
 
 		newNode.pos = Vector3(it->at("posX"), it->at("posY"), it->at("posZ"));
@@ -348,6 +350,14 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		else
 		{
 			throw "Ошибка! Файл сцены поврежден!";
+		}
+	}
+
+	for (const auto& node : nodesData)
+	{
+		for (const auto& script : node.scripts)
+		{
+			LuaManager::CreateValidClass(script, node.nodePath);
 		}
 	}
 
