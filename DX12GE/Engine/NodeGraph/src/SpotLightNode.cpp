@@ -73,3 +73,13 @@ void SpotLightNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 	LightData.PointLightProperties.AttenuationProperties.Exp = nodeData.lightAttenuation.z;
 	LightData.Cutoff = nodeData.lightCutoff;
 }
+
+void SpotLightNode::DrawDebug()
+{
+	Node3D::DrawDebug();
+	Singleton::GetDebugRender()->DrawArrow(
+		m_WorldPositionCache,
+		m_WorldPositionCache + m_WorldDirectionCache,
+		LightData.PointLightProperties.BaseLightProperties.Color,
+		abs(m_WorldDirectionCache.y) == 1.0f ? Vector3::UnitX : Vector3::UnitY);
+}

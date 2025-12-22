@@ -317,6 +317,14 @@ void Node3D::DrawDebug()
     }
 }
 
+void Node3D::DrawDebug()
+{
+    for (auto child : m_Children)
+    {
+        child.second->DrawDebug();
+    }
+}
+
 void Node3D::OnKeyPressed(KeyEventArgs& e)
 {
     for (auto child : m_Children)
