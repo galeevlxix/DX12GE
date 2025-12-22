@@ -2,19 +2,15 @@
 
 PointLightNode::PointLightNode() : Node3D()
 {
+	m_Type = NODE_TYPE_POINT_LIGHT;
 	LightData = PointLightComponent();
 	Rename("PointLightNode");
 }
 
 void PointLightNode::OnUpdate(const double& deltaTime)
 {
-	bool wasDirty = Transform.IsCacheDirty();
 	Node3D::OnUpdate(deltaTime);
-	if (wasDirty)
-	{
-		LightData.WorldPosition = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-		LightData.WorldPosition = DirectX::SimpleMath::Vector3::Transform(LightData.WorldPosition, m_WorldMatrixCache);
-	}
+	LightData.WorldPosition = m_WorldPositionCache;
 }
 
 void PointLightNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
@@ -31,4 +27,10 @@ void PointLightNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChil
 		PointLightNode* pLight = dynamic_cast<PointLightNode*>(cloneNode);
 		pLight->LightData = LightData;
 	}
+}
+
+void PointLightNode::DrawDebug()
+{
+	Node3D::DrawDebug();
+	Singleton::GetDebugRender()->DrawPoint(m_WorldPositionCache, 0.5f, LightData.BaseLightProperties.Color);
 }

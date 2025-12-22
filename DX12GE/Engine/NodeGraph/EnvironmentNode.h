@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Node3D.h"
+#include "../Graphics/GraphicsComponents.h"
 
 // Общие параметры графики
-// Может быть только один такой узел в дереве сцены
+// Только один такой узел в дереве сцены может быть активным 
 class EnvironmentNode : public Node3D
 {
 public:
-	DirectX::SimpleMath::Vector3 AmbientLightColor;
-	float AmbientLightIntensity;
+	BaseLightComponent AmbientLightData;
 
 	bool FogEnabled;
 	DirectX::SimpleMath::Vector3 FogColor;
@@ -21,8 +21,10 @@ public:
 
 	EnvironmentNode();
 
-	virtual const std::string GetType() override { return "EnvironmentNode"; }
-
 	virtual void Clone(Node3D* cloneNode, Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false) override;
 
+	virtual void DrawDebug() override;
+
+	virtual void SetCurrent() override;
+	bool IsCurrent();
 };

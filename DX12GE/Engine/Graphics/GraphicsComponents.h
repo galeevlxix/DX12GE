@@ -73,7 +73,7 @@ struct SpotLightComponent
 
 	// “олько дл€ чтени€! Ќаправление источника света в мировом пространстве
 	// ƒл€ изменени€ направлени€ источника света, используйте Transform узла
-	DirectX::SimpleMath::Vector3 Direction = { 0.0f, 0.0f, -1.0 };
+	DirectX::SimpleMath::Vector3 WorldDirection = { 0.0f, 0.0f, -1.0 };
 
 	// ”гол, на котором свет прожекторного источника заканчиваетс€
 	float Cutoff = 0.65f;

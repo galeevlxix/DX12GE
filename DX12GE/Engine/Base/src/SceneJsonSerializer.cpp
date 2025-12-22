@@ -19,12 +19,15 @@ struct ParsedNodePath
 struct NodeData
 {
 	std::string nodePath;
-	std::string type;
+	NodeTypeEnum type;
 	std::string filePath;
 
 	Vector3 pos;
 	Vector3 rot;
 	Vector3 scl;
+
+	bool isCurrent = false;
+	bool isVisible = false;
 
 	// lights
 	Vector3 lightColor;
@@ -41,6 +44,11 @@ struct NodeData
 	float envSSRMaxDistance;
 	float envSSRStepLength;
 	float envSSRThickness;
+
+	// camera
+	float camFov;
+	float camZNear;
+	float camZFar;
 };
 
 static const ParsedNodePath ParseNodePath(const std::string& nodePath)
@@ -75,19 +83,21 @@ void SceneJsonSerializer::Save()
 		json entity;
 
 		entity["node_path"] = obj->GetNodePath();
-		entity["type"] = obj->GetType();
+		entity["type"] = (int)obj->GetType();
 
 		if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(obj))
 		{
 			entity["file_path"] = obj3D->GetObjectFilePath();
+			entity["is_visible"] = obj3D->IsVisible;
 		}
-		else if (EnvironmentNode* env = dynamic_cast<EnvironmentNode*>(obj))
+		
+		if (EnvironmentNode* env = dynamic_cast<EnvironmentNode*>(obj))
 		{
-			auto color = env->AmbientLightColor;
+			auto color = env->AmbientLightData.Color;
 			entity["light_color_r"] = color.x;
 			entity["light_color_g"] = color.y;
 			entity["light_color_b"] = color.z;
-			entity["light_intensity"] = env->AmbientLightIntensity;
+			entity["light_intensity"] = env->AmbientLightData.Intensity;
 
 			entity["fog_enabled"] = env->FogEnabled;
 			auto fogColor = env->FogColor;
@@ -100,16 +110,28 @@ void SceneJsonSerializer::Save()
 			entity["ssr_max_distance"] = env->SSRMaxDistance;
 			entity["ssr_step_length"] = env->SSRStepLength;
 			entity["ssr_thickness"] = env->SSRThickness;
+
+			if (env->IsCurrent())
+			{
+				entity["is_current"] = true;
+			}
 		}
-		else if (DirectionalLightNode* dLight = dynamic_cast<DirectionalLightNode*>(obj))
+		
+		if (DirectionalLightNode* dLight = dynamic_cast<DirectionalLightNode*>(obj))
 		{
-			auto color = dLight->Color;
+			auto color = dLight->LightData.BaseLightProperties.Color;
 			entity["light_color_r"] = color.x;
 			entity["light_color_g"] = color.y;
 			entity["light_color_b"] = color.z;
-			entity["light_intensity"] = dLight->Intensity;
+			entity["light_intensity"] = dLight->LightData.BaseLightProperties.Intensity;
+
+			if (dLight->IsCurrent())
+			{
+				entity["is_current"] = true;
+			}
 		}
-		else if (PointLightNode* pLight = dynamic_cast<PointLightNode*>(obj))
+		
+		if (PointLightNode* pLight = dynamic_cast<PointLightNode*>(obj))
 		{
 			auto color = pLight->LightData.BaseLightProperties.Color;
 			entity["light_color_r"] = color.x;
@@ -122,7 +144,8 @@ void SceneJsonSerializer::Save()
 			entity["light_atten_linear"] = atten.Linear;
 			entity["light_atten_exp"] = atten.Exp;
 		}
-		else if (SpotLightNode* sLight = dynamic_cast<SpotLightNode*>(obj))
+		
+		if (SpotLightNode* sLight = dynamic_cast<SpotLightNode*>(obj))
 		{
 			auto color = sLight->LightData.PointLightProperties.BaseLightProperties.Color;
 			entity["light_color_r"] = color.x;
@@ -136,6 +159,21 @@ void SceneJsonSerializer::Save()
 			entity["light_atten_exp"] = atten.Exp;
 
 			entity["light_cutoff"] = sLight->LightData.Cutoff;
+		}
+		
+		if (CameraNode* camera = dynamic_cast<CameraNode*>(obj))
+		{
+			entity["fov"] = camera->Fov;
+			entity["z_near"] = camera->ZNear;
+			entity["z_far"] = camera->ZFar;
+		}
+		
+		if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(obj))
+		{
+			if (player->IsCurrent())
+			{
+				entity["is_current"] = true;
+			}
 		}
 
 		auto pos = obj->Transform.GetPosition();
@@ -182,6 +220,16 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		newNode.pos = Vector3(it->at("posX"), it->at("posY"), it->at("posZ"));
 		newNode.rot = Vector3(it->at("rotX"), it->at("rotY"), it->at("rotZ"));
 		newNode.scl = Vector3(it->at("sclX"), it->at("sclY"), it->at("sclZ"));
+
+		if (it->contains("is_current"))
+		{
+			newNode.isCurrent = true;
+		}
+
+		if (it->contains("is_visible"))
+		{
+			newNode.isVisible = it->at("is_visible");
+		}
 
 		// lights
 		if (it->contains("light_color_r") && it->contains("light_color_g") && it->contains("light_color_b"))
@@ -240,6 +288,23 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			newNode.envSSRThickness = it->at("ssr_thickness");
 		}
 
+		// camera
+
+		if (it->contains("fov"))
+		{
+			newNode.camFov = it->at("fov");
+		}
+
+		if (it->contains("z_near"))
+		{
+			newNode.camZNear = it->at("z_near");
+		}
+
+		if (it->contains("z_far"))
+		{
+			newNode.camZFar = it->at("z_far");
+		}
+
 		nodesData.push_back(newNode);
 	}
 
@@ -257,39 +322,62 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 	std::map<std::string, Node3D*> createdNodes;
 
-	if (nodesData[0].type == "Node3D" && nodesData[0].nodePath == "root")
+	if (nodesData[0].type == NODE_TYPE_NODE3D && nodesData[0].nodePath == "root")
 	{
 		createdNodes["root"] = Singleton::GetNodeGraph()->GetRoot();
 	}
 	else
 	{
 		throw "Ошибка! Файл поврежден! Файл сцены не содержит коренвой узел";
-	}	
+	}
 
 	for (int i = 1; i < nodesData.size(); ++i)
 	{
 		NodeData nodeData = nodesData[i];
 		ParsedNodePath parsed = ParseNodePath(nodeData.nodePath);
+		
+		Node3D* node = nullptr;
 
-		Node3D* node;
-
-		if (nodeData.type == "Node3D")
+		switch(nodeData.type)
+		{
+		case NODE_TYPE_NODE3D:
 		{
 			node = new Node3D();
 			node->OnLoad();
-		}
-		else if (nodeData.type == "Object3DNode" || nodeData.type == "ThirdPersonPlayerNode")
+			break;
+		}			
+		case NODE_TYPE_OBJECT3D:
+		case NODE_TYPE_FIRST_PERSON_PLAYER:
+		case NODE_TYPE_THIRD_PERSON_PLAYER:
 		{
-			Object3DNode* obj3D = nodeData.type == "ThirdPersonPlayerNode" ? new ThirdPersonPlayerNode() : new Object3DNode();
-			std::string modelPath = nodeData.filePath;
-			obj3D->Create(commandList, modelPath);
+			Object3DNode* obj3D;
+			switch (nodeData.type)
+			{
+			case NODE_TYPE_OBJECT3D:
+				obj3D = new Object3DNode();
+				break;
+			case NODE_TYPE_FIRST_PERSON_PLAYER:
+				obj3D = new FirstPersonPlayerNode();
+				break;
+			case NODE_TYPE_THIRD_PERSON_PLAYER:
+				obj3D = new ThirdPersonPlayerNode();
+				break;
+			default:
+				throw;
+			}
+			if (!obj3D->Create(commandList, nodeData.filePath))
+			{
+				printf("Предупреждение! Меш узла %s не инициализирован!\n", parsed.name.c_str());
+			}
+			obj3D->IsVisible = nodeData.isVisible;
 			node = obj3D;
-		}
-		else if (nodeData.type == "EnvironmentNode")
+			break;
+		}		
+		case NODE_TYPE_ENVIRONMENT:
 		{
 			EnvironmentNode* env = new EnvironmentNode();
-			env->AmbientLightColor = nodeData.lightColor;
-			env->AmbientLightIntensity = nodeData.lightIntensity;
+			env->AmbientLightData.Color = nodeData.lightColor;
+			env->AmbientLightData.Intensity = nodeData.lightIntensity;
 			env->FogColor = nodeData.envFogColor;
 			env->FogEnabled = nodeData.envFogEnabled;
 			env->FogStart = nodeData.envFogStart;
@@ -300,15 +388,17 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			env->SSRThickness = nodeData.envSSRThickness;
 
 			node = env;
-		}
-		else if (nodeData.type == "DirectionalLightNode")
+			break;
+		}			
+		case NODE_TYPE_DIRECTIONAL_LIGHT:
 		{
 			DirectionalLightNode* dLight = new DirectionalLightNode();
-			dLight->Color = nodeData.lightColor;
-			dLight->Intensity = nodeData.lightIntensity;
+			dLight->LightData.BaseLightProperties.Color = nodeData.lightColor;
+			dLight->LightData.BaseLightProperties.Intensity = nodeData.lightIntensity;
 			node = dLight;
-		}
-		else if (nodeData.type == "PointLightNode")
+			break;
+		}			
+		case NODE_TYPE_POINT_LIGHT:
 		{
 			PointLightNode* pLight = new PointLightNode();
 			pLight->LightData.BaseLightProperties.Color = nodeData.lightColor;
@@ -317,8 +407,9 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			pLight->LightData.AttenuationProperties.Linear = nodeData.lightAttenuation.y;
 			pLight->LightData.AttenuationProperties.Exp = nodeData.lightAttenuation.z;
 			node = pLight;
-		}
-		else if (nodeData.type == "SpotLightNode")
+			break;
+		}			
+		case NODE_TYPE_SPOT_LIGHT:
 		{
 			SpotLightNode* sLight = new SpotLightNode();
 			sLight->LightData.PointLightProperties.BaseLightProperties.Color = nodeData.lightColor;
@@ -328,27 +419,45 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			sLight->LightData.PointLightProperties.AttenuationProperties.Exp = nodeData.lightAttenuation.z;
 			sLight->LightData.Cutoff = nodeData.lightCutoff;
 			node = sLight;
+			break;
 		}
-		else
+		case NODE_TYPE_CAMERA:
 		{
-			throw "Ошибка! Данный тип узла не поддерживается";
+			CameraNode* camera = new CameraNode();
+			camera->Fov = nodeData.camFov;
+			camera->ZNear = nodeData.camZNear;
+			camera->ZFar = nodeData.camZFar;
+			node = camera;
+			break;
+		}
+		default:
+			printf("Ошибка! Тип узла %d не поддерживается!\n", nodeData.type);
+			break;
 		}
 
-		node->Transform.SetPosition(nodeData.pos);
-		node->Transform.SetRotation(nodeData.rot);
-		node->Transform.SetScale(nodeData.scl);
+		if (node)
+		{
+			node->Transform.SetPosition(nodeData.pos);
+			node->Transform.SetRotation(nodeData.rot);
+			node->Transform.SetScale(nodeData.scl);
 
-		auto parrent = createdNodes.find(parsed.parrentNodePath);
-		if (parrent != createdNodes.end())
-		{
-			node->Rename(parsed.name);
-			parrent->second->AddChild(node);
-			createdNodes[nodeData.nodePath] = node;
-		}
-		else
-		{
-			throw "Ошибка! Файл сцены поврежден!";
-		}
+			auto parrent = createdNodes.find(parsed.parrentNodePath);
+			if (parrent != createdNodes.end())
+			{
+				node->Rename(parsed.name);
+				parrent->second->AddChild(node);
+				createdNodes[nodeData.nodePath] = node;
+			}
+			else
+			{
+				throw "Ошибка! Файл сцены поврежден!";
+			}
+
+			if (nodeData.isCurrent)
+			{
+				node->SetCurrent();
+			}
+		}		
 	}
 
 	std::cout << "Конец загрузки объектов сцены." << std::endl;

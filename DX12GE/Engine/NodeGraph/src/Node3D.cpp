@@ -2,6 +2,7 @@
 
 Node3D::Node3D() : m_Parrent(nullptr), m_ComponentId(-1)
 {
+    m_Type = NODE_TYPE_NODE3D;
     m_WorldMatrixCache = DirectX::XMMATRIX();
     Transform.SetDefault();
     Rename("Node3D");
@@ -39,6 +40,11 @@ void Node3D::OnUpdate(const double& deltaTime)
         {
             child.second->NotifyParrentChanged();
         }
+
+        m_WorldPositionCache = Vector3::Transform(Vector3::Zero, m_WorldMatrixCache);
+
+        m_WorldDirectionCache = Vector3::Transform(Vector3::Backward, m_WorldMatrixCache) - m_WorldPositionCache;
+        m_WorldDirectionCache.Normalize();  
 
         SetTransformCacheStatus(Transform, false);
     }
@@ -195,15 +201,7 @@ bool Node3D::AddChild(Node3D* node)
     }
     m_Children[node->GetName()] = node;
 
-    bool result = Singleton::GetNodeGraph()->OnNodeAdded(node);
-    if (!result)
-    {
-        m_Children.erase(node->GetName());
-        node->m_Parrent = nullptr;
-		node->Rename(name);
-        return false;
-	}
-
+    Singleton::GetNodeGraph()->OnNodeAdded(node);
     return true;
 }
 
@@ -273,6 +271,14 @@ void Node3D::Clone(Node3D* cloneNode, Node3D* parrent, bool cloneChildrenRecursi
             Node3D* cloneChild = nullptr;
             child.second->Clone(cloneChild, cloneNode, cloneChildrenRecursive);
         }
+    }
+}
+
+void Node3D::DrawDebug()
+{
+    for (auto child : m_Children)
+    {
+        child.second->DrawDebug();
     }
 }
 

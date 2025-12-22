@@ -232,7 +232,7 @@ void CommandExecutor::ProcessSave(const std::vector<std::string>& tokens, std::s
 
 void CommandExecutor::ProcessLoad(const std::vector<std::string>& tokens, std::string& output)
 {
-	
+	  
 }
 
 void CommandExecutor::ProcessUndo(std::string& output)

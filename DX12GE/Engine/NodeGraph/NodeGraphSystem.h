@@ -1,7 +1,10 @@
 #pragma once
 
 #include "Object3DNode.h"
+
+#include "FirstPersonPlayerNode.h"
 #include "ThirdPersonPlayerNode.h"
+
 #include "EnvironmentNode.h"
 #include "DirectionalLightNode.h"
 #include "PointLightNode.h"
@@ -18,6 +21,24 @@ class NodeGraphSystem
 	Node3D* m_SceneRootNode;
 
 	std::map<std::string, Object3DNode*> m_All3DObjects;
+	std::map<std::string, PointLightNode*> m_AllPointLights;
+	std::map<std::string, SpotLightNode*> m_AllSpotLights;
+
+	EnvironmentNode* m_CurrentEnvironment;
+	friend void EnvironmentNode::SetCurrent();
+	friend bool EnvironmentNode::IsCurrent();
+
+	DirectionalLightNode* m_CurrentDirectionalLight;
+	friend void DirectionalLightNode::SetCurrent();
+	friend bool DirectionalLightNode::IsCurrent();
+	
+	FirstPersonPlayerNode* m_CurrentPlayer;
+	friend void FirstPersonPlayerNode::SetCurrent();
+	friend bool FirstPersonPlayerNode::IsCurrent();
+
+	EnvironmentNode* m_DefaultEnvironment;
+	DirectionalLightNode* m_DefaultDirectionalLight;
+	CameraNode* m_DefaultCamera;
 
 public:
 	NodeGraphSystem();
@@ -26,7 +47,7 @@ public:
 	Node3D* GetRoot() { return m_SceneRootNode; }
 	void Destroy();
 
-	bool OnNodeAdded(Node3D* node);
+	void OnNodeAdded(Node3D* node);
 	void OnNodeRemoved(Node3D* node);
 
 	void OnKeyPressed(KeyEventArgs& e);
@@ -51,24 +72,17 @@ private:
 	
 	const std::vector<Node3D*> GetNodesRecursive(Node3D* current);
 
-private:
-
-	EnvironmentNode* m_ActiveEnvironment;
-	DirectionalLightNode* m_ActiveDirectionalLight;
-
-	std::map<std::string, PointLightNode*> m_AllPointLights;
-	std::map<std::string, SpotLightNode*> m_AllSpotLights;
-
 public:
 
-	void SetActiveEnvironmentExplicitly(EnvironmentNode* env);
-	void SetActiveDirectionalLightExplicitly(DirectionalLightNode* dirLight);
+	float WindowRatio = 1.0f;
 
-	EnvironmentNode* GetActiveEnvironment() { return m_ActiveEnvironment; }
-	DirectionalLightNode* GetActiveDirectionalLight() { return m_ActiveDirectionalLight; }
+	EnvironmentNode* GetCurrentEnvironment();
+	DirectionalLightNode* GetCurrentDirectionalLight();
+	FirstPersonPlayerNode* GetCurrentPlayer() { return m_CurrentPlayer; }
+	CameraNode* GetCurrentCamera();
 
-	const std::vector<PointLightComponent> GetActivePointLightComponents();
-	const std::vector<SpotLightComponent> GetActiveSpotLightComponents();
+	const std::vector<PointLightComponent> GetPointLightComponents();
+	const std::vector<SpotLightComponent> GetSpotLightComponents();
 
 	const size_t GetPointLightsCount() { return m_AllPointLights.size(); }
 	const size_t GetSpotLightsCount() { return m_AllSpotLights.size(); }

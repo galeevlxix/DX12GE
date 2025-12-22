@@ -1,9 +1,9 @@
-#include "../EnvironmentNode.h"
+#include "../../Base/Singleton.h"
 
 EnvironmentNode::EnvironmentNode() : Node3D()
 {
-	AmbientLightColor = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
-	AmbientLightIntensity = 0.2f;
+	m_Type = NODE_TYPE_ENVIRONMENT;
+	AmbientLightData = BaseLightComponent();
 
 	FogEnabled = true;
 	FogColor = DirectX::SimpleMath::Vector3(0.5f, 0.5f, 0.5f);
@@ -30,8 +30,7 @@ void EnvironmentNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChi
 	{
 		EnvironmentNode* env = dynamic_cast<EnvironmentNode*>(cloneNode);
 
-		env->AmbientLightColor = AmbientLightColor;
-		env->AmbientLightIntensity = AmbientLightIntensity;
+		env->AmbientLightData = AmbientLightData;
 
 		env->FogEnabled = FogEnabled;
 		env->FogColor = FogColor;
@@ -42,4 +41,23 @@ void EnvironmentNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChi
 		env->SSRStepLength = SSRStepLength;
 		env->SSRThickness = SSRThickness;
 	}
+}
+
+void EnvironmentNode::DrawDebug()
+{
+	Node3D::DrawDebug();
+	Singleton::GetDebugRender()->DrawPoint(m_WorldPositionCache, 0.5f);
+}
+
+void EnvironmentNode::SetCurrent()
+{
+	if (IsInsideTree())
+	{
+		Singleton::GetNodeGraph()->m_CurrentEnvironment = this;
+	}
+}
+
+bool EnvironmentNode::IsCurrent()
+{
+	return Singleton::GetNodeGraph()->m_CurrentEnvironment == this;
 }

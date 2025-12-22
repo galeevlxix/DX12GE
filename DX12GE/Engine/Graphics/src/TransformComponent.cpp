@@ -1,5 +1,6 @@
 #pragma once
 #include "../TransformComponent.h"
+#include <algorithm>
 
 const static float PI = 3.1415926536f;
 
@@ -103,6 +104,22 @@ void TransformComponent::RotateDegrees(Vector3 RotateVector)
 void TransformComponent::Rotate(float dx, float dy, float dz)
 {
     SetRotation(m_Rotation + Vector3(dx, dy, dz));
+}
+
+void TransformComponent::LocalLookAt(const Vector3& localTarget)
+{
+    Vector3 dir = localTarget - m_Position;
+    dir.Normalize();
+
+    float yaw = atan2(dir.x, dir.z);
+    float pitch = asin(-dir.y);
+
+    pitch = std::clamp(
+        pitch,
+        -PI * 0.5f + 0.001f,
+        PI * 0.5f - 0.001f);
+
+    m_Rotation = Vector3(pitch, yaw, 0.0f);
 }
 
 // SCALE

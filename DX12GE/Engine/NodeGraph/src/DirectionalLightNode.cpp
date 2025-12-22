@@ -1,27 +1,16 @@
-#include "../DirectionalLightNode.h"
+#include "../../Base/Singleton.h"
 
 DirectionalLightNode::DirectionalLightNode() : Node3D()
 {
-	Color = Vector3(1.0f, 1.0f, 1.0f);
-	Intensity = 0.6f;
+	m_Type = NODE_TYPE_DIRECTIONAL_LIGHT;
+	LightData = DirectionalLightComponent();
 	Rename("DirectionalLightNode");
 }
 
 void DirectionalLightNode::OnUpdate(const double& deltaTime)
 {
-	bool wasDirty = Transform.IsCacheDirty();
 	Node3D::OnUpdate(deltaTime);
-	if (wasDirty)
-	{
-		DirectX::SimpleMath::Vector3 start = DirectX::SimpleMath::Vector3::Zero;
-		DirectX::SimpleMath::Vector3 end = DirectX::SimpleMath::Vector3::Backward;
-
-		start = DirectX::SimpleMath::Vector3::Transform(start, m_WorldMatrixCache);
-		end = DirectX::SimpleMath::Vector3::Transform(end, m_WorldMatrixCache);
-
-		m_DirectionCache = end - start;
-		m_DirectionCache.Normalize();
-	}
+	LightData.Direction = Vector4(m_WorldDirectionCache);
 }
 
 void DirectionalLightNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
@@ -36,7 +25,29 @@ void DirectionalLightNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool clo
 	if (cloneNode)
 	{
 		DirectionalLightNode* dirLight = dynamic_cast<DirectionalLightNode*>(cloneNode);
-		dirLight->Color = Color;
-		dirLight->Intensity = Intensity;
+		dirLight->LightData.BaseLightProperties = LightData.BaseLightProperties;
 	}
+}
+
+void DirectionalLightNode::DrawDebug()
+{
+	Node3D::DrawDebug();
+	Singleton::GetDebugRender()->DrawArrow(
+		m_WorldPositionCache,
+		m_WorldPositionCache + m_WorldDirectionCache,
+		LightData.BaseLightProperties.Color,
+		abs(m_WorldDirectionCache.y) == 1.0f ? Vector3::UnitX : Vector3::UnitY);
+}
+
+void DirectionalLightNode::SetCurrent()
+{
+	if (IsInsideTree())
+	{
+		Singleton::GetNodeGraph()->m_CurrentDirectionalLight = this;
+	}
+}
+
+bool DirectionalLightNode::IsCurrent()
+{
+	return Singleton::GetNodeGraph()->m_CurrentDirectionalLight == this;
 }

@@ -4,24 +4,27 @@
 
 Object3DNode::Object3DNode() : Node3D()
 {
+    m_Type = NODE_TYPE_OBJECT3D;
+    IsVisible = false;
     Rename("Object3DNode");
 }
 
 bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
     AssimpModelLoader modelLoader;
-    float yOffset;
+    float yOffset = 0.0f;
     uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset);
+    Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);
-    Transform.SetDefault(yOffset);
     OnLoad();
+    IsVisible = true;
     return true;
 }
 
 void Object3DNode::Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const DirectX::XMMATRIX& viewProjMatrix)
 {
-    if (m_ComponentId == -1) return;
+    if (m_ComponentId == -1 || !IsVisible) return;
 
     XMMATRIX wvp = GetWorldMatrix();
     XMMATRIX mvp = XMMatrixMultiply(wvp, viewProjMatrix);
@@ -74,6 +77,12 @@ const CollisionBox& Object3DNode::GetCollisionBox()
     return ResourceStorage::GetObject3D(m_ComponentId)->Box;
 }
 
+void Object3DNode::DrawDebug()
+{
+    Node3D::DrawDebug();
+    Singleton::GetDebugRender()->DrawBoundingBox(GetCollisionBox(), GetWorldMatrix());
+}
+
 bool Object3DNode::TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current)
 {
     current = current == nullptr ? Singleton::GetNodeGraph()->GetRoot() : current;
@@ -93,3 +102,4 @@ bool Object3DNode::TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current)
 
     return false;
 }
+

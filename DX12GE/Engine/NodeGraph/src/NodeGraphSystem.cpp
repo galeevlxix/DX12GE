@@ -6,8 +6,13 @@ NodeGraphSystem::NodeGraphSystem()
 	m_SceneRootNode = new Node3D();
 	m_SceneRootNode->Rename("root");
 
-	m_ActiveEnvironment = nullptr;
-	m_ActiveDirectionalLight = nullptr;
+	m_CurrentEnvironment = nullptr;
+	m_CurrentDirectionalLight = nullptr;
+	m_CurrentPlayer = nullptr;
+
+	m_DefaultEnvironment = nullptr;
+	m_DefaultDirectionalLight = nullptr;
+	m_DefaultCamera = nullptr;
 }
 
 void NodeGraphSystem::Destroy()
@@ -20,11 +25,30 @@ void NodeGraphSystem::Destroy()
 	m_AllPointLights.clear();
 	m_AllSpotLights.clear();
 
-	m_ActiveEnvironment = nullptr;
-	m_ActiveDirectionalLight = nullptr;
+	m_CurrentEnvironment = nullptr;
+	m_CurrentDirectionalLight = nullptr;
+	m_CurrentPlayer = nullptr;
+
+	if (m_DefaultEnvironment)
+	{
+		delete m_DefaultEnvironment;
+		m_DefaultEnvironment = nullptr;
+	}	
+
+	if (m_DefaultDirectionalLight)
+	{
+		delete m_DefaultDirectionalLight;
+		m_DefaultDirectionalLight = nullptr;
+	}
+	
+	if (m_DefaultCamera)
+	{
+		delete m_DefaultCamera;
+		m_DefaultCamera = nullptr;
+	}	
 }
 
-bool NodeGraphSystem::OnNodeAdded(Node3D* node)
+void NodeGraphSystem::OnNodeAdded(Node3D* node)
 {
 	if (node->IsInsideTree())
 	{
@@ -33,29 +57,6 @@ bool NodeGraphSystem::OnNodeAdded(Node3D* node)
 		if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
 		{
 			m_All3DObjects[nodePath] = obj3D;
-
-		}
-		else if (EnvironmentNode* env = dynamic_cast<EnvironmentNode*>(node))
-		{
-			if (!m_ActiveEnvironment)
-			{
-				m_ActiveEnvironment = env;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else if (DirectionalLightNode* dirLight = dynamic_cast<DirectionalLightNode*>(node))
-		{
-			if (!m_ActiveDirectionalLight)
-			{
-				m_ActiveDirectionalLight = dirLight;
-			}
-			else
-			{
-				return false;
-			}
 		}
 		else if (PointLightNode* pLight = dynamic_cast<PointLightNode*>(node))
 		{
@@ -64,17 +65,33 @@ bool NodeGraphSystem::OnNodeAdded(Node3D* node)
 		else if (SpotLightNode* sLight = dynamic_cast<SpotLightNode*>(node))
 		{
 			m_AllSpotLights[nodePath] = sLight;
-		}			
+		}
+		else if (!m_CurrentEnvironment)
+		{
+			if (EnvironmentNode* env = dynamic_cast<EnvironmentNode*>(node)) 
+				m_CurrentEnvironment = env;
+		}
+		else if (!m_CurrentDirectionalLight)
+		{
+			if (DirectionalLightNode* dirLight = dynamic_cast<DirectionalLightNode*>(node))
+			{
+				m_CurrentDirectionalLight = dirLight;
+			}
+		}
+
+		if (!m_CurrentPlayer)
+		{
+			if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(node))
+			{
+				m_CurrentPlayer = player;
+			}
+		}
 
 		for (Node3D* child : node->GetChildren())
 		{
-			bool result = OnNodeAdded(child);
-			if (!result) 
-				return false;
+			OnNodeAdded(child);
 		}
 	}
-
-	return true;
 }
 
 void NodeGraphSystem::OnNodeRemoved(Node3D* node)
@@ -90,20 +107,6 @@ void NodeGraphSystem::OnNodeRemoved(Node3D* node)
 				m_All3DObjects.erase(nodePath);
 			}
 		}
-		else if (EnvironmentNode* env = dynamic_cast<EnvironmentNode*>(node))
-		{
-			if (env == m_ActiveEnvironment)
-			{
-				m_ActiveEnvironment = nullptr;
-			}
-		}
-		else if (DirectionalLightNode* dirLight = dynamic_cast<DirectionalLightNode*>(node))
-		{
-			if (dirLight == m_ActiveDirectionalLight)
-			{
-				m_ActiveDirectionalLight = nullptr;
-			}
-		}
 		else if (PointLightNode* pLight = dynamic_cast<PointLightNode*>(node))
 		{
 			if (m_AllPointLights.contains(nodePath))
@@ -117,7 +120,19 @@ void NodeGraphSystem::OnNodeRemoved(Node3D* node)
 			{
 				m_AllSpotLights.erase(nodePath);
 			}
-		}			
+		}
+		else if (node == m_CurrentEnvironment)
+		{
+			m_CurrentEnvironment = nullptr;
+		}
+		else if (node == m_CurrentDirectionalLight)
+		{
+			m_CurrentDirectionalLight = nullptr;
+		}
+		else if (node == m_CurrentPlayer)
+		{
+			m_CurrentPlayer = nullptr;
+		}
 
 		for (Node3D* child : node->GetChildren())
 		{
@@ -180,23 +195,59 @@ const std::vector<Node3D*> NodeGraphSystem::GetNodesRecursive(Node3D* current)
 	return output;
 }
 
-void NodeGraphSystem::SetActiveEnvironmentExplicitly(EnvironmentNode* env)
+EnvironmentNode* NodeGraphSystem::GetCurrentEnvironment()
 {
-	if (env->IsInsideTree())
+	if (m_CurrentEnvironment)
 	{
-		m_ActiveEnvironment = env;
+		return m_CurrentEnvironment;
+	}
+	else
+	{
+		if (!m_DefaultEnvironment)
+		{
+			m_DefaultEnvironment = new EnvironmentNode();
+			m_DefaultEnvironment->OnUpdate(0.0f);
+		}
+		return m_DefaultEnvironment;
 	}
 }
 
-void NodeGraphSystem::SetActiveDirectionalLightExplicitly(DirectionalLightNode* dirLight)
+DirectionalLightNode* NodeGraphSystem::GetCurrentDirectionalLight()
 {
-	if (dirLight->IsInsideTree())
+	if (m_CurrentDirectionalLight)
 	{
-		m_ActiveDirectionalLight = dirLight;
+		return m_CurrentDirectionalLight;
+	}
+	else
+	{
+		if (!m_DefaultDirectionalLight)
+		{
+			m_DefaultDirectionalLight = new DirectionalLightNode();
+			m_DefaultDirectionalLight->OnUpdate(0.0f);
+		}
+		return m_DefaultDirectionalLight;
 	}
 }
 
-const std::vector<PointLightComponent> NodeGraphSystem::GetActivePointLightComponents()
+CameraNode* NodeGraphSystem::GetCurrentCamera()
+{
+	if (m_CurrentPlayer)
+	{
+		if (CameraNode* camera = m_CurrentPlayer->GetCamera())
+		{
+			return camera;
+		}
+	}
+
+	if (!m_DefaultCamera)
+	{
+		m_DefaultCamera = new CameraNode();
+		m_DefaultCamera->OnUpdate(0.0f);
+	}
+	return m_DefaultCamera;
+}
+
+const std::vector<PointLightComponent> NodeGraphSystem::GetPointLightComponents()
 {
 	vector<PointLightComponent> result;
 	for (auto pLight : m_AllPointLights)
@@ -206,7 +257,7 @@ const std::vector<PointLightComponent> NodeGraphSystem::GetActivePointLightCompo
 	return result;
 }
 
-const std::vector<SpotLightComponent> NodeGraphSystem::GetActiveSpotLightComponents()
+const std::vector<SpotLightComponent> NodeGraphSystem::GetSpotLightComponents()
 {
 	vector<SpotLightComponent> result;
 	for (auto sLight : m_AllSpotLights)
@@ -225,7 +276,8 @@ void NodeGraphSystem::OnKeyPressed(KeyEventArgs& e)
 		auto objects = Singleton::GetSelection()->GetSelected();
 		for (int i = 0; i < objects.size(); i++)
 		{
-			objects[i]->Destroy(false);
+			if (objects[i])
+				objects[i]->Destroy(false);
 		}
 		Singleton::GetSelection()->DeselectAll();
 	}

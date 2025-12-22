@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Graphics/TransformComponent.h"
+#include "NodeTypeEnum.h"
 #include "../Base/Events.h"
 #include <map>
 #include <vector>
@@ -18,17 +19,22 @@ protected:
     uint32_t m_ComponentId = -1;
 	DirectX::XMMATRIX m_WorldMatrixCache;
 
+	DirectX::SimpleMath::Vector3 m_WorldPositionCache;
+	DirectX::SimpleMath::Vector3 m_WorldDirectionCache;
+
+	NodeTypeEnum m_Type;
+
 public:
 	Node3D();
 
-	virtual const std::string GetType() { return "Node3D"; }
+	NodeTypeEnum GetType() { return m_Type; }
 
 	// Возвращает путь узла в дереве сцены от самого дальнего родителя до данного узла
 	const std::string GetNodePath();
 
 	// Вызывается при создании узла
 	virtual void OnLoad() {};
-
+	
 	// Обновляет данный узел и всех потомков узла
 	virtual void OnUpdate(const double& deltaTime);
 
@@ -37,7 +43,17 @@ public:
 	// При keepComponent = false из памяти также удаляется компонент с данными, если в дереве сцены нет других узлов, использующих этот компонент (keepComponent распространяется на потомков)
 	virtual void Destroy(bool keepComponent = true);
     
+	// Возвращает мировую матрицу объекта
+	// Обновляется только после OnUpdate
 	const DirectX::XMMATRIX& GetWorldMatrix();
+
+	// Возвращает позицию объекта в мировом пространстве
+	// Обновляется только после OnUpdate
+	const DirectX::SimpleMath::Vector3& GetWorldPosition() { return m_WorldPositionCache; }
+
+	// Возвращает направление объекта в мировом пространстве
+	// Обновляется только после OnUpdate
+	const DirectX::SimpleMath::Vector3& GetWorldDirection() { return m_WorldDirectionCache; }
 
 	// Возвращает id компонента (ресурса с данными) в ResourceStorage
 	uint32_t GetComponentId() { return m_ComponentId; }
@@ -80,7 +96,7 @@ public:
 	// Добавляет в данный узел нового прямого потомка
 	// Возвращает true, если добавление прошло успешно
 	// Внимание! Потомок не добавится, если у него уже есть родитель. Используйте метод Move в этом случае.
-	bool AddChild(Node3D* node);
+	virtual bool AddChild(Node3D* node);
 
 	// Удаляет узел из списка прямых потомков по имени, но не уничтожает самого потомка
 	// Возвращает true, если удаление прошло успешно
@@ -106,6 +122,12 @@ public:
 	// Возвращает nullptr, если клонирование не прошло успешно
 	// Внимание! Данный метод может быть медленным!
 	virtual void Clone(Node3D* cloneNode, Node3D* parrent = nullptr, bool cloneChildrenRecursive = false);
+
+	// Рисует отладочные примитивы
+	virtual void DrawDebug();
+
+	// Делает узел активным (н-р CameraNode, DirectionalLight или Environment)
+	virtual void SetCurrent() {};
 
 private:
 	void NotifyParrentChanged();

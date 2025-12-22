@@ -7,10 +7,9 @@
 class Object3DNode : public Node3D
 {
 public:
+	bool IsVisible;
 
 	Object3DNode();
-
-	virtual const std::string GetType() override { return "Object3DNode"; } 
 
 	// Загружает данные узла
 	virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath);
@@ -30,6 +29,8 @@ public:
 
 	const std::string GetObjectFilePath();
 	const CollisionBox& GetCollisionBox();
+
+	virtual void DrawDebug() override;
 
 private:
 	// Возвращает true, если в дереве существует узел с таким же id компонента

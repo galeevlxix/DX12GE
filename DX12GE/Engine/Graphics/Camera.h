@@ -8,7 +8,7 @@ class Camera
 {
 public:
 	XMVECTOR Position;
-	XMVECTOR Target;  
+	XMVECTOR Target;
 	XMVECTOR Up;
 	
 	float Fov;
@@ -24,7 +24,7 @@ public:
 		float ratio = 1.0f, 
 		float zNear = 0.1f, 
 		float zFar = 300.0f);
-
+	  
 	XMMATRIX GetViewProjMatrix();
 	XMMATRIX GetViewProjMatrixNoTranslation();
 

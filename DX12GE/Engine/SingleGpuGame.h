@@ -59,15 +59,9 @@ private:
 
     bool m_Initialized = false;
 
-    bool m_IsTesting = false;
-    vector<float> m_ElapsedTimeArray;
-    const string m_TestTimeOutputFile = "../../DX12GE/Resources/single_gpu.txt";
-    void TestTime(float elapsedTime);
-
     // SCENE
 
-    Camera* m_Camera;
-    ThirdPersonPlayerNode* m_Player;
+    NodeGraphSystem* m_NodeGraph;
 
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;
