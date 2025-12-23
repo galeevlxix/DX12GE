@@ -45,7 +45,7 @@ void Skybox::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 	m_Texture.OnLoadCubemap(commandList, "../../DX12GE/Resources/Skybox Textures/snowcube1024.dds");
     m_BoxMesh.OnLoad(commandList, cubeVertices, indices);
-    m_Transform.SetDefault(0.0f);
+    m_Transform.SetDefault();
     m_Transform.SetScale(500.0f);
 }
 

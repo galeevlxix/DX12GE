@@ -261,6 +261,9 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		case NODE_TYPE_CAMERA:
 			node = new CameraNode();
 			break;
+		case NODE_TYPE_SKYBOX:
+			node = new SkyBoxNode();
+			break;
 		default:
 			printf("Ошибка! Тип узла %d не поддерживается!\n", nodeData.type);
 			break;

@@ -8,7 +8,7 @@
 class Object3DNode : public Node3D
 {
 protected:
-	uint32_t m_ComponentId = -1;
+	uint32_t m_ComponentId;
 
 public:
 	bool IsVisible;
@@ -19,7 +19,7 @@ public:
 	virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath);
 
 	// Отрисовка 3Д объекта
-	void Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const DirectX::XMMATRIX& viewProjMatrix);
+	virtual void Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const DirectX::XMMATRIX& viewProjMatrix);
 	
 	// Уничтожает данный узел и всех потомков узла
 	// Узел также удаляется из списка потомков своего родителя
@@ -30,11 +30,11 @@ public:
 	virtual void SetComponentId(uint32_t newId);
 
 	// Возвращает id компонента (ресурса с данными) в ResourceStorage
-	uint32_t GetComponentId() { return m_ComponentId; }
+	virtual uint32_t GetComponentId() { return m_ComponentId; }
 
-	bool IsValid() { return m_ComponentId != -1; }
+	virtual bool IsValid() { return m_ComponentId != -1; }
 
-	const std::string GetObjectFilePath();
+	virtual const std::string GetObjectFilePath();
 	const CollisionBox& GetCollisionBox();
 	
 	virtual void Clone(Node3D* cloneNode, Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false) override;

@@ -23,7 +23,7 @@ bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const 
 
 void Object3DNode::Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const DirectX::XMMATRIX& viewProjMatrix)
 {
-    if (m_ComponentId == -1 || !IsVisible) return;
+    if (!IsValid() || !IsVisible) return;
 
     XMMATRIX wvp = GetWorldMatrix();
     XMMATRIX mvp = XMMatrixMultiply(wvp, viewProjMatrix);
@@ -45,7 +45,7 @@ void Object3DNode::Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const 
 
 void Object3DNode::Destroy(bool keepComponent)
 {
-    if (!(keepComponent || TreeHasObjects3DWithComponentId(m_ComponentId)))
+    if (m_ComponentId != -1 && !(keepComponent || TreeHasObjects3DWithComponentId(m_ComponentId)))
     {
         ResourceStorage::DeleteObject3DComponentForever(m_ComponentId);
     }
@@ -91,6 +91,7 @@ void Object3DNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildr
     {
         Object3DNode* obj3D = dynamic_cast<Object3DNode*>(cloneNode);
         obj3D->m_ComponentId = m_ComponentId;
+		obj3D->IsVisible = IsVisible;
     }
 }
 
@@ -116,8 +117,6 @@ void Object3DNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 
 bool Object3DNode::TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current)
 {
-    if (id == -1) return false;
-
     current = current == nullptr ? Singleton::GetNodeGraph()->GetRoot() : current;
 
     if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(current))

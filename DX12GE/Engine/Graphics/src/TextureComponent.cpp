@@ -8,7 +8,7 @@
 
 using namespace DirectX;
 
-void TextureComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, string path)
+void TextureComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& path)
 {
     auto device = Application::Get().GetPrimaryDevice();
 
@@ -113,9 +113,10 @@ void TextureComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, st
     device = nullptr;
 
     m_Initialized = true;
+	m_ResourcePath = path;
 }
 
-void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandList, string path)
+void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& path)
 {
     auto device = Application::Get().GetPrimaryDevice();
 
@@ -131,7 +132,10 @@ void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandL
     const TexMetadata& metadata = image.GetMetadata();
 
     if (!(metadata.miscFlags & TEX_MISC_TEXTURECUBE))
-        throw std::runtime_error("Файл не является кубической текстурой (cubemap DDS)");
+    {
+        printf("Файл не является кубической текстурой (cubemap DDS)\n");
+        return;
+    }
 
     // Создаем mip chain, если нет
     ScratchImage mipChain;
@@ -250,6 +254,7 @@ void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandL
     device = nullptr;
 
     m_Initialized = true;
+    m_ResourcePath = path;
 }
 
 void TextureComponent::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot)

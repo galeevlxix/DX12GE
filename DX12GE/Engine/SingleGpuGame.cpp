@@ -64,7 +64,6 @@ bool SingleGpuGame::LoadContent()
     Singleton::GetSerializer()->Load(commandList);
 
     m_ParticleSystem.OnLoad(commandList);
-    m_Skybox.OnLoad(commandList);
 
     // DRAW THE CUBE
     
@@ -217,7 +216,11 @@ void SingleGpuGame::DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList)
     m_GBuffer.SetGraphicsRootDescriptorTable(2, GBuffer::NORMAL,    commandList);
     m_GBuffer.SetGraphicsRootDescriptorTable(3, GBuffer::ORM,       commandList);
     commandList->SetGraphicsRootDescriptorTable(4, m_LightPassBuffer->SrvGPU());
-    m_Skybox.RenderTexture(commandList, 5);
+
+    if (SkyBoxNode* skybox = Singleton::GetNodeGraph()->GetCurrentSkyBox())
+    {
+        skybox->RenderTexture(commandList, 5);
+    }    
 
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
@@ -274,7 +277,11 @@ void SingleGpuGame::DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList)
     Singleton::GetCurrentPass()->Set(CurrentPass::Skybox);
 
     m_SkyboxPipeline.Set(commandList);
-    m_Skybox.OnRender(commandList, Singleton::GetNodeGraph()->GetCurrentCamera()->GetViewProjMatrixNoTranslation());
+
+    if (SkyBoxNode* skybox = Singleton::GetNodeGraph()->GetCurrentSkyBox())
+    {
+        skybox->Render(commandList, Singleton::GetNodeGraph()->GetCurrentCamera()->GetViewProjMatrixNoTranslation());
+    }
 }
 
 void SingleGpuGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList)

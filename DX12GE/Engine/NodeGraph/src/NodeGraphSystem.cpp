@@ -54,7 +54,14 @@ void NodeGraphSystem::OnNodeAdded(Node3D* node)
 	{
 		const std::string nodePath = node->GetNodePath();
 
-		if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
+		if (SkyBoxNode* skybox = dynamic_cast<SkyBoxNode*>(node))
+		{
+			if (!m_CurrentSkyBox)
+			{
+				m_CurrentSkyBox = skybox;
+			}
+		}
+		else if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
 		{
 			m_All3DObjects[nodePath] = obj3D;
 		}
@@ -86,6 +93,8 @@ void NodeGraphSystem::OnNodeAdded(Node3D* node)
 				m_CurrentPlayer = player;
 			}
 		}
+
+		
 
 		for (Node3D* child : node->GetChildren())
 		{
@@ -132,6 +141,10 @@ void NodeGraphSystem::OnNodeRemoved(Node3D* node)
 		else if (node == m_CurrentPlayer)
 		{
 			m_CurrentPlayer = nullptr;
+		}
+		else if (node == m_CurrentSkyBox)
+		{
+			m_CurrentSkyBox = nullptr;
 		}
 
 		for (Node3D* child : node->GetChildren())

@@ -4,6 +4,7 @@
 
 #include "FirstPersonPlayerNode.h"
 #include "ThirdPersonPlayerNode.h"
+#include "SkyBoxNode.h"
 
 #include "EnvironmentNode.h"
 #include "DirectionalLightNode.h"
@@ -28,6 +29,7 @@ class NodeGraphSystem
 	EnvironmentNode* m_CurrentEnvironment;
 	DirectionalLightNode* m_CurrentDirectionalLight;
 	FirstPersonPlayerNode* m_CurrentPlayer;
+	SkyBoxNode* m_CurrentSkyBox;
 
 	EnvironmentNode* m_DefaultEnvironment;
 	DirectionalLightNode* m_DefaultDirectionalLight;
@@ -41,6 +43,9 @@ class NodeGraphSystem
 	
 	friend void FirstPersonPlayerNode::SetCurrent();
 	friend bool FirstPersonPlayerNode::IsCurrent();
+
+	friend void SkyBoxNode::SetCurrent();
+	friend bool SkyBoxNode::IsCurrent();
 
 	friend bool Node3D::AddChild(Node3D* node);
 	void OnNodeAdded(Node3D* node);
@@ -86,6 +91,9 @@ public:
 
 	// Возвращает текущую камеру сцены
 	CameraNode* GetCurrentCamera();
+
+	// Возвращает текущий узел скайбокса сцены
+	SkyBoxNode* GetCurrentSkyBox() { return m_CurrentSkyBox; }
 
 	// Возвращает массив всех компонентов точечных источников света в сцене
 	const std::vector<PointLightComponent> GetPointLightComponents();

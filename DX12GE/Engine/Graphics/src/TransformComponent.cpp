@@ -18,7 +18,12 @@ const DirectX::XMMATRIX& TransformComponent::GetLocalMatrix()
     return m_LocalMatrixCache;
 }
 
-const DirectX::XMMATRIX& TransformComponent::GetLocalRotationMatrix()
+const DirectX::XMMATRIX TransformComponent::GetLocalScaleMatrix()
+{
+    return DirectX::XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);
+}
+
+const DirectX::XMMATRIX TransformComponent::GetLocalRotationMatrix()
 {
     return
         DirectX::XMMatrixRotationX(m_Rotation.x) *

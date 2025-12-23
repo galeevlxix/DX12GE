@@ -67,7 +67,7 @@ private:
     std::shared_ptr<TextureBuffer> m_LightPassBuffer;
     std::shared_ptr<TextureBuffer> m_SSRBuffer;
 
-    Skybox m_Skybox;
+    //Skybox m_Skybox;
 
     // PARTICLES
 

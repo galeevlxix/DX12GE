@@ -264,6 +264,9 @@
     <ClCompile Include="Engine\NodeGraph\src\ThirdPersonPlayerNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\GameSample.h">
@@ -477,6 +480,9 @@
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
     <ClInclude Include="Engine\NodeGraph\NodeSerializingData.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\SkyBoxNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
   </ItemGroup>

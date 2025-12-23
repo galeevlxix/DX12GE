@@ -18,8 +18,8 @@ class TransformComponent
 
 public:
     const DirectX::XMMATRIX& GetLocalMatrix();
-
-	const DirectX::XMMATRIX& GetLocalRotationMatrix();
+    const DirectX::XMMATRIX GetLocalScaleMatrix();
+	const DirectX::XMMATRIX GetLocalRotationMatrix();
 
     void SetDefault(float yOffset = 0.0f);
 

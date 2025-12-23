@@ -11,7 +11,7 @@ uint32_t MaterialEntity::AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandLi
     }
 
     int id = ResourceStorage::AddTexture(path);
-    auto texture = ResourceStorage::GetTexture(id);
+    std::shared_ptr<TextureComponent> texture = ResourceStorage::GetTexture(id);
 
     if (!texture->IsInitialized())
         texture->OnLoad(commandList, path);

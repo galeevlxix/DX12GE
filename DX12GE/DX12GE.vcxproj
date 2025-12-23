@@ -177,6 +177,7 @@
     <ClCompile Include="Engine\NodeGraph\src\Object3DNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\ParticlesNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\PointLightNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\SpotLightNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\ThirdPersonPlayerNode.cpp" />
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp" />
@@ -250,6 +251,7 @@
     <ClInclude Include="Engine\NodeGraph\Object3DNode.h" />
     <ClInclude Include="Engine\NodeGraph\ParticlesNode.h" />
     <ClInclude Include="Engine\NodeGraph\PointLightNode.h" />
+    <ClInclude Include="Engine\NodeGraph\SkyBoxNode.h" />
     <ClInclude Include="Engine\NodeGraph\SpotLightNode.h" />
     <ClInclude Include="Engine\NodeGraph\ThirdPersonPlayerNode.h" />
     <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h" />
