@@ -20,7 +20,6 @@
 
 #include "Graphics/DescriptorHeaps.h"
 #include "Graphics/CascadedShadowMap.h"
-#include "Graphics/Camera.h" 
 #include "Graphics/LightManager.h"
 #include "Graphics/ParticleSystem.h"
 #include "Graphics/Texture3D.h"

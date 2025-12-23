@@ -19,6 +19,8 @@ class TransformComponent
 public:
     const DirectX::XMMATRIX& GetLocalMatrix();
 
+	const DirectX::XMMATRIX& GetLocalRotationMatrix();
+
     void SetDefault(float yOffset = 0.0f);
 
     void SetPosition(Vector3 PositionVector);
@@ -37,6 +39,7 @@ public:
     void Rotate(float dx, float dy, float dz);
 
     void LocalLookAt(const Vector3& localTarget);
+    void RotateToLocalDirection(const Vector3& direction);
 
     void SetScale(Vector3 ScaleVector);
     void SetScale(float x, float y, float z);

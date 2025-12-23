@@ -18,6 +18,14 @@ const DirectX::XMMATRIX& TransformComponent::GetLocalMatrix()
     return m_LocalMatrixCache;
 }
 
+const DirectX::XMMATRIX& TransformComponent::GetLocalRotationMatrix()
+{
+    return
+        DirectX::XMMatrixRotationX(m_Rotation.x) *
+        DirectX::XMMatrixRotationY(m_Rotation.y) *
+        DirectX::XMMatrixRotationZ(m_Rotation.z);
+}
+
 void TransformComponent::SetDefault(float yOffset)
 {
     SetPosition(Vector3(0.0f, -yOffset, 0.0f));
@@ -114,10 +122,17 @@ void TransformComponent::LocalLookAt(const Vector3& localTarget)
     float yaw = atan2(dir.x, dir.z);
     float pitch = asin(-dir.y);
 
-    pitch = std::clamp(
-        pitch,
-        -PI * 0.5f + 0.001f,
-        PI * 0.5f - 0.001f);
+    pitch = std::clamp(pitch, -PI * 0.5f + 0.001f, PI * 0.5f - 0.001f);
+
+    m_Rotation = Vector3(pitch, yaw, 0.0f);
+}
+
+void TransformComponent::RotateToLocalDirection(const Vector3& direction)
+{
+    float yaw = atan2(direction.x, direction.z);
+    float pitch = asin(-direction.y);
+
+    pitch = std::clamp(pitch, -PI * 0.5f + 0.001f, PI * 0.5f - 0.001f);
 
     m_Rotation = Vector3(pitch, yaw, 0.0f);
 }
