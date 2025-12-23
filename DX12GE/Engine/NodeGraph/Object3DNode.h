@@ -7,6 +7,9 @@
 // Класс узла 3Д объекта
 class Object3DNode : public Node3D
 {
+protected:
+	uint32_t m_ComponentId = -1;
+
 public:
 	bool IsVisible;
 
@@ -23,13 +26,18 @@ public:
 	// При keepComponent = false из памяти также удаляется компонент с данными, если в дереве сцены нет других узлов, использующих этот компонент (распространяется на потомков)
 	virtual void Destroy(bool keepComponent = true) override;
 	
-	// Устанавливает новый компонент объекта по id для данного узла
-	virtual void SetComponentId(uint32_t newId) override;
+	// Устанавливает новый компонент объекта (ресурс с данными) по id для данного узла
+	virtual void SetComponentId(uint32_t newId);
+
+	// Возвращает id компонента (ресурса с данными) в ResourceStorage
+	uint32_t GetComponentId() { return m_ComponentId; }
 
 	bool IsValid() { return m_ComponentId != -1; }
 
 	const std::string GetObjectFilePath();
 	const CollisionBox& GetCollisionBox();
+	
+	virtual void Clone(Node3D* cloneNode, Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false) override;
 
 	virtual void DrawDebug() override;
 

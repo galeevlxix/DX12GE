@@ -2,7 +2,7 @@
 #include "../../Graphics/ResourceStorage.h"
 #include "../../Base/Singleton.h"
 
-Object3DNode::Object3DNode() : Node3D()
+Object3DNode::Object3DNode() : Node3D(), m_ComponentId(-1)
 {
     m_Type = NODE_TYPE_OBJECT3D;
     IsVisible = false;
@@ -45,10 +45,12 @@ void Object3DNode::Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const 
 
 void Object3DNode::Destroy(bool keepComponent)
 {
-    uint32_t id = m_ComponentId;
+    if (!(keepComponent || TreeHasObjects3DWithComponentId(m_ComponentId)))
+    {
+        ResourceStorage::DeleteObject3DComponentForever(m_ComponentId);
+    }
+    m_ComponentId = -1;
     Node3D::Destroy(keepComponent);
-    if (keepComponent || TreeHasObjects3DWithComponentId(id)) return;
-    ResourceStorage::DeleteObject3DComponentForever(id);
 }
 
 void Object3DNode::SetComponentId(uint32_t newId)
@@ -58,7 +60,7 @@ void Object3DNode::SetComponentId(uint32_t newId)
         printf("Ошибка: Id компонента 3Д объекта за пределами размера массива в ResourceStorage\n");
         return;
     }
-    Node3D::SetComponentId(newId);
+    m_ComponentId = newId;
 }
 
 const std::string Object3DNode::GetObjectFilePath()
@@ -74,6 +76,22 @@ const CollisionBox& Object3DNode::GetCollisionBox()
         throw;
     }
     return ResourceStorage::GetObject3D(m_ComponentId)->Box;
+}
+
+void Object3DNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
+{
+    if (!cloneNode)
+    {
+        cloneNode = new Object3DNode();
+    }
+
+    Node3D::Clone(cloneNode, newParrent, cloneChildrenRecursive);
+
+    if (cloneNode)
+    {
+        Object3DNode* obj3D = dynamic_cast<Object3DNode*>(cloneNode);
+        obj3D->m_ComponentId = m_ComponentId;
+    }
 }
 
 void Object3DNode::DrawDebug()
@@ -98,11 +116,14 @@ void Object3DNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 
 bool Object3DNode::TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current)
 {
+    if (id == -1) return false;
+
     current = current == nullptr ? Singleton::GetNodeGraph()->GetRoot() : current;
 
-    if (dynamic_cast<Object3DNode*>(current) && current->GetComponentId() == id && id != -1)
+    if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(current))
     {
-        return true;
+        if (obj3D->GetComponentId() == id)
+            return true;
     }
 
     for (auto child : current->GetChildren())

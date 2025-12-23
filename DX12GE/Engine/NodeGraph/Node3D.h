@@ -16,7 +16,6 @@ protected:
 	std::map<std::string, Node3D*> m_Children;
 	Node3D* m_Parrent = nullptr;
 	std::string m_Name;
-    uint32_t m_ComponentId = -1;
 	DirectX::XMMATRIX m_WorldMatrixCache;
 
 	DirectX::SimpleMath::Vector3 m_WorldPositionCache;
@@ -52,12 +51,6 @@ public:
 	// Возвращает направление объекта в мировом пространстве
 	// Обновляется только после OnUpdate
 	const DirectX::SimpleMath::Vector3& GetWorldDirection() { return m_WorldDirectionCache; }
-
-	// Возвращает id компонента (ресурса с данными) в ResourceStorage
-	uint32_t GetComponentId() { return m_ComponentId; }
-
-	// Устанавливает новый компонент (ресурс с данными) по id для данного узла
-	virtual void SetComponentId(uint32_t newId) { m_ComponentId = newId; }
 
 	// Возвращает имя узла
 	const std::string GetName() { return m_Name; }

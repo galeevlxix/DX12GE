@@ -282,3 +282,10 @@ void NodeGraphSystem::OnKeyPressed(KeyEventArgs& e)
 		Singleton::GetSelection()->DeselectAll();
 	}
 }
+
+void NodeGraphSystem::OnResize(ResizeEventArgs& e) 
+{ 
+	m_SceneRootNode->OnWindowResize(e); 
+
+	WindowRatio = static_cast<float>(e.Width) / static_cast<float>(e.Height); 
+}

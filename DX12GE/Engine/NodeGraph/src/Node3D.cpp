@@ -1,6 +1,6 @@
 #include "../../Base/Singleton.h"
 
-Node3D::Node3D() : m_Parrent(nullptr), m_ComponentId(-1)
+Node3D::Node3D() : m_Parrent(nullptr)
 {
     m_Type = NODE_TYPE_NODE3D;
     m_WorldMatrixCache = DirectX::XMMATRIX();
@@ -70,8 +70,6 @@ void Node3D::Destroy(bool keepComponent)
         m_Parrent->RemoveChild(m_Name);
         m_Parrent = nullptr;
     }
-
-    m_ComponentId = -1;
 }
 
 const DirectX::XMMATRIX& Node3D::GetWorldMatrix()
@@ -280,8 +278,6 @@ void Node3D::Clone(Node3D* cloneNode, Node3D* parrent, bool cloneChildrenRecursi
     cloneNode->Transform.SetPosition(Transform.GetPosition());
     cloneNode->Transform.SetRotation(Transform.GetRotation());
     cloneNode->Transform.SetScale(Transform.GetScale());
-
-    cloneNode->m_ComponentId = m_ComponentId;
 
     if (parrent)
     {

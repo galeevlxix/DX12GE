@@ -105,5 +105,5 @@ public:
 	void OnMouseMoved(MouseMotionEventArgs& e) { m_SceneRootNode->OnMouseMoved(e); }
 	void OnMouseButtonPressed(MouseButtonEventArgs& e) { m_SceneRootNode->OnMouseButtonPressed(e); }
 	void OnMouseButtonReleased(MouseButtonEventArgs& e) { m_SceneRootNode->OnMouseButtonReleased(e); }
-	void OnResize(ResizeEventArgs& e) { m_SceneRootNode->OnWindowResize(e); WindowRatio = static_cast<float>(e.Width) / static_cast<float>(e.Height); }
+	void OnResize(ResizeEventArgs& e);
 };
