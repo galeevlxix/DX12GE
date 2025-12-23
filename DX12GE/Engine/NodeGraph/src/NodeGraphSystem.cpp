@@ -128,6 +128,8 @@ void NodeGraphSystem::OnNodeAdded(Node3D* node)
 			}
 		}
 
+		
+
 		for (Node3D* child : node->GetChildren())
 		{
 			OnNodeAdded(child);
