@@ -122,16 +122,14 @@ bool Object3DNode::TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current)
 
     if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(current))
     {
-        if (obj3D->GetComponentId() == id)
+        if (obj3D->GetComponentId() == id && obj3D != this)
             return true;
     }
 
     for (auto child : current->GetChildren())
     {
-        if (TreeHasObjects3DWithComponentId(id, child))
-        {
+        if (TreeHasObjects3DWithComponentId(id, child)) 
             return true;
-        }
     }
 
     return false;
