@@ -41,6 +41,48 @@ void CameraNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildren
 	}
 }
 
+void CameraNode::DrawDebug()
+{
+	Node3D::DrawDebug();
+	Matrix view = Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
+	Matrix proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
+	Singleton::GetDebugRender()->DrawFrustrum(view, proj);
+}
+
+void CameraNode::CreateJsonData(json& j)
+{
+	Node3D::CreateJsonData(j);
+
+	j["cam_fov"] = Fov;
+	j["cam_z_near"] = ZNear;
+	j["cam_z_far"] = ZFar;
+}
+
+void CameraNode::LoadFromJsonData(const NodeSerializingData& nodeData)
+{
+	Node3D::LoadFromJsonData(nodeData);
+	Fov = nodeData.camFov;
+	ZNear = nodeData.camZNear;
+	ZFar = nodeData.camZFar;
+}
+
+void CameraNode::SetCurrent()
+{
+	if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(m_Parrent))
+	{
+		player->SetCamera(this);
+	}
+}
+
+bool CameraNode::IsCurrent()
+{
+	if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(m_Parrent))
+	{
+		return player->GetCamera() == this;
+	}
+	return false;
+}
+
 void CameraNode::OnWindowResize(ResizeEventArgs& e)
 {
 	Node3D::OnWindowResize(e);

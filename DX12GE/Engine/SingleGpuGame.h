@@ -59,9 +59,6 @@ private:
     bool m_Initialized = false;
 
     // SCENE
-
-    NodeGraphSystem* m_NodeGraph;
-
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;
 

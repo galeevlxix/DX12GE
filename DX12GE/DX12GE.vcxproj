@@ -245,6 +245,7 @@
     <ClInclude Include="Engine\NodeGraph\FirstPersonPlayerNode.h" />
     <ClInclude Include="Engine\NodeGraph\Node3D.h" />
     <ClInclude Include="Engine\NodeGraph\NodeGraphSystem.h" />
+    <ClInclude Include="Engine\NodeGraph\NodeSerializingData.h" />
     <ClInclude Include="Engine\NodeGraph\NodeTypeEnum.h" />
     <ClInclude Include="Engine\NodeGraph\Object3DNode.h" />
     <ClInclude Include="Engine\NodeGraph\ParticlesNode.h" />

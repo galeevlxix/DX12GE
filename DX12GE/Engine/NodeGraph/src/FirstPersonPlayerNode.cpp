@@ -7,8 +7,14 @@ FirstPersonPlayerNode::FirstPersonPlayerNode() : Object3DNode()
 
 	m_Camera = nullptr;
 
-	m_MovementSpeed = 0.0f;
-	m_Sensitivity = 0.0075f;
+	m_CurrentMovementSpeed = 0.0f;
+	MinMovementSpeed = 2.0f;
+	NormalMovementSpeed = 4.0f;
+	MaxMovementSpeed = 8.0f;
+
+	MouseSensitivity = 0.0075f;
+	WheelSensitivity = 0.8f;
+
 	m_angle_h = 0.0f;
 	m_angle_v = 0.0f;
 	m_prevX = 0;
@@ -19,19 +25,19 @@ FirstPersonPlayerNode::FirstPersonPlayerNode() : Object3DNode()
 
 void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 {
-	if (IsCurrent() && m_Type == NODE_TYPE_FIRST_PERSON_PLAYER && m_PressedInputs.RBC)
+	if (IsCurrent() && m_PressedInputs.RBC)
 	{
 		if (m_PressedInputs.Shift)
 		{
-			m_MovementSpeed = m_MinMovementSpeed;
+			m_CurrentMovementSpeed = MinMovementSpeed;
 		}
 		else if (m_PressedInputs.Ctrl)
 		{
-			m_MovementSpeed = m_MaxMovementSpeed;
+			m_CurrentMovementSpeed = MaxMovementSpeed;
 		}
 		else
 		{
-			m_MovementSpeed = m_NormalMovementSpeed;
+			m_CurrentMovementSpeed = NormalMovementSpeed;
 		}
 
 		Transform.SetRotationY(m_angle_h);
@@ -53,27 +59,27 @@ void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 		float delta = static_cast<float>(deltaTime);
 		if (m_PressedInputs.W)
 		{
-			Transform.Move(direction * m_MovementSpeed * delta);
+			Transform.Move(direction * m_CurrentMovementSpeed * delta);
 		}
 		if (m_PressedInputs.S)
 		{
-			Transform.Move(-direction * m_MovementSpeed * delta);
+			Transform.Move(-direction * m_CurrentMovementSpeed * delta);
 		}
 		if (m_PressedInputs.A)
 		{
-			Transform.Move(-right * m_MovementSpeed * delta);
+			Transform.Move(-right * m_CurrentMovementSpeed * delta);
 		}
 		if (m_PressedInputs.D)
 		{
-			Transform.Move(right * m_MovementSpeed * delta);
+			Transform.Move(right * m_CurrentMovementSpeed * delta);
 		}
 		if (m_PressedInputs.E)
 		{
-			Transform.Move(Vector3::Up * m_MovementSpeed * delta);
+			Transform.Move(Vector3::Up * m_CurrentMovementSpeed * delta);
 		}
 		if (m_PressedInputs.Q)
 		{
-			Transform.Move(Vector3::Down * m_MovementSpeed * delta);
+			Transform.Move(Vector3::Down * m_CurrentMovementSpeed * delta);
 		}
 	}
 
@@ -99,6 +105,55 @@ bool FirstPersonPlayerNode::AddChild(Node3D* node)
 		}
 	}
 	return true;
+}
+
+void FirstPersonPlayerNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
+{
+	if (!cloneNode)
+	{
+		cloneNode = new FirstPersonPlayerNode();
+	}
+
+	Object3DNode::Clone(cloneNode, newParrent, cloneChildrenRecursive);
+
+	if (cloneNode)
+	{
+		FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(cloneNode);
+
+		player->MouseSensitivity = MouseSensitivity;
+		player->WheelSensitivity = WheelSensitivity;
+		player->MinMovementSpeed = MinMovementSpeed;
+		player->NormalMovementSpeed = NormalMovementSpeed;
+		player->MaxMovementSpeed = MaxMovementSpeed;
+	}
+}
+
+void FirstPersonPlayerNode::CreateJsonData(json& j)
+{
+	Object3DNode::CreateJsonData(j);
+
+	j["sens_mouse"] = MouseSensitivity;
+	j["sens_wheel"] = WheelSensitivity;
+
+	j["speed_min"] = MinMovementSpeed;
+	j["speed_nrm"] = NormalMovementSpeed;
+	j["speed_max"] = MaxMovementSpeed;
+
+	if (IsCurrent())
+	{
+		j["is_current"] = true;
+	}
+}
+
+void FirstPersonPlayerNode::LoadFromJsonData(const NodeSerializingData& nodeData)
+{
+	Object3DNode::LoadFromJsonData(nodeData);
+
+	MouseSensitivity = nodeData.MouseSensitivity;
+	WheelSensitivity = nodeData.WheelSensitivity;
+	MinMovementSpeed = nodeData.MinMovementSpeed;
+	NormalMovementSpeed = nodeData.NormalMovementSpeed;
+	MaxMovementSpeed = nodeData.MaxMovementSpeed;
 }
 
 void FirstPersonPlayerNode::SetCurrent()
@@ -143,9 +198,9 @@ void FirstPersonPlayerNode::OnMouseMoved(MouseMotionEventArgs& e)
 	m_dx = e.X - m_prevX;
 	m_dy = e.Y - m_prevY;
 
-	m_angle_h -= m_dx * m_Sensitivity;
-	if (m_angle_v + m_dy * m_Sensitivity > -PI / 2.0f && m_angle_v + m_dy * m_Sensitivity < PI / 2.0f)
-		m_angle_v += m_dy * m_Sensitivity;
+	m_angle_h -= m_dx * MouseSensitivity;
+	if (m_angle_v + m_dy * MouseSensitivity > -PI / 2.0f && m_angle_v + m_dy * MouseSensitivity < PI / 2.0f)
+		m_angle_v += m_dy * MouseSensitivity;
 
 	m_prevX = e.X;
 	m_prevY = e.Y;
@@ -177,5 +232,5 @@ void FirstPersonPlayerNode::OnMouseButtonReleased(MouseButtonEventArgs& e)
 void FirstPersonPlayerNode::OnMouseWheel(MouseWheelEventArgs& e)
 {
 	Object3DNode::OnMouseWheel(e);
-	m_Camera->Fov = std::clamp(m_Camera->Fov - e.WheelDelta, 20.0f, 120.0f);
+	m_Camera->Fov = std::clamp(m_Camera->Fov - e.WheelDelta * WheelSensitivity, 20.0f, 120.0f);
 }

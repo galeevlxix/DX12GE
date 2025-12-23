@@ -17,7 +17,6 @@ bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const 
     Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);
-    OnLoad();
     IsVisible = true;
     return true;
 }
@@ -81,6 +80,20 @@ void Object3DNode::DrawDebug()
 {
     Node3D::DrawDebug();
     Singleton::GetDebugRender()->DrawBoundingBox(GetCollisionBox(), GetWorldMatrix());
+}
+
+void Object3DNode::CreateJsonData(json& j)
+{
+	Node3D::CreateJsonData(j);
+
+    j["file_path"] = GetObjectFilePath();
+    j["is_visible"] = IsVisible;
+}
+
+void Object3DNode::LoadFromJsonData(const NodeSerializingData& nodeData)
+{
+    Node3D::LoadFromJsonData(nodeData);
+    IsVisible = nodeData.isVisible;
 }
 
 bool Object3DNode::TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current)

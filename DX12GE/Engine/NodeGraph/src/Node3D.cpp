@@ -79,6 +79,34 @@ const DirectX::XMMATRIX& Node3D::GetWorldMatrix()
     return m_WorldMatrixCache;
 }
 
+void Node3D::CreateJsonData(json& j)
+{
+    j["node_path"] = GetNodePath();
+    j["node_type"] = GetType();
+
+    auto pos = Transform.GetPosition();
+    j["trans_pos_x"] = pos.x;
+    j["trans_pos_y"] = pos.y;
+    j["trans_pos_z"] = pos.z;
+
+    auto rot = Transform.GetRotation();
+    j["trans_rot_x"] = rot.x;
+    j["trans_rot_y"] = rot.y;
+    j["trans_rot_z"] = rot.z;
+
+    auto scl = Transform.GetScale();
+    j["trans_scl_x"] = scl.x;
+    j["trans_scl_y"] = scl.y;
+    j["trans_scl_z"] = scl.z;
+}
+
+void Node3D::LoadFromJsonData(const NodeSerializingData& nodeData)
+{
+    Transform.SetPosition(nodeData.pos);
+    Transform.SetRotation(nodeData.rot);
+    Transform.SetScale(nodeData.scl);
+}
+
 void Node3D::NotifyParrentChanged()
 {
     SetTransformCacheStatus(Transform, true);

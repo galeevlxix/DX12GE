@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include "../Base/SimpleMath.h"
 
 enum NodeTypeEnum
 {

@@ -476,6 +476,9 @@
     <ClInclude Include="Engine\NodeGraph\NodeTypeEnum.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\NodeSerializingData.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc">

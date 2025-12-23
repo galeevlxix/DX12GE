@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../Graphics/TransformComponent.h"
-#include "NodeTypeEnum.h"
+#include "NodeSerializingData.h"
 #include "../Base/Events.h"
 #include <map>
 #include <vector>
-#include <string>
 
+// Базовый класс узла в дереве сцены
 class Node3D
 {
 public:
@@ -27,13 +27,11 @@ protected:
 public:
 	Node3D();
 
+	// Возвращает тип узла
 	NodeTypeEnum GetType() { return m_Type; }
 
 	// Возвращает путь узла в дереве сцены от самого дальнего родителя до данного узла
 	const std::string GetNodePath();
-
-	// Вызывается при создании узла
-	virtual void OnLoad() {};
 	
 	// Обновляет данный узел и всех потомков узла
 	virtual void OnUpdate(const double& deltaTime);
@@ -126,8 +124,14 @@ public:
 	// Рисует отладочные примитивы
 	virtual void DrawDebug();
 
-	// Делает узел активным (н-р CameraNode, DirectionalLight или Environment)
+	// Делает узел единственным активным на сцене (н-р CameraNode, DirectionalLight, Environment и тд)
 	virtual void SetCurrent() {};
+
+	// Создает JSON данные для сериализации узла
+	virtual void CreateJsonData(json& j);
+
+	// Загружает данные узла из структуры NodeSerializingData
+	virtual void LoadFromJsonData(const NodeSerializingData& nodeData);
 
 private:
 	void NotifyParrentChanged();

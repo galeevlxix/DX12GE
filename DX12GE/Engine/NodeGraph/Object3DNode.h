@@ -4,6 +4,7 @@
 #include "../Base/DX12LibPCH.h"
 #include "../Base/CollisionBox.h"
 
+// Класс узла 3Д объекта
 class Object3DNode : public Node3D
 {
 public:
@@ -31,6 +32,10 @@ public:
 	const CollisionBox& GetCollisionBox();
 
 	virtual void DrawDebug() override;
+
+	virtual void CreateJsonData(json& j) override;
+
+	virtual void LoadFromJsonData(const NodeSerializingData& nodeData) override;
 
 private:
 	// Возвращает true, если в дереве существует узел с таким же id компонента
