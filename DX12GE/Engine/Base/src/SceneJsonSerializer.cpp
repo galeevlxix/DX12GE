@@ -1,6 +1,7 @@
 #include "../SceneJsonSerializer.h"
 #include "../../Graphics/ResourceStorage.h"
 #include "../Singleton.h"
+#include "LuaManager.h"
 #include <fstream>
 
 static const std::string path = "../../DX12GE/Resources/scene lite.json";
@@ -9,6 +10,34 @@ struct ParsedNodePath
 {
 	std::string name;
 	std::string parrentNodePath;
+};
+
+struct NodeData
+{
+	std::string nodePath;
+	std::string type;
+	std::vector<std::string> scripts;
+	std::string filePath;
+
+	Vector3 pos;
+	Vector3 rot;
+	Vector3 scl;
+
+	// lights
+	Vector3 lightColor;
+	float lightIntensity;
+	Vector3 lightAttenuation;
+	float lightCutoff;
+
+	//environment
+	bool envFogEnabled;
+	Vector3 envFogColor;
+	float envFogStart;
+	float envFogDistance;
+
+	float envSSRMaxDistance;
+	float envSSRStepLength;
+	float envSSRThickness;
 };
 
 static const ParsedNodePath ParseNodePath(const std::string& nodePath)
@@ -57,7 +86,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	json scene;
 	in >> scene;
 
-	std::cout << "Начало загрузки объектов сцены из файла " + path << std::endl;
+	std::cout << "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ " + path << std::endl;
 
 	std::vector<NodeSerializingData> nodesData;
 
@@ -66,8 +95,10 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		NodeSerializingData newNode;
 
 		newNode.nodePath = it->at("node_path");
+		
 		newNode.type = it->at("node_type");
-
+		newNode.scripts = it->at("scripts");
+		
 		newNode.filePath = it->contains("file_path") ? it->at("file_path") : "";
 
 		newNode.pos = Vector3(it->at("trans_pos_x"), it->at("trans_pos_y"), it->at("trans_pos_z"));
@@ -222,7 +253,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	}
 	else
 	{
-		throw "Ошибка! Файл поврежден! Файл сцены не содержит коренвой узел";
+		throw "пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ";
 	}
 
 	for (int i = 1; i < nodesData.size(); ++i)
@@ -265,7 +296,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			node = new SkyBoxNode();
 			break;
 		default:
-			printf("Ошибка! Тип узла %d не поддерживается!\n", nodeData.type);
+			printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ %d пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!\n", nodeData.type);
 			break;
 		}
 
@@ -275,7 +306,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		{
 			if (!obj3D->Create(commandList, nodeData.filePath))
 			{
-				printf("Предупреждение! Меш узла %s не инициализирован!\n", parsed.name.c_str());
+				printf("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ %s пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!\n", parsed.name.c_str());
 			}
 		}
 
@@ -295,13 +326,21 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		}
 		else
 		{
-			printf("Ошибка! Файл сцены поврежден!\n");
+			printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!\n");
 			node->Destroy(true);
 			delete node;
 		}
 	}
 
-	std::cout << "Конец загрузки объектов сцены." << std::endl;
+	for (const auto& node : nodesData)
+	{
+		for (const auto& script : node.scripts)
+		{
+			LuaManager::CreateValidClass(script, node.nodePath);
+		}
+	}
+
+	std::cout << "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ." << std::endl;
 
 	in.close();
 }

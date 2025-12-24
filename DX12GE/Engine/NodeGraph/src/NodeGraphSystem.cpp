@@ -1,5 +1,6 @@
 #include "../NodeGraphSystem.h"
 #include "../../Base/Singleton.h"
+#include "LuaManager.h"
 
 NodeGraphSystem::NodeGraphSystem()
 {
@@ -13,6 +14,10 @@ NodeGraphSystem::NodeGraphSystem()
 	m_DefaultEnvironment = nullptr;
 	m_DefaultDirectionalLight = nullptr;
 	m_DefaultCamera = nullptr;
+	LuaManager::SetGraspSystem(this);
+
+	m_ActiveEnvironment = nullptr;
+	m_ActiveDirectionalLight = nullptr;
 }
 
 void NodeGraphSystem::Destroy()

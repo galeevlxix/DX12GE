@@ -5,6 +5,7 @@
 #include <vector>
 #include <cctype>
 #include <filesystem>
+#include "../DX12GE/EngineConfig.h"
 #include <algorithm>
 #include <system_error>
 #include <direct.h> 
@@ -19,6 +20,7 @@ lua_State* LuaManager::L = nullptr;
 LuaManager* LuaManager::p_instance = nullptr;
 std::string const luaSciptsFolder = "../Lua/scripts/";
 static SingleGpuGame* p_scene;
+static NodeGraphSystem* p_grapsh_system;
 static std::vector<std::string> lua_classes_vector;
 static std::map<std::string, std::vector<std::string>> lua_classes_map;
 static sol::state lua;
@@ -28,10 +30,10 @@ static Camera* p_camera;
 //LUA API ZONE
 Node3D* lua_get_object_on_scene(std::string name)
 {
-	const auto object = p_scene->Get(name);
+	const auto object = p_grapsh_system->GetNodeByPath(name);
 	//object->AddScriptComponent();
 
-	return nullptr;
+	return object;
 }
 
 int lua_rotate_object_by_rotator(Node3D* object, float y, float p, float r)
@@ -269,22 +271,21 @@ LuaManager::LuaManager()
 		lua.safe_script_file(luaFiles[i]);
 	}
 
-#ifdef TEST
-	//lua.safe_script_file(luaSciptsFolder + "Core.lua");
-//	lua.safe_script_file(luaSciptsFolder + "Player.lua");
-	//lua.safe_script_file(luaSciptsFolder + "TestScript.lua");
-	//lua.safe_script_file(luaSciptsFolder + "TestScript2.lua");
-#else
-	lua.safe_script_file("Core.lua");
-	lua.safe_script_file("Player.lua");
-//	lua.safe_script_file("TestScript.lua");
-	//lua.safe_script_file("TestScript2.lua");
-#endif // TEST
-
-	/*/
-
-	//lua_classes_vector.emplace_back("Player");
-	//*
+	if (!EngineConfig::IsReleaseMode)
+	{
+		lua.safe_script_file(luaSciptsFolder + "Core.lua");
+		lua.safe_script_file(luaSciptsFolder + "Player.lua");
+		lua.safe_script_file(luaSciptsFolder + "TestScript.lua");
+		lua.safe_script_file(luaSciptsFolder + "TestScript2.lua");
+	}
+	else
+	{
+		lua.safe_script_file("Core.lua");
+		lua.safe_script_file("Player.lua");
+		//	lua.safe_script_file("TestScript.lua");
+			//lua.safe_script_file("TestScript2.lua");
+	}
+	
 
 	//*/
 
@@ -417,10 +418,10 @@ std::string LuaManager::ReadUserDataFromTable(std::string tableName, std::string
 ///////////////////////////////////////////////////////////////// ABOUT TO BE CUTTED END ZONE
 
 
-void LuaManager::SetScene(SingleGpuGame* scene)
+void LuaManager::SetGraspSystem(NodeGraphSystem* system)
 {
-	p_scene = scene;
-	const auto tuple = std::make_tuple(1, 2.5f, "dodik");
+	p_grapsh_system = system;
+	//const auto tuple = std::make_tuple(1, 2.5f, "dodik");
 	//p_instance->CallLuaFunction("DoThing", tuple, 1);
 }
 
@@ -498,6 +499,7 @@ std::string LuaManager::CreateValidClass(std::string className, std::string objI
 	lua.safe_script("if " + actualName + " ~= nil then return end \n" + actualName + " = " + highCaseName + ":new(\"" + actualName + "\")" +
 		"\n" + actualName + ":SetEntityName(\"" + objId + "\")\n" + actualName + ":AddComponent(Transform)\n");
 
+	lua_register_class(actualName);
 	return actualName;
 }
 

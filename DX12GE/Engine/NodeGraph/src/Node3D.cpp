@@ -20,6 +20,11 @@ const std::string Node3D::GetNodePath()
     return nodePath;
 }
 
+const std::string Node3D::GetNodeScripts()
+{
+    return std::string();
+}
+
 void SetTransformCacheStatus(TransformComponent& transform, bool cacheIsDirty)
 {
     transform.m_CacheIsDirty = cacheIsDirty;

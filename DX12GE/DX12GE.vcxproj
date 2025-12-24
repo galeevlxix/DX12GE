@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DX12GE.cpp" />
+    <ClCompile Include="EngineConfig.cpp" />
     <ClCompile Include="Engine\AI\src\AIComponent.cpp" />
     <ClCompile Include="Engine\AI\src\Behavior.cpp" />
     <ClCompile Include="Engine\AI\src\BehaviorTree.cpp" />
@@ -285,6 +286,7 @@
     <ClCompile Include="Game\GameSample.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EngineConfig.h" />
     <ClInclude Include="Engine\AI\AIComponent.h" />
     <ClInclude Include="Engine\AI\Behavior.h" />
     <ClInclude Include="Engine\AI\BehaviorTree.h" />

@@ -60,7 +60,7 @@ public:
 		return p_instance;
 	};
 
-	static void SetScene(SingleGpuGame* scene);
+	static void SetGraspSystem(NodeGraphSystem* system);
 	static void ProceedMouseMovementInput(MouseMotionEventArgs&);
 	static void ProceedMouseClickInput(MouseButtonEventArgs& e, bool pressed);
 	static void ProceedMouseWheelInput(MouseWheelEventArgs& e);

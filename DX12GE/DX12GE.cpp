@@ -5,7 +5,7 @@
 #include "Engine/Base/Application.h"
 #include "Game/GameSample.h"
 #include "Engine/Lua/LuaManager.h"
-
+#include "EngineConfig.h"
 #include <dxgidebug.h>
 
 void ReportLiveObjects()
@@ -21,6 +21,27 @@ int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine,
 {
     int retCode = 0;
     setlocale(LC_ALL, "Russian");
+
+    int argc = 0;
+    LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+    if (argv != NULL)
+    {
+        for (int i = 1; i < argc; ++i)
+        {
+            std::wstring arg = argv[i];
+
+            if (arg == L"-debug")
+            {
+                EngineConfig::IsReleaseMode = false;
+                std::cout << "enbled release mode" << std::endl;
+            }
+        }
+
+        LocalFree(argv);
+    }
+
+
     auto manager = LuaManager::GetInstance();
 
     // Set the working directory to the path of the executable.
