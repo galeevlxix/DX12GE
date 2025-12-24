@@ -162,7 +162,6 @@
     <ClCompile Include="Engine\Graphics\src\ShaderResources.cpp" />
     <ClCompile Include="Engine\Graphics\src\ShadowMap.cpp" />
     <ClCompile Include="Engine\Graphics\src\SharedMemory.cpp" />
-    <ClCompile Include="Engine\Graphics\src\Skybox.cpp" />
     <ClCompile Include="Engine\Graphics\src\SSRCrossAdapterResources.cpp" />
     <ClCompile Include="Engine\Graphics\src\TextureBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
@@ -233,7 +232,6 @@
     <ClInclude Include="Engine\Graphics\ShaderResources.h" />
     <ClInclude Include="Engine\Graphics\ShadowMap.h" />
     <ClInclude Include="Engine\Graphics\SharedMemory.h" />
-    <ClInclude Include="Engine\Graphics\Skybox.h" />
     <ClInclude Include="Engine\Graphics\SSRCrossAdapterResources.h" />
     <ClInclude Include="Engine\Graphics\TextureBuffer.h" />
     <ClInclude Include="Engine\Graphics\TextureComponent.h" />

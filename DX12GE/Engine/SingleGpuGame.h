@@ -26,7 +26,6 @@
 #include "Graphics/TextureBuffer.h"
 #include "Graphics/DepthBuffer.h"
 #include "Graphics/GBuffer.h"
-#include "Graphics/Skybox.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
