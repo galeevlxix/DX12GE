@@ -26,7 +26,7 @@ private:
     void DestroyTexture(uint32_t textureId);
 
 public:
-    map<TextureType, string> m_ImagePaths;
+    std::map<TextureType, std::string> m_ImagePaths;
 
     void Load(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void Render(ComPtr<ID3D12GraphicsCommandList2> commandList);

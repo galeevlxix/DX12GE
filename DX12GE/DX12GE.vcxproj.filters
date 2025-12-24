@@ -150,9 +150,6 @@
     <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\src\Camera.cpp">
-      <Filter>Исходные файлы\Engine\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Graphics\src\CascadedShadowMap.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
@@ -270,7 +267,13 @@
     <ClCompile Include="Engine\NodeGraph\src\NodeGraphSystem.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\FirstPersonPlayerNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
     <ClCompile Include="Engine\NodeGraph\src\ThirdPersonPlayerNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
   </ItemGroup>
@@ -345,9 +348,6 @@
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h">
-      <Filter>Файлы заголовков\Engine\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Graphics\Camera.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\CascadedShadowMap.h">
@@ -479,11 +479,23 @@
     <ClInclude Include="Engine\NodeGraph\NodeGraphSystem.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\GraphicsComponents.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\FirstPersonPlayerNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
     <ClInclude Include="Engine\NodeGraph\ThirdPersonPlayerNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\GraphicsComponents.h">
-      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    <ClInclude Include="Engine\NodeGraph\NodeTypeEnum.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\NodeSerializingData.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\SkyBoxNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -576,9 +588,6 @@
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </None>
     <None Include="..\README.md" />
-    <None Include="Resources\scene.json">
-      <Filter>Файлы ресурсов</Filter>
-    </None>
     <None Include="Resources\scene lite.json">
       <Filter>Файлы ресурсов</Filter>
     </None>

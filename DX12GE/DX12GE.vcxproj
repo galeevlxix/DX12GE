@@ -161,7 +161,6 @@
     <ClCompile Include="Engine\Base\src\UploadBuffer.cpp" />
     <ClCompile Include="Engine\Base\src\Window.cpp" />
     <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp" />
-    <ClCompile Include="Engine\Graphics\src\Camera.cpp" />
     <ClCompile Include="Engine\Graphics\src\CascadedShadowMap.cpp" />
     <ClCompile Include="Engine\Graphics\src\CrossAdapterResource.cpp" />
     <ClCompile Include="Engine\Graphics\src\CurrentPass.cpp" />
@@ -178,7 +177,6 @@
     <ClCompile Include="Engine\Graphics\src\ShaderResources.cpp" />
     <ClCompile Include="Engine\Graphics\src\ShadowMap.cpp" />
     <ClCompile Include="Engine\Graphics\src\SharedMemory.cpp" />
-    <ClCompile Include="Engine\Graphics\src\Skybox.cpp" />
     <ClCompile Include="Engine\Graphics\src\SSRCrossAdapterResources.cpp" />
     <ClCompile Include="Engine\Graphics\src\TextureBuffer.cpp" />
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
@@ -187,11 +185,13 @@
     <ClCompile Include="Engine\NodeGraph\src\CameraNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\DirectionalLightNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\EnvironmentNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\FirstPersonPlayerNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\Node3D.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\NodeGraphSystem.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\Object3DNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\ParticlesNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\PointLightNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\SpotLightNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\ThirdPersonPlayerNode.cpp" />
     <ClCompile Include="Engine\Lua\LuaManager.cpp">
@@ -314,7 +314,6 @@
     <ClInclude Include="Engine\Base\UploadBuffer.h" />
     <ClInclude Include="Engine\Base\Window.h" />
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h" />
-    <ClInclude Include="Engine\Graphics\Camera.h" />
     <ClInclude Include="Engine\Graphics\CascadedShadowMap.h" />
     <ClInclude Include="Engine\Graphics\CrossAdapterResource.h" />
     <ClInclude Include="Engine\Graphics\CurrentPass.h" />
@@ -332,7 +331,6 @@
     <ClInclude Include="Engine\Graphics\ShaderResources.h" />
     <ClInclude Include="Engine\Graphics\ShadowMap.h" />
     <ClInclude Include="Engine\Graphics\SharedMemory.h" />
-    <ClInclude Include="Engine\Graphics\Skybox.h" />
     <ClInclude Include="Engine\Graphics\SSRCrossAdapterResources.h" />
     <ClInclude Include="Engine\Graphics\TextureBuffer.h" />
     <ClInclude Include="Engine\Graphics\TextureComponent.h" />
@@ -342,11 +340,15 @@
     <ClInclude Include="Engine\NodeGraph\CameraNode.h" />
     <ClInclude Include="Engine\NodeGraph\DirectionalLightNode.h" />
     <ClInclude Include="Engine\NodeGraph\EnvironmentNode.h" />
+    <ClInclude Include="Engine\NodeGraph\FirstPersonPlayerNode.h" />
     <ClInclude Include="Engine\NodeGraph\Node3D.h" />
     <ClInclude Include="Engine\NodeGraph\NodeGraphSystem.h" />
+    <ClInclude Include="Engine\NodeGraph\NodeSerializingData.h" />
+    <ClInclude Include="Engine\NodeGraph\NodeTypeEnum.h" />
     <ClInclude Include="Engine\NodeGraph\Object3DNode.h" />
     <ClInclude Include="Engine\NodeGraph\ParticlesNode.h" />
     <ClInclude Include="Engine\NodeGraph\PointLightNode.h" />
+    <ClInclude Include="Engine\NodeGraph\SkyBoxNode.h" />
     <ClInclude Include="Engine\NodeGraph\SpotLightNode.h" />
     <ClInclude Include="Engine\NodeGraph\ThirdPersonPlayerNode.h" />
     <ClInclude Include="Engine\Lua\LuaManager.h" />
@@ -507,7 +509,6 @@
     <None Include="Engine\Base\SimpleMath.inl" />
     <None Include="packages.config" />
     <None Include="Resources\scene lite.json" />
-    <None Include="Resources\scene.json" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Engine\Lua\scripts\TestScript.lua" />

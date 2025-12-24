@@ -68,12 +68,7 @@ void SelectionSystem::DrawDebug()
 {
     for (Node3D* obj : m_Selected)
     {
-        if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(obj))
-        {
-            const CollisionBox& box = obj3D->GetCollisionBox();
-            Matrix transform = obj->GetWorldMatrix();
-            Singleton::GetDebugRender()->DrawBoundingBox(box, transform);
-        }       
+        obj->DrawDebug(); 
     }
 }
 

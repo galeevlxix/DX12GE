@@ -200,7 +200,7 @@ float3 CalculatePBRLight(float3 Color, float Intensity, float3 LightDirection, f
 
 float3 CalcPointLight(PointLight pLight, float3 worldPos, float3 normal, float4 albedo, float roughness, float metalness)
 {
-    float3 LightToPixel = worldPos - pLight.Position;
+    float3 LightToPixel = worldPos - pLight.Position; 
     float Distance = length(LightToPixel);
     float3 Color = CalculatePBRLight(pLight.Color, pLight.Intensity, -normalize(LightToPixel), worldPos, normal, albedo, roughness, metalness);
     float Attenuation = pLight.AttenuationConstant + pLight.AttenuationLinear * Distance + pLight.AttenuationExp * Distance * Distance;

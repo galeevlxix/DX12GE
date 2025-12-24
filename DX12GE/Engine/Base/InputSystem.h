@@ -1,7 +1,7 @@
 #pragma once
 #include "Events.h"
 
-struct inputs
+struct PressedKeysAndButtons
 {
     bool W = false;
     bool S = false;

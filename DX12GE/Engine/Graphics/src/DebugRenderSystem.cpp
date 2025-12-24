@@ -146,6 +146,11 @@ void DebugRenderSystem::DrawSphere(const double& radius, const Color& color, con
 	DrawCircle(radius, color, Matrix::CreateRotationY(DirectX::XM_PIDIV2) * transform, density);
 }
 
+void DebugRenderSystem::DrawSphere(const double& radius, const Vector3& color, const Matrix& transform, int density)
+{
+	DrawSphere(radius, Color(color.x, color.y, color.z), transform, density);
+}
+
 void DebugRenderSystem::DrawPlane(const Vector4& p, const Color& color, float sizeWidth, float sizeNormal, bool drawCenterCross)
 {
 	auto dir = Vector3(p.x, p.y, p.z);

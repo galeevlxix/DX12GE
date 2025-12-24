@@ -75,6 +75,7 @@ void ResourceStorage::DeleteObject3DComponentForever(uint32_t id)
 void ResourceStorage::DeleteTextureComponentForever(uint32_t id)
 {
     if (!m_Textures[id]) return;
+
     m_Textures[id]->Destroy();
     m_Textures[id].reset();
     m_Textures[id] = nullptr;

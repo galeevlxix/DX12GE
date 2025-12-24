@@ -20,14 +20,12 @@
 
 #include "Graphics/DescriptorHeaps.h"
 #include "Graphics/CascadedShadowMap.h"
-#include "Graphics/Camera.h" 
 #include "Graphics/LightManager.h"
 #include "Graphics/ParticleSystem.h"
 #include "Graphics/Texture3D.h"
 #include "Graphics/TextureBuffer.h"
 #include "Graphics/DepthBuffer.h"
 #include "Graphics/GBuffer.h"
-#include "Graphics/Skybox.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -62,16 +60,7 @@ private:
 
     bool m_Initialized = false;
 
-    bool m_IsTesting = false;
-    vector<float> m_ElapsedTimeArray;
-    const string m_TestTimeOutputFile = "../../DX12GE/Resources/single_gpu.txt";
-    void TestTime(float elapsedTime);
-
     // SCENE
-
-    Camera* m_Camera;
-    ThirdPersonPlayerNode* m_Player;
-
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;
 
@@ -80,7 +69,7 @@ private:
     std::shared_ptr<TextureBuffer> m_LightPassBuffer;
     std::shared_ptr<TextureBuffer> m_SSRBuffer;
 
-    Skybox m_Skybox;
+    //Skybox m_Skybox;
 
     // PARTICLES
 

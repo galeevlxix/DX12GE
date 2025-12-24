@@ -13,7 +13,6 @@ class LightManager
 
 public:
 	void OnUpdate(float deltaTime);
-	void DrawDebug();
 
 	void AddPointLight(Vector3 pos, Vector3 color, float intensity = 1.0f, float AttenConst = 1.0f, float AttenLinear = 0.09f, float AttenExp = 0.032f);
 	void AddPointLight(Vector3 pos, Vector3 color, float intensity, AttenuationComponent atten);
