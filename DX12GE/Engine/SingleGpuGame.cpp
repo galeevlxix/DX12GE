@@ -1,16 +1,12 @@
 #include "SingleGpuGame.h"
 
-#include "Base/SceneJsonSerializer.h"
 #include "Graphics/ResourceStorage.h"
 #include "Graphics/ShaderResources.h"
-#include "Base/CommandExecutor.h"
 
 #include <sstream>
 #include <string>
 #include <chrono>
 #include <fstream>
-
-static CommandExecutor* executor;
 
 SingleGpuGame::SingleGpuGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
     , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
@@ -52,13 +48,6 @@ bool SingleGpuGame::Initialize()
     m_DepthBuffer->Init(GraphicAdapterPrimary);
     m_DepthBuffer->Resize(GetClientWidth(), GetClientHeight());
 
-    m_Camera = new Camera();
-    m_Camera->OnLoad();
-    m_Camera->Ratio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
-
-    m_DebugSystem = std::make_shared<DebugRenderSystem>();
-    m_SelectionSystem = std::make_shared<SelectionSystem>(m_Objects, m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
-
     if (!super::Initialize()) return false;
     
     return true;
@@ -69,18 +58,12 @@ bool SingleGpuGame::LoadContent()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-    SceneJsonSerializer::Load(commandList, m_Objects);
-    m_Player = dynamic_cast<ThirdPersonPlayer*>(m_Objects["player"]);
-    m_Player->SetCamera(m_Camera);
+    Singleton::Initialize();
+    Singleton::GetSelection()->SetTextureBuffer(m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
+    Singleton::GetNodeGraph()->WindowRatio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
+    Singleton::GetSerializer()->Load(commandList);
 
     m_ParticleSystem.OnLoad(commandList);
-    m_Lights.Init(m_Player);
-
-    m_Skybox.OnLoad(commandList);
-
-    ShaderResources::GetSSRCB()->MaxDistance = 32.0f;
-    ShaderResources::GetSSRCB()->RayStep = 0.1f;
-    ShaderResources::GetSSRCB()->Thickness = 0.0999f;
 
     // DRAW THE CUBE
     
@@ -93,42 +76,44 @@ bool SingleGpuGame::LoadContent()
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
 
-    executor = new CommandExecutor(this);
     m_Initialized = true;
-
     return true;
 }
 
 void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 {
-    if (!m_Initialized) return;
+    if (!m_Initialized || !Singleton::IsInitialized()) return;
     super::OnUpdate(e);
 
-    executor->Update();
+    Singleton::GetExecutor()->Update();
 
     float elapsedTime = static_cast<float>(e.ElapsedTime);
 
-    for (auto obj : m_Objects) 
-        obj.second->OnUpdate(elapsedTime);
+    Singleton::GetNodeGraph()->GetRoot()->OnUpdate(e.ElapsedTime);
 
     m_Lights.OnUpdate(elapsedTime);
-    ShaderResources::GetWorldCB()->LightProps.CameraPos = m_Camera->Position;
-    ShaderResources::GetSSRCB()->ViewProjection = m_Camera->GetViewProjMatrix();
-    ShaderResources::GetSSRCB()->CameraPos = m_Camera->Position;
 
-    m_ParticleSystem.OnUpdate(elapsedTime, m_stopParticles, m_Camera->GetViewProjMatrix(), m_Camera->Position);
-    m_CascadedShadowMap.Update(m_Camera->Position, ShaderResources::GetWorldCB()->DirLight.Direction);
+    CameraNode* camera = Singleton::GetNodeGraph()->GetCurrentCamera();
+	const Matrix viewProj = camera->GetViewProjMatrix();
+	const Vector3& cameraPos = camera->GetWorldPosition(); 
+
+    ShaderResources::GetWorldCB()->LightProps.CameraPos = Vector4(cameraPos);
+
+    ShaderResources::GetSSRCB()->ViewProjection = viewProj;
+    ShaderResources::GetSSRCB()->CameraPos = Vector4(cameraPos);
+
+    m_ParticleSystem.OnUpdate(elapsedTime, m_stopParticles, viewProj, cameraPos);
+    m_CascadedShadowMap.Update(cameraPos, ShaderResources::GetWorldCB()->DirLight.Direction);
     
-    m_DebugSystem->Clear();
-    m_SelectionSystem->DrawDebug(m_DebugSystem);
-    m_Lights.DrawDebug(m_DebugSystem);  
+    Singleton::GetDebugRender()->Clear();
+    Singleton::GetSelection()->DrawDebug();
 
     RefreshTitle(e);
 }
 
 void SingleGpuGame::DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    CurrentPass::Set(CurrentPass::Shadow);
+    Singleton::GetCurrentPass()->Set(CurrentPass::Shadow);
 
     for (int i = 0; i < CASCADES_COUNT; i++)
     {
@@ -155,7 +140,7 @@ void SingleGpuGame::DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> com
 
 void SingleGpuGame::DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    CurrentPass::Set(CurrentPass::Geometry);
+    Singleton::GetCurrentPass()->Set(CurrentPass::Geometry);
 
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer->dsvCpuHandleIndex, GraphicAdapterPrimary);
 
@@ -171,14 +156,14 @@ void SingleGpuGame::DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> comman
     ShaderResources::SetGraphicsWorldCB(commandList, 0);
     commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap(GraphicAdapterPrimary).GetAddressOf());
 
-    DrawSceneObjectsForward(commandList, m_Camera->GetViewProjMatrix());
+    DrawSceneObjectsForward(commandList, Singleton::GetNodeGraph()->GetCurrentCamera()->GetViewProjMatrix());
 
     m_GBuffer.SetToRead(commandList);
 }
  
 void SingleGpuGame::LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    CurrentPass::Set(CurrentPass::Lighting);
+    Singleton::GetCurrentPass()->Set(CurrentPass::Lighting);
 
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer->dsvCpuHandleIndex, GraphicAdapterPrimary);
 
@@ -193,8 +178,8 @@ void SingleGpuGame::LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandLi
 
     ShaderResources::SetGraphicsWorldCB(commandList, 0);
     ShaderResources::SetGraphicsShadowCB(commandList, 1);
-    SetGraphicsDynamicStructuredBuffer(commandList, 2, m_Lights.m_PointLights);
-    SetGraphicsDynamicStructuredBuffer(commandList, 3, m_Lights.m_SpotLights);
+    SetGraphicsDynamicStructuredBuffer(commandList, 2, Singleton::GetNodeGraph()->GetPointLightComponents());
+    SetGraphicsDynamicStructuredBuffer(commandList, 3, Singleton::GetNodeGraph()->GetSpotLightComponents());
     m_CascadedShadowMap.SetGraphicsRootDescriptorTables(4, commandList);
 
     m_GBuffer.SetGraphicsRootDescriptorTable(8,  GBuffer::POSITION, commandList);
@@ -213,7 +198,7 @@ void SingleGpuGame::LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandLi
 
 void SingleGpuGame::DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    CurrentPass::Set(CurrentPass::SSR);
+    Singleton::GetCurrentPass()->Set(CurrentPass::SSR);
 
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer->dsvCpuHandleIndex, GraphicAdapterPrimary);
     
@@ -231,7 +216,11 @@ void SingleGpuGame::DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList)
     m_GBuffer.SetGraphicsRootDescriptorTable(2, GBuffer::NORMAL,    commandList);
     m_GBuffer.SetGraphicsRootDescriptorTable(3, GBuffer::ORM,       commandList);
     commandList->SetGraphicsRootDescriptorTable(4, m_LightPassBuffer->SrvGPU());
-    m_Skybox.RenderTexture(commandList, 5);
+
+    if (SkyBoxNode* skybox = Singleton::GetNodeGraph()->GetCurrentSkyBox())
+    {
+        skybox->RenderTexture(commandList, 5);
+    }    
 
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
@@ -241,7 +230,7 @@ void SingleGpuGame::DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 void SingleGpuGame::MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    CurrentPass::Set(CurrentPass::Merging);
+    Singleton::GetCurrentPass()->Set(CurrentPass::Merging);
 
     ComPtr<ID3D12Resource> backBuffer = m_pWindow->GetCurrentBackBuffer();
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetView();
@@ -269,7 +258,7 @@ void SingleGpuGame::MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 void SingleGpuGame::DrawParticles(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    CurrentPass::Set(CurrentPass::TransparentParticles);
+    Singleton::GetCurrentPass()->Set(CurrentPass::TransparentParticles);
 
     m_ParticleComputePipeline.SetUpdatePSO(commandList);
     m_tex3d.Render(commandList);
@@ -285,18 +274,22 @@ void SingleGpuGame::DrawParticles(ComPtr<ID3D12GraphicsCommandList2> commandList
 
 void SingleGpuGame::DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    CurrentPass::Set(CurrentPass::Skybox);
+    Singleton::GetCurrentPass()->Set(CurrentPass::Skybox);
 
     m_SkyboxPipeline.Set(commandList);
-    m_Skybox.OnRender(commandList, m_Camera->GetViewProjMatrixNoTranslation());
+
+    if (SkyBoxNode* skybox = Singleton::GetNodeGraph()->GetCurrentSkyBox())
+    {
+        skybox->Render(commandList, Singleton::GetNodeGraph()->GetCurrentCamera()->GetViewProjMatrixNoTranslation());
+    }
 }
 
 void SingleGpuGame::DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    CurrentPass::Set(CurrentPass::Debug);
+    Singleton::GetCurrentPass()->Set(CurrentPass::Debug);
 
     m_SimplePipeline.Set(commandList);    
-    m_DebugSystem->OnRender(commandList, m_Camera->GetViewProjMatrix());
+    Singleton::GetDebugRender()->OnRender(commandList, Singleton::GetNodeGraph()->GetCurrentCamera()->GetViewProjMatrix());
 }
 
 void SingleGpuGame::DrawForwardOther(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -308,80 +301,63 @@ void SingleGpuGame::DrawForwardOther(ComPtr<ID3D12GraphicsCommandList2> commandL
 
 void SingleGpuGame::OnRender(RenderEventArgs& e)
 {
-    if (!m_Initialized) return;
+    if (!m_Initialized || !Singleton::IsInitialized()) return;
     super::OnRender(e);
 
-    TestTime(static_cast<float>(e.ElapsedTime));
-
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
     UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
-
     ShaderResources::GetUploadBuffer()->Reset();
 
-    DrawSceneToShadowMaps(commandList);
-    DrawSceneToGBuffer(commandList);
-    LightPassRender(commandList);
-    DrawSSR(commandList);
-    MergeResults(commandList);
-
-    m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
-    currentBackBufferIndex = m_pWindow->Present();
-    commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
-
-    CurrentPass::Set(CurrentPass::None);
-}
-
-void SingleGpuGame::TestTime(float elapsedTime)
-{
-    if (!m_IsTesting) return;
-
-    if (m_Player->IsTesting())
     {
-        m_ElapsedTimeArray.push_back(elapsedTime);
+        ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+        DrawSceneToShadowMaps(commandList);
+        DrawSceneToGBuffer(commandList);
+        DrawSSR(commandList);
+        uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+        commandQueue->WaitForFenceValue(fenceValue);
     }
-    else
+
     {
-        m_IsTesting = false;
-        ofstream out(m_TestTimeOutputFile);
-        for (size_t i = 0; i < m_ElapsedTimeArray.size(); i++)
-        {
-            out << m_ElapsedTimeArray[i] << endl;
-        }
-        m_ElapsedTimeArray.clear();
-        out.close();
+        ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+        
+        LightPassRender(commandList);
+        MergeResults(commandList);
+
+        m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
+        currentBackBufferIndex = m_pWindow->Present();
+        commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
     }
+
+    Singleton::GetCurrentPass()->Set(CurrentPass::None);
 }
 
 void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
 {
-    super::OnKeyPressed(e);
-    m_Player->OnKeyPressed(e);
-    
+    Singleton::GetNodeGraph()->OnKeyPressed(e);
+
     switch (e.Key)
     {
     case KeyCode::Escape:
         Application::Get().Quit(0);
         break;
-    case KeyCode::Enter:
-        if (e.Alt)
-        {
     case KeyCode::F11:
         m_pWindow->ToggleFullscreen();
         break;
-        }
     case KeyCode::V:
         m_pWindow->ToggleVSync();
         break;
     case KeyCode::P:
         m_stopParticles = !m_stopParticles;
         break;    
-    case KeyCode::T:
-        m_Player->StartTest();
-        m_IsTesting = true;
-        break;   
-    case KeyCode::X:
-        m_Lights.AddPointLight(m_Player->Transform.GetPosition(), Vector3(1.0f, 1.0f, 1.0f), 5.0f);
+    case KeyCode::B:
+        if (Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player") == Singleton::GetNodeGraph()->GetCurrentPlayer())
+        {
+            Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player")->SetCurrent();
+        }
+        else
+        {
+            Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player")->SetCurrent();
+        }
         break;
     case KeyCode::R:
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
@@ -395,28 +371,28 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
 
 void SingleGpuGame::OnKeyReleased(KeyEventArgs& e)
 {
-    m_Player->OnKeyReleased(e);
+    Singleton::GetNodeGraph()->OnKeyReleased(e);
 }
 
 void SingleGpuGame::OnMouseWheel(MouseWheelEventArgs& e)
 {
-    m_Player->OnMouseWheel(e);
+    Singleton::GetNodeGraph()->OnMouseWheel(e);
 }
 
 void SingleGpuGame::OnMouseMoved(MouseMotionEventArgs& e)
 {
-    m_Player->OnMouseMoved(e);
+    Singleton::GetNodeGraph()->OnMouseMoved(e);
 }
 
 void SingleGpuGame::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
-    m_Player->OnMouseButtonPressed(e);
-    m_SelectionSystem->OnMouseButtonPressed(e);
+    Singleton::GetNodeGraph()->OnMouseButtonPressed(e);
+    Singleton::GetSelection()->OnMouseButtonPressed(e);
 }
 
 void SingleGpuGame::OnMouseButtonReleased(MouseButtonEventArgs& e)
 {
-    m_Player->OnMouseButtonReleased(e);
+    Singleton::GetNodeGraph()->OnMouseButtonReleased(e);
 }
 
 void SingleGpuGame::OnResize(ResizeEventArgs& e)
@@ -424,65 +400,77 @@ void SingleGpuGame::OnResize(ResizeEventArgs& e)
     if (e.Width == GetClientWidth() && e.Height == GetClientHeight()) return;
     
     super::OnResize(e);
+    Singleton::GetNodeGraph()->OnResize(e);
     m_Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(e.Width), static_cast<float>(e.Height));
     m_DepthBuffer->Resize(e.Width, e.Height);
     m_GBuffer.Resize(e.Width, e.Height);
     m_LightPassBuffer->Resize(e.Width, e.Height);
     m_SSRBuffer->Resize(e.Width, e.Height);
-    m_Camera->Ratio = static_cast<float>(e.Width) / static_cast<float>(e.Height);
-}
-
-void SingleGpuGame::UpdateSceneObjects(float deltaTime)
-{
-    for (auto obj : m_Objects)
-    {
-        obj.second->OnUpdate(deltaTime);
-    }
 }
 
 void SingleGpuGame::DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
 {
     UINT index = 1;
-    for (auto obj : m_Objects)
+    for (auto obj : Singleton::GetNodeGraph()->GetAll3DObjects())
     {
-        if (CurrentPass::Get() == CurrentPass::Geometry)
+        if (Singleton::GetCurrentPass()->Get() == CurrentPass::Geometry)
         {
             ShaderResources::GetGeometryPassCB()->ObjectId = index++;
         }
-        obj.second->OnRender(commandList, viewProjMatrix);
+        obj.second->Render(commandList, viewProjMatrix);
     }
 }
 
-Object3DEntity* SingleGpuGame::GetSceneEntity(std::string name)
+void SingleGpuGame::RefreshTitle(UpdateEventArgs& e)
 {
-    if (m_Objects.find(name) == m_Objects.end()) return nullptr;
-    return m_Objects[name];
-}
+    static unsigned long frameCounter = 0;
+    static double timer = 0.0;
 
-std::map<std::string, Object3DEntity*>::iterator SingleGpuGame::GetSceneEntity(int index)
-{
-    if (index >= m_Objects.size() || index < 0) return {};
-    return std::next(m_Objects.begin(), index);
-}
+    static const std::wstring winName = L"BianGame";
 
-void SingleGpuGame::SaveSceneToFile()
-{
-    SceneJsonSerializer::Save(m_Objects);
+    if (timer >= 1.0)
+    {
+        std::wstring fps = L" | Fps " + std::to_wstring(frameCounter);
+        fps = Align(fps, 10);
+
+        std::wstring mg = L" | Single-GPU";
+        mg = Align(mg, 10);
+
+        std::wstring cPos = L" | Pos " +
+            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldPosition().x, 1) + L"; " +
+            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldPosition().y, 1) + L"; " +
+            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldPosition().z, 1);
+        cPos = Align(cPos, 21);
+
+        std::wstring cTar = L" | Tar " +
+            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldDirection().x, 1) + L"; " +
+            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldDirection().y, 1) + L"; " +
+            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldDirection().z, 1);
+        cTar = Align(cTar, 21);
+
+        m_pWindow->UpdateWindowText(winName + mg + fps + cPos + cTar);
+
+        timer = 0.0;
+        frameCounter = 0;
+    }
+    else
+    {
+        frameCounter++;
+        timer += e.ElapsedTime;
+    }
 }
 
 void SingleGpuGame::UnloadContent()
 {
-    if (m_SerializeSceneOnExit)
-        SaveSceneToFile();
+    Singleton::Destroy();
 }
 
 void SingleGpuGame::Destroy()
 {
-    super::Destroy();
+    if (!m_Initialized) return;
 
-    executor->Exit();
+    m_Initialized = false;
 
-    m_DebugSystem->Destroy();
     m_CascadedShadowMap.Destroy();
 
     m_DepthBuffer->Destroy();
@@ -516,46 +504,8 @@ void SingleGpuGame::Destroy()
 
     m_Device.Reset();
     m_Device = nullptr;
-}
 
-
-void SingleGpuGame::RefreshTitle(UpdateEventArgs& e)
-{
-    static unsigned long frameCounter = 0;
-    static double timer = 0.0;
-
-    static const std::wstring winName = L"BianGame";
-
-    if (timer >= 1.0)
-    {
-        std::wstring fps = L" | Fps " + std::to_wstring(frameCounter);
-        fps = Align(fps, 10);
-
-        std::wstring mg = L" | Single-GPU";
-        mg = Align(mg, 10);
-
-        std::wstring cPos = L" | Pos " +
-            rStr(m_Camera->Position.m128_f32[0], 1) + L"; " +
-            rStr(m_Camera->Position.m128_f32[1], 1) + L"; " +
-            rStr(m_Camera->Position.m128_f32[2], 1);
-        cPos = Align(cPos, 21);
-
-        std::wstring cTar = L" | Tar " +
-            rStr(m_Camera->Target.m128_f32[0], 1) + L"; " +
-            rStr(m_Camera->Target.m128_f32[1], 1) + L"; " +
-            rStr(m_Camera->Target.m128_f32[2], 1);
-        cTar = Align(cTar, 21);
-
-        m_pWindow->UpdateWindowText(winName + mg + fps + cPos + cTar);
-
-        timer = 0.0;
-        frameCounter = 0;
-    }
-    else
-    {
-        frameCounter++;
-        timer += e.ElapsedTime;
-    }
+    super::Destroy();
 }
 
 SingleGpuGame::~SingleGpuGame()

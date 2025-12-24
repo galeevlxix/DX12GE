@@ -34,7 +34,7 @@ void CascadedShadowMap::Update(Vector3 centerPosition, Vector4 dirLightDirection
 		
 		float l = sphereCenterLS.x - m_Cascades[i].Radius;
 		float b = sphereCenterLS.y - m_Cascades[i].Radius;
-		float n = sphereCenterLS.z - m_Cascades[i].Radius;
+		float n = 0.0f;// sphereCenterLS.z - m_Cascades[i].Radius;
 		float r = sphereCenterLS.x + m_Cascades[i].Radius;
 		float t = sphereCenterLS.y + m_Cascades[i].Radius;
 		float f = sphereCenterLS.z + m_Cascades[i].Radius;

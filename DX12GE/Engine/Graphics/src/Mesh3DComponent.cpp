@@ -1,6 +1,5 @@
 #include "../Mesh3DComponent.h"
 #include "../../Base/Application.h"
-#include "../CurrentPass.h"
 
 void Mesh3DComponent::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> commandList, ComPtr<ID3D12Resource>& pDestinationResource, ComPtr<ID3D12Resource>& pIntermediateResource, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags)
 {
@@ -43,6 +42,9 @@ void Mesh3DComponent::UpdateBufferResource(ComPtr<ID3D12GraphicsCommandList2> co
 
         UpdateSubresources(commandList.Get(), pDestinationResource.Get(), pIntermediateResource.Get(), 0, 0, 1, &subresourceData);
     }
+
+    device.Reset();
+    device = nullptr;
 }
 
 void Mesh3DComponent::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D_PRIMITIVE_TOPOLOGY primitiveType)
@@ -72,5 +74,13 @@ void Mesh3DComponent::Destroy()
     m_IntermediateIndexBufferResource.Reset();
     m_IntermediateIndexBufferResource = nullptr;
 
+    m_IndiciesCount = 0;
+    m_VerticesCount = 0;
+
+    if (m_Material && m_Material->CanDrawIt())
+    {
+        m_Material->Destroy();
+        delete m_Material;
+    }    
     m_Material = nullptr;
 }

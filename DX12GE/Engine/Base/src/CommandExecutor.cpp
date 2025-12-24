@@ -1,8 +1,7 @@
-#include "../CommandExecutor.h"
+#include "../Singleton.h"
 
-CommandExecutor::CommandExecutor(SingleGpuGame* game)
+CommandExecutor::CommandExecutor()
 {
-	m_Game = game;
 	reader_thread = std::thread(&CommandExecutor::read_loop, this);
 }
 
@@ -27,7 +26,7 @@ void CommandExecutor::Exit()
 	if (reader_thread.joinable()) 
 	{
 		// TODO: при вызове join происходит дедлок
-		/*reader_thread.join();*/
+		//reader_thread.join();
 	}
 }
 
@@ -91,20 +90,20 @@ void CommandExecutor::ProcessObject(const std::vector<std::string>& tokens, std:
 
 	ActionCommand command;
 
-	std::string name = tokens[2];
+	std::string nodePath = tokens[2];
 
-	if (name == "selected_entities_in_scene")
+	if (nodePath == "%selected")
 	{
-		command.objects = m_Game->m_SelectionSystem->GetSelected();
+		command.nodes = Singleton::GetSelection()->GetSelected();
 	}
 	else
 	{
-		command.objects = { m_Game->GetSceneEntity(name) };
+		command.nodes = { Singleton::GetNodeGraph()->GetNodeByPath(nodePath) };
 	}
 
-	if (command.objects.size() == 0)
+	if (command.nodes.size() == 0)
 	{
-		output = "Ошибка Set Object: Объект(ы) не найдены (" + name + ")";
+		output = "Ошибка Set Object: Объект(ы) не найдены (" + nodePath + ")";
 		return;
 	}	
 
@@ -140,7 +139,7 @@ bool CommandExecutor::ProcessObjectAction(ActionCommand& command, std::string& o
 		return false;
 	}
 
-	for (auto obj : command.objects)
+	for (auto obj : command.nodes)
 	{
 		if (command.action == "pos" || command.action == "position")
 		{
@@ -184,7 +183,7 @@ bool CommandExecutor::ProcessObjectAction(ActionCommand& command, std::string& o
 
 void CommandExecutor::GetObjectInfo(const std::vector<std::string>& tokens, std::string& output)
 {
-	if (tokens.size() <= 2)
+	if (tokens.size() < 2)
 	{
 		output = "Ошибка Get: Недостаточно аргументов";
 		return;
@@ -194,11 +193,11 @@ void CommandExecutor::GetObjectInfo(const std::vector<std::string>& tokens, std:
 	{
 		ActionCommand command; 
 
-		std::string name = tokens[2];
-		command.objects = { m_Game->GetSceneEntity(name) };
-		if (!command.objects[0])
+		std::string nodePath = tokens[2];
+		command.nodes = { Singleton::GetNodeGraph()->GetNodeByPath(nodePath)};
+		if (!command.nodes[0])
 		{
-			output = "Ошибка Set Object: Объект по имени " + name + " не найден";
+			output = "Ошибка Set Object: Объект по имени " + nodePath + " не найден";
 			return;
 		}
 		command.action = tokens[3];
@@ -216,6 +215,10 @@ void CommandExecutor::GetObjectInfo(const std::vector<std::string>& tokens, std:
 
 		output = info;
 	}
+	else if (tokens[1] == "%tree")
+	{
+		output = Singleton::GetNodeGraph()->Print();
+	}
 		
 	else
 		output = "Ошибка Get: неизвестная команда" + tokens[1];
@@ -223,13 +226,13 @@ void CommandExecutor::GetObjectInfo(const std::vector<std::string>& tokens, std:
 
 void CommandExecutor::ProcessSave(const std::vector<std::string>& tokens, std::string& output)
 {
-	m_Game->SaveSceneToFile();
+	Singleton::GetSerializer()->Save();
 	output = "Сцена сохранена";
 }
 
 void CommandExecutor::ProcessLoad(const std::vector<std::string>& tokens, std::string& output)
 {
-	
+	  
 }
 
 void CommandExecutor::ProcessUndo(std::string& output)

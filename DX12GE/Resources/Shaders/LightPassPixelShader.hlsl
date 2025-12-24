@@ -20,10 +20,11 @@ struct DirectionalLight
 struct LightProperties
 {
     float4 CameraPos;
-    float Intensity;
-    float MaterialPower;
+    float4 FogColor;
     float PointLightsCount;
     float SpotLightsCount;
+    float FogStart;
+    float FogDistance;
 };
 
 struct PointLight
@@ -85,10 +86,6 @@ SamplerState ShadowSampler : register(s1);
 // 0.15f, 0.3f, 0.6f, 1.0f
 static float splitDistances[3] = { 37.5, 75, 140 };
 
-static bool fogEnable = false;
-static float fogStart = 35;
-static float fogDistance = 115 * 2;         //fogEnd - fogStart
-
 static float PI = 3.14159265359;
 
 float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
@@ -111,7 +108,7 @@ float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
         float2(-dx, +dx),   float2(0.0f, +dx),  float2(dx, +dx)
     };
     
-    float shadow = 0.0;
+    float shadow = 0.0f;
     [unroll]
     for (int i = 0; i < 9; ++i)
     {
@@ -130,8 +127,8 @@ float CalcShadowCascade(float3 worldPos, float Distance)
         return CalcShadowFactor(mul(ShadowMapTransform1, float4(worldPos, 1.0)), ShadowMapSB1);
     else if (Distance < splitDistances[2])
         return CalcShadowFactor(mul(ShadowMapTransform2, float4(worldPos, 1.0)), ShadowMapSB2);
-    else
-        return CalcShadowFactor(mul(ShadowMapTransform3, float4(worldPos, 1.0)), ShadowMapSB3);
+ 
+    return CalcShadowFactor(mul(ShadowMapTransform3, float4(worldPos, 1.0)), ShadowMapSB3);
 }
 
 float3 DebugShadowCascade(float3 WorldPos, float Distance)
@@ -183,7 +180,7 @@ float3 CalculatePBRLight(float3 Color, float Intensity, float3 LightDirection, f
 {
     float3 PixelToEye = normalize(LightPropertiesCB.CameraPos.xyz - worldPos);
     
-    float3 H = normalize(PixelToEye + LightDirection);
+    float3 H = normalize(PixelToEye + LightDirection);    
     float3 F0 = lerp(0.04, albedo.rgb, metalness);
     
     float NDF = DistributionGGX(normal, H, roughness);
@@ -203,7 +200,7 @@ float3 CalculatePBRLight(float3 Color, float Intensity, float3 LightDirection, f
 
 float3 CalcPointLight(PointLight pLight, float3 worldPos, float3 normal, float4 albedo, float roughness, float metalness)
 {
-    float3 LightToPixel = worldPos - pLight.Position;
+    float3 LightToPixel = worldPos - pLight.Position; 
     float Distance = length(LightToPixel);
     float3 Color = CalculatePBRLight(pLight.Color, pLight.Intensity, -normalize(LightToPixel), worldPos, normal, albedo, roughness, metalness);
     float Attenuation = pLight.AttenuationConstant + pLight.AttenuationLinear * Distance + pLight.AttenuationExp * Distance * Distance;
@@ -279,12 +276,11 @@ float4 main(PSInput input) : SV_Target
     float3 outputPixelColor = lightingResult + emissive.rgb;
     
     // Fog
-    if (fogEnable)
+    if (LightPropertiesCB.FogColor.w > 0.5f)
     {
-        float fogFactor = 1.0f - (cameraPixelDistance - fogStart) / fogDistance;    
+        float fogFactor = 1.0f - (cameraPixelDistance - LightPropertiesCB.FogStart) / LightPropertiesCB.FogDistance;
         fogFactor = clamp(fogFactor, 0.0f, 1.0f);
-        float3 fogColor = float3(0.5f, 0.5f, 0.5f);
-        outputPixelColor = fogFactor * outputPixelColor + (1.0 - fogFactor) * fogColor;
+        outputPixelColor = fogFactor * outputPixelColor + (1.0 - fogFactor) * LightPropertiesCB.FogColor.rgb;
     }
     
     // Result

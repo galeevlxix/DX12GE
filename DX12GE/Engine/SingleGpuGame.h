@@ -5,8 +5,8 @@
 #include "Base/Application.h"
 #include "Base/Game.h"
 #include "Base/Window.h"
-#include "Base/SelectionSystem.h"
 #include "Base/CommandQueue.h"
+#include "Base/Singleton.h"
 
 #include "Pipelines/Pipeline.h"
 #include "Pipelines/ShadowMapPipeline.h"
@@ -19,17 +19,13 @@
 #include "Pipelines/SkyboxPipeline.h"
 
 #include "Graphics/DescriptorHeaps.h"
-#include "Graphics/Object3DEntity.h"
-#include "Graphics/DebugRenderSystem.h"
 #include "Graphics/CascadedShadowMap.h"
-#include "Graphics/Camera.h" 
 #include "Graphics/LightManager.h"
 #include "Graphics/ParticleSystem.h"
 #include "Graphics/Texture3D.h"
 #include "Graphics/TextureBuffer.h"
 #include "Graphics/DepthBuffer.h"
 #include "Graphics/GBuffer.h"
-#include "Graphics/Skybox.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -38,8 +34,9 @@ using namespace std;
 class SingleGpuGame : public Game
 {
 public:
+
     using super = Game;
-    
+
     SingleGpuGame(const wstring& name, int width, int height, bool vSync = false);
     ~SingleGpuGame();
 
@@ -48,9 +45,53 @@ public:
     virtual void UnloadContent() override;
     virtual void Destroy() override;
 
+private:
+
+    // API
+
+    ComPtr<ID3D12Device2> m_Device;
+
+    uint64_t m_FenceValues[Window::BufferCount] = {};
+    D3D12_VIEWPORT m_Viewport;
+    D3D12_RECT m_ScissorRect;
+
+    bool m_Initialized = false;
+
+    // SCENE
+    LightManager m_Lights;
+    CascadedShadowMap m_CascadedShadowMap;
+
+    std::shared_ptr<DepthBuffer> m_DepthBuffer;
+    GBuffer m_GBuffer;
+    std::shared_ptr<TextureBuffer> m_LightPassBuffer;
+    std::shared_ptr<TextureBuffer> m_SSRBuffer;
+
+    //Skybox m_Skybox;
+
+    // PARTICLES
+
+    ParticleSystem m_ParticleSystem;
+    Texture3D m_tex3d;
+    bool m_stopParticles = false;
+    Vector3 m_boxPosition = Vector3(50, 0, -15);
+    Vector3 m_boxSize = Vector3(30, 30, 30);
+
+    // PIPELINES
+
+    ParticlePipeline m_ParticlePipeline;
+    ParticleComputePipeline m_ParticleComputePipeline;
+    SimplePipeline m_SimplePipeline;
+    ShadowMapPipeline m_ShadowMapPipeline;
+    GeometryPassPipeline m_GeometryPassPipeline;
+    SSRPipeline m_SSRPipeline;
+    MergingPipeline m_MergingPipeline;
+    LightPassPipeline m_LightPassPipeline;
+    SkyboxPipeline m_SkyboxPipeline;
+
 protected:
     virtual void OnUpdate(UpdateEventArgs& e) override;
     virtual void OnRender(RenderEventArgs& e) override final;
+
     virtual void OnKeyPressed(KeyEventArgs& e) override;
     virtual void OnKeyReleased(KeyEventArgs& e) override;
     virtual void OnMouseWheel(MouseWheelEventArgs& e) override;
@@ -70,69 +111,7 @@ private:
     void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
-    void UpdateSceneObjects(float deltaTime);
     void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
     void RefreshTitle(UpdateEventArgs& e);
-private:
-
-    ComPtr<ID3D12Device2> m_Device;
-
-    uint64_t m_FenceValues[Window::BufferCount] = {};
-    D3D12_VIEWPORT m_Viewport;
-    D3D12_RECT m_ScissorRect;
-
-    bool m_Initialized = false;
-    
-    bool m_IsTesting = false;
-    vector<float> m_ElapsedTimeArray;
-    const string m_TestTimeOutputFile = "../../DX12GE/Resources/single_gpu.txt";
-    void TestTime(float elapsedTime);
-
-    // SCENE
-
-    Camera* m_Camera;
-    map<string, Object3DEntity*> m_Objects;
-    ThirdPersonPlayer* m_Player;
-    bool m_SerializeSceneOnExit = false;
-
-    std::shared_ptr<DebugRenderSystem> m_DebugSystem;  
-
-    LightManager m_Lights;
-    CascadedShadowMap m_CascadedShadowMap;
-
-    std::shared_ptr<DepthBuffer> m_DepthBuffer;
-    GBuffer m_GBuffer;
-    std::shared_ptr<TextureBuffer> m_LightPassBuffer;
-    std::shared_ptr<TextureBuffer> m_SSRBuffer;
-
-    Skybox m_Skybox;
-
-    // PARTICLES
-
-    ParticleSystem m_ParticleSystem;
-    Texture3D m_tex3d;
-    bool m_stopParticles = false;
-    Vector3 m_boxPosition = Vector3(50, 0, -15);
-    Vector3 m_boxSize = Vector3(30, 30, 30);
-
-    // PIPELINES
-
-    ParticlePipeline m_ParticlePipeline;
-    ParticleComputePipeline m_ParticleComputePipeline;
-    SimplePipeline m_SimplePipeline;
-    ShadowMapPipeline m_ShadowMapPipeline;
-    GeometryPassPipeline m_GeometryPassPipeline;
-    SSRPipeline m_SSRPipeline;
-    MergingPipeline m_MergingPipeline;
-    LightPassPipeline m_LightPassPipeline;    
-    SkyboxPipeline m_SkyboxPipeline;
-
-public:
-    std::shared_ptr<SelectionSystem> m_SelectionSystem;
-
-    Object3DEntity* GetSceneEntity(std::string name);
-    std::map<std::string, Object3DEntity*>::iterator GetSceneEntity(int index);
-
-    void SaveSceneToFile();
 };

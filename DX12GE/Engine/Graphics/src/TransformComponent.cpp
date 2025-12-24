@@ -1,31 +1,41 @@
 #pragma once
 #include "../TransformComponent.h"
+#include <algorithm>
 
 const static float PI = 3.1415926536f;
 
-DirectX::XMMATRIX TransformComponent::GetWorldMatrix()
+const DirectX::XMMATRIX& TransformComponent::GetLocalMatrix()
 {
-    return 
-        DirectX::XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
-        DirectX::XMMatrixRotationX(m_Rotation.x) *
-        DirectX::XMMatrixRotationY(m_Rotation.y) *
-        DirectX::XMMatrixRotationZ(m_Rotation.z) *
-        DirectX::XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
+    if (m_CacheIsDirty)
+    {
+        m_LocalMatrixCache = 
+            DirectX::XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
+            DirectX::XMMatrixRotationX(m_Rotation.x) *
+            DirectX::XMMatrixRotationY(m_Rotation.y) *
+            DirectX::XMMatrixRotationZ(m_Rotation.z) *
+            DirectX::XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
+    }
+    return m_LocalMatrixCache;
 }
 
-DirectX::XMMATRIX TransformComponent::GetInverseMatrix()
+const DirectX::XMMATRIX TransformComponent::GetLocalScaleMatrix()
 {
-    Matrix m = GetWorldMatrix();
-    m = m.Invert();
-    m = m.Transpose();
-    return m;
+    return DirectX::XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);
+}
+
+const DirectX::XMMATRIX TransformComponent::GetLocalRotationMatrix()
+{
+    return
+        DirectX::XMMatrixRotationX(m_Rotation.x) *
+        DirectX::XMMatrixRotationY(m_Rotation.y) *
+        DirectX::XMMatrixRotationZ(m_Rotation.z);
 }
 
 void TransformComponent::SetDefault(float yOffset)
 {
-    m_Position = Vector3(0.0f, -yOffset, 0.0f);
-    m_Rotation = Vector3(0.0f, 0.0f, 0.0f);
-    m_Scale = Vector3(1.0f, 1.0f, 1.0f);
+    SetPosition(Vector3(0.0f, -yOffset, 0.0f));
+    SetRotation(Vector3(0.0f, 0.0f, 0.0f));
+    SetScale(Vector3(1.0f, 1.0f, 1.0f));
 }
 
 float TransformComponent::ToDegrees(float radians)
@@ -38,62 +48,65 @@ float TransformComponent::ToRadians(float degrees)
     return degrees * PI / 180.0f;
 }
 
-void TransformComponent::SetPosition(float x, float y, float z)
-{
-    m_Position = Vector3(x, y, z);
-}
+// POSITION
 
 void TransformComponent::SetPosition(Vector3 PositionVector)
 {
     m_Position = PositionVector;
+    m_CacheIsDirty = true;
+}
+
+void TransformComponent::SetPosition(float x, float y, float z)
+{
+    SetPosition(Vector3(x, y, z));
 }
 
 void TransformComponent::Move(float dx, float dy, float dz)
 {
-    m_Position += Vector3(dx, dy, dz);
+    SetPosition(m_Position + Vector3(dx, dy, dz));
 }
 
 void TransformComponent::Move(Vector3 MoveVector)
 {
-    m_Position += MoveVector;
+    SetPosition(m_Position + MoveVector);
 }
 
-void TransformComponent::SetRotation(float x, float y, float z)
-{
-    m_Rotation = Vector3(x, y, z);
-}
+// ROTATION
 
 void TransformComponent::SetRotation(Vector3 RotationVector)
 {
     m_Rotation = RotationVector;
+    m_CacheIsDirty = true;
+}
+
+void TransformComponent::SetRotation(float x, float y, float z)
+{
+    SetRotation(Vector3(x, y, z));
 }
 
 void TransformComponent::SetRotationDegrees(Vector3 RotationVector)
 {
-    SetRotation(RotationVector);
-    m_Rotation.x = ToRadians(m_Rotation.x);
-    m_Rotation.y = ToRadians(m_Rotation.y);
-    m_Rotation.z = ToRadians(m_Rotation.z);
+    SetRotation(ToRadians(RotationVector.x), ToRadians(RotationVector.y), ToRadians(RotationVector.z));
 }
 
 void TransformComponent::SetRotationX(float value)
 {
-    m_Rotation.x = value;
+    SetRotation(value, m_Rotation.y, m_Rotation.z);
 }
 
 void TransformComponent::SetRotationY(float value)
 {
-    m_Rotation.y = value;
+    SetRotation(m_Rotation.x, value, m_Rotation.z);
 }
 
 void TransformComponent::SetRotationZ(float value)
 {
-    m_Rotation.z = value;
+    SetRotation(m_Rotation.x, m_Rotation.y, value);
 }
 
 void TransformComponent::Rotate(Vector3 RotateVector)
 {
-    m_Rotation += RotateVector;
+    SetRotation(m_Rotation + RotateVector);
 }
 
 void TransformComponent::RotateDegrees(Vector3 RotateVector)
@@ -103,50 +116,78 @@ void TransformComponent::RotateDegrees(Vector3 RotateVector)
 
 void TransformComponent::Rotate(float dx, float dy, float dz)
 {
-    m_Rotation += Vector3(dx, dy, dz);
+    SetRotation(m_Rotation + Vector3(dx, dy, dz));
 }
 
-void TransformComponent::SetScale(float x, float y, float z)
+void TransformComponent::LocalLookAt(const Vector3& localTarget)
 {
-    m_Scale = Vector3(x, y, z);
+    Vector3 dir = localTarget - m_Position;
+    dir.Normalize();
+
+    float yaw = atan2(dir.x, dir.z);
+    float pitch = asin(-dir.y);
+
+    pitch = std::clamp(pitch, -PI * 0.5f + 0.001f, PI * 0.5f - 0.001f);
+
+    m_Rotation = Vector3(pitch, yaw, 0.0f);
 }
 
-void TransformComponent::SetScale(float value)
+void TransformComponent::RotateToLocalDirection(const Vector3& direction)
 {
-    m_Scale = Vector3(value, value, value);
+    float yaw = atan2(direction.x, direction.z);
+    float pitch = asin(-direction.y);
+
+    pitch = std::clamp(pitch, -PI * 0.5f + 0.001f, PI * 0.5f - 0.001f);
+
+    m_Rotation = Vector3(pitch, yaw, 0.0f);
 }
+
+// SCALE
 
 void TransformComponent::SetScale(Vector3 ScaleVector)
 {
     m_Scale = ScaleVector;
+    m_CacheIsDirty = true;
+}
+
+void TransformComponent::SetScale(float x, float y, float z)
+{
+    SetScale(Vector3(x, y, z));
+}
+
+void TransformComponent::SetScale(float value)
+{
+    SetScale(Vector3(value, value, value));
 }
 
 void TransformComponent::Expand(float ExpandValue)
 {
-    m_Scale *= ExpandValue;
+    SetScale(m_Scale * ExpandValue);
 }
 
 void TransformComponent::Expand(float dx, float dy, float dz)
 {
-    m_Scale *= Vector3(dx, dy, dz);
+    SetScale(m_Scale * Vector3(dx, dy, dz));
 }
 
-Vector3 TransformComponent::GetPosition()
+// GET
+
+const Vector3& TransformComponent::GetPosition()
 {
     return m_Position;
 }
 
-Vector3 TransformComponent::GetRotation()
+const Vector3& TransformComponent::GetRotation()
 {
     return m_Rotation;
 }
 
-Vector3 TransformComponent::GetRotationDegrees()
+const Vector3 TransformComponent::GetRotationDegrees()
 {
     return Vector3(ToDegrees(m_Rotation.x), ToDegrees(m_Rotation.y), ToDegrees(m_Rotation.z));
 }
 
-Vector3 TransformComponent::GetScale()
+const Vector3& TransformComponent::GetScale()
 {
     return m_Scale;
 }

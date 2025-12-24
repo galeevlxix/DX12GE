@@ -1,6 +1,6 @@
 #include "../Object3DComponent.h"
-#include "../CurrentPass.h"
 #include "../../Base/DX12LibPCH.h"
+#include "../../Base/Singleton.h"
 
 void Object3DComponent::OnLoad(std::vector<Mesh3DComponent*>& meshes)
 {
@@ -22,7 +22,7 @@ void Object3DComponent::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList)
     {
         if (!m_Meshes[i]->m_Material->CanDrawIt()) continue;
 
-        if (CurrentPass::Get() != CurrentPass::Shadow && CurrentPass::Get() != CurrentPass::Lighting)
+        if (Singleton::GetCurrentPass()->Get() != CurrentPass::Shadow && Singleton::GetCurrentPass()->Get() != CurrentPass::Lighting)
             m_Meshes[i]->m_Material->Render(commandList);
 
         m_Meshes[i]->OnRender(commandList, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

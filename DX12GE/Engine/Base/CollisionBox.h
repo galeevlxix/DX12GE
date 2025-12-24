@@ -1,7 +1,5 @@
 #pragma once
-#include "SimpleMath.h"
-
-using namespace DirectX::SimpleMath;
+#include "DX12LibPCH.h"
 
 struct CollisionBox
 {
@@ -12,7 +10,7 @@ struct CollisionBox
 	float z_max = 0;
 	float z_min = 0;
 
-	void Add(XMFLOAT3 position)
+	void Add(const DirectX::XMFLOAT3& position)
 	{
 		if (isEmpty)
 		{
