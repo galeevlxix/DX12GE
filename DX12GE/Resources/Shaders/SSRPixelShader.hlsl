@@ -26,6 +26,9 @@ float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
     float3 rayStep = reflectionDir * RayStepLength;
     float3 currentPos = worldPos;
     
+    float3 hitPos = worldPos;
+    bool hit = false;
+    
     [loop]
     while (length(worldPos - currentPos) < MaxDistance)
     {
@@ -33,48 +36,84 @@ float3 TraceScreenSpaceReflection(float3 worldPos, float3 reflectionDir)
         
         float4 clipPos = mul(ViewProjection, float4(currentPos, 1.0));
         clipPos.xyz /= clipPos.w;
+        clipPos.y = -clipPos.y;
+        float2 uv = clipPos.xy * 0.5 + 0.5;
         
-        if (clipPos.x < -1.0 || clipPos.x > 1.0 ||
-            clipPos.y < -1.0 || clipPos.y > 1.0 ||
-            clipPos.z < 0.0 || clipPos.z > 1.0)
+        if (uv.x < 0 || uv.y < 0 || uv.x > 1 || uv.y > 1)
             break;
-        
-        float2 uv = float2(clipPos.x * 0.5 + 0.5, -clipPos.y * 0.5 + 0.5);
         
         float3 gBufferWorldPos = gPosition.SampleLevel(gSampler, uv, 0).xyz;
         float depthDiff = length(currentPos - gBufferWorldPos);
         
         if (depthDiff > 0 && depthDiff <= Thickness)
-        {
-            float3 normal = gNormal.Sample(gSampler, uv).xyz;
-            if (dot(reflectionDir, normal) > 0)
-                break;
-            
-            float3 color = gColor.Sample(gSampler, uv).rgb;
-            return color;
+        {                        
+            hitPos = currentPos;
+            hit = true;
+            break;
         }
     }
     
-    return SkyboxCubemap.Sample(gSampler, reflectionDir).rgb;
+    if (!hit)
+        return SkyboxCubemap.Sample(gSampler, reflectionDir).rgb;
+    
+    // Двоичный поиск для уточнения
+    float3 binaryStep = rayStep * 0.5;
+    currentPos = hitPos - rayStep;
+    
+    [unroll(8)] // 8 итераций обычно достаточно
+    for (int j = 0; j < 8; j++)
+    {
+        binaryStep *= 0.5;
+        
+        float4 clipPos = mul(ViewProjection, float4(currentPos, 1.0));
+        clipPos.xyz /= clipPos.w;
+        clipPos.y = -clipPos.y;
+        float2 uv = clipPos.xy * 0.5 + 0.5;
+        
+        float3 gBufferWorldPos = gPosition.SampleLevel(gSampler, uv, 0).xyz;
+        float depthDiff = length(currentPos - gBufferWorldPos);
+        
+        if (depthDiff > 0)
+            currentPos += binaryStep;
+        else
+            currentPos -= binaryStep;
+    }
+    
+    // Финальная проверка
+    float4 finalClipPos = mul(ViewProjection, float4(currentPos, 1.0));
+    finalClipPos.xyz /= finalClipPos.w;
+    finalClipPos.y = -finalClipPos.y;
+    float2 finalUV = finalClipPos.xy * 0.5 + 0.5;
+    
+    if (finalUV.x < 0 || finalUV.y < 0 || finalUV.x > 1 || finalUV.y > 1)
+        return SkyboxCubemap.Sample(gSampler, reflectionDir).rgb;
+    
+    float3 normal = gNormal.Sample(gSampler, finalUV).xyz;
+    if (dot(reflectionDir, normal) > 0)
+        return SkyboxCubemap.Sample(gSampler, reflectionDir).rgb;
+    
+    return gColor.Sample(gSampler, finalUV).rgb;
 }
 
 float4 main(PSInput input) : SV_Target
 {
     float4 orm = gORM.Sample(gSampler, input.TexCoord);
-    if (orm.b < 0.16)
+    if (orm.b < 0.16 || orm.g > 0.6)
         return float4(0.0, 0.0, 0.0, 0.0);
+    
+    float3 color = gColor.Sample(gSampler, input.TexCoord).rgb;
     
     float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
     float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
     float3 cameraPixelVector = normalize(worldPos - CameraPos.xyz);
     
-    float f0 = 0.04;
+    float f0 = lerp(0.04, (color.r + color.g + color.b) / 3.0f, orm.b);
     float NdotV = dot(normal, -cameraPixelVector);
-    float fresnel = saturate(f0 + (1 - f0) * pow(1 - NdotV, 5));
-   
-    float3 reflectDir = normalize(reflect(cameraPixelVector, normal));
     
-    float3 reflectionColor = TraceScreenSpaceReflection(worldPos, reflectDir);
+    float fresnel = saturate(f0 + (1 - f0) * pow(1 - NdotV, 5));
+    
+    float3 reflectDir = normalize(reflect(cameraPixelVector, normal));
+    float3 reflectionColor = TraceScreenSpaceReflection(worldPos + normal * 0.001f, reflectDir);
     
     return float4(reflectionColor, fresnel);
 }
