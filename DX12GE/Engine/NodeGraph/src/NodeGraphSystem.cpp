@@ -15,9 +15,6 @@ NodeGraphSystem::NodeGraphSystem()
 	m_DefaultDirectionalLight = nullptr;
 	m_DefaultCamera = nullptr;
 	LuaManager::SetGraspSystem(this);
-
-	m_ActiveEnvironment = nullptr;
-	m_ActiveDirectionalLight = nullptr;
 }
 
 void NodeGraphSystem::Destroy()

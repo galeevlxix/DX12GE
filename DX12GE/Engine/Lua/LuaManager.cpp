@@ -24,7 +24,6 @@ static NodeGraphSystem* p_grapsh_system;
 static std::vector<std::string> lua_classes_vector;
 static std::map<std::string, std::vector<std::string>> lua_classes_map;
 static sol::state lua;
-static Camera* p_camera;
 
 //////////////////////////////////////////////////////////////////////
 //LUA API ZONE
@@ -55,10 +54,6 @@ std::map<std::string, float> lua_get_object_pos(Node3D* object)
 	return posMap;
 }
 
-Camera* lua_get_camera() 
-{
-	return p_camera;
-}
 
 int lua_set_camera_target(lua_State* L)
 {
@@ -71,11 +66,11 @@ int lua_set_camera_target(lua_State* L)
 	const float flyRadius = (float)lua_tonumber(L, 5);
 
 	const Vector3 camPosition(objectPos + Vector3(x, y, z) * flyRadius);
-	p_camera->Position = XMVectorSet(camPosition.x, camPosition.y, camPosition.z, 1.0f);
+	//p_camera->Position = XMVectorSet(camPosition.x, camPosition.y, camPosition.z, 1.0f);
 
 	Vector3 razn = objectPos - camPosition;
 	razn.Normalize();
-	p_camera->Target = XMVectorSet(razn.x , razn.y, razn.z, 1.0f);
+	//p_camera->Target = XMVectorSet(razn.x , razn.y, razn.z, 1.0f);
 
 	return 1;
 }
@@ -252,7 +247,7 @@ LuaManager::LuaManager()
 
 	lua.set_function("Register", &lua_register_class);
 	lua.set_function("LoadObjectWithModel", &lua_load_object_with_model);
-	lua.set_function("GetCamera", &lua_get_camera);
+//	lua.set_function("GetCamera", &lua_get_camera);
 	lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
 	lua.set_function("TranslateTo", &lua_transform_move_to);
 	lua.set_function("GetObjectOnScene", &lua_get_object_on_scene);
@@ -479,10 +474,6 @@ void LuaManager::Start()
 	}
 }
 
-void LuaManager::SetCamera(Camera* camera)
-{
-	p_camera = camera;
-}
 
 std::string LuaManager::CreateValidClass(std::string className, std::string objId)
 {

@@ -12,6 +12,8 @@ struct NodeSerializingData
 	NodeTypeEnum type;
 	std::string filePath;
 
+	std::vector<std::string> scripts;
+
 	DirectX::SimpleMath::Vector3 pos;
 	DirectX::SimpleMath::Vector3 rot;
 	DirectX::SimpleMath::Vector3 scl;

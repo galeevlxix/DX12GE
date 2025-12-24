@@ -67,7 +67,6 @@ public:
 	static void ProceedKeyBoardInput(KeyEventArgs& e, bool pressed);
 	static void PerformUpdate();
 	static void Start();
-	static void SetCamera(Camera* camera);
 	static void CLose() {
 		lua_close(L);
 	}
