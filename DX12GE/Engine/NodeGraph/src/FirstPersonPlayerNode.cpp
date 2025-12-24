@@ -107,14 +107,14 @@ bool FirstPersonPlayerNode::AddChild(Node3D* node)
 	return true;
 }
 
-void FirstPersonPlayerNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
+Node3D* FirstPersonPlayerNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new FirstPersonPlayerNode();
 	}
 
-	Object3DNode::Clone(cloneNode, newParrent, cloneChildrenRecursive);
+	Object3DNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
@@ -126,6 +126,8 @@ void FirstPersonPlayerNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cl
 		player->NormalMovementSpeed = NormalMovementSpeed;
 		player->MaxMovementSpeed = MaxMovementSpeed;
 	}
+
+	return cloneNode;
 }
 
 void FirstPersonPlayerNode::CreateJsonData(json& j)
@@ -154,6 +156,11 @@ void FirstPersonPlayerNode::LoadFromJsonData(const NodeSerializingData& nodeData
 	MinMovementSpeed = nodeData.MinMovementSpeed;
 	NormalMovementSpeed = nodeData.NormalMovementSpeed;
 	MaxMovementSpeed = nodeData.MaxMovementSpeed;
+
+	if (nodeData.isCurrent)
+	{
+		SetCurrent();
+	}
 }
 
 void FirstPersonPlayerNode::SetCurrent()
@@ -161,6 +168,10 @@ void FirstPersonPlayerNode::SetCurrent()
 	if (IsInsideTree())
 	{
 		Singleton::GetNodeGraph()->m_CurrentPlayer = this;
+	}
+	else
+	{
+		printf("Внимание! Невозможно сделать FirstPersonPlayerNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
 	}
 }
 

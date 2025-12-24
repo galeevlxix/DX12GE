@@ -79,6 +79,9 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
 
         if (m_Camera)
         {
+            /*m_angle_h += deltaTime * PI / 8.0f;
+            m_angle_v = PI / 4;*/
+
             Vector3 camLocalPos = CameraAnchor + Vector3(
                 m_FlyRadius * cos(m_angle_v) * cos(-m_angle_h),
                 m_FlyRadius * sin(m_angle_v),
@@ -100,14 +103,14 @@ void ThirdPersonPlayerNode::Destroy(bool keepComponent)
 	Object3DNode::Destroy(keepComponent);
 }
 
-void ThirdPersonPlayerNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
+Node3D* ThirdPersonPlayerNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
         cloneNode = new ThirdPersonPlayerNode();
     }
 
-    FirstPersonPlayerNode::Clone(cloneNode, newParrent, cloneChildrenRecursive);
+    FirstPersonPlayerNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
 
     if (cloneNode)
     {
@@ -117,6 +120,8 @@ void ThirdPersonPlayerNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cl
         player->MaxFlyRadius = MaxFlyRadius;
         player->CameraAnchor = CameraAnchor;
     }
+
+    return cloneNode;
 }
 
 void ThirdPersonPlayerNode::CreateJsonData(json& j)

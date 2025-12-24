@@ -80,7 +80,6 @@ void Mesh3DComponent::Destroy()
     if (m_Material && m_Material->CanDrawIt())
     {
         m_Material->Destroy();
-        delete m_Material;
     }    
     m_Material = nullptr;
 }

@@ -10,7 +10,7 @@ uint32_t MaterialEntity::AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandLi
         return -1;
     }
 
-    int id = ResourceStorage::AddTexture(path);
+    uint32_t id = ResourceStorage::AddTexture(path);
     std::shared_ptr<TextureComponent> texture = ResourceStorage::GetTexture(id);
 
     if (!texture->IsInitialized())
@@ -24,15 +24,15 @@ int IsNotNull(uint32_t id)
     return id == -1 ? 0 : 1;
 }
 
-void MaterialEntity::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
+void MaterialEntity::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<TextureType, std::string>& imagePaths)
 {
-    m_DiffuseTextureId =                AddTexture(commandList, m_ImagePaths[TextureType::DIFFUSE]);
-    m_NormalTextureId =                 AddTexture(commandList, m_ImagePaths[TextureType::NORMALS]);
-    m_EmissiveTextureId =               AddTexture(commandList, m_ImagePaths[TextureType::EMISSIVE]);
-    m_MetallicTextureId =               AddTexture(commandList, m_ImagePaths[TextureType::METALNESS]);
-    m_RoughnessTextureId =              AddTexture(commandList, m_ImagePaths[TextureType::DIFFUSE_ROUGHNESS]);
-    m_GltfMetallicRoughnessTextureId =  AddTexture(commandList, m_ImagePaths[TextureType::GLTF_METALLIC_ROUGHNESS]);
-    m_AOTextureId =                     AddTexture(commandList, m_ImagePaths[TextureType::AMBIENT_OCCLUSION]);
+    m_DiffuseTextureId =                AddTexture(commandList, imagePaths[TextureType::DIFFUSE]);
+    m_NormalTextureId =                 AddTexture(commandList, imagePaths[TextureType::NORMALS]);
+    m_EmissiveTextureId =               AddTexture(commandList, imagePaths[TextureType::EMISSIVE]);
+    m_MetallicTextureId =               AddTexture(commandList, imagePaths[TextureType::METALNESS]);
+    m_RoughnessTextureId =              AddTexture(commandList, imagePaths[TextureType::DIFFUSE_ROUGHNESS]);
+    m_GltfMetallicRoughnessTextureId =  AddTexture(commandList, imagePaths[TextureType::GLTF_METALLIC_ROUGHNESS]);
+    m_AOTextureId =                     AddTexture(commandList, imagePaths[TextureType::AMBIENT_OCCLUSION]);
 
     m_HasDiffuseNormalEmissive.x = static_cast<float>(IsNotNull(m_DiffuseTextureId));
     m_HasDiffuseNormalEmissive.y = static_cast<float>(IsNotNull(m_NormalTextureId));
@@ -87,6 +87,5 @@ void MaterialEntity::Destroy()
     DestroyTexture(m_RoughnessTextureId);
     DestroyTexture(m_GltfMetallicRoughnessTextureId);
     DestroyTexture(m_AOTextureId);
-    m_ImagePaths.clear();
     m_DrawIt = false;
 }
