@@ -105,6 +105,19 @@ static Node3D* CreateObj(const std::string& nodePath, ComPtr<ID3D12GraphicsComma
     return node;
 }
 
+static Node3D* CreateObj(const std::string& nodePath, ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
+{
+    Node3D* node = Singleton::GetNodeGraph()->CreateNewNodeInScene(nodePath, NODE_TYPE_OBJECT3D);
+    if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
+    {
+        if (!obj3D->Create(commandList, filePath))
+        {
+            printf("Предупреждение! Меш узла %s не инициализирован!\n", node->GetName().c_str());
+        }
+    }
+    return node;
+}
+
 bool SingleGpuGame::LoadContent()
 {
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
