@@ -508,6 +508,7 @@
     <None Include="..\README.md" />
     <None Include="Engine\Base\SimpleMath.inl" />
     <None Include="packages.config" />
+    <None Include="Resources\scene lite(Timur).json" />
     <None Include="Resources\scene lite.json" />
   </ItemGroup>
   <ItemGroup>
