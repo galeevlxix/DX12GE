@@ -109,19 +109,23 @@ const std::string SkyBoxNode::GetObjectFilePath()
     return ResourceStorage::GetTexture(m_TextureId)->GetResourcePath();
 }
 
-void SkyBoxNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
+Node3D* SkyBoxNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
         cloneNode = new SkyBoxNode();
     }
-    Object3DNode::Clone(cloneNode, newParrent, cloneChildrenRecursive);
+
+    Object3DNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+
     if (cloneNode)
     {
         SkyBoxNode* obj3D = dynamic_cast<SkyBoxNode*>(cloneNode);
         obj3D->m_TextureId = m_TextureId;
         obj3D->m_BoxMesh = m_BoxMesh;
     }
+
+    return cloneNode;
 }
 
 void SkyBoxNode::DrawDebug()
@@ -132,6 +136,21 @@ void SkyBoxNode::DrawDebug()
 void SkyBoxNode::CreateJsonData(json& j)
 {
 	Object3DNode::CreateJsonData(j);
+
+    if (IsCurrent())
+    {
+        j["is_current"] = true;
+    }
+}
+
+void SkyBoxNode::LoadFromJsonData(const NodeSerializingData& nodeData)
+{
+    Object3DNode::LoadFromJsonData(nodeData);
+
+    if (nodeData.isCurrent)
+    {
+        SetCurrent();
+    }
 }
 
 void SkyBoxNode::SetCurrent()
@@ -139,6 +158,10 @@ void SkyBoxNode::SetCurrent()
     if (IsInsideTree())
     {
         Singleton::GetNodeGraph()->m_CurrentSkyBox = this;
+    }
+    else
+    {
+        printf("Внимание! Невозможно сделать SkyBoxNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
     }
 }
 

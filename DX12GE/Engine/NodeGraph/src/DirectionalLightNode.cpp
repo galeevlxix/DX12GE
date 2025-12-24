@@ -13,20 +13,22 @@ void DirectionalLightNode::OnUpdate(const double& deltaTime)
 	LightData.Direction = Vector4(m_WorldDirectionCache);
 }
 
-void DirectionalLightNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
+Node3D* DirectionalLightNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new DirectionalLightNode();
 	}
 
-	Node3D::Clone(cloneNode, newParrent, cloneChildrenRecursive);
+	Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
 		DirectionalLightNode* dirLight = dynamic_cast<DirectionalLightNode*>(cloneNode);
 		dirLight->LightData.BaseLightProperties = LightData.BaseLightProperties;
 	}
+
+	return cloneNode;
 }
 
 void DirectionalLightNode::DrawDebug()
@@ -60,6 +62,11 @@ void DirectionalLightNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 
 	LightData.BaseLightProperties.Color = nodeData.lightColor;
 	LightData.BaseLightProperties.Intensity = nodeData.lightIntensity;
+
+	if (nodeData.isCurrent)
+	{
+		SetCurrent();
+	}
 }
 
 void DirectionalLightNode::SetCurrent()
@@ -67,6 +74,10 @@ void DirectionalLightNode::SetCurrent()
 	if (IsInsideTree())
 	{
 		Singleton::GetNodeGraph()->m_CurrentDirectionalLight = this;
+	}
+	else
+	{
+		printf("Внимание! Невозможно сделать DirectionalLightNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
 	}
 }
 

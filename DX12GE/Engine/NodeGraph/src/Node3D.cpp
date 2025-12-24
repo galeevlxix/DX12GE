@@ -120,7 +120,7 @@ void Node3D::Rename(const std::string& name)
         int number = 2;
         while (m_Parrent->HasChild(newName))
         {
-            newName = name + " " + std::to_string(number);
+            newName = name + "_" + std::to_string(number);
             number++;
         }
 
@@ -266,7 +266,7 @@ bool Node3D::Move(Node3D* newParrent)
     return newParrent->AddChild(this);
 }
 
-void Node3D::Clone(Node3D* cloneNode, Node3D* parrent, bool cloneChildrenRecursive)
+Node3D* Node3D::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
@@ -279,23 +279,27 @@ void Node3D::Clone(Node3D* cloneNode, Node3D* parrent, bool cloneChildrenRecursi
     cloneNode->Transform.SetRotation(Transform.GetRotation());
     cloneNode->Transform.SetScale(Transform.GetScale());
 
-    if (parrent)
+    if (!newParrent)
     {
-        if (!parrent->AddChild(cloneNode))
-        {
-            cloneNode = nullptr;
-            return;
-        }
+        newParrent = m_Parrent;
+    }
+
+    if (!newParrent->AddChild(cloneNode))
+    {
+        delete cloneNode;
+        cloneNode = nullptr;
+        return cloneNode;
     }
 
     if (cloneChildrenRecursive)
     {
         for (auto child : m_Children)
         {
-            Node3D* cloneChild = nullptr;
-            child.second->Clone(cloneChild, cloneNode, cloneChildrenRecursive);
+            child.second->Clone(cloneNode, cloneChildrenRecursive);
         }
     }
+
+    return cloneNode;
 }
 
 void Node3D::DrawDebug()

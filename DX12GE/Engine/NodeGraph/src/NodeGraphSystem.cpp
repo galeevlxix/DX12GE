@@ -45,7 +45,7 @@ void NodeGraphSystem::Destroy()
 	{
 		delete m_DefaultCamera;
 		m_DefaultCamera = nullptr;
-	}	
+	}
 }
 
 void NodeGraphSystem::OnNodeAdded(Node3D* node)
@@ -93,8 +93,6 @@ void NodeGraphSystem::OnNodeAdded(Node3D* node)
 				m_CurrentPlayer = player;
 			}
 		}
-
-		
 
 		for (Node3D* child : node->GetChildren())
 		{
@@ -171,6 +169,7 @@ Node3D* NodeGraphSystem::GetNodeByPath(const std::string& nodePath)
 	for (int i = 1; i < arr.size(); i++)
 	{
 		current = current->GetChild(arr[i]);
+		if (!current) return nullptr;
 	}
 	return current;
 }
@@ -284,15 +283,38 @@ void NodeGraphSystem::OnKeyPressed(KeyEventArgs& e)
 { 
 	m_SceneRootNode->OnKeyPressed(e); 
 
-	if (e.Key == KeyCode::Delete)
+	std::vector<Node3D*> objects;
+
+	switch (e.Key)
 	{
-		auto objects = Singleton::GetSelection()->GetSelected();
+	case KeyCode::Delete:
+		objects = Singleton::GetSelection()->GetSelected();
+		Singleton::GetSelection()->DeselectAll();
 		for (int i = 0; i < objects.size(); i++)
 		{
 			if (objects[i])
 				objects[i]->Destroy(false);
 		}
-		Singleton::GetSelection()->DeselectAll();
+		break;
+
+	case KeyCode::C:
+		if (e.Alt)
+		{
+			objects = Singleton::GetSelection()->GetSelected();
+			Singleton::GetSelection()->DeselectAll();
+			for (int i = 0; i < objects.size(); i++)
+			{
+				if (objects[i])
+				{
+					Node3D* clone = objects[i]->Clone(nullptr, true);
+					if (clone)
+					{
+						Singleton::GetSelection()->SelectedNode(clone);
+					}
+				}
+			}
+		}
+		break;
 	}
 }
 
@@ -301,4 +323,152 @@ void NodeGraphSystem::OnResize(ResizeEventArgs& e)
 	m_SceneRootNode->OnWindowResize(e); 
 
 	WindowRatio = static_cast<float>(e.Width) / static_cast<float>(e.Height); 
+}
+
+Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeTypeEnum type)
+{
+	Node3D* node = nullptr;
+
+	if (GetNodeByPath(nodePath))
+	{
+		printf("Ошибка! Узел %s уже существует!\n", nodePath.c_str());
+		return node;
+	}
+
+	ParsedNodePath parsed;
+	parsed.ParseNodePath(nodePath);
+
+	if (parsed.name == "" || parsed.parrentNodePath == "")
+	{
+		printf("Ошибка! Невозможно создать узел %s!\n", nodePath.c_str());
+		return node;
+	}	
+
+	switch (type)
+	{
+	case NODE_TYPE_NODE3D:
+		node = new Node3D();
+		break;
+	case NODE_TYPE_OBJECT3D:
+		node = new Object3DNode();
+		break;
+	case NODE_TYPE_FIRST_PERSON_PLAYER:
+		node = new FirstPersonPlayerNode();
+		break;
+	case NODE_TYPE_THIRD_PERSON_PLAYER:
+		node = new ThirdPersonPlayerNode();
+		break;
+	case NODE_TYPE_ENVIRONMENT:
+		node = new EnvironmentNode();
+		break;
+	case NODE_TYPE_DIRECTIONAL_LIGHT:
+		node = new DirectionalLightNode();
+		break;
+	case NODE_TYPE_POINT_LIGHT:
+		node = new PointLightNode();
+		break;
+	case NODE_TYPE_SPOT_LIGHT:
+		node = new SpotLightNode();
+		break;
+	case NODE_TYPE_CAMERA:
+		node = new CameraNode();
+		break;
+	case NODE_TYPE_SKYBOX:
+		node = new SkyBoxNode();
+		break;
+	default:
+		printf("Ошибка! Тип узла %d не поддерживается!\n", type);
+		return node;
+	}
+
+	Node3D* parrent = GetNodeByPath(parsed.parrentNodePath);
+
+	if (!parrent)
+	{	
+		if (node)
+		{
+			delete node;
+			node = nullptr;
+		}
+		printf("Ошибка! Родительский узел %s не существует!\n", parsed.parrentNodePath.c_str());
+		return node;
+	}
+
+	node->Rename(parsed.name);
+	
+	if (!parrent->AddChild(node))
+	{
+		delete node;
+		node = nullptr;
+
+		printf("Ошибка! Невозможно добавить узел %s в родительский узел %s!\n", parsed.name.c_str(), parsed.parrentNodePath.c_str());
+	}
+
+	return node;
+}
+
+bool NodeGraphSystem::RemoveNodeFromScene(const std::string& nodePath, bool destroy)
+{
+	Node3D* node = GetNodeByPath(nodePath);
+
+	if (!node)
+	{
+		printf("Ошибка! Узла %s не существует в сцене!\n", nodePath.c_str());
+		return false;
+	}
+
+	if (destroy)
+	{
+		node->Destroy(false);
+		return true;
+	}
+	
+	Node3D* parrent = node->GetParrent();
+	return node->RemoveChild(node);
+}
+
+Node3D* NodeGraphSystem::CloneNode(const std::string& nodePath, const std::string& pathOfNewParrent)
+{
+	Node3D* original = GetNodeByPath(nodePath);
+	if (!original)
+	{
+		printf("Ошибка! Узла %s не существует в сцене!\n", nodePath.c_str());
+		return nullptr;
+	}
+
+	Node3D* newParrent = GetNodeByPath(pathOfNewParrent);
+	if (!newParrent)
+	{
+		printf("Ошибка! Узла %s не существует в сцене!\n", pathOfNewParrent.c_str());
+		return nullptr;
+	}
+
+	Node3D* clone = original->Clone(newParrent, true);
+
+	if (!clone)
+	{
+		printf("Ошибка! Не удалось создать клон!\n");
+		return nullptr;
+	}
+
+	return clone;
+}
+
+bool NodeGraphSystem::MoveNode(const std::string& nodePath, const std::string& pathOfNewParrent)
+{
+	Node3D* node = GetNodeByPath(nodePath);
+	if (!node)
+	{
+		printf("Ошибка! Узла %s не существует в сцене!\n", nodePath.c_str());
+		return false;
+	}
+
+	Node3D* newParrent = GetNodeByPath(pathOfNewParrent);
+	if (!newParrent)
+	{
+		printf("Ошибка! Узла %s не существует в сцене!\n", pathOfNewParrent.c_str());
+		return false;
+	}
+
+	return node->Move(newParrent);
 }

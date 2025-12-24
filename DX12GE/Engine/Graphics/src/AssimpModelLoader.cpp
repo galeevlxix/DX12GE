@@ -17,6 +17,8 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     if (object->IsInitialized())
         return id;
 
+    printf("Загрузка компонента из файла объекта: %s\n", filePath.c_str());
+
     Assimp::Importer importer;
     
     const aiScene* pScene = importer.ReadFile(filePath.c_str(),
@@ -53,6 +55,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     for (unsigned int i = 0; i < pScene->mNumMaterials; i++)
     {
         materials.push_back(new MaterialEntity());
+        std::map<TextureType, std::string> imagePaths;
 
         for (int tt = 0; tt <= 27; tt++)
         {
@@ -64,11 +67,11 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
 
             if (p != "")
             {
-                materials[i]->m_ImagePaths[(TextureType)tt] = directory + "/" + p;
+                imagePaths[(TextureType)tt] = directory + "/" + p;
             }
         }
 
-        materials[i]->Load(commandList);
+        materials[i]->Load(commandList, imagePaths);
     }
 
     std::vector<Mesh3DComponent*> meshes;

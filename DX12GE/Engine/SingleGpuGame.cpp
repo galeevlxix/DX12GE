@@ -53,6 +53,19 @@ bool SingleGpuGame::Initialize()
     return true;
 }
 
+static Node3D* CreateObj(const std::string& nodePath, ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
+{
+    Node3D* node = Singleton::GetNodeGraph()->CreateNewNodeInScene(nodePath, NODE_TYPE_OBJECT3D);
+    if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
+    {
+        if (!obj3D->Create(commandList, filePath))
+        {
+            printf("Предупреждение! Меш узла %s не инициализирован!\n", node->GetName().c_str());
+        }
+    }
+    return node;
+}
+
 bool SingleGpuGame::LoadContent()
 {
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
@@ -350,13 +363,13 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
         m_stopParticles = !m_stopParticles;
         break;    
     case KeyCode::B:
-        if (Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player") == Singleton::GetNodeGraph()->GetCurrentPlayer())
+        if (Singleton::GetNodeGraph()->GetNodeByPath("root/player_fp") == Singleton::GetNodeGraph()->GetCurrentPlayer())
         {
-            Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player")->SetCurrent();
+            Singleton::GetNodeGraph()->GetNodeByPath("root/player_tp")->SetCurrent();
         }
         else
         {
-            Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player")->SetCurrent();
+            Singleton::GetNodeGraph()->GetNodeByPath("root/player_fp")->SetCurrent();
         }
         break;
     case KeyCode::R:

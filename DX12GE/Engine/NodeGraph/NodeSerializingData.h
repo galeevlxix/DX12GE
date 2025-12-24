@@ -51,3 +51,24 @@ struct NodeSerializingData
 	float MaxFlyRadius;
 	DirectX::SimpleMath::Vector3 CameraAnchor;
 };
+
+struct ParsedNodePath
+{
+	std::string name = "";
+	std::string parrentNodePath = "";
+
+	void ParseNodePath(const std::string& nodePath)
+	{
+		const size_t last_slash_idx = nodePath.rfind('/');
+		if (last_slash_idx != std::string::npos)
+		{
+			name = nodePath.substr(last_slash_idx + 1);
+			parrentNodePath = nodePath.substr(0, last_slash_idx);
+		}
+		else
+		{
+			name = nodePath;
+			parrentNodePath = "";
+		}
+	}
+};

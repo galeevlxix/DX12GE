@@ -106,13 +106,12 @@ public:
 
 	// Клонирует данный узел, копируя данные и параметры в cloneNode
 	// Пример использования:
-	//		Node3D* newNode;
-	//		oldNode->Clone(newNode, someParrent);
+	//		Node3D* newNode = oldNode->Clone(someParrent, true);
 	// Если parrent определен, новый узел добавится в узел этого родителя
 	// Если cloneChildrenRecursive равен true, все потомки также склонируются
 	// Возвращает nullptr, если клонирование не прошло успешно
 	// Внимание! Данный метод может быть медленным!
-	virtual void Clone(Node3D* cloneNode, Node3D* parrent = nullptr, bool cloneChildrenRecursive = false);
+	virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr);
 
 	// Рисует отладочные примитивы
 	virtual void DrawDebug();

@@ -40,18 +40,24 @@ uint32_t ResourceStorage::AddTexture(const std::string& name)
 
 std::shared_ptr<Object3DComponent> ResourceStorage::GetObject3D(uint32_t id)
 {
+    if (id < 0 || id >= m_Objects.size()) 
+        return nullptr;
+
     return m_Objects[id];
 }
 
 std::shared_ptr<TextureComponent> ResourceStorage::GetTexture(uint32_t id)
 {
+    if (id < 0 || id >= m_Textures.size())
+        return nullptr;
+
     return m_Textures[id];
 }
 
 std::shared_ptr<Object3DComponent> ResourceStorage::GetObject3DByName(const std::string& name)
 {
     uint32_t foundId = Find(name);
-    if (foundId != -1) 
+    if (foundId >= 0 && foundId < m_Objects.size())
         return m_Objects[foundId];
     return nullptr;
 }
@@ -59,14 +65,18 @@ std::shared_ptr<Object3DComponent> ResourceStorage::GetObject3DByName(const std:
 std::shared_ptr<TextureComponent> ResourceStorage::GetTextureByName(const std::string& name)
 {
     uint32_t foundId = Find(name);
-    if (foundId != -1) 
+    if (foundId >= 0 && foundId < m_Textures.size())
         return m_Textures[foundId];
     return nullptr;
 }
 
 void ResourceStorage::DeleteObject3DComponentForever(uint32_t id)
 {
+    if (id < 0 || id >= m_Objects.size())
+        return;
+
     if (!m_Objects[id]) return;
+
     m_Objects[id]->Destroy();
     m_Objects[id].reset();
     m_Objects[id] = nullptr;
@@ -74,6 +84,9 @@ void ResourceStorage::DeleteObject3DComponentForever(uint32_t id)
 
 void ResourceStorage::DeleteTextureComponentForever(uint32_t id)
 {
+    if (id < 0 || id >= m_Textures.size())
+        return;
+
     if (!m_Textures[id]) return;
 
     m_Textures[id]->Destroy();
