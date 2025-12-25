@@ -150,9 +150,6 @@
     <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Graphics\src\Camera.cpp">
-      <Filter>Исходные файлы\Engine\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Graphics\src\CascadedShadowMap.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
@@ -234,9 +231,6 @@
     <ClCompile Include="Engine\Pipelines\src\SkyboxPipeline.cpp">
       <Filter>Исходные файлы\Engine\Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\Lua\LuaManager.cpp">
-      <Filter>Исходные файлы\Engine\Lua</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Base\src\SelectionSystem.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
@@ -270,8 +264,44 @@
     <ClCompile Include="Engine\NodeGraph\src\NodeGraphSystem.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\FirstPersonPlayerNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
     <ClCompile Include="Engine\NodeGraph\src\ThirdPersonPlayerNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\AIComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Behavior.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\BehaviorTree.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\BehaviorTreeBuilder.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Blackboard.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Composites.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Decorators.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Leaves.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Lua\LuaManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineConfig.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -345,9 +375,6 @@
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h">
-      <Filter>Файлы заголовков\Engine\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Graphics\Camera.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\CascadedShadowMap.h">
@@ -446,9 +473,6 @@
     <ClInclude Include="Engine\Base\CollisionBox.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lua\LuaManager.h">
-      <Filter>Исходные файлы\Engine\Lua</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\NodeGraph\CameraNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
@@ -479,11 +503,65 @@
     <ClInclude Include="Engine\NodeGraph\NodeGraphSystem.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\GraphicsComponents.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\FirstPersonPlayerNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
     <ClInclude Include="Engine\NodeGraph\ThirdPersonPlayerNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Graphics\GraphicsComponents.h">
-      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    <ClInclude Include="Engine\NodeGraph\NodeTypeEnum.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\NodeSerializingData.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\SkyBoxNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\AIComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Behavior.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\BehaviorTree.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\BehaviorTreeBuilder.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Blackboard.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Composites.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Decorators.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Leaves.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\LuaManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lualib.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lua.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lauxlib.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\luaconf.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineConfig.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -576,16 +654,11 @@
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </None>
     <None Include="..\README.md" />
-    <None Include="Resources\scene.json">
-      <Filter>Файлы ресурсов</Filter>
-    </None>
     <None Include="Resources\scene lite.json">
       <Filter>Файлы ресурсов</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\Lua\scripts\TestScript.lua">
-      <Filter>Исходные файлы\Engine\Lua\scripts</Filter>
-    </Text>
+    <Text Include="Engine\Lua\scripts\TestScript.lua" />
   </ItemGroup>
 </Project>

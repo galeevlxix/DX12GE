@@ -1,11 +1,11 @@
-﻿#define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <Shlwapi.h>
 
 #include "Engine/Base/Application.h"
 #include "Game/GameSample.h"
 #include "Engine/Lua/LuaManager.h"
-
+#include "EngineConfig.h"
 #include <dxgidebug.h>
 
 void ReportLiveObjects()
@@ -21,6 +21,27 @@ int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine,
 {
     int retCode = 0;
     setlocale(LC_ALL, "Russian");
+
+    int argc = 0;
+    LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+    if (argv != NULL)
+    {
+        for (int i = 1; i < argc; ++i)
+        {
+            std::wstring arg = argv[i];
+
+            if (arg == L"-debug")
+            {
+                EngineConfig::IsReleaseMode = true;
+                std::cout << "enbled release mode" << std::endl;
+            }
+        }
+
+        LocalFree(argv);
+    }
+    EngineConfig::IsReleaseMode = true;
+
     auto manager = LuaManager::GetInstance();
 
     // Set the working directory to the path of the executable.

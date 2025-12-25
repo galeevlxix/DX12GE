@@ -2,26 +2,28 @@
 #include "../../Graphics/ResourceStorage.h"
 #include "../../Base/Singleton.h"
 
-Object3DNode::Object3DNode() : Node3D()
+Object3DNode::Object3DNode() : Node3D(), m_ComponentId(-1)
 {
+    m_Type = NODE_TYPE_OBJECT3D;
+    IsVisible = false;
     Rename("Object3DNode");
 }
 
 bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
     AssimpModelLoader modelLoader;
-    float yOffset;
+    float yOffset = 0.0f;
     uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset);
+    Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);
-    Transform.SetDefault(yOffset);
-    OnLoad();
+    IsVisible = true;
     return true;
 }
 
 void Object3DNode::Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const DirectX::XMMATRIX& viewProjMatrix)
 {
-    if (m_ComponentId == -1) return;
+    if (!IsValid() || !IsVisible) return;
 
     XMMATRIX wvp = GetWorldMatrix();
     XMMATRIX mvp = XMMatrixMultiply(wvp, viewProjMatrix);
@@ -43,10 +45,12 @@ void Object3DNode::Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const 
 
 void Object3DNode::Destroy(bool keepComponent)
 {
-    uint32_t id = m_ComponentId;
+    if (m_ComponentId != -1 && !(keepComponent || TreeHasObjects3DWithComponentId(m_ComponentId)))
+    {
+        ResourceStorage::DeleteObject3DComponentForever(m_ComponentId);
+    }
+    m_ComponentId = -1;
     Node3D::Destroy(keepComponent);
-    if (keepComponent || TreeHasObjects3DWithComponentId(id)) return;
-    ResourceStorage::DeleteObject3DComponentForever(id);
 }
 
 void Object3DNode::SetComponentId(uint32_t newId)
@@ -56,7 +60,7 @@ void Object3DNode::SetComponentId(uint32_t newId)
         printf("Ошибка: Id компонента 3Д объекта за пределами размера массива в ResourceStorage\n");
         return;
     }
-    Node3D::SetComponentId(newId);
+    m_ComponentId = newId;
 }
 
 const std::string Object3DNode::GetObjectFilePath()
@@ -74,22 +78,61 @@ const CollisionBox& Object3DNode::GetCollisionBox()
     return ResourceStorage::GetObject3D(m_ComponentId)->Box;
 }
 
+Node3D* Object3DNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+{
+    if (!cloneNode)
+    {
+        cloneNode = new Object3DNode();
+    }
+
+    Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+
+    if (cloneNode)
+    {
+        Object3DNode* obj3D = dynamic_cast<Object3DNode*>(cloneNode);
+        obj3D->m_ComponentId = m_ComponentId;
+		obj3D->IsVisible = IsVisible;
+    }
+
+    return cloneNode;
+}
+
+void Object3DNode::DrawDebug()
+{
+    Node3D::DrawDebug();
+    Singleton::GetDebugRender()->DrawBoundingBox(GetCollisionBox(), GetWorldMatrix());
+}
+
+void Object3DNode::CreateJsonData(json& j)
+{
+	Node3D::CreateJsonData(j);
+
+    j["file_path"] = GetObjectFilePath();
+    j["is_visible"] = IsVisible;
+}
+
+void Object3DNode::LoadFromJsonData(const NodeSerializingData& nodeData)
+{
+    Node3D::LoadFromJsonData(nodeData);
+    IsVisible = nodeData.isVisible;
+}
+
 bool Object3DNode::TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current)
 {
     current = current == nullptr ? Singleton::GetNodeGraph()->GetRoot() : current;
 
-    if (dynamic_cast<Object3DNode*>(current) && current->GetComponentId() == id && id != -1)
+    if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(current))
     {
-        return true;
+        if (obj3D->GetComponentId() == id && obj3D != this)
+            return true;
     }
 
     for (auto child : current->GetChildren())
     {
-        if (TreeHasObjects3DWithComponentId(id, child))
-        {
+        if (TreeHasObjects3DWithComponentId(id, child)) 
             return true;
-        }
     }
 
     return false;
 }
+

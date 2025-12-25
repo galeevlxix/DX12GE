@@ -1,7 +1,8 @@
 #include "../../Base/Singleton.h"
 
-Node3D::Node3D() : m_Parrent(nullptr), m_ComponentId(-1)
+Node3D::Node3D() : m_Parrent(nullptr)
 {
+    m_Type = NODE_TYPE_NODE3D;
     m_WorldMatrixCache = DirectX::XMMATRIX();
     Transform.SetDefault();
     Rename("Node3D");
@@ -17,6 +18,11 @@ const std::string Node3D::GetNodePath()
         parrent = parrent->GetParrent();
     }
     return nodePath;
+}
+
+const std::string Node3D::GetNodeScripts()
+{
+    return std::string();
 }
 
 void SetTransformCacheStatus(TransformComponent& transform, bool cacheIsDirty)
@@ -39,6 +45,11 @@ void Node3D::OnUpdate(const double& deltaTime)
         {
             child.second->NotifyParrentChanged();
         }
+
+        m_WorldPositionCache = Vector3::Transform(Vector3::Zero, m_WorldMatrixCache);
+
+        m_WorldDirectionCache = Vector3::Transform(Vector3::Backward, m_WorldMatrixCache) - m_WorldPositionCache;
+        m_WorldDirectionCache.Normalize();  
 
         SetTransformCacheStatus(Transform, false);
     }
@@ -64,13 +75,39 @@ void Node3D::Destroy(bool keepComponent)
         m_Parrent->RemoveChild(m_Name);
         m_Parrent = nullptr;
     }
-
-    m_ComponentId = -1;
 }
 
 const DirectX::XMMATRIX& Node3D::GetWorldMatrix()
 {
     return m_WorldMatrixCache;
+}
+
+void Node3D::CreateJsonData(json& j)
+{
+    j["node_path"] = GetNodePath();
+    j["node_type"] = GetType();
+
+    auto pos = Transform.GetPosition();
+    j["trans_pos_x"] = pos.x;
+    j["trans_pos_y"] = pos.y;
+    j["trans_pos_z"] = pos.z;
+
+    auto rot = Transform.GetRotation();
+    j["trans_rot_x"] = rot.x;
+    j["trans_rot_y"] = rot.y;
+    j["trans_rot_z"] = rot.z;
+
+    auto scl = Transform.GetScale();
+    j["trans_scl_x"] = scl.x;
+    j["trans_scl_y"] = scl.y;
+    j["trans_scl_z"] = scl.z;
+}
+
+void Node3D::LoadFromJsonData(const NodeSerializingData& nodeData)
+{
+    Transform.SetPosition(nodeData.pos);
+    Transform.SetRotation(nodeData.rot);
+    Transform.SetScale(nodeData.scl);
 }
 
 void Node3D::NotifyParrentChanged()
@@ -88,7 +125,7 @@ void Node3D::Rename(const std::string& name)
         int number = 2;
         while (m_Parrent->HasChild(newName))
         {
-            newName = name + " " + std::to_string(number);
+            newName = name + "_" + std::to_string(number);
             number++;
         }
 
@@ -195,15 +232,7 @@ bool Node3D::AddChild(Node3D* node)
     }
     m_Children[node->GetName()] = node;
 
-    bool result = Singleton::GetNodeGraph()->OnNodeAdded(node);
-    if (!result)
-    {
-        m_Children.erase(node->GetName());
-        node->m_Parrent = nullptr;
-		node->Rename(name);
-        return false;
-	}
-
+    Singleton::GetNodeGraph()->OnNodeAdded(node);
     return true;
 }
 
@@ -242,7 +271,7 @@ bool Node3D::Move(Node3D* newParrent)
     return newParrent->AddChild(this);
 }
 
-void Node3D::Clone(Node3D* cloneNode, Node3D* parrent, bool cloneChildrenRecursive)
+Node3D* Node3D::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
@@ -255,24 +284,34 @@ void Node3D::Clone(Node3D* cloneNode, Node3D* parrent, bool cloneChildrenRecursi
     cloneNode->Transform.SetRotation(Transform.GetRotation());
     cloneNode->Transform.SetScale(Transform.GetScale());
 
-    cloneNode->m_ComponentId = m_ComponentId;
-
-    if (parrent)
+    if (!newParrent)
     {
-        if (!parrent->AddChild(cloneNode))
-        {
-            cloneNode = nullptr;
-            return;
-        }
+        newParrent = m_Parrent;
+    }
+
+    if (!newParrent->AddChild(cloneNode))
+    {
+        delete cloneNode;
+        cloneNode = nullptr;
+        return cloneNode;
     }
 
     if (cloneChildrenRecursive)
     {
         for (auto child : m_Children)
         {
-            Node3D* cloneChild = nullptr;
-            child.second->Clone(cloneChild, cloneNode, cloneChildrenRecursive);
+            child.second->Clone(cloneNode, cloneChildrenRecursive);
         }
+    }
+
+    return cloneNode;
+}
+
+void Node3D::DrawDebug()
+{
+    for (auto child : m_Children)
+    {
+        child.second->DrawDebug();
     }
 }
 

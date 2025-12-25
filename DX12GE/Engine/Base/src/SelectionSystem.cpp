@@ -68,12 +68,7 @@ void SelectionSystem::DrawDebug()
 {
     for (Node3D* obj : m_Selected)
     {
-        if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(obj))
-        {
-            const CollisionBox& box = obj3D->GetCollisionBox();
-            Matrix transform = obj->GetWorldMatrix();
-            Singleton::GetDebugRender()->DrawBoundingBox(box, transform);
-        }       
+        obj->DrawDebug(); 
     }
 }
 
@@ -99,21 +94,23 @@ void SelectionSystem::OnMouseButtonPressed(MouseButtonEventArgs& e)
         }
 
         auto obj = std::next(objects.begin(), id);
-
-        bool hasEntity = false;
-        for (auto selected : m_Selected)
-        {
-            if (obj->second == selected)
-            {
-                hasEntity = true;
-                break;
-            }
-        }
-
-        if (hasEntity) return;
-
-        m_Selected.push_back(obj->second);
+        SelectedNode(obj->second);
 	}
+}
+
+void SelectionSystem::SelectedNode(Node3D* node)
+{
+    bool hasEntity = false;
+    for (auto selected : m_Selected)
+    {
+        if (node == selected)
+        {
+            hasEntity = true;
+            break;
+        }
+    }
+    if (hasEntity) return;
+    m_Selected.push_back(node);
 }
 
 void SelectionSystem::DeselectAll()

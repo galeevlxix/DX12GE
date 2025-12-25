@@ -24,6 +24,8 @@ public:
 	void DrawDebug();
 	void OnMouseButtonPressed(MouseButtonEventArgs& e);
 
+	void SelectedNode(Node3D* node);
+
 	std::vector<Node3D*>& GetSelected() { return m_Selected; }
 	void DeselectAll();
 

@@ -34,14 +34,6 @@ end
 
 ]]
 
---[[keyboardKey = {
-    "0" = 48,
-    "w" = 87,
-    "a" = 65,
-    "s" = 83,
-    "d" = 68
-
-}]]
 Transform   = "transfrom"
 Physics     = "physics"
 
@@ -96,7 +88,7 @@ function GameObject:new( id )
     end
 
     function GameObject:OnKeyBoardInput( k, pressed )
-	    print("keyboard", k)
+	 --   print("keyboard")
     end
 
     function GameObject:OnMouseClickInput( k, pressed )
@@ -163,5 +155,4 @@ function TransformComponent:Add( id )
 end
 
 PhysicsComponent = {}
-
 

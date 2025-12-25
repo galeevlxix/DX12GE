@@ -12,9 +12,9 @@ end
 
 function PLAYER:OnMouseClickInput( k, pressed )
 	if self.transform ~= nil then
-		local pos = self.transform:GetPosition()
+		--[[local pos = self.transform:GetPosition()
 
-		--[[local object = LoadObjectWithModel("ddd")
+		local object = LoadObjectWithModel("ddd")
 		if object ~= nil then
 			if object.transform == nil then
 				object:AddComponent(Transform)
@@ -30,7 +30,7 @@ end
 function PLAYER:OnMouseMovementInputReceived( x, y )
 	if self.transform then
 		self.transform:MoveTo(x/100, 10, y/100)
-		--[[local object = GetClass("ddd")
+	--[[	local object = GetClass("ddd")
 		if object ~= nil then
 			if object.transform == nil then
 				object:AddComponent(Transform)		
@@ -42,3 +42,15 @@ function PLAYER:OnMouseMovementInputReceived( x, y )
 		
 	return GameObject.OnMouseMovementInputReceived(self, x, y)
 end
+
+
+
+
+
+
+
+
+
+
+
+

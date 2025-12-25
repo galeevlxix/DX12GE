@@ -60,14 +60,13 @@ public:
 		return p_instance;
 	};
 
-	static void SetScene(SingleGpuGame* scene);
+	static void SetGraspSystem(NodeGraphSystem* system);
 	static void ProceedMouseMovementInput(MouseMotionEventArgs&);
 	static void ProceedMouseClickInput(MouseButtonEventArgs& e, bool pressed);
 	static void ProceedMouseWheelInput(MouseWheelEventArgs& e);
-	static void ProceedKeyBoardInput(KeyEventArgs& e, bool pressed);
+	static void ProceedKeyBoardInput(KeyCode::Key& e, bool pressed);
 	static void PerformUpdate();
 	static void Start();
-	static void SetCamera(Camera* camera);
 	static void CLose() {
 		lua_close(L);
 	}

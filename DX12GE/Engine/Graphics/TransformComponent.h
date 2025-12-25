@@ -12,11 +12,14 @@ class TransformComponent
     Vector3 m_Scale;
 
     friend void SetTransformCacheStatus(TransformComponent& transform, bool cacheIsDirty);
+
     static float ToDegrees(float radians);
     static float ToRadians(float degrees);
 
 public:
     const DirectX::XMMATRIX& GetLocalMatrix();
+    const DirectX::XMMATRIX GetLocalScaleMatrix();
+	const DirectX::XMMATRIX GetLocalRotationMatrix();
 
     void SetDefault(float yOffset = 0.0f);
 
@@ -34,6 +37,9 @@ public:
     void Rotate(Vector3 RotateVector);
     void RotateDegrees(Vector3 RotateVector);
     void Rotate(float dx, float dy, float dz);
+
+    void LocalLookAt(const Vector3& localTarget);
+    void RotateToLocalDirection(const Vector3& direction);
 
     void SetScale(Vector3 ScaleVector);
     void SetScale(float x, float y, float z);

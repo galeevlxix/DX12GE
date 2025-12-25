@@ -53,7 +53,7 @@ public:
 	ComPtr<ID3D12Resource> GetReadbackBuffer() { return m_ReadbackBuffer; }
 	ComPtr<ID3D12Device2> GetDevice() { return m_Device; }
 	void SetName(LPCWSTR name) { m_Name = name; }
-	wstring GetName() { return m_Name; }
+	std::wstring GetName() { return m_Name; }
 	D3D12_RESOURCE_STATES GetResourceState() { return m_CurrentState; }
 	void SetAdapter(GraphicsAdapter graphicsAdapter) { m_Adapter = graphicsAdapter; }
 	UINT GetWidth() { return m_Width; }

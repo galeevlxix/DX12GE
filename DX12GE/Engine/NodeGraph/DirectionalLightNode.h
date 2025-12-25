@@ -1,25 +1,27 @@
 #pragma once
 
 #include "Node3D.h"
+#include "../Graphics/GraphicsComponents.h"
 
-// Направленный источник света
-// Может быть только один такой узел в дереве сцены
+// Класс узла направленного источника света
+// Только один такой узел в дереве сцены может быть активным 
 class DirectionalLightNode : public Node3D
 {
-private:
-	DirectX::SimpleMath::Vector3 m_DirectionCache;
-
 public:
-	DirectX::SimpleMath::Vector3 Color;
-	float Intensity;
+	DirectionalLightComponent LightData;
 
 	DirectionalLightNode();
 
-	virtual const std::string GetType() override { return "DirectionalLightNode"; }
-
 	virtual void OnUpdate(const double& deltaTime) override;
 
-	const DirectX::SimpleMath::Vector3& GetWorldDirection() { return m_DirectionCache; }
+	virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
 
-	virtual void Clone(Node3D* cloneNode, Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false) override;
+	virtual void DrawDebug() override;
+
+	virtual void CreateJsonData(json& j) override;
+
+	virtual void LoadFromJsonData(const NodeSerializingData& nodeData) override;
+
+	virtual void SetCurrent() override;
+	bool IsCurrent();
 };
