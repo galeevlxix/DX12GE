@@ -34,14 +34,208 @@ end
 
 ]]
 
---[[keyboardKey = {
-    "0" = 48,
-    "w" = 87,
-    "a" = 65,
-    "s" = 83,
-    "d" = 68
+Forward = {
+	0, 0, 1
+}
 
-}]]
+Backward = {
+    0, 0, -1
+}
+
+Left = {
+    1, 0, 0
+}
+
+Right = {
+    -1, 0, 0
+}
+
+Up = {
+    0, 1, 0
+}
+
+Down = {
+    0, -1, 0
+}
+
+KeyCode = {
+    -- Кнопки мыши
+    ["mouse_left"] = 1,
+    ["mouse_right"] = 2,
+    ["mouse_middle"] = 4,
+    ["mouse_xbutton1"] = 5,
+    ["mouse_xbutton2"] = 6,
+    
+    -- Специальные клавиши
+    ["escape"] = 27,
+    ["backspace"] = 8,
+    ["tab"] = 9,
+    ["enter"] = 13,
+    ["space"] = 32,
+    ["capslock"] = 20,
+    ["numlock"] = 144,
+    ["scrolllock"] = 145,
+    ["pause"] = 19,
+    ["cancel"] = 3,
+    
+    -- Модификаторы
+    ["shift"] = 16,
+    ["lshift"] = 160,
+    ["rshift"] = 161,
+    ["ctrl"] = 17,
+    ["lctrl"] = 162,
+    ["rctrl"] = 163,
+    ["alt"] = 18,
+    ["lalt"] = 164,
+    ["ralt"] = 165,
+    ["lwin"] = 91,
+    ["rwin"] = 92,
+    ["context_menu"] = 93,
+    ["sleep"] = 95,
+    
+    -- Навигация
+    ["home"] = 36,
+    ["end"] = 35,
+    ["pageup"] = 33,
+    ["pagedown"] = 34,
+    ["clear"] = 12,
+    ["select"] = 41,
+    ["print"] = 42,
+    ["execute"] = 43,
+    ["printscreen"] = 44,
+    ["insert"] = 45,
+    ["delete"] = 46,
+    ["help"] = 47,
+    
+    -- Стрелки
+    ["left"] = 37,
+    ["up"] = 38,
+    ["right"] = 39,
+    ["down"] = 40,
+    
+    -- Цифры
+    ["0"] = 48,
+    ["1"] = 49,
+    ["2"] = 50,
+    ["3"] = 51,
+    ["4"] = 52,
+    ["5"] = 53,
+    ["6"] = 54,
+    ["7"] = 55,
+    ["8"] = 56,
+    ["9"] = 57,
+    
+    -- Буквы (A-Z)
+    ["a"] = 65,
+    ["b"] = 66,
+    ["c"] = 67,
+    ["d"] = 68,
+    ["e"] = 69,
+    ["f"] = 70,
+    ["g"] = 71,
+    ["h"] = 72,
+    ["i"] = 73,
+    ["j"] = 74,
+    ["k"] = 75,
+    ["l"] = 76,
+    ["m"] = 77,
+    ["n"] = 78,
+    ["o"] = 79,
+    ["p"] = 80,
+    ["q"] = 81,
+    ["r"] = 82,
+    ["s"] = 83,
+    ["t"] = 84,  -- Исправлено: должно быть 84 вместо 83
+    ["u"] = 85,
+    ["v"] = 86,
+    ["w"] = 87,
+    ["x"] = 88,
+    ["y"] = 89,
+    ["z"] = 90,
+    
+    -- Цифровая клавиатура
+    ["numpad0"] = 96,
+    ["numpad1"] = 97,
+    ["numpad2"] = 98,
+    ["numpad3"] = 99,
+    ["numpad4"] = 100,
+    ["numpad5"] = 101,
+    ["numpad6"] = 102,
+    ["numpad7"] = 103,
+    ["numpad8"] = 104,
+    ["numpad9"] = 105,
+    ["numpad_multiply"] = 106,
+    ["numpad_add"] = 107,
+    ["numpad_separator"] = 108,
+    ["numpad_subtract"] = 109,
+    ["numpad_decimal"] = 110,
+    ["numpad_divide"] = 111,
+    ["numpad_enter"] = 13,
+    
+    -- Функциональные клавиши
+    ["f1"] = 112,
+    ["f2"] = 113,
+    ["f3"] = 114,
+    ["f4"] = 115,
+    ["f5"] = 116,
+    ["f6"] = 117,
+    ["f7"] = 118,
+    ["f8"] = 119,
+    ["f9"] = 120,
+    ["f10"] = 121,
+    ["f11"] = 122,
+    ["f12"] = 123,
+    ["f13"] = 124,
+    ["f14"] = 125,
+    ["f15"] = 126,
+    ["f16"] = 127,
+    ["f17"] = 128,
+    ["f18"] = 129,
+    ["f19"] = 130,
+    ["f20"] = 131,
+    ["f21"] = 132,
+    ["f22"] = 133,
+    ["f23"] = 134,
+    ["f24"] = 135,
+    
+    -- Браузер и медиа клавиши
+    ["browser_back"] = 166,
+    ["browser_forward"] = 167,
+    ["browser_refresh"] = 168,
+    ["browser_stop"] = 169,
+    ["browser_search"] = 170,
+    ["browser_favorites"] = 171,
+    ["browser_home"] = 172,
+    ["volume_mute"] = 173,
+    ["volume_down"] = 174,
+    ["volume_up"] = 175,
+    ["media_next_track"] = 176,
+    ["media_previous_track"] = 177,
+    ["media_stop"] = 178,
+    ["media_play_pause"] = 179,
+    ["launch_mail"] = 180,
+    ["launch_media_select"] = 181,
+    ["launch_app1"] = 182,
+    ["launch_app2"] = 183,
+    
+    -- Символьные клавиши (OEM клавиши)
+    ["oem_1"] = 186,           -- ; :
+    ["oem_plus"] = 187,        -- = +
+    ["oem_comma"] = 188,       -- , <
+    ["oem_minus"] = 189,       -- - _
+    ["oem_period"] = 190,      -- . >
+    ["oem_2"] = 191,           -- / ?
+    ["oem_3"] = 192,           -- `
+    ["oem_4"] = 219,           -- [ {
+    ["oem_5"] = 220,           -- \ |
+    ["oem_6"] = 221,           -- ] }
+    ["oem_7"] = 222,           -- ' "
+    
+    -- Дополнительные (если нужны)
+    ["abnt_c1"] = 193,
+    ["abnt_c2"] = 194,
+}
+
 Transform   = "transfrom"
 Physics     = "physics"
 
@@ -96,7 +290,7 @@ function GameObject:new( id )
     end
 
     function GameObject:OnKeyBoardInput( k, pressed )
-	    print("keyboard", k)
+	  --  print("keyboard", k)
     end
 
     function GameObject:OnMouseClickInput( k, pressed )
@@ -131,13 +325,24 @@ function TransformComponent:Add( id )
 	local obj = {}
     obj.id = id
     obj.object = nil
-    function TransformComponent:MoveTo( x, y, z )
+    function TransformComponent:MoveToVector( table )
+        assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
+
+        TranslateTo(obj.object, table[1], table[2], table[3])
+	end
+
+    function TransformComponent:MoveByVector( table )
+        assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
+        TranslateBy(obj.object, table[1], table[2], table[3])
+	end
+
+    function TransformComponent:MoveToPos( x, y, z )
         assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
 
         TranslateTo(obj.object, x, y, z)
 	end
 
-    function TransformComponent:MoveBy( x, y, z )
+    function TransformComponent:MoveByPos( x, y, z )
         assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
         TranslateBy(obj.object, x, y, z)
 	end
@@ -146,6 +351,14 @@ function TransformComponent:Add( id )
         assert(parent ~= nil, "Attemp to call SetParent to on empty object, call SetParent to set object!")
         print("set parent for transform")
 	    obj.object = parent
+    end
+
+    function TransformComponent:RotateByVector( table )
+	    RotateBy(obj.object, table[1], table[2], table[3])
+    end
+
+    function TransformComponent:RotateByCoords( x, y, z )
+	    RotateBy(obj.object, x, y, z)
     end
 
     function TransformComponent:Update()
