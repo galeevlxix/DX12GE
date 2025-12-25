@@ -112,13 +112,12 @@ public:
 
 	// ��������� ������ ����, ������� ������ � ��������� � cloneNode
 	// ������ �������������:
-	//		Node3D* newNode;
-	//		oldNode->Clone(newNode, someParrent);
+	//		Node3D* newNode = oldNode->Clone(someParrent, true);
 	// ���� parrent ���������, ����� ���� ��������� � ���� ����� ��������
 	// ���� cloneChildrenRecursive ����� true, ��� ������� ����� ������������
 	// ���������� nullptr, ���� ������������ �� ������ �������
 	// ��������! ������ ����� ����� ���� ���������!
-	virtual void Clone(Node3D* cloneNode, Node3D* parrent = nullptr, bool cloneChildrenRecursive = false);
+	virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr);
 
 	// ������ ���������� ���������
 	virtual void DrawDebug();

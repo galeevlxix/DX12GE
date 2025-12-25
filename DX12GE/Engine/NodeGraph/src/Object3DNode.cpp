@@ -78,14 +78,14 @@ const CollisionBox& Object3DNode::GetCollisionBox()
     return ResourceStorage::GetObject3D(m_ComponentId)->Box;
 }
 
-void Object3DNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
+Node3D* Object3DNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
         cloneNode = new Object3DNode();
     }
 
-    Node3D::Clone(cloneNode, newParrent, cloneChildrenRecursive);
+    Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
 
     if (cloneNode)
     {
@@ -93,6 +93,8 @@ void Object3DNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildr
         obj3D->m_ComponentId = m_ComponentId;
 		obj3D->IsVisible = IsVisible;
     }
+
+    return cloneNode;
 }
 
 void Object3DNode::DrawDebug()

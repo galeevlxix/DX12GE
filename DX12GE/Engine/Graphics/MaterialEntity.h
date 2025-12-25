@@ -26,9 +26,8 @@ private:
     void DestroyTexture(uint32_t textureId);
 
 public:
-    std::map<TextureType, std::string> m_ImagePaths;
 
-    void Load(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::map<TextureType, std::string>& imagePaths);
     void Render(ComPtr<ID3D12GraphicsCommandList2> commandList);
     bool CanDrawIt() { return m_DrawIt; }
 

@@ -245,13 +245,9 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		}
 	}
 
-	std::map<std::string, Node3D*> createdNodes;
+	//std::map<std::string, Node3D*> createdNodes;
 
-	if (nodesData[0].type == NODE_TYPE_NODE3D && nodesData[0].nodePath == "root")
-	{
-		createdNodes["root"] = Singleton::GetNodeGraph()->GetRoot();
-	}
-	else
+	if (nodesData[0].type != NODE_TYPE_NODE3D || nodesData[0].nodePath != "root")
 	{
 		throw "������! ���� ���������! ���� ����� �� �������� �������� ����";
 	}
@@ -259,46 +255,8 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	for (int i = 1; i < nodesData.size(); ++i)
 	{
 		NodeSerializingData nodeData = nodesData[i];
-		ParsedNodePath parsed = ParseNodePath(nodeData.nodePath);
 		
-		Node3D* node = nullptr;
-
-		switch(nodeData.type)
-		{
-		case NODE_TYPE_NODE3D:
-			node = new Node3D();
-			break;
-		case NODE_TYPE_OBJECT3D:
-			node = new Object3DNode();
-			break;
-		case NODE_TYPE_FIRST_PERSON_PLAYER:
-			node = new FirstPersonPlayerNode();
-			break;
-		case NODE_TYPE_THIRD_PERSON_PLAYER:
-			node = new ThirdPersonPlayerNode();
-			break;
-		case NODE_TYPE_ENVIRONMENT:
-			node = new EnvironmentNode();
-			break;
-		case NODE_TYPE_DIRECTIONAL_LIGHT:
-			node = new DirectionalLightNode();
-			break;
-		case NODE_TYPE_POINT_LIGHT:
-			node = new PointLightNode();
-			break;
-		case NODE_TYPE_SPOT_LIGHT:
-			node = new SpotLightNode();
-			break;
-		case NODE_TYPE_CAMERA:
-			node = new CameraNode();
-			break;
-		case NODE_TYPE_SKYBOX:
-			node = new SkyBoxNode();
-			break;
-		default:
-			printf("������! ��� ���� %d �� ��������������!\n", nodeData.type);
-			break;
-		}
+		Node3D* node = Singleton::GetNodeGraph()->CreateNewNodeInScene(nodeData.nodePath, nodeData.type);
 
 		if (!node) continue;
 
@@ -306,30 +264,11 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		{
 			if (!obj3D->Create(commandList, nodeData.filePath))
 			{
-				printf("��������������! ��� ���� %s �� ���������������!\n", parsed.name.c_str());
+				printf("��������������! ��� ���� %s �� ���������������!\n", node->GetName().c_str());
 			}
 		}
 
 		node->LoadFromJsonData(nodeData);
-
-		auto parrent = createdNodes.find(parsed.parrentNodePath);
-		if (parrent != createdNodes.end())
-		{
-			node->Rename(parsed.name);
-			parrent->second->AddChild(node);
-			createdNodes[nodeData.nodePath] = node;
-
-			if (nodeData.isCurrent)
-			{
-				node->SetCurrent();
-			}
-		}
-		else
-		{
-			printf("������! ���� ����� ���������!\n");
-			node->Destroy(true);
-			delete node;
-		}
 	}
 
 	for (const auto& node : nodesData)

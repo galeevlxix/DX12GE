@@ -17,14 +17,14 @@ EnvironmentNode::EnvironmentNode() : Node3D()
 	Rename("EnvironmentNode");
 }
 
-void EnvironmentNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
+Node3D* EnvironmentNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new EnvironmentNode();
 	}
 
-	Node3D::Clone(cloneNode, newParrent, cloneChildrenRecursive);
+	Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
@@ -41,6 +41,8 @@ void EnvironmentNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChi
 		env->SSRStepLength = SSRStepLength;
 		env->SSRThickness = SSRThickness;
 	}
+
+	return cloneNode;
 }
 
 void EnvironmentNode::DrawDebug()
@@ -88,6 +90,11 @@ void EnvironmentNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 	SSRMaxDistance = nodeData.envSSRMaxDistance;
 	SSRStepLength = nodeData.envSSRStepLength;
 	SSRThickness = nodeData.envSSRThickness;
+
+	if (nodeData.isCurrent)
+	{
+		SetCurrent();
+	}
 }
 
 void EnvironmentNode::SetCurrent()
@@ -95,6 +102,10 @@ void EnvironmentNode::SetCurrent()
 	if (IsInsideTree())
 	{
 		Singleton::GetNodeGraph()->m_CurrentEnvironment = this;
+	}
+	else
+	{
+		printf("Внимание! Невозможно сделать EnvironmentNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
 	}
 }
 

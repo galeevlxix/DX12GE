@@ -24,14 +24,14 @@ const Matrix CameraNode::GetViewProjMatrixNoTranslation()
 	return viewNoTrans * proj;
 }
 
-void CameraNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildrenRecursive)
+Node3D* CameraNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new CameraNode();
 	}
 
-	Node3D::Clone(cloneNode, newParrent, cloneChildrenRecursive);
+	Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
 
 	if (CameraNode* camera = dynamic_cast<CameraNode*>(cloneNode))
 	{
@@ -39,6 +39,8 @@ void CameraNode::Clone(Node3D* cloneNode, Node3D* newParrent, bool cloneChildren
 		camera->ZNear = ZNear;
 		camera->ZFar = ZFar;
 	}
+
+	return cloneNode;
 }
 
 void CameraNode::DrawDebug()

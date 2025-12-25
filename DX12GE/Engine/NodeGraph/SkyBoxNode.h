@@ -33,11 +33,13 @@ public:
 
 	virtual const std::string GetObjectFilePath() override;
 
-	virtual void Clone(Node3D* cloneNode, Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false) override;
+	virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
 
 	virtual void DrawDebug() override;
 
 	virtual void CreateJsonData(json& j) override;
+
+	virtual void LoadFromJsonData(const NodeSerializingData& nodeData) override;
 
 	virtual void SetCurrent() override;
 	bool IsCurrent();

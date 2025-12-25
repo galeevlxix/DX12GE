@@ -114,4 +114,21 @@ public:
 	void OnMouseButtonPressed(MouseButtonEventArgs& e) { m_SceneRootNode->OnMouseButtonPressed(e); }
 	void OnMouseButtonReleased(MouseButtonEventArgs& e) { m_SceneRootNode->OnMouseButtonReleased(e); }
 	void OnResize(ResizeEventArgs& e);
+
+	// Создаёт новый узел и добавляет его на сцену
+	// Возвращает созданный узел, если создание прошло успешно (nullptr - в противном случае)
+	Node3D* CreateNewNodeInScene(const std::string& nodePath, NodeTypeEnum type);
+
+	// Удаляет узел со сцены
+	// Если destroy = true, узел удаляется полностью из памяти
+	// Возвращает true, если удаление прошло успешно
+	bool RemoveNodeFromScene(const std::string& nodePath, bool destroy = false);
+
+	// Полностью клонирует узел и добавляет клон на сцену
+	// Возвращает узел клона, если создание прошло успешно (nullptr - в противном случае)
+	Node3D* CloneNode(const std::string& nodePath, const std::string& pathOfNewParrent);
+
+	// Перемещает узел в узел нового родителя
+	// Возвращает true, если перемещение прошло успешно
+	bool MoveNode(const std::string& nodePath, const std::string& pathOfNewParrent);
 };
