@@ -84,7 +84,8 @@ int lua_transform_move_to(Node3D* object, float x, float y, float z)
 {
 	assert(object != nullptr, "Attempt to call move to on null object!");
 
-	object->Transform.SetPosition(DirectX::SimpleMath::Vector3(x, y, z));
+	const auto& worldDirection = object->GetWorldDirection();
+	object->Transform.SetPosition(DirectX::SimpleMath::Vector3(x, y, z) * worldDirection);
 
 	return 1;
 }
@@ -93,7 +94,8 @@ int lua_transform_move_by(Node3D* object, float x, float y, float z)
 {
 	assert(object != nullptr, "Attempt to call move to on null object!");
 
-	object->Transform.Move(DirectX::SimpleMath::Vector3(x, y, z));
+	const auto& worldDirection = object->GetWorldDirection();
+	object->Transform.Move(DirectX::SimpleMath::Vector3(x, y, z) * worldDirection);
 
 	return 1;
 }
