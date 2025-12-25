@@ -64,7 +64,7 @@ public:
 	static void ProceedMouseMovementInput(MouseMotionEventArgs&);
 	static void ProceedMouseClickInput(MouseButtonEventArgs& e, bool pressed);
 	static void ProceedMouseWheelInput(MouseWheelEventArgs& e);
-	static void ProceedKeyBoardInput(KeyEventArgs& e, bool pressed);
+	static void ProceedKeyBoardInput(KeyCode::Key& e, bool pressed);
 	static void PerformUpdate();
 	static void Start();
 	static void CLose() {

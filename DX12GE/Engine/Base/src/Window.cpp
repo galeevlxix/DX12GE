@@ -194,7 +194,7 @@ void Window::OnKeyPressed(KeyEventArgs& e)
 {
     if (EngineConfig::IsReleaseMode)
     {
-        LuaManager::ProceedKeyBoardInput(e, true);
+        LuaManager::ProceedKeyBoardInput(e.Key, true);
     }
     else
     {
@@ -209,7 +209,7 @@ void Window::OnKeyReleased(KeyEventArgs& e)
 {
     if (EngineConfig::IsReleaseMode)
     {
-        LuaManager::ProceedKeyBoardInput(e, true);
+        LuaManager::ProceedKeyBoardInput(e.Key, true);
     }
     else
     {
@@ -227,9 +227,8 @@ void Window::OnMouseMoved(MouseMotionEventArgs& e)
     {
         LuaManager::ProceedMouseMovementInput(e);
     }
-    else {
-
-
+    else 
+    {
         if (auto pGame = m_pGame.lock())
         {
             pGame->OnMouseMoved(e);

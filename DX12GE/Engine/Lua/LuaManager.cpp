@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 
 lua_State* LuaManager::L = nullptr;
 LuaManager* LuaManager::p_instance = nullptr;
-std::string const luaSciptsFolder = "../Lua/scripts/";
+std::string const luaSciptsFolder = "../DX12GE/Engine/Lua/scripts/";
 static SingleGpuGame* p_scene;
 static NodeGraphSystem* p_grapsh_system;
 static std::vector<std::string> lua_classes_vector;
@@ -275,8 +275,8 @@ LuaManager::LuaManager()
 	}
 	else
 	{
-		lua.safe_script_file("Core.lua");
-		lua.safe_script_file("Player.lua");
+		lua.safe_script_file(luaSciptsFolder + "Core.lua");
+		lua.safe_script_file(luaSciptsFolder + "Player.lua");
 		//	lua.safe_script_file("TestScript.lua");
 			//lua.safe_script_file("TestScript2.lua");
 	}
@@ -447,7 +447,7 @@ void LuaManager::ProceedMouseWheelInput(MouseWheelEventArgs& e)
 	};
 }
 
-void LuaManager::ProceedKeyBoardInput(KeyEventArgs& e, bool pressed)
+void LuaManager::ProceedKeyBoardInput(KeyCode::Key& e, bool pressed)
 {
 	for (const auto& lua_class : lua_classes_vector)
 	{

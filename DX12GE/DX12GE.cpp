@@ -1,4 +1,4 @@
-﻿#define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <Shlwapi.h>
 
@@ -33,14 +33,14 @@ int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine,
 
             if (arg == L"-debug")
             {
-                EngineConfig::IsReleaseMode = false;
+                EngineConfig::IsReleaseMode = true;
                 std::cout << "enbled release mode" << std::endl;
             }
         }
 
         LocalFree(argv);
     }
-
+    EngineConfig::IsReleaseMode = true;
 
     auto manager = LuaManager::GetInstance();
 
