@@ -19,6 +19,21 @@ protected:
     Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override;
 };
 
+class MoveAwayFromTarget : public Behavior {
+    Object3DNode* target = nullptr;
+    float speed = 15.f;
+    float safeDistance = 50.f;  // Run until this far away
+public:
+    MoveAwayFromTarget(Object3DNode* t, float s = 15.f, float dist = 50.f)
+        : target(t), speed(s), safeDistance(dist) {}
+    
+    BehaviorPtr Clone() const override {
+        return std::make_unique<MoveAwayFromTarget>(target, speed, safeDistance);
+    }
+protected:
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override;
+};
+
 class MoveToSpawn : public Behavior {
     float speed = 15.f;
     float stopDist = 5.f;

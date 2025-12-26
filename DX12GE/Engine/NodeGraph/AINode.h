@@ -21,7 +21,9 @@ public:
         if (m_Parrent && m_BehaviorTree) {
             Object3DNode* owner = dynamic_cast<Object3DNode*>(m_Parrent);
             if (owner) {
-                m_BehaviorTree->tick(static_cast<float>(deltaTime), owner);
+                float dt = static_cast<float>(deltaTime);
+                if (dt > 0.1f) dt = 0.1f; // Cap delta time to avoid large jumps
+                m_BehaviorTree->tick(dt, owner);
             }
         }
         Node3D::OnUpdate(deltaTime); // Update children if any

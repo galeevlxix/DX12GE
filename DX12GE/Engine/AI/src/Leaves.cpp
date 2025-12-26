@@ -1,4 +1,4 @@
-﻿/*#include "../Leaves.h"
+#include "../Leaves.h"
 using namespace DirectX::SimpleMath;
 
 Status MoveToTarget::update(float dt, Object3DNode* owner, Blackboard& blackboard) {
@@ -9,6 +9,27 @@ Status MoveToTarget::update(float dt, Object3DNode* owner, Blackboard& blackboar
     float dist = dir.Length();
     if (dist <= stopDist) return Status::SUCCESS;
 
+    dir.Normalize();
+    from += dir * speed * dt;
+    owner->Transform.SetPosition(from);
+    
+    float yaw = atan2f(dir.x, dir.z);
+    owner->Transform.SetRotation(0.f, yaw, 0.f);
+    return Status::RUNNING;
+}
+
+Status MoveAwayFromTarget::update(float dt, Object3DNode* owner, Blackboard& blackboard) {
+    if (!target) return Status::FAILURE;
+
+    Vector3 to = target->Transform.GetPosition();
+    Vector3 from = owner->Transform.GetPosition();
+    Vector3 dir = from - to;
+    float dist = dir.Length();
+    if (dist >= safeDistance) return Status::SUCCESS;
+
+    dir.Normalize();
+    Vector3 newWorldPos = from + dir * speed * dt;
+    
     dir.Normalize();
     from += dir * speed * dt;
     owner->Transform.SetPosition(from);
@@ -86,4 +107,3 @@ Status RandomPointMove::update(float dt, Object3DNode* owner, Blackboard& blackb
     owner->Transform.SetRotation(0.0f, yaw, 0.0f);
     return Status::RUNNING;
 }
-*/
