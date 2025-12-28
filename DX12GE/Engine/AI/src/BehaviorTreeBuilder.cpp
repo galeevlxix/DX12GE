@@ -76,6 +76,28 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::untilFail() {
     return *this;
 }
 
+BehaviorTreeBuilder& BehaviorTreeBuilder::utilitySelector() {
+    BuilderContext ctx;
+    ctx.type = NodeType::UtilitySelector;
+    stack.emplace(std::move(ctx));
+    return *this;
+}
+
+BehaviorTreeBuilder& BehaviorTreeBuilder::utilityDecorator(Aggregation aggr) {
+    BuilderContext ctx;
+    ctx.type = NodeType::UtilityDecorator;
+    ctx.aggregation = aggr;
+    stack.emplace(std::move(ctx));
+    return *this;
+}
+
+BehaviorTreeBuilder& BehaviorTreeBuilder::score(UtilityFactor* factor) {
+    if (!stack.empty()) {
+        stack.top().factors.emplace_back(std::shared_ptr<UtilityFactor>(factor));
+    }
+    return *this;
+}
+
 BehaviorTreeBuilder& BehaviorTreeBuilder::end() {
     if (stack.size() <= 1) return *this;
 
@@ -107,6 +129,16 @@ BehaviorTreeBuilder& BehaviorTreeBuilder::end() {
         break;
     case NodeType::UntilFail:
         nodePtr = std::make_unique<UntilFail>();
+        break;
+    case NodeType::UtilitySelector:
+        nodePtr = std::make_unique<UtilitySelector>();
+        break;
+    case NodeType::UtilityDecorator:
+        auto decorator = std::make_unique<UtilityDecorator>(nullptr, current.aggregation);
+        for(auto& f : current.factors) {
+            decorator->AddFactor(f);
+        }
+        nodePtr = std::move(decorator);
         break;
     }
     

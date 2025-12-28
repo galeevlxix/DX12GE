@@ -34,6 +34,23 @@ protected:
     Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override;
 };
 
+class FleeRandomly : public Behavior {
+    Object3DNode* target = nullptr;
+    float speed = 15.f;
+    float safeDistance = 50.f;
+    float jitterStrength = 0.5f; 
+public:
+    FleeRandomly(Object3DNode* t, float s = 15.f, float dist = 50.f, float jitter = 0.5f)
+        : target(t), speed(s), safeDistance(dist), jitterStrength(jitter) {}
+
+    BehaviorPtr Clone() const override {
+        return std::make_unique<FleeRandomly>(target, speed, safeDistance, jitterStrength);
+    }
+protected:
+    void onInitialize() override;
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override;
+};
+
 class MoveToSpawn : public Behavior {
     float speed = 15.f;
     float stopDist = 5.f;
@@ -71,6 +88,56 @@ public:
 
     BehaviorPtr Clone() const override {
         return std::make_unique<IsTargetVisible>(target, m_Negate, m_Monitor);
+    }
+};
+
+class LinkCheckCondition : public Condition {
+public:
+    std::string key;
+    bool expected;
+
+    LinkCheckCondition(std::string k, bool exp, bool negate = false) 
+        : key(k), expected(exp), Condition([this, k, exp](Object3DNode* owner) {
+             return false; 
+        }, negate) 
+    {
+    }
+};
+
+class CheckBlackboardBool : public Behavior {
+    std::string key;
+    bool expectedValue;
+public:
+    CheckBlackboardBool(std::string k, bool val) : key(k), expectedValue(val) {}
+    
+    BehaviorPtr Clone() const override {
+        return std::make_unique<CheckBlackboardBool>(key, expectedValue);
+    }
+protected:
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override {
+        if (!blackboard.Has(key)) return Status::FAILURE;
+        try {
+            bool val = blackboard.Get<bool>(key);
+            return (val == expectedValue) ? Status::SUCCESS : Status::FAILURE;
+        } catch(...) {
+            return Status::FAILURE;
+        }
+    }
+};
+
+class SetBlackboardBool : public Behavior {
+    std::string key;
+    bool value;
+public:
+    SetBlackboardBool(std::string k, bool v) : key(k), value(v) {}
+    
+    BehaviorPtr Clone() const override {
+        return std::make_unique<SetBlackboardBool>(key, value);
+    }
+protected:
+    Status update(float dt, Object3DNode* owner, Blackboard& blackboard) override {
+        blackboard.Set(key, value);
+        return Status::SUCCESS;
     }
 };
 

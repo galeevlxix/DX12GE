@@ -29,6 +29,7 @@ public:
     }
     Status m_Status = Status::INVALID;
     virtual std::unique_ptr<Behavior> Clone() const = 0;
+    virtual float getUtility(Object3DNode* owner, Blackboard& blackboard) { return 0.0f; }
 protected:
     virtual void onInitialize() {}
     virtual Status update(float dt, Object3DNode* owner, Blackboard& blackboard) = 0;

@@ -33,6 +33,10 @@ public:
         m_BehaviorTree = std::move(tree);
     }
 
+    Blackboard* GetBlackboard() const {
+        return &m_BehaviorTree->GetBlackboard();
+    }
+
 protected:
     std::unique_ptr<BehaviorTree> m_BehaviorTree;
 };

@@ -1,4 +1,6 @@
 #include "../Leaves.h"
+#include "../NodeGraph/AINode.h"
+
 using namespace DirectX::SimpleMath;
 
 Status MoveToTarget::update(float dt, Object3DNode* owner, Blackboard& blackboard) {
@@ -28,9 +30,33 @@ Status MoveAwayFromTarget::update(float dt, Object3DNode* owner, Blackboard& bla
     if (dist >= safeDistance) return Status::SUCCESS;
 
     dir.Normalize();
-    Vector3 newWorldPos = from + dir * speed * dt;
+    from += dir * speed * dt;
+    owner->Transform.SetPosition(from);
     
+    float yaw = atan2f(dir.x, dir.z);
+    owner->Transform.SetRotation(0.f, yaw, 0.f);
+    return Status::RUNNING;
+}
+
+Status FleeRandomly::update(float dt, Object3DNode* owner, Blackboard& blackboard) {
+    if (!target) return Status::FAILURE;
+
+    Vector3 to = target->Transform.GetPosition();
+    Vector3 from = owner->Transform.GetPosition();
+    Vector3 dir = from - to; 
+    float dist = dir.Length();
+    if (dist >= safeDistance) return Status::SUCCESS;
+
     dir.Normalize();
+    
+    // Add Jitter
+    float rx = ((float)rand() / RAND_MAX - 0.5f) * 2.0f; 
+    float rz = ((float)rand() / RAND_MAX - 0.5f) * 2.0f;
+    Vector3 noise(rx, 0, rz);
+    
+    dir += noise * jitterStrength;
+    dir.Normalize();
+
     from += dir * speed * dt;
     owner->Transform.SetPosition(from);
     

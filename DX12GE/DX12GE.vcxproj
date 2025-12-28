@@ -295,6 +295,7 @@
     <ClInclude Include="Engine\AI\Composites.h" />
     <ClInclude Include="Engine\AI\Decorators.h" />
     <ClInclude Include="Engine\AI\Leaves.h" />
+    <ClInclude Include="Engine\AI\Utility.h" />
     <ClInclude Include="Engine\Base\Application.h" />
     <ClInclude Include="Engine\Base\CollisionBox.h" />
     <ClInclude Include="Engine\Base\CommandExecutor.h" />
@@ -339,6 +340,7 @@
     <ClInclude Include="Engine\Graphics\Texture3D.h" />
     <ClInclude Include="Engine\Graphics\TransformComponent.h" />
     <ClInclude Include="Engine\Graphics\VertexStructures.h" />
+    <ClInclude Include="Engine\NodeGraph\AINode.h" />
     <ClInclude Include="Engine\NodeGraph\CameraNode.h" />
     <ClInclude Include="Engine\NodeGraph\DirectionalLightNode.h" />
     <ClInclude Include="Engine\NodeGraph\EnvironmentNode.h" />
