@@ -2,10 +2,21 @@ PLAYER = {}
 Class(PLAYER, GameObject)
 
 function PLAYER:Update()
-	return GameObject.Update(self)
+	if PLAYER.moveVector ~= nil then
+		self.transform:MoveByPos(
+		PLAYER.moveVector.x, 
+		PLAYER.moveVector.y, 
+		PLAYER.moveVector.z)
+	end
+
+	return GameObject.Update(PLAYER)
 end
 
 function PLAYER:Start()
+	PLAYER.moveVector = {}
+	PLAYER.moveVector.x = 0
+	PLAYER.moveVector.y = 0
+	PLAYER.moveVector.z = 0
 	return GameObject.Start(self)
 end
 
@@ -28,21 +39,44 @@ function PLAYER:OnMouseClickInput( k, pressed )
 end
 
 function PLAYER:OnKeyBoardInput( k, pressed )
-	if k == KeyCode.w then
+
+	if pressed == false then
+		PLAYER.moveVector = {}
+	elseif k == KeyCode.w then
 		if self.transform then
-			self.transform:MoveByVector(Forward)
+			PLAYER.moveVector.x = 0.01
+			PLAYER.moveVector.y = 0
+			PLAYER.moveVector.z = 0
 		end
 	elseif k == KeyCode.s then
 		if self.transform then
-			self.transform:MoveByVector(Backward)
+			PLAYER.moveVector.x = -0.01
+			PLAYER.moveVector.y = 0
+			PLAYER.moveVector.z = 0
 		end
 	elseif k == KeyCode.a then
 		if self.transform then
-			self.transform:MoveByVector(Left)
+			PLAYER.moveVector.x = 0
+			PLAYER.moveVector.y = 0
+			PLAYER.moveVector.z = 0.01
 		end
 	elseif k == KeyCode.d then
 		if self.transform then
-			self.transform:MoveByVector(Right)
+			PLAYER.moveVector.x = 0
+			PLAYER.moveVector.y = 0
+			PLAYER.moveVector.z = -0.01
+		end
+	elseif k == KeyCode.q then
+		if self.transform then
+			PLAYER.moveVector.x = 0
+			PLAYER.moveVector.y = 0.01
+			PLAYER.moveVector.z = 0
+		end
+	elseif k == KeyCode.e then
+		if self.transform then
+			PLAYER.moveVector.x = 0
+			PLAYER.moveVector.y = -0.01
+			PLAYER.moveVector.z = 0
 		end
 	end
 

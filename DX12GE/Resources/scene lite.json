@@ -1387,7 +1387,9 @@
     "trans_scl_x": 3.333329916000366,
     "trans_scl_y": 3.333329916000366,
     "trans_scl_z": 3.333329916000366,
-    "scripts": []
+    "scripts": [
+      "Car"
+    ]
   },
   {
     "file_path": "../../DX12GE/Resources/Models/knight-artorias/scene.gltf",

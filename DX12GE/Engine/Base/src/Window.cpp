@@ -209,7 +209,7 @@ void Window::OnKeyReleased(KeyEventArgs& e)
 {
     if (EngineConfig::IsReleaseMode)
     {
-        LuaManager::ProceedKeyBoardInput(e.Key, true);
+        LuaManager::ProceedKeyBoardInput(e.Key, false);
     }
     else
     {

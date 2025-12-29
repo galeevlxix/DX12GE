@@ -245,134 +245,137 @@ function Class(child, parent)
 end
 
 GameObject = {}
+GameObject.__index = GameObject
 
 function GameObject:new( id )
-    local obj = {}
-    obj.entity = nil
-    obj.id = id
-    obj.components = {}
-    obj.object = nil
-    obj.transform = nil
+    local instance = {}
+    instance.entity = nil
+    instance.id = id
+    instance.components = {}
+    instance.object = nil
+    instance.transform = nil
 
-    function GameObject:SetEntityName( entity )
-        obj.entity = entity
+
+    setmetatable(instance, self)
+    self.__index = self;
+    return instance
+end
+
+function GameObject:SetEntityName( entity )
+    self.entity = entity
+end
+
+function GameObject:Start()
+    print("Start for instance.id ", self.id)
+    self.object = GetObjectOnScene(self.entity)
+    if  self.transform ~= nil and self.object ~= nil then
+        self.transform:SetParent(self.object )
     end
+end
 
-
-    function GameObject:Start()
-        print("Start for obj.id ", obj.id)
-	    obj.object = GetObjectOnScene(obj.entity)
-        if  obj.transform ~= nil and obj.object ~= nil then
-            obj.transform:SetParent(obj.object )
-        end
-    end
-
-    function GameObject:Update()
-     --   for _, component in ipairs(obj.components) do
+function GameObject:Update()
+     --   for _, component in ipairs(self.components) do
      --       component:Update()
      --   end
-    end
+end
 
-    function GameObject:Remove()
+function GameObject:Remove()
        -- print("Remove")
-    end
+end
 
-    function GameObject:OnCollisionEnter( other )
+function GameObject:OnCollisionEnter( other )
       --  print("collision")
-	end
+end
 
-    function GameObject:OnMouseMovementInputReceived( x, y )
+function GameObject:OnMouseMovementInputReceived( x, y )
      --   print("input mouse")
-    end
+end
 
-    function GameObject:OnMouseWheelInput( y )
+function GameObject:OnMouseWheelInput( y )
      --   print("input wheel")
-    end
+end
 
-    function GameObject:OnKeyBoardInput( k, pressed )
+function GameObject:OnKeyBoardInput( k, pressed )
 	  --  print("keyboard", k)
-    end
+end
 
-    function GameObject:OnMouseClickInput( k, pressed )
+function GameObject:OnMouseClickInput( k, pressed )
     --    print("click")
-    end
+end
 
-    function GameObject:AddComponent( component )
-      local componentName = string.lower(component)
+function GameObject:AddComponent( component )
+    local componentName = string.lower(component)
         
-        if not obj.components then obj.components = {} end
+    if not self.components then self.components = {} end
 
-	    if componentName == Transform then
-            print("component added for id ", obj.id)
-             obj.transform = TransformComponent:Add( obj.id )
-            obj.components[obj.transform] = obj.transform
-        end
-
-        if componentName == Physics then
-            obj.components[#obj.components] = TransformComponent:Add( obj.object )
-            obj.transform = obj.components[#obj.components - 1]
-        end
+    if componentName == Transform then
+        print("component added for id ", self.id)
+        self.transform = TransformComponent:Add( self.id )
+        self.components[self.transform] = self.transform
     end
 
-    setmetatable(obj, self)
-    self.__index = self; return obj
+    if componentName == Physics then
+        self.components[#self.components] = TransformComponent:Add( self.object )
+        self.transform = self.components[#self.components - 1]
+    end
 end
 
 TransformComponent = {}
+TransformComponent.__index = TransformComponent
 
 function TransformComponent:Add( id )
     print("transform added")
-	local obj = {}
-    obj.id = id
-    obj.object = nil
-    function TransformComponent:MoveToVector( table )
-        assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
+	local instance = {}
+    instance.id = id
+    instance.object = nil
 
-        TranslateTo(obj.object, table[1], table[2], table[3])
-	end
+    setmetatable(instance, self)
+    self.__index = self; 
+    return instance
+end
 
-    function TransformComponent:MoveByVector( table )
-        assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
-        TranslateBy(obj.object, table[1], table[2], table[3])
-	end
+function TransformComponent:MoveToVector( table )
+    assert(self.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
+    TranslateTo(self.object, table[1], table[2], table[3])
+end
 
-    function TransformComponent:MoveToPos( x, y, z )
-        assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
+function TransformComponent:MoveByVector( table )
+   -- assert(self.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
+    TranslateBy(self.object, table[1], table[2], table[3])
+end
 
-        TranslateTo(obj.object, x, y, z)
-	end
+function TransformComponent:MoveToPos( x, y, z )
+    assert(self.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
+    TranslateTo(self.object, x, y, z)
+end
 
-    function TransformComponent:MoveByPos( x, y, z )
-        assert(obj.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")
-        TranslateBy(obj.object, x, y, z)
-	end
+function TransformComponent:MoveByPos( x, y, z )       
+    assert(self.object ~= nil, "Attemp to call move to on empty object, call SetParent to set object!")     
+    TranslateBy(self.object, x, y, z)
+end
 
-    function TransformComponent:SetParent( parent )
-        assert(parent ~= nil, "Attemp to call SetParent to on empty object, call SetParent to set object!")
-        print("set parent for transform")
-	    obj.object = parent
+function TransformComponent:SetParent( parent )
+    assert(parent ~= nil, "Attemp to call SetParent to on empty object, call SetParent to set object!") 
+    print("set parent for transform") 
+    self.object = parent
+end
+
+function TransformComponent:RotateByVector( table )   
+    RotateBy(self.object, table[1], table[2], table[3])
+end
+
+function TransformComponent:RotateByCoords( x, y, z ) 
+    RotateBy(self.object, x, y, z)
+end
+
+function TransformComponent:Update()
+    print("transform update")
+end
+
+function TransformComponent:GetPosition( )
+    if self.object ~= nil then
+        return GetTransfromPosition(self.object)
     end
-
-    function TransformComponent:RotateByVector( table )
-	    RotateBy(obj.object, table[1], table[2], table[3])
-    end
-
-    function TransformComponent:RotateByCoords( x, y, z )
-	    RotateBy(obj.object, x, y, z)
-    end
-
-    function TransformComponent:Update()
-        print("transform update")
-	end
-
-    function TransformComponent:GetPosition( )
-        if obj.object ~= nil then
-            return GetTransfromPosition(obj.object)
-        end
-    end
-
-    setmetatable(obj, self)
-    self.__index = self; return obj
 end
 
 PhysicsComponent = {}
