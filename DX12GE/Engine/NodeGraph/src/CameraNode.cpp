@@ -10,17 +10,17 @@ CameraNode::CameraNode() : Node3D()
 	ZFar = 300.0f;
 }
 
-const Matrix CameraNode::GetViewProjMatrix()
+const SimpleMath::Matrix CameraNode::GetViewProjMatrix()
 {
-	Matrix view = Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
-	Matrix proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
+	SimpleMath::Matrix view = SimpleMath::Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
+	SimpleMath::Matrix proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
 	return view * proj;
 }
 
-const Matrix CameraNode::GetViewProjMatrixNoTranslation()
+const SimpleMath::Matrix CameraNode::GetViewProjMatrixNoTranslation()
 {
-	Matrix viewNoTrans = Matrix::CreateLookAt(Vector3::Zero, m_WorldDirectionCache, m_Up);
-	Matrix proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, 1000.0);
+	SimpleMath::Matrix viewNoTrans = SimpleMath::Matrix::CreateLookAt(Vector3::Zero, m_WorldDirectionCache, m_Up);
+	SimpleMath::Matrix proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, 1000.0);
 	return viewNoTrans * proj;
 }
 
@@ -46,8 +46,8 @@ Node3D* CameraNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3
 void CameraNode::DrawDebug()
 {
 	Node3D::DrawDebug();
-	Matrix view = Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
-	Matrix proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
+	SimpleMath::Matrix view = SimpleMath::Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
+	SimpleMath::Matrix proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
 	Singleton::GetDebugRender()->DrawFrustrum(view, proj);
 }
 

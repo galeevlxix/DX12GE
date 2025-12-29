@@ -42,7 +42,7 @@ void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 
 		Transform.SetRotationY(m_angle_h);
 
-		const Matrix& parMat = m_Parrent->GetWorldMatrix();
+		const SimpleMath::Matrix& parMat = m_Parrent->GetWorldMatrix();
 		Vector3 direction = GetWorldDirection();
 		
 		if (m_Camera)

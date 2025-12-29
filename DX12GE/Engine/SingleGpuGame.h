@@ -111,6 +111,8 @@ private:
     void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void GenerateCollisions()const;
+    void UpdateObjectsTransforms(const map<uint32_t, DirectX::SimpleMath::Matrix>& Transforms)const;
 
     void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 

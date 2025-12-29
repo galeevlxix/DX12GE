@@ -40,7 +40,7 @@ int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine,
 
         LocalFree(argv);
     }
-    EngineConfig::IsReleaseMode = true;
+    EngineConfig::IsReleaseMode = false;
 
     auto manager = LuaManager::GetInstance();
 

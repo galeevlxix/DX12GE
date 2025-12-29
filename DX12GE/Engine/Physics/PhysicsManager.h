@@ -23,6 +23,7 @@
 
 //Custom files
 #include "PhysicsDataTypes.h"
+#include "../Graphics/VertexStructures.h"
 
 // Disable common warnings
 JPH_SUPPRESS_WARNINGS
@@ -221,6 +222,8 @@ namespace Physics
         void Initialize();
         
         void AddBoxCollision(uint32_t ObjectID, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
+        
+        void AddMeshCollision(uint32_t ObjectID, Vector3 Position, Vector3 Rotation, const vector<VertexStruct>& Vertices, const vector<WORD>& Indices, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
         
         map<uint32_t, DirectX::SimpleMath::Matrix> OnUpdate(float inDeltaTime);
         

@@ -93,7 +93,7 @@ static Node3D* CreateObj(const std::string& nodePath, ComPtr<ID3D12GraphicsComma
     {
         if (!obj3D->Create(commandList, filePath))
         {
-            printf("Предупреждение! Меш узла %s не инициализирован!\n", node->GetName().c_str());
+            printf("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ %s пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!\n", node->GetName().c_str());
         }
     }
     return node;
@@ -108,6 +108,7 @@ bool SingleGpuGame::LoadContent()
     Singleton::GetSelection()->SetTextureBuffer(m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
     Singleton::GetNodeGraph()->WindowRatio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
     Singleton::GetSerializer()->Load(commandList);
+    GenerateCollisions();
 
     m_ParticleSystem.OnLoad(commandList);
 
@@ -177,11 +178,15 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     float elapsedTime = static_cast<float>(e.ElapsedTime);
 
     Singleton::GetNodeGraph()->GetRoot()->OnUpdate(e.ElapsedTime);
+    
+    map<uint32_t, SimpleMath::Matrix> ObjectsTransforms = Singleton::GetPhysicsManager()->OnUpdate(e.ElapsedTime);
+    UpdateObjectsTransforms(ObjectsTransforms);
+    
 
     m_Lights.OnUpdate(elapsedTime);
 
     CameraNode* camera = Singleton::GetNodeGraph()->GetCurrentCamera();
-	const Matrix viewProj = camera->GetViewProjMatrix();
+	const SimpleMath::Matrix viewProj = camera->GetViewProjMatrix();
 	const Vector3& cameraPos = camera->GetWorldPosition(); 
 
     ShaderResources::GetWorldCB()->LightProps.CameraPos = Vector4(cameraPos);
@@ -196,6 +201,36 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     Singleton::GetSelection()->DrawDebug();
 
     RefreshTitle(e);
+}
+
+void SingleGpuGame::GenerateCollisions() const
+{
+    const auto& Objects = Singleton::GetNodeGraph()->GetAll3DObjects();
+    for (auto obj : Objects)
+    {
+        EMotionType MotionType = EMotionType::Static;   
+        if (obj.first.find("Models"))
+        {
+            MotionType = EMotionType::Dynamic;
+            Singleton::GetPhysicsManager()->AddMeshCollision(obj.second->GetComponentId(), obj.second->Transform.GetPosition(), obj.second->Transform.GetRotation(), obj.second->GetVertices(), obj.second->GetIndices(), obj.second->Transform.GetScale(), MotionType);
+        }
+        else
+        {
+            Singleton::GetPhysicsManager()->AddBoxCollision(obj.second->GetComponentId(), obj.second->Transform.GetPosition(), obj.second->Transform.GetRotation(), obj.second->Transform.GetScale(), MotionType);
+        }
+    }
+}
+
+void SingleGpuGame::UpdateObjectsTransforms(const map<uint32_t, DirectX::SimpleMath::Matrix>& Transforms) const
+{
+    for (const auto& transform : Transforms)
+    {
+        for (auto obj : Singleton::GetNodeGraph()->GetAll3DObjects()) 
+            if (obj.second->GetComponentId() == transform.first)
+            {
+                obj.second->UpdateTransform(transform.second);
+            }
+    }
 }
 
 void SingleGpuGame::DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList)

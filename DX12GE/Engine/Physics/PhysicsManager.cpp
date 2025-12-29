@@ -68,20 +68,20 @@ namespace Physics
 	{
 		BodyCreationSettings boxSettings;//(new BoxShape(RVec3(abs(Scale.x), abs(Scale.y), abs(Scale.z))), static_cast<RVec3>(Position), Quat::sEulerAngles(static_cast<Vec3Arg>(Rotation)), MotionType, MotionType == EMotionType::Static ? Layers::NON_MOVING : Layers::MOVING);
 		int shapeType = rand() % 2;
-		// if (shapeType)
-		// {
-		// 	boxSettings.SetShape(new BoxShape(RVec3(abs(Scale.x), abs(Scale.y), abs(Scale.z))));
-		// }
-		// else
-		// {
+		if (shapeType)
+		{
+			boxSettings.SetShape(new BoxShape(RVec3(abs(Scale.x), abs(Scale.y), abs(Scale.z))));
+		}
+		else
+		{
 			boxSettings.SetShape(new SphereShape(abs(Scale.x)));
-		//}
+		}
 		boxSettings.mPosition = static_cast<RVec3>(Position + Vector3(0.0_r, 30.0_r, 0.0_r));
 		boxSettings.mRotation = Quat::sEulerAngles(static_cast<Vec3Arg>(Rotation));
 		boxSettings.mMotionType = MotionType;
 		
 		MassProperties Mass;
-		Mass.ScaleToMass(rand() % 50 + 1);
+		Mass.ScaleToMass(rand() % 5 + 1);
 		boxSettings.mOverrideMassProperties = EOverrideMassProperties::MassAndInertiaProvided;
 		boxSettings.mMassPropertiesOverride = Mass;
 		
@@ -102,12 +102,62 @@ namespace Physics
 		BodyID boxID = m_BodyInterface->CreateAndAddBody(boxSettings, activationType);
 		Vec3 Vel(rand() % 6 - 3, rand() % 10 - 5, rand() % 6 - 3);
 		m_BodyInterface->SetLinearVelocity(boxID, Vel);
-		m_BodyInterface->SetGravityFactor(boxID, rand() % 5);
+		m_BodyInterface->SetGravityFactor(boxID, static_cast<float>(rand() % 100) / 100.f);
 		BodiesMap.insert(pair(boxID, ObjectID));
 		
 		//m_PhysicsSystem.OptimizeBroadPhase();
 	}
-	
+
+	void PhysicsManager::AddMeshCollision(uint32_t ObjectID, Vector3 Position, Vector3 Rotation, 
+										  const vector<VertexStruct>& Vertices, const vector<WORD>& Indices, Vector3 Scale, EMotionType MotionType)
+	{
+		BodyCreationSettings meshSettings;//(new BoxShape(RVec3(abs(Scale.x), abs(Scale.y), abs(Scale.z))), static_cast<RVec3>(Position), Quat::sEulerAngles(static_cast<Vec3Arg>(Rotation)), MotionType, MotionType == EMotionType::Static ? Layers::NON_MOVING : Layers::MOVING);
+		
+		TriangleList CollisionTriangles(Indices.size());
+		for (int i = 0; i < Indices.size(); i += 3)
+		{
+			CollisionTriangles[i] = Triangle(Float3(Vertices[Indices[i]].Position.x, Vertices[Indices[i]].Position.y, Vertices[Indices[i]].Position.z),
+											 Float3(Vertices[Indices[i + 1]].Position.x, Vertices[Indices[i + 1]].Position.y, Vertices[Indices[i + 1]].Position.z),
+											 Float3(Vertices[Indices[i + 2]].Position.x, Vertices[Indices[i + 2]].Position.y, Vertices[Indices[i + 2]].Position.z));
+		}
+		
+		MeshShapeSettings meshShapeSettings(CollisionTriangles);
+		
+		meshSettings.SetShape(new MeshShape());
+		meshSettings.SetShapeSettings(&meshShapeSettings);
+		
+		meshSettings.mPosition = static_cast<RVec3>(Position + Vector3(0.0_r, 30.0_r, 0.0_r));
+		meshSettings.mRotation = Quat::sEulerAngles(static_cast<Vec3Arg>(Rotation));
+		meshSettings.mMotionType = MotionType;
+		
+		MassProperties Mass;
+		Mass.ScaleToMass(rand() % 5 + 1);
+		meshSettings.mOverrideMassProperties = EOverrideMassProperties::MassAndInertiaProvided;
+		meshSettings.mMassPropertiesOverride = Mass;
+		
+		meshSettings.mFriction = rand() % 10 / 10.f;
+		
+		//MotionType = EMotionType::Dynamic;
+		
+		EActivation activationType;
+		if (MotionType == EMotionType::Static)
+		{
+			meshSettings.mObjectLayer = Layers::NON_MOVING;
+			activationType = EActivation::DontActivate;
+		}
+		else
+		{
+			meshSettings.mObjectLayer = Layers::MOVING;
+			activationType = EActivation::Activate;
+		}
+		
+		BodyID boxID = m_BodyInterface->CreateAndAddBody(meshSettings, activationType);
+		Vec3 Vel(rand() % 6 - 3, rand() % 10 - 5, rand() % 6 - 3);
+		m_BodyInterface->SetLinearVelocity(boxID, Vel);
+		m_BodyInterface->SetGravityFactor(boxID, static_cast<float>(rand() % 100) / 100.f);
+		BodiesMap.insert(pair(boxID, ObjectID));
+	}
+
 	map<uint32_t, DirectX::SimpleMath::Matrix> PhysicsManager::OnUpdate(float inDeltaTime)
 	{
 		PrePhysics(inDeltaTime);
@@ -140,6 +190,11 @@ namespace Physics
 
 	void PhysicsManager::DuringPhysics(float inDeltaTime)
 	{
+		if (inDeltaTime > 1.f)
+		{
+			return;
+		}
+		
 		int CurrentFramerate = static_cast<int> (1.f / inDeltaTime);
 		if (CurrentFramerate == 0)
 		{
@@ -156,15 +211,15 @@ namespace Physics
 		const BodyLockInterface &lockInterface = m_PhysicsSystem.GetBodyLockInterface();
 		
 		// For debugging
-		// for (auto& bodyID : bodies)
-		// {
-		// 	if ((m_BodyInterface->GetMotionType(bodyID) != EMotionType::Static))
-		// 	{
-		// 		RVec3 position = m_BodyInterface->GetCenterOfMassPosition(bodyID);
-		// 		Vec3 velocity = m_BodyInterface->GetLinearVelocity(bodyID);
-		// 		cout << "Step " << cCollisionSteps << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.GetZ() << ")" << endl;
-		// 	}
-		// }
+		for (auto& bodyID : bodies)
+		{
+			if ((m_BodyInterface->GetMotionType(bodyID) != EMotionType::Static))
+			{
+				RVec3 position = m_BodyInterface->GetCenterOfMassPosition(bodyID);
+				Vec3 velocity = m_BodyInterface->GetLinearVelocity(bodyID);
+				cout << "Step " << cCollisionSteps << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.GetZ() << ")" << endl;
+			}
+		}
 	}
 
 	map<uint32_t, DirectX::SimpleMath::Matrix> PhysicsManager::PostPhysics(float inDeltaTime)

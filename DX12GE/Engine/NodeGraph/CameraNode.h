@@ -2,6 +2,7 @@
 
 #include "Node3D.h"
   
+using namespace DirectX::SimpleMath;
 // Класс узла камеры
 // Только один такой узел в дереве сцены может быть активным 
 class CameraNode : public Node3D

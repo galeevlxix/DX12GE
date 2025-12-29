@@ -13,7 +13,8 @@ bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const 
 {
     AssimpModelLoader modelLoader;
     float yOffset = 0.0f;
-    uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset);
+    
+    uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset,Vertices,Indices);
     Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);
@@ -57,10 +58,21 @@ void Object3DNode::SetComponentId(uint32_t newId)
 {
     if (newId < 0 || newId >= ResourceStorage::ObjectsCount())
     {
-        printf("Ошибка: Id компонента 3Д объекта за пределами размера массива в ResourceStorage\n");
+        printf("пїЅпїЅпїЅпїЅпїЅпїЅ: Id пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 3пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ ResourceStorage\n");
         return;
     }
     m_ComponentId = newId;
+}
+
+void Object3DNode::UpdateTransform(SimpleMath::Matrix InTransform)
+{
+    Vector3 scale, translation;
+    Quaternion rotation;
+    
+    InTransform.Decompose(scale, rotation, translation);
+    Transform.SetPosition(translation);
+    //Transform.SetScale(scale);
+    Transform.SetRotation(rotation.ToEuler());
 }
 
 const std::string Object3DNode::GetObjectFilePath()

@@ -6,6 +6,9 @@
 #include "../Graphics/DebugRenderSystem.h"
 #include "../NodeGraph/NodeGraphSystem.h"
 #include "../Graphics/CurrentPass.h"
+#include "../DX12GE/Engine/Physics/PhysicsManager.h"
+
+using namespace Physics;
 
 class Singleton
 {
@@ -19,6 +22,7 @@ public:
 	static NodeGraphSystem* GetNodeGraph();
 	static SceneJsonSerializer* GetSerializer();
 	static CurrentPass* GetCurrentPass();
+	static PhysicsManager* GetPhysicsManager();
 
 	static bool IsInitialized();
 };

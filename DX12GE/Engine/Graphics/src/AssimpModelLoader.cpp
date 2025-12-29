@@ -1,13 +1,12 @@
 #include "../AssimpModelLoader.h"
 #include "../../Base/Application.h"
-#include "../VertexStructures.h"
 #include "../ResourceStorage.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, float& OutYOffset)
+uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, float& OutYOffset, vector<VertexStruct>& OutVertices, vector<WORD>& OutIndices)
 {
     if (NotFoundFile(filePath.c_str())) return -1;
 
@@ -17,7 +16,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     if (object->IsInitialized())
         return id;
 
-    printf("Загрузка компонента из файла объекта: %s\n", filePath.c_str());
+    printf("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: %s\n", filePath.c_str());
 
     Assimp::Importer importer;
     
@@ -127,6 +126,9 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
         }
 
         meshes[meshIndex]->OnLoad<VertexStruct>(commandList, Vertices, Indices);
+        
+        OutVertices = Vertices;
+        OutIndices = Indices;
     }
 
     OutYOffset = yOffset;
