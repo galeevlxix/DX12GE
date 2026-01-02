@@ -84,8 +84,7 @@ int lua_transform_move_to(Node3D* object, float x, float y, float z)
 {
 	assert(object != nullptr, "Attempt to call move to on null object!");
 
-	const auto& worldDirection = object->GetWorldDirection();
-	object->Transform.SetPosition(DirectX::SimpleMath::Vector3(x, y, z) * worldDirection);
+	object->Transform.SetPosition(DirectX::SimpleMath::Vector3(x, y, z));
 
 	return 1;
 }
@@ -94,8 +93,7 @@ int lua_transform_move_by(Node3D* object, float x, float y, float z)
 {
 	assert(object != nullptr, "Attempt to call move to on null object!");
 
-	const auto& worldDirection = object->GetWorldDirection();
-	object->Transform.Move(DirectX::SimpleMath::Vector3(x, y, z) * worldDirection);
+	object->Transform.Move(DirectX::SimpleMath::Vector3(x, y, z));
 
 	return 1;
 }
@@ -265,12 +263,13 @@ LuaManager::LuaManager()
 	std::cout << "\nFound " << count << " Lua files:" << std::endl;
 	for (size_t i = 0; i < luaFiles.size(); ++i) {
 		std::cout << "  [" << (i + 1) << "/" << count << "] " << luaFiles[i] << std::endl;
-		lua.safe_script_file(luaFiles[i]);
+		//lua.safe_script_file(luaFiles[i]);
 	}
 
 	if (!EngineConfig::IsReleaseMode)
 	{
 		lua.safe_script_file(luaSciptsFolder + "Core.lua");
+		lua.safe_script_file(luaSciptsFolder + "Car.lua");
 		lua.safe_script_file(luaSciptsFolder + "Player.lua");
 		lua.safe_script_file(luaSciptsFolder + "TestScript.lua");
 		lua.safe_script_file(luaSciptsFolder + "TestScript2.lua");
@@ -278,6 +277,7 @@ LuaManager::LuaManager()
 	else
 	{
 		lua.safe_script_file(luaSciptsFolder + "Core.lua");
+		lua.safe_script_file(luaSciptsFolder + "Car.lua");
 		lua.safe_script_file(luaSciptsFolder + "Player.lua");
 		//	lua.safe_script_file("TestScript.lua");
 			//lua.safe_script_file("TestScript2.lua");

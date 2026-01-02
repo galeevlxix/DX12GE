@@ -4,8 +4,9 @@
 #include <stack>
 #include <vector>
 #include <memory>
+#include "Utility.h"
 
-enum class NodeType { Sequence, Selector, ActiveSelector, Parallel, Monitor, Repeat, Invert, UntilFail };
+enum class NodeType { Sequence, Selector, ActiveSelector, Parallel, Monitor, Repeat, Invert, UntilFail, UtilitySelector, UtilityDecorator };
 
 struct BuilderContext {
     std::vector<BehaviorPtr> children;
@@ -13,13 +14,19 @@ struct BuilderContext {
     Policy successPolicy = Policy::RequireAll;
     Policy failurePolicy = Policy::RequireOne;
     int decoratorLimit = 2;
+    // Utility
+    Aggregation aggregation = Aggregation::Average;
+    std::vector<std::shared_ptr<UtilityFactor>> factors;
 
     BuilderContext() = default;
     BuilderContext(BuilderContext&& other) noexcept
         : children(std::move(other.children)),
           type(other.type),
           successPolicy(other.successPolicy),
-          failurePolicy(other.failurePolicy) {}
+          failurePolicy(other.failurePolicy),
+          decoratorLimit(other.decoratorLimit),
+          aggregation(other.aggregation),
+          factors(std::move(other.factors)) {}
 
     BuilderContext& operator=(BuilderContext&& other) noexcept {
         if (this != &other) {
@@ -27,6 +34,9 @@ struct BuilderContext {
             type = other.type;
             successPolicy = other.successPolicy;
             failurePolicy = other.failurePolicy;
+            decoratorLimit = other.decoratorLimit;
+            aggregation = other.aggregation;
+            factors = std::move(other.factors);
         }
         return *this;
     }
@@ -51,6 +61,12 @@ public:
     BehaviorTreeBuilder& repeat(int limit);
     BehaviorTreeBuilder& invert();
     BehaviorTreeBuilder& untilFail();
+    
+    // Utility
+    BehaviorTreeBuilder& utilitySelector();
+    BehaviorTreeBuilder& utilityDecorator(Aggregation aggr = Aggregation::Average);
+    BehaviorTreeBuilder& score(UtilityFactor* factor);
+
     BehaviorTreeBuilder& end();
 
     BehaviorPtr build();
