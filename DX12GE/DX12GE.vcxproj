@@ -167,6 +167,7 @@
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp" />
     <ClCompile Include="Engine\Graphics\src\TransformComponent.cpp" />
+    <ClCompile Include="Engine\MultiGpuGame.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\CameraNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\DirectionalLightNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\EnvironmentNode.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="Engine\Base\SelectionSystem.h" />
     <ClInclude Include="Engine\Base\SimpleMath.h" />
     <ClInclude Include="Engine\Base\Singleton.h" />
+    <ClInclude Include="Engine\Base\TestTime.h" />
     <ClInclude Include="Engine\Base\UploadBuffer.h" />
     <ClInclude Include="Engine\Base\Window.h" />
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h" />
@@ -238,6 +240,7 @@
     <ClInclude Include="Engine\Graphics\Texture3D.h" />
     <ClInclude Include="Engine\Graphics\TransformComponent.h" />
     <ClInclude Include="Engine\Graphics\VertexStructures.h" />
+    <ClInclude Include="Engine\MultiGpuGame.h" />
     <ClInclude Include="Engine\NodeGraph\CameraNode.h" />
     <ClInclude Include="Engine\NodeGraph\DirectionalLightNode.h" />
     <ClInclude Include="Engine\NodeGraph\EnvironmentNode.h" />

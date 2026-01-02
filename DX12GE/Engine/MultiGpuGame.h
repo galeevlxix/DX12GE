@@ -27,19 +27,20 @@
 #include "Graphics/TextureBuffer.h"
 #include "Graphics/DepthBuffer.h"
 #include "Graphics/GBuffer.h"
+#include "Graphics/SSRCrossAdapterResources.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
 using namespace std;
 
-class SingleGpuGame : public Game
+class MultiGpuGame : public Game
 {
 public:
 
     using super = Game;
 
-    SingleGpuGame(const wstring& name, int width, int height, bool vSync = false);
-    ~SingleGpuGame();
+    MultiGpuGame(const wstring& name, int width, int height, bool vSync = false);
+    ~MultiGpuGame();
 
     virtual bool Initialize() override final;
     virtual bool LoadContent() override;
@@ -50,12 +51,14 @@ private:
 
     // API
 
-    ComPtr<ID3D12Device2> m_Device;
+    ComPtr<ID3D12Device2> m_PrimaryDevice;
+    ComPtr<ID3D12Device2> m_SecondDevice;
 
     uint64_t m_FenceValues[Window::BufferCount] = {};
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
+    bool m_IsFirstFrame = true;
     bool m_Initialized = false;
 
     TestTime* test;
@@ -63,11 +66,9 @@ private:
     // SCENE
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;
+    CrossAdapterTextureResources m_CATR;
 
-    std::shared_ptr<DepthBuffer> m_DepthBuffer;
-    GBuffer m_GBuffer;
-    std::shared_ptr<TextureBuffer> m_LightPassBuffer;
-    std::shared_ptr<TextureBuffer> m_SSRBuffer;
+    std::shared_ptr<TextureComponent> m_SkyboxSecondDevice;
 
     // PARTICLES
 
@@ -91,6 +92,9 @@ private:
 
 protected:
     virtual void OnUpdate(UpdateEventArgs& e) override;
+
+    void RenderPrimaryGPU();
+    void RenderSecondGPU();
     virtual void OnRender(RenderEventArgs& e) override final;
 
     virtual void OnKeyPressed(KeyEventArgs& e) override;
