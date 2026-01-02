@@ -6,6 +6,7 @@ Object3DNode::Object3DNode() : Node3D(), m_ComponentId(-1)
 {
     m_Type = NODE_TYPE_OBJECT3D;
     IsVisible = false;
+    ModelVertices = new std::vector<float>();
     Rename("Object3DNode");
 }
 
@@ -14,7 +15,7 @@ bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const 
     AssimpModelLoader modelLoader;
     float yOffset = 0.0f;
     
-    uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset,Vertices,Indices);
+    uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset,*ModelVertices);
     Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);

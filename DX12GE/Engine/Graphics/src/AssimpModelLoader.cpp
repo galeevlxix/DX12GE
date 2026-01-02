@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, float& OutYOffset, vector<VertexStruct>& OutVertices, vector<WORD>& OutIndices)
+uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, float& OutYOffset, std::vector<float>& OutVertices)
 {
     if (NotFoundFile(filePath.c_str())) return -1;
 
@@ -76,7 +76,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     std::vector<Mesh3DComponent*> meshes;
 
     float yOffset = 0.0f;
-
+    
     for (unsigned int meshIndex = 0; meshIndex < pScene->mNumMeshes; meshIndex++)
     {
         meshes.push_back(new Mesh3DComponent());
@@ -126,9 +126,13 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
         }
 
         meshes[meshIndex]->OnLoad<VertexStruct>(commandList, Vertices, Indices);
-        
-        OutVertices = Vertices;
-        OutIndices = Indices;
+                
+        for (int i = 0; i < Indices.size(); ++i)
+        {
+            OutVertices.push_back(Vertices[Indices[i]].Position.x);
+            OutVertices.push_back(Vertices[Indices[i]].Position.y);
+            OutVertices.push_back(Vertices[Indices[i]].Position.z);
+        }
     }
 
     OutYOffset = yOffset;

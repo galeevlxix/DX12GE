@@ -4,6 +4,7 @@
 #include "Graphics/ResourceStorage.h"
 #include "Graphics/ShaderResources.h"
 #include "Base/CommandExecutor.h"
+#include "../DX12GE/Engine/Physics/PhysicsManager.h"
 
 #include <sstream>
 #include <string>
@@ -208,15 +209,13 @@ void SingleGpuGame::GenerateCollisions() const
     const auto& Objects = Singleton::GetNodeGraph()->GetAll3DObjects();
     for (auto obj : Objects)
     {
-        EMotionType MotionType = EMotionType::Static;   
-        if (obj.first.find("Models"))
+        if (obj.first.size() != string("root/gasN").size())
         {
-            MotionType = EMotionType::Dynamic;
-            Singleton::GetPhysicsManager()->AddMeshCollision(obj.second->GetComponentId(), obj.second->Transform.GetPosition(), obj.second->Transform.GetRotation(), obj.second->GetVertices(), obj.second->GetIndices(), obj.second->Transform.GetScale(), MotionType);
+            Singleton::GetPhysicsManager()->AddConvexCollision(obj.second->GetComponentId(), obj.second->GetVertices(), obj.second->Transform.GetPosition(), obj.second->Transform.GetRotation(), obj.second->Transform.GetScale(), EMotionType::Dynamic);
         }
         else
         {
-            Singleton::GetPhysicsManager()->AddBoxCollision(obj.second->GetComponentId(), obj.second->Transform.GetPosition(), obj.second->Transform.GetRotation(), obj.second->Transform.GetScale(), MotionType);
+            Singleton::GetPhysicsManager()->AddStaticMeshCollision(obj.second->GetComponentId(), obj.second->GetVertices(), obj.second->Transform.GetPosition(), obj.second->Transform.GetRotation(), obj.second->Transform.GetScale());
         }
     }
 }

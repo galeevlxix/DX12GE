@@ -16,6 +16,7 @@
 #include <Jolt/Physics/Collision/Shape/PlaneShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/SoftBody/SoftBodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
@@ -223,7 +224,9 @@ namespace Physics
         
         void AddBoxCollision(uint32_t ObjectID, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
         
-        void AddMeshCollision(uint32_t ObjectID, Vector3 Position, Vector3 Rotation, const vector<VertexStruct>& Vertices, const vector<WORD>& Indices, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
+        void AddConvexCollision(uint32_t ObjectID, const vector<float>& Vertices, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
+        
+        void AddStaticMeshCollision(uint32_t ObjectID, const vector<float>& Vertices, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One);
         
         map<uint32_t, DirectX::SimpleMath::Matrix> OnUpdate(float inDeltaTime);
         

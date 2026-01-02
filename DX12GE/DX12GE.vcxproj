@@ -115,6 +115,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\Include;$(SolutionDir)DX12GE\Engine\Lua</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/FS</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

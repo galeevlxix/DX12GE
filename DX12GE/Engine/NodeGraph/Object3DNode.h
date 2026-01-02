@@ -10,8 +10,7 @@ class Object3DNode : public Node3D
 protected:
 	uint32_t m_ComponentId;
 	
-	std::vector<VertexStruct> Vertices;
-	std::vector<WORD> Indices;
+	std::vector<float>* ModelVertices;
 
 public:
 	bool IsVisible;
@@ -50,9 +49,7 @@ public:
 
 	virtual void LoadFromJsonData(const NodeSerializingData& nodeData) override;
 	
-	vector<VertexStruct> GetVertices() { return Vertices; };
-	
-	vector<WORD> GetIndices() { return Indices; };
+	const vector<float>& GetVertices() { return *ModelVertices; };
 
 private:
 	// ���������� true, ���� � ������ ���������� ���� � ����� �� id ����������
