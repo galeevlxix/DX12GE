@@ -1,5 +1,6 @@
 #include "../../Base/Singleton.h"
 #include "../../Graphics/ResourceStorage.h"
+#include "../../Base/Application.h"
 
 SkyBoxNode::SkyBoxNode() : Object3DNode()
 {
@@ -52,7 +53,7 @@ bool SkyBoxNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const st
 
 	m_TextureId = ResourceStorage::AddTexture(filePath);
 	auto textureComponent = ResourceStorage::GetTexture(m_TextureId);
-    textureComponent->OnLoadCubemap(commandList, filePath);
+    textureComponent->OnLoadCubemap(commandList, filePath, Application::Get().GetPrimaryDevice(), GraphicAdapterPrimary);
     m_BoxMesh.OnLoad(commandList, cubeVertices, indices);
 
     if (!textureComponent->IsInitialized() || !m_BoxMesh.IsInitialized())

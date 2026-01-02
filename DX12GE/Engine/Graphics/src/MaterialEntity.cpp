@@ -1,6 +1,7 @@
 #include "../MaterialEntity.h"
 #include "../ShaderResources.h"
 #include "../ResourceStorage.h"
+#include "../../Base/Application.h"
 
 uint32_t MaterialEntity::AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, std::string& path)
 {
@@ -14,7 +15,7 @@ uint32_t MaterialEntity::AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandLi
     std::shared_ptr<TextureComponent> texture = ResourceStorage::GetTexture(id);
 
     if (!texture->IsInitialized())
-        texture->OnLoad(commandList, path);
+        texture->OnLoad(commandList, path, Application::Get().GetPrimaryDevice(), GraphicAdapterPrimary);
     
     return id;
 }

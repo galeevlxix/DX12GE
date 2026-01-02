@@ -84,8 +84,13 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
         PrimaryDevice->SetName(L"Primary Device");
 
         PrimaryDirectCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
+        PrimaryDirectCommandQueue->GetD3D12CommandQueue()->SetName(L"PrimaryDirectCommandQueue");
+
         PrimaryComputeCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+        PrimaryComputeCommandQueue->GetD3D12CommandQueue()->SetName(L"PrimaryComputeCommandQueue");
+
         PrimaryCopyCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COPY);
+        PrimaryCopyCommandQueue->GetD3D12CommandQueue()->SetName(L"PrimaryCopyCommandQueue");
     }
 
     if (SecondAdapter)
@@ -99,8 +104,13 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
         SecondDevice->SetName(L"Second Device");
         
         SecondDirectCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
+        SecondDirectCommandQueue->GetD3D12CommandQueue()->SetName(L"SecondDirectCommandQueue");
+
         SecondComputeCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+        SecondComputeCommandQueue->GetD3D12CommandQueue()->SetName(L"SecondComputeCommandQueue");
+
         SecondCopyCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COPY);
+        SecondCopyCommandQueue->GetD3D12CommandQueue()->SetName(L"SecondCopyCommandQueue");
     }
 
     if (PrimaryAdapter || SecondAdapter)

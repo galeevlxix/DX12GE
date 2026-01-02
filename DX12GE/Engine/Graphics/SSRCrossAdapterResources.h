@@ -3,6 +3,7 @@
 #include "GBuffer.h"
 #include "DepthBuffer.h"
 #include "CrossAdapterResource.h"	
+#include "../Base/TestTime.h"
 
 class CrossAdapterTextureResources
 {
@@ -14,6 +15,9 @@ class CrossAdapterTextureResources
 
 	std::shared_ptr<CrossAdapterResource> CreateCrossResource(std::shared_ptr<TextureBuffer> buffer, const std::wstring& name);
 	void CopyResource(ComPtr<ID3D12GraphicsCommandList2> commandList, std::shared_ptr<TextureBuffer> src, std::shared_ptr<TextureBuffer> dst, bool toShared);
+
+	bool primaryStates = false;
+	bool secondStates = false;
 
 public:
 
@@ -32,15 +36,17 @@ public:
 	std::shared_ptr<TextureBuffer>	SecondSSRResult;
 
 	void Initialize();
+	void SetStatesToPrimaryResources(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void SetStatesToSharedResources(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 	// Primary GBuffer -> SharedMemory
-	void CopyPrimaryDeviceDataToSharedMemory(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void CopyPrimaryDeviceDataToSharedMemory(TestTime* test);
 	// SharedMemory -> Primary SSR
-	void CopySharedMemoryDataToPrimaryDevice(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void CopySharedMemoryDataToPrimaryDevice(TestTime* test);
 	// Secondary SSR -> SharedMemory
-	void CopySecondDeviceDataToSharedMemory(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void CopySecondDeviceDataToSharedMemory(TestTime* test);
 	// SharedMemory -> Secondary GBuffer
-	void CopySharedMemoryDataToSecondDevice(ComPtr<ID3D12GraphicsCommandList2> commandList);
+	void CopySharedMemoryDataToSecondDevice(TestTime* test);
 
 	void Resize(UINT width, UINT height);
 

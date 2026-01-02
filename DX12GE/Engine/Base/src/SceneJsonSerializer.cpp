@@ -199,6 +199,11 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	for (int i = 1; i < nodesData.size(); ++i)
 	{
 		NodeSerializingData nodeData = nodesData[i];
+
+		if (nodeData.type == NODE_TYPE_SPOT_LIGHT)
+		{
+			nodeData.lightIntensity *= 0.0f;
+		}
 		
 		Node3D* node = Singleton::GetNodeGraph()->CreateNewNodeInScene(nodeData.nodePath, nodeData.type);
 
