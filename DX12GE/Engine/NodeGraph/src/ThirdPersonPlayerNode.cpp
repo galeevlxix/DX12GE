@@ -36,7 +36,7 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
             Vector3 direction = Vector3::Backward;
             if (m_Camera)
             {
-                direction = m_Camera->GetWorldDirection(); 
+                direction = m_Camera->GetWorldDirection();
             }
 
             const Matrix& parMat = m_Parrent->GetWorldMatrix();
@@ -77,13 +77,10 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
             }
         }
 
-        Transform.SetPosition(0, Transform.GetPosition().y, 0);
-
         if (m_Camera)
         {
-            m_angle_h += PI / 180.0f;
-            m_angle_v = PI / 6;
-            m_FlyRadius = 70.0f;
+            /*m_angle_h += deltaTime * PI / 8.0f;
+            m_angle_v = PI / 4;*/
 
             Vector3 camLocalPos = CameraAnchor + Vector3(
                 m_FlyRadius * cos(m_angle_v) * cos(-m_angle_h),

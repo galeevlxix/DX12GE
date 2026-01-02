@@ -6,6 +6,7 @@ struct PSInput
 
 Texture2D<float4> gColor : register(t0);    // RGBA8_UNORM
 Texture2D<float4> gSSR : register(t1);      // RGBA8_UNORM
+Texture2D<float4> gORM : register(t2);      // RGBA8_UNORM
 
 SamplerState gSampler : register(s0);
 

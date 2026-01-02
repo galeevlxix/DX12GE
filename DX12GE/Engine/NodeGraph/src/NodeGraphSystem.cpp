@@ -9,7 +9,6 @@ NodeGraphSystem::NodeGraphSystem()
 	m_CurrentEnvironment = nullptr;
 	m_CurrentDirectionalLight = nullptr;
 	m_CurrentPlayer = nullptr;
-	m_CurrentSkyBox = nullptr;
 
 	m_DefaultEnvironment = nullptr;
 	m_DefaultDirectionalLight = nullptr;

@@ -219,6 +219,9 @@
     <ClCompile Include="Engine\Graphics\src\DescriptorHeaps.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Graphics\src\Skybox.cpp">
+      <Filter>Исходные файлы\Engine\Graphics</Filter>
+    </ClCompile>
     <ClCompile Include="Engine\Pipelines\src\SkyboxPipeline.cpp">
       <Filter>Исходные файлы\Engine\Pipelines</Filter>
     </ClCompile>
@@ -263,9 +266,6 @@
     </ClCompile>
     <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\MultiGpuGame.cpp">
-      <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -425,6 +425,9 @@
     <ClInclude Include="Engine\Base\InputSystem.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Graphics\Skybox.h">
+      <Filter>Файлы заголовков\Engine\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="Engine\Pipelines\SkyboxPipeline.h">
       <Filter>Файлы заголовков\Engine\Pipelines</Filter>
     </ClInclude>
@@ -481,12 +484,6 @@
     </ClInclude>
     <ClInclude Include="Engine\NodeGraph\SkyBoxNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Base\TestTime.h">
-      <Filter>Файлы заголовков\Engine\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\MultiGpuGame.h">
-      <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

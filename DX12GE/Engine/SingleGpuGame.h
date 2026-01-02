@@ -7,7 +7,6 @@
 #include "Base/Window.h"
 #include "Base/CommandQueue.h"
 #include "Base/Singleton.h"
-#include "Base/TestTime.h"
 
 #include "Pipelines/Pipeline.h"
 #include "Pipelines/ShadowMapPipeline.h"
@@ -58,8 +57,6 @@ private:
 
     bool m_Initialized = false;
 
-    TestTime* test;
-
     // SCENE
     LightManager m_Lights;
     CascadedShadowMap m_CascadedShadowMap;
@@ -105,18 +102,14 @@ private:
     void DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawParticles(ComPtr<ID3D12GraphicsCommandList2> commandList);
-
-    void DrawSceneToShadowMaps();
-    void DrawSceneToGBuffer();
-    void LightPassRender();
-    void DrawSSR();
-    void MergeResults();
+    void DrawForwardOther(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
     void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
     void RefreshTitle(UpdateEventArgs& e);
-
-    // testing 
-    
-    
 };
