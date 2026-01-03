@@ -147,6 +147,7 @@
     <ClCompile Include="Engine\Base\src\Window.cpp" />
     <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp" />
     <ClCompile Include="Engine\Graphics\src\CascadedShadowMap.cpp" />
+    <ClCompile Include="Engine\Graphics\src\CellularField.cpp" />
     <ClCompile Include="Engine\Graphics\src\CrossAdapterResource.cpp" />
     <ClCompile Include="Engine\Graphics\src\CurrentPass.cpp" />
     <ClCompile Include="Engine\Graphics\src\DebugRenderSystem.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="Engine\Base\Window.h" />
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h" />
     <ClInclude Include="Engine\Graphics\CascadedShadowMap.h" />
+    <ClInclude Include="Engine\Graphics\CellularField.h" />
     <ClInclude Include="Engine\Graphics\CrossAdapterResource.h" />
     <ClInclude Include="Engine\Graphics\CurrentPass.h" />
     <ClInclude Include="Engine\Graphics\DebugRenderSystem.h" />

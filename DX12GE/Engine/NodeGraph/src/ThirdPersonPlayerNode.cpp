@@ -79,9 +79,6 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
 
         if (m_Camera)
         {
-            /*m_angle_h += deltaTime * PI / 8.0f;
-            m_angle_v = PI / 4;*/
-
             Vector3 camLocalPos = CameraAnchor + Vector3(
                 m_FlyRadius * cos(m_angle_v) * cos(-m_angle_h),
                 m_FlyRadius * sin(m_angle_v),

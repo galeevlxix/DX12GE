@@ -120,6 +120,7 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     
     Singleton::GetDebugRender()->Clear();
     Singleton::GetSelection()->DrawDebug();
+    Singleton::GetCellularField()->Update();
 
     RefreshTitle(e);
 }

@@ -6,6 +6,7 @@ static SelectionSystem* Selection = nullptr;
 static NodeGraphSystem* NodeGraph = nullptr;
 static SceneJsonSerializer* Serializer = nullptr;
 static CurrentPass* Pass = nullptr;
+static CellularField* Field = nullptr;
 
 static bool m_IsInitialized = false;
 
@@ -19,6 +20,7 @@ void Singleton::Initialize()
 	NodeGraph = new NodeGraphSystem();
 	Serializer = new SceneJsonSerializer();
 	Pass = new CurrentPass();
+	Field = new CellularField();
 
 	m_IsInitialized = true;
 }
@@ -40,6 +42,7 @@ void Singleton::Destroy()
 	delete NodeGraph;
 	delete Serializer;
 	delete Pass;
+	delete Field;
 
 	Executor = nullptr;
 	DebugRender = nullptr;
@@ -47,6 +50,7 @@ void Singleton::Destroy()
 	NodeGraph = nullptr;
 	Serializer = nullptr;
 	Pass = nullptr;
+	Field = nullptr;
 }
 
 CommandExecutor* Singleton::GetExecutor()
@@ -77,6 +81,11 @@ SceneJsonSerializer* Singleton::GetSerializer()
 CurrentPass* Singleton::GetCurrentPass()
 {
 	return Pass;
+}
+
+CellularField* Singleton::GetCellularField()
+{
+	return Field;
 }
 
 bool Singleton::IsInitialized()
