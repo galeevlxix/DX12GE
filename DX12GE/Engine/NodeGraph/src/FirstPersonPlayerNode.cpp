@@ -1,6 +1,6 @@
 #include "../../Base/Singleton.h"
 
-FirstPersonPlayerNode::FirstPersonPlayerNode() : Object3DNode()
+FirstPersonPlayerNode::FirstPersonPlayerNode() : PhysicalObjectNode()
 {
 	m_Type = NODE_TYPE_FIRST_PERSON_PLAYER;
 	Rename("FirstPersonPlayerNode");
@@ -83,18 +83,19 @@ void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 		}
 	}
 
-	Object3DNode::OnUpdate(deltaTime);
+	PhysicalObjectNode::OnUpdate(deltaTime);
+	std::cout << Transform.GetPosition().x << " " << Transform.GetPosition().y << " "  << Transform.GetPosition().z << endl;
 }
 
 void FirstPersonPlayerNode::Destroy(bool keepComponent)
 {
 	m_Camera = nullptr;
-	Object3DNode::Destroy(keepComponent);
+	PhysicalObjectNode::Destroy(keepComponent);
 }
 
 bool FirstPersonPlayerNode::AddChild(Node3D* node)
 {
-	if (!Object3DNode::AddChild(node)) return false;
+	if (!PhysicalObjectNode::AddChild(node)) return false;
 
 	if (!m_Camera)
 	{
@@ -114,7 +115,7 @@ Node3D* FirstPersonPlayerNode::Clone(Node3D* newParrent, bool cloneChildrenRecur
 		cloneNode = new FirstPersonPlayerNode();
 	}
 
-	Object3DNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+	PhysicalObjectNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
@@ -132,7 +133,7 @@ Node3D* FirstPersonPlayerNode::Clone(Node3D* newParrent, bool cloneChildrenRecur
 
 void FirstPersonPlayerNode::CreateJsonData(json& j)
 {
-	Object3DNode::CreateJsonData(j);
+	PhysicalObjectNode::CreateJsonData(j);
 
 	j["sens_mouse"] = MouseSensitivity;
 	j["sens_wheel"] = WheelSensitivity;
@@ -149,7 +150,7 @@ void FirstPersonPlayerNode::CreateJsonData(json& j)
 
 void FirstPersonPlayerNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 {
-	Object3DNode::LoadFromJsonData(nodeData);
+	PhysicalObjectNode::LoadFromJsonData(nodeData);
 
 	MouseSensitivity = nodeData.MouseSensitivity;
 	WheelSensitivity = nodeData.WheelSensitivity;
@@ -171,7 +172,7 @@ void FirstPersonPlayerNode::SetCurrent()
 	}
 	else
 	{
-		printf("Внимание! Невозможно сделать FirstPersonPlayerNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ FirstPersonPlayerNode::%s пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ!\n", m_Name.c_str());
 	}
 }
 

@@ -2,14 +2,9 @@
 #include <map>
 
 using namespace std;
-using namespace JPH;
 
-namespace Physics
-{    
-    struct BodyProperties
-    {
-        EMotionType motionType = EMotionType::Static;
-        float Mass = 1.0f;
-        float Friction = 1.0f;
-    };
-}
+enum CollisionTypeEnum
+{
+    COLLISION_TYPE_STATIC,
+    COLLISION_TYPE_DYNAMIC
+};

@@ -9,8 +9,6 @@ class Object3DNode : public Node3D
 {
 protected:
 	uint32_t m_ComponentId;
-	
-	std::vector<float>* ModelVertices;
 
 public:
 	bool IsVisible;
@@ -48,8 +46,6 @@ public:
 	virtual void CreateJsonData(json& j) override;
 
 	virtual void LoadFromJsonData(const NodeSerializingData& nodeData) override;
-	
-	const vector<float>& GetVertices() { return *ModelVertices; };
 
 private:
 	// ���������� true, ���� � ������ ���������� ���� � ����� �� id ����������

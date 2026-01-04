@@ -11,9 +11,11 @@
 #include <chrono>
 #include <fstream>
 
+#include "NodeGraph/PhysicalObjectNode.h"
+
 SingleGpuGame::SingleGpuGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
-    , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
-    , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height))) { }
+                                                                                       , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
+                                                                                       , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height))) { }
 
 bool SingleGpuGame::Initialize()
 {
@@ -180,8 +182,7 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 
     Singleton::GetNodeGraph()->GetRoot()->OnUpdate(e.ElapsedTime);
     
-    map<uint32_t, SimpleMath::Matrix> ObjectsTransforms = Singleton::GetPhysicsManager()->OnUpdate(e.ElapsedTime);
-    UpdateObjectsTransforms(ObjectsTransforms);
+    UpdateObjectsTransforms(e);
     
 
     m_Lights.OnUpdate(elapsedTime);
@@ -209,26 +210,49 @@ void SingleGpuGame::GenerateCollisions() const
     const auto& Objects = Singleton::GetNodeGraph()->GetAll3DObjects();
     for (auto obj : Objects)
     {
-        if (obj.first.size() != string("root/gasN").size())
+        if (FirstPersonPlayerNode* Player = dynamic_cast<FirstPersonPlayerNode*>(obj.second))
         {
-            Singleton::GetPhysicsManager()->AddConvexCollision(obj.second->GetComponentId(), obj.second->GetVertices(), obj.second->Transform.GetPosition(), obj.second->Transform.GetRotation(), obj.second->Transform.GetScale(), EMotionType::Dynamic);
+            if (Player->GetCollisionType() == COLLISION_TYPE_DYNAMIC)
+            {
+                Singleton::GetPhysicsManager()->AddPlayerCollision(Player->GetComponentId(), Player->GetVertices(), Player->Transform.GetPosition(), Player->Transform.GetRotation(), Player->Transform.GetScale());
+            }
         }
-        else
+        else if (PhysicalObjectNode* Object = dynamic_cast<PhysicalObjectNode*>(obj.second))
         {
-            Singleton::GetPhysicsManager()->AddStaticMeshCollision(obj.second->GetComponentId(), obj.second->GetVertices(), obj.second->Transform.GetPosition(), obj.second->Transform.GetRotation(), obj.second->Transform.GetScale());
+            if (Object->GetCollisionType() == COLLISION_TYPE_STATIC)
+            {
+                Singleton::GetPhysicsManager()->AddStaticMeshCollision(Object->GetComponentId(), Object->GetVertices(), Object->Transform.GetPosition(), Object->Transform.GetRotation(), Object->Transform.GetScale());
+            }
+            else
+            {
+                Singleton::GetPhysicsManager()->AddConvexCollision(Object->GetComponentId(), Object->GetVertices(), Object->Transform.GetPosition(), Object->Transform.GetRotation(), Object->Transform.GetScale(), EMotionType::Dynamic);
+            }
         }
     }
 }
 
-void SingleGpuGame::UpdateObjectsTransforms(const map<uint32_t, DirectX::SimpleMath::Matrix>& Transforms) const
+void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
 {
-    for (const auto& transform : Transforms)
+    map<uint32_t, SimpleMath::Matrix> PrePhysicsTransforms;
+    
+    for (const auto& object : Singleton::GetNodeGraph()->GetAll3DObjects())
     {
-        for (auto obj : Singleton::GetNodeGraph()->GetAll3DObjects()) 
-            if (obj.second->GetComponentId() == transform.first)
-            {
-                obj.second->UpdateTransform(transform.second);
-            }
+        PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(object.second);
+        if (PhysRef != nullptr && PhysRef->GetCollisionType() == COLLISION_TYPE_DYNAMIC)
+        {
+            PrePhysicsTransforms.insert(pair(PhysRef->GetComponentId(), PhysRef->Transform.GetLocalMatrix()));
+        }
+    }
+    
+    map<uint32_t, SimpleMath::Matrix> PostPhysicsTransforms = Singleton::GetPhysicsManager()->OnUpdate(e.ElapsedTime, PrePhysicsTransforms);
+    
+    for (const auto& object : Singleton::GetNodeGraph()->GetAll3DObjects())
+    {
+        PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(object.second);
+        if (PhysRef != nullptr && PhysRef->GetCollisionType() == COLLISION_TYPE_DYNAMIC && PostPhysicsTransforms.contains(PhysRef->GetComponentId()))
+        {
+            PhysRef->UpdateTransform(PostPhysicsTransforms[PhysRef->GetComponentId()]);
+        }
     }
 }
 

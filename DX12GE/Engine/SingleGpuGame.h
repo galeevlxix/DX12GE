@@ -112,7 +112,7 @@ private:
     void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void GenerateCollisions()const;
-    void UpdateObjectsTransforms(const map<uint32_t, DirectX::SimpleMath::Matrix>& Transforms)const;
+    void UpdateObjectsTransforms(UpdateEventArgs& e);
 
     void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 

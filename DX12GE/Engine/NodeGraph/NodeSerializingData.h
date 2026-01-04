@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "NodeTypeEnum.h"
+#include "../Physics/PhysicsDataTypes.h"
 #include "../Base/SimpleMath.h"
 
 #include "../Base/json.hpp"
@@ -52,6 +53,12 @@ struct NodeSerializingData
 	float MinFlyRadius;
 	float MaxFlyRadius;
 	DirectX::SimpleMath::Vector3 CameraAnchor;
+	
+	// physics
+	CollisionTypeEnum collisionType;
+	float gravityScale;
+	float mass;
+	float frictionScale;
 };
 
 struct ParsedNodePath

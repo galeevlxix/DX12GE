@@ -49,6 +49,7 @@
     "trans_scl_x": 0.3333300054073334,
     "trans_scl_y": 0.3333300054073334,
     "trans_scl_z": 0.3333300054073334,
+    "collision_type": 1,
     "scripts": [
       "Player"
     ]
@@ -96,7 +97,7 @@
     "file_path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1",
-    "node_type": 1,
+    "node_type": 12,
     "trans_pos_x": 0.0,
     "trans_pos_y": 0.0,
     "trans_pos_z": 0.0,
@@ -106,6 +107,7 @@
     "trans_scl_x": 1.0,
     "trans_scl_y": 1.0,
     "trans_scl_z": 1.0,
+    "collision_type": 0,
     "scripts": []
   },
   {
@@ -1377,7 +1379,7 @@
     "file_path": "../../DX12GE/Resources/Models/cars/audi/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1/audi1",
-    "node_type": 1,
+    "node_type": 12,
     "trans_pos_x": -2.0,
     "trans_pos_y": 1.8499999046325684,
     "trans_pos_z": 0.0,
@@ -1387,6 +1389,7 @@
     "trans_scl_x": 3.333329916000366,
     "trans_scl_y": 3.333329916000366,
     "trans_scl_z": 3.333329916000366,
+    "collision_type": 1,
     "scripts": [
       "Car"
     ]
@@ -1395,7 +1398,7 @@
     "file_path": "../../DX12GE/Resources/Models/knight-artorias/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1/knight",
-    "node_type": 1,
+    "node_type": 12,
     "trans_pos_x": 0.0,
     "trans_pos_y": 1.9999998807907104,
     "trans_pos_z": 8.0,
@@ -1405,13 +1408,14 @@
     "trans_scl_x": 0.004049999639391899,
     "trans_scl_y": 0.004049999639391899,
     "trans_scl_z": 0.004049999639391899,
+    "collision_type": 1,
     "scripts": []
   },
   {
     "file_path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas2",
-    "node_type": 1,
+    "node_type": 12,
     "trans_pos_x": -20.0,
     "trans_pos_y": 0.0,
     "trans_pos_z": 0.0,
@@ -1421,6 +1425,7 @@
     "trans_scl_x": 1.0,
     "trans_scl_y": 1.0,
     "trans_scl_z": 1.0,
+    "collision_type": 0,
     "scripts": []
   },
   {
@@ -1559,7 +1564,7 @@
     "file_path": "../../DX12GE/Resources/Models/cars/audi/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas2/audi2",
-    "node_type": 1,
+    "node_type": 12,
     "trans_pos_x": 5.0,
     "trans_pos_y": 1.8999998569488525,
     "trans_pos_z": 8.0,
@@ -1569,13 +1574,14 @@
     "trans_scl_x": 3.3329999446868896,
     "trans_scl_y": 3.3329999446868896,
     "trans_scl_z": 3.3329999446868896,
+    "collision_type": 1,
     "scripts": []
   },
   {
     "file_path": "../../DX12GE/Resources/Models/cars/police/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas2/police1",
-    "node_type": 1,
+    "node_type": 12,
     "trans_pos_x": -1.5,
     "trans_pos_y": 2.3499996662139893,
     "trans_pos_z": 2.0,
@@ -1585,6 +1591,7 @@
     "trans_scl_x": 1.0,
     "trans_scl_y": 1.0,
     "trans_scl_z": 1.0,
+    "collision_type": 1,
     "scripts": []
   },
   {
@@ -1611,6 +1618,7 @@
     "trans_scl_x": 0.3333300054073334,
     "trans_scl_y": 0.3333300054073334,
     "trans_scl_z": 0.3333300054073334,
+    "collision_type": 1,
     "scripts": []
   },
   {

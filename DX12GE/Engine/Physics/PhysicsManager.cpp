@@ -1,5 +1,7 @@
 #include "PhysicsManager.h"
 
+#include "../Base/Helpers.h"
+
 namespace Physics
 {
 	void PhysicsManager::Initialize()
@@ -45,22 +47,6 @@ namespace Physics
 		// The main way to interact with the bodies in the physics system is through the body interface. There is a locking and a non-locking
 		// variant of this. We're going to use the locking version (even though we're not planning to access bodies from multiple threads)
 		m_BodyInterface = unique_ptr<BodyInterface>(&m_PhysicsSystem.GetBodyInterface());
-		
-		// 		
-		// 		Color color;
-		// 		color = Color::sGetDistinctColor(body.GetID().GetIndex());
-		// 	}
-		// }
-		// return 0;
-		
-		//PlaneShapeSettings floor_shape_settings(JPH::Plane(Vec3(0.0f, 1.0f, 0.0f), 1.0f));
-		// BoxShapeSettings floor_shape_settings(Vec3(10000.0f, 1.0f, 10000.0f));
-		// floor_shape_settings.SetEmbedded(); // A ref counted object on the stack (base class RefTarget) should be marked as such to prevent it from being freed when its reference count goes to 0.
-		//
-		// ShapeSettings::ShapeResult floor_shape_result = floor_shape_settings.Create();
-		// ShapeRefC floor_shape = floor_shape_result.Get();
-		// BodyCreationSettings floor_settings(floor_shape, RVec3(0.0_r, 5.0_r, 0.0_r), Quat::sIdentity(), EMotionType::Static, Layers::NON_MOVING);
-		// m_BodyInterface->CreateAndAddBody(floor_settings, EActivation::DontActivate);
 	}
 
 	void PhysicsManager::AddBoxCollision(uint32_t ObjectID, Vector3 Position, Vector3 Rotation, Vector3 Scale,
@@ -73,12 +59,7 @@ namespace Physics
 		boxSettings.mPosition = static_cast<RVec3>(Position);
 		boxSettings.mRotation = Quat::sEulerAngles(static_cast<Vec3Arg>(Rotation));
 		boxSettings.mMotionType = MotionType;
-		
-		MassProperties Mass;
-		Mass.ScaleToMass(rand() % 5 + 1);
-		boxSettings.mOverrideMassProperties = EOverrideMassProperties::MassAndInertiaProvided;
-		boxSettings.mMassPropertiesOverride = Mass;
-				
+						
 		EActivation activationType;
 		if (MotionType == EMotionType::Static)
 		{
@@ -91,13 +72,17 @@ namespace Physics
 			activationType = EActivation::Activate;
 		}
 		
+		MassProperties Mass;
+		Mass.ScaleToMass(rand() % 5 + 1);
+		boxSettings.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
+		boxSettings.mMassPropertiesOverride = Mass;
+		
 		BodyID boxID = m_BodyInterface->CreateAndAddBody(boxSettings, activationType);
 		Vec3 Vel(rand() % 6 - 3, rand() % 10 - 5, rand() % 6 - 3);
 		m_BodyInterface->SetLinearVelocity(boxID, Vel);
 		m_BodyInterface->SetGravityFactor(boxID, static_cast<float>(rand() % 100) / 100.f);
 		BodiesMap.insert(pair(boxID, ObjectID));
 		
-		//m_PhysicsSystem.OptimizeBroadPhase();
 		cout << "Box collision generated" << endl;
 	}
 
@@ -132,23 +117,65 @@ namespace Physics
 			activationType = EActivation::Activate;
 		}
 				
-		BodyCreationSettings meshSettings(shapeSettings.Create().Get(), static_cast<RVec3>(Position + Vector3(0.f, 10.f, 0.f)),
+		BodyCreationSettings meshSettings(shapeSettings.Create().Get(), static_cast<RVec3>(Position),
 										  Quat::sEulerAngles(static_cast<Vec3Arg>(Rotation)), MotionType, layer);
 		
 		MassProperties Mass;
 		Mass.ScaleToMass(rand() % 5 + 1);
-		meshSettings.mOverrideMassProperties = EOverrideMassProperties::MassAndInertiaProvided;
+		meshSettings.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
 		meshSettings.mMassPropertiesOverride = Mass;
 		
 		meshSettings.mFriction = rand() % 10 / 10.f;
 						
 		BodyID meshID = m_BodyInterface->CreateAndAddBody(meshSettings, activationType);
-		Vec3 Vel(rand() % 6 - 3, rand() % 10 - 5, rand() % 6 - 3);
+		Vec3 Vel(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
 		m_BodyInterface->SetLinearVelocity(meshID, Vel);
 		m_BodyInterface->SetGravityFactor(meshID, static_cast<float>(rand() % 100) / 100.f);
 		BodiesMap.insert(pair(meshID, ObjectID));
 		
 		cout << "Convex collision generated" << endl;
+	}
+
+	void PhysicsManager::AddPlayerCollision(uint32_t ObjectID, const vector<float>& Vertices, Vector3 Position,
+											Vector3 Rotation, Vector3 Scale)
+	{
+		if (Vertices.size() == 0)
+		{
+			std::cout << "No vertices to generate convex collision" << endl;
+			return;
+		}
+		
+		Array<Vec3> CollisionTriangles(Vertices.size() / 3);
+		for (int i = 0; i < Vertices.size(); i += 3)
+		{
+			CollisionTriangles[i / 3] = Vec3(Float3(Vertices[i] * Scale.x, Vertices[i + 1] * Scale.y, Vertices[i + 2] * Scale.z));
+		}
+		
+		ConvexHullShapeSettings shapeSettings(CollisionTriangles);
+		
+		EMotionType motionType = EMotionType::Dynamic;
+		ObjectLayer layer = Layers::MOVING;
+		EActivation activationType = EActivation::Activate;
+						
+		BodyCreationSettings meshSettings(shapeSettings.Create().Get(), static_cast<RVec3>(Position),
+										  Quat::sEulerAngles(static_cast<Vec3Arg>(Rotation)), motionType, layer);
+		
+		MassProperties Mass;
+		Mass.ScaleToMass(rand() % 5 + 1);
+		meshSettings.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
+		meshSettings.mMassPropertiesOverride = Mass;
+		
+		meshSettings.mFriction = rand() % 10 / 10.f;
+		
+		meshSettings.mAllowedDOFs = EAllowedDOFs::TranslationX | EAllowedDOFs::TranslationY | EAllowedDOFs::TranslationZ | EAllowedDOFs::RotationY;
+						
+		BodyID meshID = m_BodyInterface->CreateAndAddBody(meshSettings, activationType);
+		Vec3 Vel(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
+		m_BodyInterface->SetLinearVelocity(meshID, Vel);
+		m_BodyInterface->SetGravityFactor(meshID, static_cast<float>(rand() % 100) / 100.f);
+		BodiesMap.insert(pair(meshID, ObjectID));
+		
+		cout << "Player collision generated" << endl;
 	}
 
 	void PhysicsManager::AddStaticMeshCollision(uint32_t ObjectID, const vector<float>& Vertices, Vector3 Position,  
@@ -176,54 +203,50 @@ namespace Physics
 				
 		BodyCreationSettings meshSettings(shapeSettings.Create().Get(), static_cast<RVec3>(Position),
 										  Quat::sEulerAngles(static_cast<Vec3Arg>(Rotation)), motionType, layer);
-		
-		MassProperties Mass;
-		Mass.ScaleToMass(rand() % 5 + 1);
-		meshSettings.mOverrideMassProperties = EOverrideMassProperties::MassAndInertiaProvided;
-		meshSettings.mMassPropertiesOverride = Mass;
-		
-		meshSettings.mFriction = rand() % 10 / 10.f;
-						
+								
 		BodyID meshID = m_BodyInterface->CreateAndAddBody(meshSettings, activationType);
-		Vec3 Vel(rand() % 6 - 3, rand() % 10 - 5, rand() % 6 - 3);
-		m_BodyInterface->SetLinearVelocity(meshID, Vel);
-		m_BodyInterface->SetGravityFactor(meshID, static_cast<float>(rand() % 100) / 100.f);
 		BodiesMap.insert(pair(meshID, ObjectID));
 		
 		cout << "Mesh collision generated" << endl;
 	}
 
-	map<uint32_t, DirectX::SimpleMath::Matrix> PhysicsManager::OnUpdate(float inDeltaTime)
+	map<uint32_t, DirectX::SimpleMath::Matrix> PhysicsManager::OnUpdate(double inDeltaTime,  map<uint32_t, SimpleMath::Matrix> ObjectsTransforms)
 	{
-		PrePhysics(inDeltaTime);
+		PrePhysics(inDeltaTime, ObjectsTransforms);
 		
 		DuringPhysics(inDeltaTime);
 		
 		return PostPhysics(inDeltaTime);
 	}
 
-	void PhysicsManager::PrePhysics(float inDeltaTime)
+	void PhysicsManager::PrePhysics(double inDeltaTime,  map<uint32_t, SimpleMath::Matrix> ObjectsTransforms)
 	{
-		// BodyIDVector bodies;
-		// m_PhysicsSystem.GetBodies(bodies);
-		// const BodyLockInterface &lockInterface = m_PhysicsSystem.GetBodyLockInterface();
-		//
-		// for (auto& bodyID : bodies)
-		// {
-		// 	BodyLockRead lock(lockInterface, bodyID);
-		// 	
-		// 	if (lock.SucceededAndIsInBroadPhase())
-		// 	{
-		//  		const Body &body = lock.GetBody();
-		// 		
-		// 		//specific logic
-		// 		
-		// 		lock.ReleaseLock();
-		// 	}
-		// }
+		BodyIDVector bodies;
+		m_PhysicsSystem.GetBodies(bodies);
+		const BodyLockInterface &lockInterface = m_PhysicsSystem.GetBodyLockInterface();
+		
+		for (auto& bodyID : bodies)
+		{
+			if (ObjectsTransforms.contains(BodiesMap[bodyID]))
+			{
+				BodyLockWrite lock(lockInterface, bodyID);
+			
+				if (lock.SucceededAndIsInBroadPhase())
+				{
+					Body &body = lock.GetBody();
+					Vector3 Scale, Translation;
+					Quaternion Rotation;
+					ObjectsTransforms[BodiesMap[bodyID]].Decompose(Scale, Rotation, Translation);
+					
+					//body.SetPositionAndRotationInternal(RVec3Arg(Translation.x, Translation.y, Translation.z), QuatArg(Rotation.x, Rotation.y, Rotation.z, Rotation.w));
+				}
+				
+				lock.ReleaseLock();
+			}
+		}
 	}
 
-	void PhysicsManager::DuringPhysics(float inDeltaTime)
+	void PhysicsManager::DuringPhysics(double inDeltaTime)
 	{
 		if (inDeltaTime > 1.f)
 		{
@@ -243,7 +266,6 @@ namespace Physics
 		
 		BodyIDVector bodies;
 		m_PhysicsSystem.GetBodies(bodies);
-		const BodyLockInterface &lockInterface = m_PhysicsSystem.GetBodyLockInterface();
 		
 		// For debugging
 		for (auto& bodyID : bodies)
@@ -252,12 +274,12 @@ namespace Physics
 			{
 				RVec3 position = m_BodyInterface->GetCenterOfMassPosition(bodyID);
 				Vec3 velocity = m_BodyInterface->GetLinearVelocity(bodyID);
-				cout << "Step " << cCollisionSteps << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.GetZ() << ")" << endl;
+				cout << "Body " << bodyID.GetIndex() <<": Position = (" << position.GetX() << ", " << position.GetY() << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.GetZ() << ")" << endl;
 			}
 		}
 	}
 
-	map<uint32_t, DirectX::SimpleMath::Matrix> PhysicsManager::PostPhysics(float inDeltaTime)
+	map<uint32_t, DirectX::SimpleMath::Matrix> PhysicsManager::PostPhysics(double inDeltaTime)
 	{
 		map<uint32_t, DirectX::SimpleMath::Matrix> ObjectsTransforms;
 		
@@ -290,6 +312,8 @@ namespace Physics
 				
 				ObjectsTransforms.insert(pair(BodiesMap[bodyID], ObjectTransform));
 			}
+				
+			lock.ReleaseLock();
 		}
 		
 		return ObjectsTransforms;

@@ -333,7 +333,7 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 
 	if (GetNodeByPath(nodePath))
 	{
-		printf("Ошибка! Узел %s уже существует!\n", nodePath.c_str());
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ %s пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!\n", nodePath.c_str());
 		return node;
 	}
 
@@ -342,7 +342,7 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 
 	if (parsed.name == "" || parsed.parrentNodePath == "")
 	{
-		printf("Ошибка! Невозможно создать узел %s!\n", nodePath.c_str());
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ %s!\n", nodePath.c_str());
 		return node;
 	}	
 
@@ -353,6 +353,9 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 		break;
 	case NODE_TYPE_OBJECT3D:
 		node = new Object3DNode();
+		break;
+	case NODE_TYPE_PHYSICAL_OBJECT3D:
+		node = new PhysicalObjectNode();
 		break;
 	case NODE_TYPE_FIRST_PERSON_PLAYER:
 		node = new FirstPersonPlayerNode();
@@ -379,7 +382,7 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 		node = new SkyBoxNode();
 		break;
 	default:
-		printf("Ошибка! Тип узла %d не поддерживается!\n", type);
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ %d пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!\n", type);
 		return node;
 	}
 
@@ -392,7 +395,7 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 			delete node;
 			node = nullptr;
 		}
-		printf("Ошибка! Родительский узел %s не существует!\n", parsed.parrentNodePath.c_str());
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ %s пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!\n", parsed.parrentNodePath.c_str());
 		return node;
 	}
 
@@ -403,7 +406,7 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 		delete node;
 		node = nullptr;
 
-		printf("Ошибка! Невозможно добавить узел %s в родительский узел %s!\n", parsed.name.c_str(), parsed.parrentNodePath.c_str());
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ %s пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ %s!\n", parsed.name.c_str(), parsed.parrentNodePath.c_str());
 	}
 
 	return node;
@@ -415,7 +418,7 @@ bool NodeGraphSystem::RemoveNodeFromScene(const std::string& nodePath, bool dest
 
 	if (!node)
 	{
-		printf("Ошибка! Узла %s не существует в сцене!\n", nodePath.c_str());
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ %s пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ!\n", nodePath.c_str());
 		return false;
 	}
 
@@ -434,14 +437,14 @@ Node3D* NodeGraphSystem::CloneNode(const std::string& nodePath, const std::strin
 	Node3D* original = GetNodeByPath(nodePath);
 	if (!original)
 	{
-		printf("Ошибка! Узла %s не существует в сцене!\n", nodePath.c_str());
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ %s пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ!\n", nodePath.c_str());
 		return nullptr;
 	}
 
 	Node3D* newParrent = GetNodeByPath(pathOfNewParrent);
 	if (!newParrent)
 	{
-		printf("Ошибка! Узла %s не существует в сцене!\n", pathOfNewParrent.c_str());
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ %s пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ!\n", pathOfNewParrent.c_str());
 		return nullptr;
 	}
 
@@ -449,7 +452,7 @@ Node3D* NodeGraphSystem::CloneNode(const std::string& nodePath, const std::strin
 
 	if (!clone)
 	{
-		printf("Ошибка! Не удалось создать клон!\n");
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ!\n");
 		return nullptr;
 	}
 
@@ -461,14 +464,14 @@ bool NodeGraphSystem::MoveNode(const std::string& nodePath, const std::string& p
 	Node3D* node = GetNodeByPath(nodePath);
 	if (!node)
 	{
-		printf("Ошибка! Узла %s не существует в сцене!\n", nodePath.c_str());
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ %s пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ!\n", nodePath.c_str());
 		return false;
 	}
 
 	Node3D* newParrent = GetNodeByPath(pathOfNewParrent);
 	if (!newParrent)
 	{
-		printf("Ошибка! Узла %s не существует в сцене!\n", pathOfNewParrent.c_str());
+		printf("пїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ %s пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ!\n", pathOfNewParrent.c_str());
 		return false;
 	}
 

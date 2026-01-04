@@ -65,6 +65,7 @@ using Microsoft::WRL::ComPtr;
 #include <iostream>
 #include <cstdarg>
 #include <thread>
+#include <map>
 
 using namespace JPH;
 using namespace JPH::literals;
@@ -226,15 +227,17 @@ namespace Physics
         
         void AddConvexCollision(uint32_t ObjectID, const vector<float>& Vertices, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
         
+        void AddPlayerCollision(uint32_t ObjectID, const vector<float>& Vertices, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One);
+        
         void AddStaticMeshCollision(uint32_t ObjectID, const vector<float>& Vertices, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One);
         
-        map<uint32_t, DirectX::SimpleMath::Matrix> OnUpdate(float inDeltaTime);
+        map<uint32_t, DirectX::SimpleMath::Matrix> OnUpdate(double inDeltaTime,  map<uint32_t, SimpleMath::Matrix> ObjectsTransforms);
         
-        void PrePhysics(float inDeltaTime);
+        void PrePhysics(double inDeltaTime,  map<uint32_t, SimpleMath::Matrix> ObjectsTransforms);
         
-        void DuringPhysics(float inDeltaTime);
+        void DuringPhysics(double inDeltaTime);
         
-        map<uint32_t, DirectX::SimpleMath::Matrix> PostPhysics(float inDeltaTime);
+        map<uint32_t, DirectX::SimpleMath::Matrix> PostPhysics(double inDeltaTime);
         
         void OnDestroy();
         

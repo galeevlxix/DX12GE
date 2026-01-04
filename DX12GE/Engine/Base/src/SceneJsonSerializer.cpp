@@ -4,6 +4,8 @@
 #include "LuaManager.h"
 #include <fstream>
 
+#include "../../NodeGraph/PhysicalObjectNode.h"
+
 static const std::string path = "../../DX12GE/Resources/scene lite.json";
 
 
@@ -224,7 +226,28 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		{
 			newNode.CameraAnchor = Vector3(it->at("cam_anchor_x"), it->at("cam_anchor_y"), it->at("cam_anchor_z"));
 		}
-
+		
+		//Physics
+		if (it->contains("collision_type"))
+		{
+			newNode.collisionType = it->at("collision_type");
+		}
+				
+		if (it->contains("gravity_scale"))
+		{
+			newNode.gravityScale = it->at("gravity_scale");
+		}
+		
+		if (it->contains("mass"))
+		{
+			newNode.mass = it->at("mass");
+		}
+		
+		if (it->contains("friction_scale"))
+		{
+			newNode.frictionScale = it->at("friction_scale");
+		}
+		
 		nodesData.push_back(newNode);
 	}
 

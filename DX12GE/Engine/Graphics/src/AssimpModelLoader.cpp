@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, float& OutYOffset, std::vector<float>& OutVertices)
+uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, float& OutYOffset, std::vector<float>* OutVertices)
 {
     if (NotFoundFile(filePath.c_str())) return -1;
 
@@ -127,11 +127,14 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
 
         meshes[meshIndex]->OnLoad<VertexStruct>(commandList, Vertices, Indices);
                 
-        for (int i = 0; i < Indices.size(); ++i)
+        if (OutVertices != nullptr)
         {
-            OutVertices.push_back(Vertices[Indices[i]].Position.x);
-            OutVertices.push_back(Vertices[Indices[i]].Position.y);
-            OutVertices.push_back(Vertices[Indices[i]].Position.z);
+            for (int i = 0; i < Indices.size(); ++i)
+            {
+                OutVertices->push_back(Vertices[Indices[i]].Position.x);
+                OutVertices->push_back(Vertices[Indices[i]].Position.y);
+                OutVertices->push_back(Vertices[Indices[i]].Position.z);
+            }
         }
     }
 
