@@ -210,23 +210,22 @@ void SingleGpuGame::GenerateCollisions() const
     const auto& Objects = Singleton::GetNodeGraph()->GetAll3DObjects();
     for (auto obj : Objects)
     {
-        if (FirstPersonPlayerNode* Player = dynamic_cast<FirstPersonPlayerNode*>(obj.second))
+        if (PhysicalObjectNode* Object = dynamic_cast<PhysicalObjectNode*>(obj.second))
         {
-            if (Player->GetCollisionType() == COLLISION_TYPE_DYNAMIC)
+            if (FirstPersonPlayerNode* Player = dynamic_cast<FirstPersonPlayerNode*>(obj.second))
             {
-                Singleton::GetPhysicsManager()->AddPlayerCollision(Player->GetComponentId(), Player->GetVertices(), Player->Transform.GetPosition(), Player->Transform.GetRotation(), Player->Transform.GetScale());
+                Singleton::GetPhysicsManager()->AddPlayerCollision(Player->GetComponentId(), Player->GetVertices(), Player->Transform.GetPosition(), Player->Transform.GetRotation(), Player->GetMass(), Player->Transform.GetScale());
             }
-        }
-        else if (PhysicalObjectNode* Object = dynamic_cast<PhysicalObjectNode*>(obj.second))
-        {
-            if (Object->GetCollisionType() == COLLISION_TYPE_STATIC)
+            else if (Object->GetCollisionType() == COLLISION_TYPE_STATIC)
             {
                 Singleton::GetPhysicsManager()->AddStaticMeshCollision(Object->GetComponentId(), Object->GetVertices(), Object->Transform.GetPosition(), Object->Transform.GetRotation(), Object->Transform.GetScale());
             }
             else
             {
-                Singleton::GetPhysicsManager()->AddConvexCollision(Object->GetComponentId(), Object->GetVertices(), Object->Transform.GetPosition(), Object->Transform.GetRotation(), Object->Transform.GetScale(), EMotionType::Dynamic);
+                Singleton::GetPhysicsManager()->AddConvexCollision(Object->GetComponentId(), Object->GetVertices(), Object->Transform.GetPosition(), Object->Transform.GetRotation(), Object->GetMass(), Object->Transform.GetScale(), EMotionType::Dynamic);
             }
+            
+            Singleton::GetPhysicsManager()->ApplyProperties(Object->GetComponentId(), Object->GetGravityScale(), Object->GetFrictionScale());
         }
     }
 }

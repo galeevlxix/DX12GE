@@ -26,6 +26,7 @@ public:
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
 	void DrawLine(const Vector3& pos0, const Vector3& pos1, const Color& color);
+	void DrawTriangle(const Vector3& pos0, const Vector3& pos1, const Vector3& pos2, const Color& color);
 	void DrawBoundingBox(const BoundingBox& box);
 	void DrawBoundingBox(const BoundingBox& box, const Matrix& transform);
 	void DrawBoundingBox(const CollisionBox& box, const Matrix& transform);

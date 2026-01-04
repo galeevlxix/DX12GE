@@ -36,6 +36,13 @@ void DebugRenderSystem::DrawLine(const Vector3& pos0, const Vector3& pos1, const
 	CreateLine(pos0, pos1, color);
 }
 
+void DebugRenderSystem::DrawTriangle(const Vector3& pos0, const Vector3& pos1, const Vector3& pos2, const Color& color)
+{
+	CreateLine(pos0, pos1, color);
+	CreateLine(pos1, pos2, color);
+	CreateLine(pos2, pos0, color);
+}
+
 void DebugRenderSystem::DrawBoundingBox(const BoundingBox& box)
 {
 	Vector3 corners[8];

@@ -181,7 +181,7 @@ namespace Physics
         // See: ContactListener
         virtual ValidateResult	OnContactValidate(const Body &inBody1, const Body &inBody2, RVec3Arg inBaseOffset, const CollideShapeResult &inCollisionResult) override
         {
-            cout << "Contact validate callback" << endl;
+            //cout << "Contact validate callback" << endl;
 
             // Allows you to ignore a contact before it is created (using layers to not make objects collide is cheaper!)
             return ValidateResult::AcceptAllContactsForThisBodyPair;
@@ -189,17 +189,17 @@ namespace Physics
 
         virtual void			OnContactAdded(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
         {
-            cout << "A contact was added" << endl;
+            //cout << "A contact was added" << endl;
         }
 
         virtual void			OnContactPersisted(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
         {
-            cout << "A contact was persisted" << endl;
+            //cout << "A contact was persisted" << endl;
         }
 
         virtual void			OnContactRemoved(const SubShapeIDPair &inSubShapePair) override
         {
-            cout << "A contact was removed" << endl;
+            //cout << "A contact was removed" << endl;
         }
     };
 
@@ -223,13 +223,15 @@ namespace Physics
     public:
         void Initialize();
         
-        void AddBoxCollision(uint32_t ObjectID, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
+        void AddBoxCollision(uint32_t ObjectID, Vector3 Position, Vector3 Rotation, float Mass = 1.f, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
         
-        void AddConvexCollision(uint32_t ObjectID, const vector<float>& Vertices, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
+        void AddConvexCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position, Vector3 Rotation, float Mass = 1.f, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
         
-        void AddPlayerCollision(uint32_t ObjectID, const vector<float>& Vertices, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One);
+        void AddPlayerCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position, Vector3 Rotation, float Mass = 1.f, Vector3 Scale = Vector3::One);
         
-        void AddStaticMeshCollision(uint32_t ObjectID, const vector<float>& Vertices, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One);
+        void AddStaticMeshCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One);
+        
+        void ApplyProperties(uint32_t ObjectID, float GravityFactor, float Friction);
         
         map<uint32_t, DirectX::SimpleMath::Matrix> OnUpdate(double inDeltaTime,  map<uint32_t, SimpleMath::Matrix> ObjectsTransforms);
         
@@ -286,7 +288,7 @@ namespace Physics
         PhysicsSystem m_PhysicsSystem;
         
         unique_ptr<BodyInterface> m_BodyInterface;
-        
+                
         map<BodyID, uint32_t> BodiesMap;
     };
 }
