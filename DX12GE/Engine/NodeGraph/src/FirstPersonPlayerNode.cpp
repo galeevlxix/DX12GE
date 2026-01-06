@@ -84,7 +84,6 @@ void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 	}
 
 	PhysicalObjectNode::OnUpdate(deltaTime);
-	std::cout << Transform.GetPosition().x << " " << Transform.GetPosition().y << " "  << Transform.GetPosition().z << endl;
 }
 
 void FirstPersonPlayerNode::Destroy(bool keepComponent)

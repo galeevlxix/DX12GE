@@ -5,7 +5,6 @@
 PhysicalObjectNode::PhysicalObjectNode() : Object3DNode()
 {    
     ModelVertices = new std::vector<Vector3>();
-    DebugCollisionGeometry = new std::vector<float>();
 }
 
 bool PhysicalObjectNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
@@ -63,11 +62,11 @@ void PhysicalObjectNode::DrawDebug()
 {
     Object3DNode::DrawDebug();
     
-    for (int i = 0; i < DebugCollisionGeometry->size(); i += 9)
+    for (int i = 0; i < ModelVertices->size(); i += 3)
     {
-        Vector3 P0(Vector3((*DebugCollisionGeometry)[i], (*DebugCollisionGeometry)[i + 1], (*DebugCollisionGeometry)[i + 2]));
-        Vector3 P1(Vector3((*DebugCollisionGeometry)[i + 3], (*DebugCollisionGeometry)[i + 4], (*DebugCollisionGeometry)[i + 5]));
-        Vector3 P2(Vector3((*DebugCollisionGeometry)[i + 6], (*DebugCollisionGeometry)[i + 7], (*DebugCollisionGeometry)[i + 8]));
+        Vector3 P0(Vector3::Transform((*ModelVertices)[i], Transform.GetLocalMatrix()));
+        Vector3 P1(Vector3::Transform((*ModelVertices)[i + 1], Transform.GetLocalMatrix()));
+        Vector3 P2(Vector3::Transform((*ModelVertices)[i + 2], Transform.GetLocalMatrix()));
             
         Singleton::GetDebugRender()->DrawTriangle(P0, P1, P2, SimpleMath::Color(0.f, 1.f, 0.f, 1.f));
     }

@@ -41,7 +41,7 @@
     "speed_min": 2.0,
     "speed_nrm": 4.0,
     "trans_pos_x": -7.260694980621338,
-    "trans_pos_y": 2.6207032203674316,
+    "trans_pos_y": 20.6207032203674316,
     "trans_pos_z": 0.7849105000495911,
     "trans_rot_x": 0.0,
     "trans_rot_y": 12.974798202514648,
@@ -49,10 +49,10 @@
     "trans_scl_x": 0.3333300054073334,
     "trans_scl_y": 0.3333300054073334,
     "trans_scl_z": 0.3333300054073334,
-    "collision_type": 1,
-    "scripts": [
-      "Player"
-    ]
+    "collision_type": 5,
+    "mass": 100.0,
+    "friction_scale": 1.0,
+    "scripts": []
   },
   {
     "light_atten_constant": 1.0,
@@ -107,7 +107,7 @@
     "trans_scl_x": 1.0,
     "trans_scl_y": 1.0,
     "trans_scl_z": 1.0,
-    "collision_type": 0,
+    "collision_type": 6,
     "scripts": []
   },
   {
@@ -1389,7 +1389,9 @@
     "trans_scl_x": 3.333329916000366,
     "trans_scl_y": 3.333329916000366,
     "trans_scl_z": 3.333329916000366,
-    "collision_type": 1,
+    "collision_type": 4,
+    "mass": 2000.0,
+    "friction_scale": 1.0,
     "scripts": [
       "Car"
     ]
@@ -1408,7 +1410,9 @@
     "trans_scl_x": 0.004049999639391899,
     "trans_scl_y": 0.004049999639391899,
     "trans_scl_z": 0.004049999639391899,
-    "collision_type": 1,
+    "collision_type": 4,
+    "mass": 200.0,
+    "friction_scale": 0.8,
     "scripts": []
   },
   {
@@ -1425,7 +1429,7 @@
     "trans_scl_x": 1.0,
     "trans_scl_y": 1.0,
     "trans_scl_z": 1.0,
-    "collision_type": 0,
+    "collision_type": 6,
     "scripts": []
   },
   {
@@ -1574,7 +1578,9 @@
     "trans_scl_x": 3.3329999446868896,
     "trans_scl_y": 3.3329999446868896,
     "trans_scl_z": 3.3329999446868896,
-    "collision_type": 1,
+    "collision_type": 4,
+    "mass": 2000.0,
+    "friction_scale": 1.0,
     "scripts": []
   },
   {
@@ -1591,7 +1597,9 @@
     "trans_scl_x": 1.0,
     "trans_scl_y": 1.0,
     "trans_scl_z": 1.0,
-    "collision_type": 1,
+    "collision_type": 4,
+    "mass": 2000.0,
+    "friction_scale": 1.0,
     "scripts": []
   },
   {
@@ -1618,7 +1626,7 @@
     "trans_scl_x": 0.3333300054073334,
     "trans_scl_y": 0.3333300054073334,
     "trans_scl_z": 0.3333300054073334,
-    "collision_type": 1,
+    "collision_type": 5,
     "scripts": []
   },
   {

@@ -210,22 +210,20 @@ void SingleGpuGame::GenerateCollisions() const
     const auto& Objects = Singleton::GetNodeGraph()->GetAll3DObjects();
     for (auto obj : Objects)
     {
-        if (PhysicalObjectNode* Object = dynamic_cast<PhysicalObjectNode*>(obj.second))
+        if (PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(obj.second))
         {
-            if (FirstPersonPlayerNode* Player = dynamic_cast<FirstPersonPlayerNode*>(obj.second))
+            if (PhysRef->GetCollisionType() != COLLISION_TYPE_NONE)
             {
-                Singleton::GetPhysicsManager()->AddPlayerCollision(Player->GetComponentId(), Player->GetVertices(), Player->Transform.GetPosition(), Player->Transform.GetRotation(), Player->GetMass(), Player->Transform.GetScale());
-            }
-            else if (Object->GetCollisionType() == COLLISION_TYPE_STATIC)
-            {
-                Singleton::GetPhysicsManager()->AddStaticMeshCollision(Object->GetComponentId(), Object->GetVertices(), Object->Transform.GetPosition(), Object->Transform.GetRotation(), Object->Transform.GetScale());
-            }
-            else
-            {
-                Singleton::GetPhysicsManager()->AddConvexCollision(Object->GetComponentId(), Object->GetVertices(), Object->Transform.GetPosition(), Object->Transform.GetRotation(), Object->GetMass(), Object->Transform.GetScale(), EMotionType::Dynamic);
+                Vector3 Rotation = PhysRef->Transform.GetRotation();
+                if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
+                {
+                    Rotation = Vector3(0.f, Rotation.y, 0.f);
+                }
+                
+                Singleton::GetPhysicsManager()->GenerateCollision(PhysRef->GetComponentId(), PhysRef->GetVertices(), PhysRef->Transform.GetPosition(), Rotation, PhysRef->GetMass(), PhysRef->Transform.GetScale(), PhysRef->GetCollisionType());
             }
             
-            Singleton::GetPhysicsManager()->ApplyProperties(Object->GetComponentId(), Object->GetGravityScale(), Object->GetFrictionScale());
+            Singleton::GetPhysicsManager()->ApplyProperties(PhysRef->GetComponentId(), PhysRef->GetGravityScale(), PhysRef->GetFrictionScale());
         }
     }
 }
@@ -237,9 +235,19 @@ void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
     for (const auto& object : Singleton::GetNodeGraph()->GetAll3DObjects())
     {
         PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(object.second);
-        if (PhysRef != nullptr && PhysRef->GetCollisionType() == COLLISION_TYPE_DYNAMIC)
+        if (PhysRef != nullptr && PhysRef->GetCollisionType() > COLLISION_TYPE_NONE && PhysRef->GetCollisionType() < COLLISION_TYPE_STATIC_MESH)
         {
             PrePhysicsTransforms.insert(pair(PhysRef->GetComponentId(), PhysRef->Transform.GetLocalMatrix()));
+            
+            if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
+            {
+                Vector3 Position, Scale;
+                Quaternion Rotation;
+                PrePhysicsTransforms[PhysRef->GetComponentId()].Decompose(Scale, Rotation, Position);
+                Vector3 RotationEuler = Rotation.ToEuler();
+                RotationEuler = Vector3(RotationEuler.y, 0.f, 0.f);
+                PrePhysicsTransforms[PhysRef->GetComponentId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(RotationEuler) * SimpleMath::Matrix::CreateTranslation(Position);
+            }
         }
     }
     
@@ -248,9 +256,20 @@ void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
     for (const auto& object : Singleton::GetNodeGraph()->GetAll3DObjects())
     {
         PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(object.second);
-        if (PhysRef != nullptr && PhysRef->GetCollisionType() == COLLISION_TYPE_DYNAMIC && PostPhysicsTransforms.contains(PhysRef->GetComponentId()))
+        if (PhysRef != nullptr && PostPhysicsTransforms.contains(PhysRef->GetComponentId()))
         {
+            if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
+            {
+                Vector3 Position, Scale;
+                Quaternion Rotation;
+                PostPhysicsTransforms[PhysRef->GetComponentId()].Decompose(Scale, Rotation, Position);
+                Vector3 RotationEuler = Rotation.ToEuler();
+                RotationEuler = Vector3(PhysRef->Transform.GetRotation().x, RotationEuler.x, PhysRef->Transform.GetRotation().z);
+                PostPhysicsTransforms[PhysRef->GetComponentId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(RotationEuler) * SimpleMath::Matrix::CreateTranslation(Position);
+            }
+            
             PhysRef->UpdateTransform(PostPhysicsTransforms[PhysRef->GetComponentId()]);
+            //PhysRef->SetCollisionGeometry(Singleton::GetPhysicsManager()->GetBodyCollision(PhysRef->GetComponentId()));
         }
     }
 }

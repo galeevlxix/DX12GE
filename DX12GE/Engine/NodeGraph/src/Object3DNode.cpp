@@ -71,7 +71,6 @@ void Object3DNode::UpdateTransform(SimpleMath::Matrix InTransform)
     
     InTransform.Decompose(scale, rotation, translation);
     Transform.SetPosition(translation);
-    //Transform.SetScale(scale);
     Transform.SetRotation(rotation.ToEuler());
 }
 

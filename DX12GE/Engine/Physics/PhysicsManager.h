@@ -15,7 +15,7 @@
 #include <Jolt/Geometry/Plane.h>
 #include <Jolt/Physics/Collision/Shape/PlaneShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
-#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/SoftBody/SoftBodyCreationSettings.h>
@@ -223,13 +223,11 @@ namespace Physics
     public:
         void Initialize();
         
-        void AddBoxCollision(uint32_t ObjectID, Vector3 Position, Vector3 Rotation, float Mass = 1.f, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
+        bool GenerateCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position, Vector3 Rotation, float Mass = 1.f, Vector3 Scale = Vector3::One, CollisionTypeEnum CollisionType = COLLISION_TYPE_STATIC_MESH);
         
-        void AddConvexCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position, Vector3 Rotation, float Mass = 1.f, Vector3 Scale = Vector3::One, EMotionType MotionType = EMotionType::Static);
+        void AddConvexCollision(const vector<Vector3>& Vertices, Vector3 Scale = Vector3::One);
         
-        void AddPlayerCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position, Vector3 Rotation, float Mass = 1.f, Vector3 Scale = Vector3::One);
-        
-        void AddStaticMeshCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position, Vector3 Rotation, Vector3 Scale = Vector3::One);
+        void AddStaticMeshCollision(const vector<Vector3>& Vertices, Vector3 Scale = Vector3::One);
         
         void ApplyProperties(uint32_t ObjectID, float GravityFactor, float Friction);
         
@@ -240,6 +238,8 @@ namespace Physics
         void DuringPhysics(double inDeltaTime);
         
         map<uint32_t, DirectX::SimpleMath::Matrix> PostPhysics(double inDeltaTime);
+        
+        std::vector<Vector3>* GetBodyCollision(uint32_t inID);
         
         void OnDestroy();
         
@@ -290,5 +290,7 @@ namespace Physics
         unique_ptr<BodyInterface> m_BodyInterface;
                 
         map<BodyID, uint32_t> BodiesMap;
+        
+        Ref<Shape> CurrentShape;
     };
 }
