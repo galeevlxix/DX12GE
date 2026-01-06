@@ -94,7 +94,7 @@ static Node3D* CreateObj(const std::string& nodePath, ComPtr<ID3D12GraphicsComma
     Node3D* node = Singleton::GetNodeGraph()->CreateNewNodeInScene(nodePath, NODE_TYPE_OBJECT3D);
     if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
     {
-        if (!obj3D->Create(commandList, filePath))
+        if (!obj3D->Create(commandList, filePath, nodePath))
         {
             printf("��������������! ��� ���� %s �� ���������������!\n", node->GetName().c_str());
         }
@@ -220,7 +220,7 @@ void SingleGpuGame::GenerateCollisions() const
                     Rotation = Vector3(0.f, Rotation.y, 0.f);
                 }
                 
-                Singleton::GetPhysicsManager()->GenerateCollision(PhysRef->GetComponentId(), PhysRef->GetVertices(), PhysRef->Transform.GetPosition(), Rotation, PhysRef->GetMass(), PhysRef->Transform.GetScale(), PhysRef->GetCollisionType());
+                Singleton::GetPhysicsManager()->GenerateCollision(PhysRef->GetComponentId(), *PhysRef->GetVertices(), PhysRef->Transform.GetPosition(), Rotation, PhysRef->GetMass(), PhysRef->Transform.GetScale(), PhysRef->GetCollisionType());
             }
             
             Singleton::GetPhysicsManager()->ApplyProperties(PhysRef->GetComponentId(), PhysRef->GetGravityScale(), PhysRef->GetFrictionScale());
@@ -246,6 +246,7 @@ void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
                 PrePhysicsTransforms[PhysRef->GetComponentId()].Decompose(Scale, Rotation, Position);
                 Vector3 RotationEuler = Rotation.ToEuler();
                 RotationEuler = Vector3(RotationEuler.y, 0.f, 0.f);
+                
                 PrePhysicsTransforms[PhysRef->GetComponentId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(RotationEuler) * SimpleMath::Matrix::CreateTranslation(Position);
             }
         }
@@ -263,13 +264,13 @@ void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
                 Vector3 Position, Scale;
                 Quaternion Rotation;
                 PostPhysicsTransforms[PhysRef->GetComponentId()].Decompose(Scale, Rotation, Position);
-                Vector3 RotationEuler = Rotation.ToEuler();
-                RotationEuler = Vector3(PhysRef->Transform.GetRotation().x, RotationEuler.x, PhysRef->Transform.GetRotation().z);
-                PostPhysicsTransforms[PhysRef->GetComponentId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(RotationEuler) * SimpleMath::Matrix::CreateTranslation(Position);
+                
+                PostPhysicsTransforms[PhysRef->GetComponentId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(PhysRef->Transform.GetRotation()) * SimpleMath::Matrix::CreateTranslation(Position);
             }
             
             PhysRef->UpdateTransform(PostPhysicsTransforms[PhysRef->GetComponentId()]);
-            //PhysRef->SetCollisionGeometry(Singleton::GetPhysicsManager()->GetBodyCollision(PhysRef->GetComponentId()));
+            
+            //PhysRef->SetCollisionGeometry(Singleton::GetPhysicsManager()->GetBodyCollision(PhysRef->GetComponentId(), PhysRef->GetVertices()));
         }
     }
 }
@@ -513,13 +514,13 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
         m_stopParticles = !m_stopParticles;
         break;    
     case KeyCode::B:
-        if (Singleton::GetNodeGraph()->GetNodeByPath("root/player_fp") == Singleton::GetNodeGraph()->GetCurrentPlayer())
+        if (Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player") == Singleton::GetNodeGraph()->GetCurrentPlayer())
         {
-            Singleton::GetNodeGraph()->GetNodeByPath("root/player_tp")->SetCurrent();
+            Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player")->SetCurrent();
         }
         else
         {
-            Singleton::GetNodeGraph()->GetNodeByPath("root/player_fp")->SetCurrent();
+            Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player")->SetCurrent();
         }
         break;
     case KeyCode::R:

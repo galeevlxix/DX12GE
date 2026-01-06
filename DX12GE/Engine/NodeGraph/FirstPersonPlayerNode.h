@@ -16,6 +16,8 @@ public:
 	float MinMovementSpeed;
 	float NormalMovementSpeed;
 	float MaxMovementSpeed;
+	
+	float JumpImpulse;
 
 protected:
 	CameraNode* m_Camera;
@@ -34,6 +36,8 @@ protected:
 public:
 	FirstPersonPlayerNode();
 
+	virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath) override;
+	
 	virtual void OnUpdate(const double& deltaTime) override;
 
 	virtual void Destroy(bool keepComponent = true) override;

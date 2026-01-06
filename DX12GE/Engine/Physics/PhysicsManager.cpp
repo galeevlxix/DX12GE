@@ -68,6 +68,14 @@ namespace Physics
 			CollisionShape = new BoxShape(RVec3(abs(Scale.x), abs(Scale.y), abs(Scale.z)));
 			break;
 			
+		case COLLISION_TYPE_SPHERE:
+			CollisionShape = new SphereShape(Scale.x);
+			break;
+			
+		case COLLISION_TYPE_CAPSULE:
+			CollisionShape = new CapsuleShape(Scale.y, Scale.x);
+			break;
+			
 		case COLLISION_TYPE_CONVEX:
 			AddConvexCollision(Vertices, Scale);
 			CollisionShape = CurrentShape;
@@ -76,7 +84,7 @@ namespace Physics
 		case COLLISION_TYPE_PLAYER:
 			AddConvexCollision(Vertices, Scale);
 			CollisionShape = CurrentShape;
-			CollisionShape = new CapsuleShape(CollisionShape->GetLocalBounds().GetExtent().GetY(), CollisionShape->GetLocalBounds().GetExtent().GetX());
+			//CollisionShape = new CapsuleShape(CollisionShape->GetLocalBounds().GetExtent().GetY(), CollisionShape->GetLocalBounds().GetExtent().GetX());
 			break;
 		
 		case COLLISION_TYPE_STATIC_MESH:
@@ -115,7 +123,7 @@ namespace Physics
 		
 		if (CollisionType == COLLISION_TYPE_PLAYER)
 		{
-			meshSettings.mAllowedDOFs = EAllowedDOFs::TranslationX | EAllowedDOFs::TranslationY | EAllowedDOFs::TranslationZ | EAllowedDOFs::RotationY;
+			meshSettings.mAllowedDOFs = EAllowedDOFs::TranslationX | EAllowedDOFs::TranslationY | EAllowedDOFs::TranslationZ;
 		}
 								
 		BodyID meshID = m_BodyInterface->CreateAndAddBody(meshSettings, activationType);
@@ -254,10 +262,9 @@ namespace Physics
 				Vec3 Translation = RotTrans.GetTranslation();
 				Quat Rotation = RotTrans.GetRotationSafe().GetQuaternion();
 				Vec3 RotationEuler = Rotation.GetEulerAngles();
-				// float i = RotationEuler.GetY() * 180.f / Math::PI;
-				// Scale.SetX(i);
-				//if (bodyID.GetIndex() == 8388608)
-					cout << Translation.GetX() << " " << Translation.GetY() << " " << Translation.GetZ() << endl;
+				
+				//cout << Translation.GetX() << " " << Translation.GetY() << " " << Translation.GetZ() << endl;
+				
 				DirectX::SimpleMath::Matrix T = DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(Translation.GetX(), Translation.GetY(), Translation.GetZ()));
 				//DirectX::SimpleMath::Matrix R = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(Quaternion(Rotation.GetY(), Rotation.GetX(), Rotation.GetZ(), Rotation.GetW()).ToEuler());
 				DirectX::SimpleMath::Matrix R = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(RotationEuler.GetX(), RotationEuler.GetY(), RotationEuler.GetZ());
@@ -273,7 +280,7 @@ namespace Physics
 		return ObjectsTransforms;
 	}
 
-	std::vector<Vector3>* PhysicsManager::GetBodyCollision(uint32_t inID)
+	std::vector<Vector3>* PhysicsManager::GetBodyCollision(uint32_t inID, std::vector<Vector3>* outTriangles)
 	{
 		for (const auto& [bodyID, objID] : BodiesMap)
 		{
@@ -284,12 +291,13 @@ namespace Physics
 				Shape::GetTrianglesContext context; 
 				Shape.GetTrianglesStart(context, Bounds, RVec3Arg(0.f, 0.f, 0.f));
 				Float3* Triangles = new Float3[999];
-				int FoundTriangles = Shape.GetTrianglesNext(context, 1000, Triangles);
+				int FoundTriangles = Shape.GetTrianglesNext(context, 999, Triangles);
 				
-				std::vector<Vector3>* outTriangles = new std::vector<Vector3>();
+				outTriangles->clear();
+				outTriangles = new std::vector<Vector3>(FoundTriangles);
 				for (int i = 0; i < FoundTriangles; ++i)
 				{
-					outTriangles->push_back(Vector3(Triangles[i].x, Triangles[i].y, Triangles[i].z));
+					(*outTriangles)[i] = Vector3(Triangles[i].x, Triangles[i].y, Triangles[i].z);
 				}
 				return outTriangles;
 			}

@@ -9,12 +9,12 @@ Object3DNode::Object3DNode() : Node3D(), m_ComponentId(-1)
     Rename("Object3DNode");
 }
 
-bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
+bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath)
 {
     AssimpModelLoader modelLoader;
     float yOffset = 0.0f;
     
-    uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset);
+    uint32_t id = modelLoader.LoadModelData(commandList, filePath, nodePath, yOffset);
     Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);

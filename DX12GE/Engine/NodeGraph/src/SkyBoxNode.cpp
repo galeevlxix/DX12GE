@@ -9,7 +9,7 @@ SkyBoxNode::SkyBoxNode() : Object3DNode()
     Transform.SetScale(500.0f);
 }
 
-bool SkyBoxNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
+bool SkyBoxNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath)
 {
     std::vector<XMFLOAT3> cubeVertices =
     {
@@ -97,7 +97,7 @@ void SkyBoxNode::SetComponentId(uint32_t newId)
 {
     if (newId < 0 || newId >= ResourceStorage::TexturesCount())
     {
-        printf("Ошибка: Id текстуры за пределами размера массива в ResourceStorage\n");
+        printf("пїЅпїЅпїЅпїЅпїЅпїЅ: Id пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ ResourceStorage\n");
         return;
     }
     m_TextureId = newId;
@@ -161,7 +161,7 @@ void SkyBoxNode::SetCurrent()
     }
     else
     {
-        printf("Внимание! Невозможно сделать SkyBoxNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
+        printf("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ SkyBoxNode::%s пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ!\n", m_Name.c_str());
     }
 }
 

@@ -23,6 +23,12 @@ FirstPersonPlayerNode::FirstPersonPlayerNode() : PhysicalObjectNode()
 	m_dy = 0;
 }
 
+bool FirstPersonPlayerNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath,
+	const std::string& nodePath)
+{
+	return PhysicalObjectNode::Create(commandList, filePath, nodePath);
+}
+
 void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 {
 	if (IsCurrent() && m_PressedInputs.RBC)

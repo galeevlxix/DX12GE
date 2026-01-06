@@ -8,5 +8,5 @@
 class AssimpModelLoader
 {
 public:
-	uint32_t LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string &filePath, float& OutYOffset, vector<Vector3>* OutVertices = nullptr);
+	uint32_t LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string &filePath, const std::string& nodePath, float& OutYOffset, vector<Vector3>* OutVertices = nullptr);
 };

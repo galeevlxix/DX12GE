@@ -7,12 +7,12 @@ PhysicalObjectNode::PhysicalObjectNode() : Object3DNode()
     ModelVertices = new std::vector<Vector3>();
 }
 
-bool PhysicalObjectNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
+bool PhysicalObjectNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath)
 {
     AssimpModelLoader modelLoader;
     float yOffset = 0.0f;
     
-    uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset, ModelVertices);
+    uint32_t id = modelLoader.LoadModelData(commandList, filePath, nodePath, yOffset, ModelVertices);
     Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);
@@ -64,13 +64,19 @@ void PhysicalObjectNode::DrawDebug()
     
     for (int i = 0; i < ModelVertices->size(); i += 3)
     {
-        Vector3 P0(Vector3::Transform((*ModelVertices)[i], Transform.GetLocalMatrix()));
-        Vector3 P1(Vector3::Transform((*ModelVertices)[i + 1], Transform.GetLocalMatrix()));
-        Vector3 P2(Vector3::Transform((*ModelVertices)[i + 2], Transform.GetLocalMatrix()));
+        Vector3 P0(Vector3::Transform((*ModelVertices)[i] * 1.05f, Transform.GetLocalMatrix()));
+        Vector3 P1(Vector3::Transform((*ModelVertices)[i + 1] * 1.05f, Transform.GetLocalMatrix()));
+        Vector3 P2(Vector3::Transform((*ModelVertices)[i + 2] * 1.05f, Transform.GetLocalMatrix()));
             
         Singleton::GetDebugRender()->DrawTriangle(P0, P1, P2, SimpleMath::Color(0.f, 1.f, 0.f, 1.f));
     }
 }
+
+void PhysicalObjectNode::SetCollisionGeometry(std::vector<Vector3>* vertices)
+{
+    ModelVertices->clear();
+    ModelVertices = vertices;
+};
 
 void PhysicalObjectNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 {

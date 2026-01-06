@@ -280,7 +280,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 		if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
 		{
-			if (!obj3D->Create(commandList, nodeData.filePath))
+			if (!obj3D->Create(commandList, nodeData.filePath, nodeData.nodePath))
 			{
 				printf("��������������! ��� ���� %s �� ���������������!\n", node->GetName().c_str());
 			}

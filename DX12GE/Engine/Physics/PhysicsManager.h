@@ -15,6 +15,7 @@
 #include <Jolt/Geometry/Plane.h>
 #include <Jolt/Physics/Collision/Shape/PlaneShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
+#include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
@@ -239,7 +240,7 @@ namespace Physics
         
         map<uint32_t, DirectX::SimpleMath::Matrix> PostPhysics(double inDeltaTime);
         
-        std::vector<Vector3>* GetBodyCollision(uint32_t inID);
+        std::vector<Vector3>* GetBodyCollision(uint32_t inID, std::vector<Vector3>* outTriangles);
         
         void OnDestroy();
         

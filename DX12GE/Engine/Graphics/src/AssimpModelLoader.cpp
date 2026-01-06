@@ -6,11 +6,11 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, float& OutYOffset, std::vector<Vector3>* OutVertices)
+uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, const std::string& nodePath, float& OutYOffset, std::vector<Vector3>* OutVertices)
 {
     if (NotFoundFile(filePath.c_str())) return -1;
 
-    int id = ResourceStorage::AddObject3D(filePath);
+    int id = ResourceStorage::AddObject3D(nodePath);
     std::shared_ptr<Object3DComponent> object = ResourceStorage::GetObject3D(id);
 
     if (object->IsInitialized())

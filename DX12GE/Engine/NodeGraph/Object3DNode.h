@@ -16,7 +16,7 @@ public:
 	Object3DNode();
 
 	// ��������� ������ ����
-	virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath);
+	virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath);
 
 	// ��������� 3� �������
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const DirectX::XMMATRIX& viewProjMatrix);

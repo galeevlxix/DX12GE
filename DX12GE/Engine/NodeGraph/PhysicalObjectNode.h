@@ -18,7 +18,7 @@ protected:
 public:
     PhysicalObjectNode();
 
-    virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath) override;
+    virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath) override;
     
     virtual void OnUpdate(const double& deltaTime) override;
 
@@ -36,9 +36,9 @@ public:
     
 	virtual void DrawDebug() override;
     
-    const std::vector<Vector3>& GetVertices() { return *ModelVertices; };
+    std::vector<Vector3>* GetVertices() { return ModelVertices; };
     
-    const void SetCollisionGeometry(std::vector<Vector3>* vertices) { ModelVertices = vertices; };
+    void SetCollisionGeometry(std::vector<Vector3>* vertices);
     
     const CollisionTypeEnum& GetCollisionType() { return collisionType; }
     
