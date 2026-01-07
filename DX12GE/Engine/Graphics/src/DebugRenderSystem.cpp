@@ -246,6 +246,58 @@ void DebugRenderSystem::DrawBoundingBox(const CollisionBox& box, const Matrix& t
 	DrawBoundingBox(bounding, transform);
 }
 
+// Displaying the cell field and XYZ axes for the engine editor
+void DebugRenderSystem::DrawCellularFieldAndAxes(const Vector3& cameraPos)
+{
+	const float camPosX = roundf(cameraPos.x);
+	const float camPosY = roundf(abs(cameraPos.y));
+	const float camPosZ = roundf(cameraPos.z);
+
+	DrawLine(Vector3(-CellularFieldFieldSizeLevel1 + cameraPos.x, 0, 0), Vector3(CellularFieldFieldSizeLevel1 + cameraPos.x, 0, 0), AxisXColor);
+	DrawLine(Vector3(0, -CellularFieldFieldSizeLevel1 + cameraPos.y, 0), Vector3(0, CellularFieldFieldSizeLevel1 + cameraPos.y, 0), AxisYColor);
+	DrawLine(Vector3(0, 0, -CellularFieldFieldSizeLevel1 + cameraPos.z), Vector3(0, 0, CellularFieldFieldSizeLevel1 + cameraPos.z), AxisZColor);
+
+	for (int x = -CellularFieldFieldSizeLevel1 + static_cast<int>(camPosX); x <= CellularFieldFieldSizeLevel1 + static_cast<int>(camPosX); x++)
+	{
+		if (x == 0) continue;
+
+		float xFloat = static_cast<float>(x);
+
+		if (x % 64 == 0)
+		{
+			DrawLine(Vector3(xFloat, 0, -CellularFieldFieldSizeLevel1 + camPosZ), Vector3(xFloat, 0, CellularFieldFieldSizeLevel1 + camPosZ), CellularFieldColorLevel1);
+		}
+		else if (x % 8 == 0 && camPosY <= CellularFieldHeightLevel2 && abs(xFloat - camPosX) <= CellularFieldFieldSizeLevel2)
+		{
+			DrawLine(Vector3(xFloat, 0, -CellularFieldFieldSizeLevel2 + camPosZ), Vector3(xFloat, 0, CellularFieldFieldSizeLevel2 + camPosZ), CellularFieldColorLevel2);
+		}
+		else if (camPosY <= CellularFieldHeightLevel3 && abs(xFloat - camPosX) <= CellularFieldFieldSizeLevel3)
+		{
+			DrawLine(Vector3(xFloat, 0, -CellularFieldFieldSizeLevel3 + camPosZ), Vector3(xFloat, 0, CellularFieldFieldSizeLevel3 + camPosZ), CellularFieldColorLevel3);
+		}
+	}
+
+	for (int z = -CellularFieldFieldSizeLevel1 + static_cast<int>(camPosZ); z <= CellularFieldFieldSizeLevel1 + static_cast<int>(camPosZ); z++)
+	{
+		if (z == 0) continue;
+
+		float zFloat = static_cast<float>(z);
+
+		if (z % 64 == 0)
+		{
+			DrawLine(Vector3(-CellularFieldFieldSizeLevel1 + camPosX, 0, zFloat), Vector3(CellularFieldFieldSizeLevel1 + camPosX, 0, zFloat), CellularFieldColorLevel1);
+		}
+		else if (z % 8 == 0 && camPosY <= CellularFieldHeightLevel2 && abs(zFloat - camPosZ) <= CellularFieldFieldSizeLevel2)
+		{
+			DrawLine(Vector3(-CellularFieldFieldSizeLevel2 + camPosX, 0, zFloat), Vector3(CellularFieldFieldSizeLevel2 + camPosX, 0, zFloat), CellularFieldColorLevel2);
+		}
+		else if (camPosY <= CellularFieldHeightLevel3 && abs(zFloat - camPosZ) <= CellularFieldFieldSizeLevel3)
+		{
+			DrawLine(Vector3(-CellularFieldFieldSizeLevel3 + camPosX, 0, zFloat), Vector3(CellularFieldFieldSizeLevel3 + camPosX, 0, zFloat), CellularFieldColorLevel3);
+		}
+	}
+}
+
 void DebugRenderSystem::Clear()
 {
 	linesVertices.clear();

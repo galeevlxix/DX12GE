@@ -39,7 +39,7 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
                 direction = m_Camera->GetWorldDirection();
             }
 
-            const Matrix& parMat = m_Parrent->GetWorldMatrix();
+            const Matrix& parMat = m_Parent->GetWorldMatrix();
             direction = Vector3::Transform(direction, parMat.Invert());
             direction.y = 0.0f;
 
@@ -100,14 +100,14 @@ void ThirdPersonPlayerNode::Destroy(bool keepComponent)
 	Object3DNode::Destroy(keepComponent);
 }
 
-Node3D* ThirdPersonPlayerNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* ThirdPersonPlayerNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
         cloneNode = new ThirdPersonPlayerNode();
     }
 
-    FirstPersonPlayerNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+    FirstPersonPlayerNode::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
     if (cloneNode)
     {

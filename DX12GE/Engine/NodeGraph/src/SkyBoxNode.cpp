@@ -97,7 +97,7 @@ void SkyBoxNode::SetComponentId(uint32_t newId)
 {
     if (newId < 0 || newId >= ResourceStorage::TexturesCount())
     {
-        printf("Ошибка: Id текстуры за пределами размера массива в ResourceStorage\n");
+        printf("Error: Texture ID is outside the array size in ResourceStorage\n");
         return;
     }
     m_TextureId = newId;
@@ -109,14 +109,14 @@ const std::string SkyBoxNode::GetObjectFilePath()
     return ResourceStorage::GetTexture(m_TextureId)->GetResourcePath();
 }
 
-Node3D* SkyBoxNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* SkyBoxNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
         cloneNode = new SkyBoxNode();
     }
 
-    Object3DNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+    Object3DNode::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
     if (cloneNode)
     {
@@ -161,7 +161,7 @@ void SkyBoxNode::SetCurrent()
     }
     else
     {
-        printf("Внимание! Невозможно сделать SkyBoxNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
+        printf("Attention! SkyBoxNode::%s cannot be activated! The node is not located in the scene tree!\n", m_Name.c_str());
     }
 }
 

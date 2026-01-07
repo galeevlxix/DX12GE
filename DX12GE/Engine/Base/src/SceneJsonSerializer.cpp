@@ -32,7 +32,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	json scene;
 	in >> scene;
 
-	std::cout << "Начало загрузки объектов сцены из файла " + path << std::endl;
+	std::cout << "Start loading scene objects from file " + path << std::endl;
 
 	std::vector<NodeSerializingData> nodesData;
 
@@ -193,7 +193,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 	if (nodesData[0].type != NODE_TYPE_NODE3D || nodesData[0].nodePath != "root")
 	{
-		throw "Ошибка! Файл поврежден! Файл сцены не содержит коренвой узел";
+		throw "Error! File is corrupted! Scene file does not contain a root node!";
 	}
 
 	for (int i = 1; i < nodesData.size(); ++i)
@@ -208,14 +208,14 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		{
 			if (!obj3D->Create(commandList, nodeData.filePath))
 			{
-				printf("Предупреждение! Меш узла %s не инициализирован!\n", node->GetName().c_str());
+				printf("Warning! The mesh node %s has not been initialized!\n", node->GetName().c_str());
 			}
 		}
 
 		node->LoadFromJsonData(nodeData);
 	}
 
-	std::cout << "Конец загрузки объектов сцены." << std::endl;
+	std::cout << "End of scene object loading." << std::endl;
 
 	in.close();
 }

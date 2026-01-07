@@ -17,7 +17,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     if (object->IsInitialized())
         return id;
 
-    printf("Загрузка компонента из файла объекта: %s\n", filePath.c_str());
+    printf("Loading component from object file: %s\n", filePath.c_str());
 
     Assimp::Importer importer;
     

@@ -17,7 +17,7 @@
 
 #include <vector> 
 
-// Система управления деревом сцены
+/// \brief Scene tree management system
 class NodeGraphSystem
 {
 	Node3D* m_SceneRootNode;
@@ -62,49 +62,55 @@ private:
 public:
 	NodeGraphSystem();
 
-	// Возвращает корневой узел сцены
+	/// \brief Returns the root node of the scene.
 	Node3D* GetRoot() { return m_SceneRootNode; }
 
-	// Уничтожает дерево сцены
+	/// \brief Destroys the stage tree.
 	void Destroy();
 	
-	// Возвращает все узлы сцены в виде массива
+	/// \brief Returns all scene nodes as a list.
 	const std::vector<Node3D*> GetAllNodes() { return GetNodesRecursive(m_SceneRootNode); }
 
-	// Возвращает все 3Д объекты в сцене в виде словаря (путь к узлу -> указатель на узел)
+	/// \brief Returns all 3D objects in the scene as a dictionary (path to node -> node).
 	const std::map<std::string, Object3DNode*>& GetAll3DObjects() { return m_All3DObjects; }
 
-	// Находит узел по его пути в дереве сцены
+	/// \brief Finds a node along its path in the scene tree.
+	/// \return Returns the node if it is found. Returns nullptr otherwise.
 	Node3D* GetNodeByPath(const std::string& nodePath);
 
-	// Возвращает строковое представление дерева сцены
+	/// \brief Returns a string representation of the scene tree.
 	const std::string Print(Node3D* current = nullptr, int depth = 0);
 
-	// Возвращает текущий узел окружения сцены
+	/// \brief Returns the current scene environment node.
+	/// \return Returns the active environment if it exists. Returns default environment otherwise.
 	EnvironmentNode* GetCurrentEnvironment();
 
-	// Возвращает текущий узел направленного света сцены
+	/// \brief Returns the current directional light node of the scene.
+	/// \return Returns the active directional light if it exists. Returns default directional light otherwise.
 	DirectionalLightNode* GetCurrentDirectionalLight();
 
-	// Возвращает текущий узел игрока сцены
+	/// \brief Returns the current player node of the scene.
+	/// \return Returns the active player if it exists. Returns nullptr otherwise.
 	FirstPersonPlayerNode* GetCurrentPlayer() { return m_CurrentPlayer; }
 
-	// Возвращает текущую камеру сцены
+	/// \brief Returns the current camera node of the scene.
+	/// \return Returns the active camera if it exists. Returns default camera otherwise.
 	CameraNode* GetCurrentCamera();
 
-	// Возвращает текущий узел скайбокса сцены
+	/// \brief Returns the current skybox node of the scene.
+	/// \return Returns the active skybox if it exists. Returns nullptr otherwise.
 	SkyBoxNode* GetCurrentSkyBox() { return m_CurrentSkyBox; }
 
-	// Возвращает массив всех компонентов точечных источников света в сцене
+	/// \brief Returns an array of all point light source components in the scene.
 	const std::vector<PointLightComponent> GetPointLightComponents();
 
-	// Возвращает массив всех компонентов прожекторных источников света в сцене
+	/// \brief Returns an array of all spotlight light source components in the scene.
 	const std::vector<SpotLightComponent> GetSpotLightComponents();
 
-	// Возвращает количество точечных источников света в сцене
+	/// \brief Returns the number of point light sources in the scene.
 	const size_t GetPointLightsCount() { return m_AllPointLights.size(); }
 
-	// Возвращает количество прожекторных источников света в сцене
+	/// \brief Returns the number of spotlight light sources in the scene.
 	const size_t GetSpotLightsCount() { return m_AllSpotLights.size(); }
 
 	void OnKeyPressed(KeyEventArgs& e);
@@ -115,20 +121,27 @@ public:
 	void OnMouseButtonReleased(MouseButtonEventArgs& e) { m_SceneRootNode->OnMouseButtonReleased(e); }
 	void OnResize(ResizeEventArgs& e);
 
-	// Создаёт новый узел и добавляет его на сцену
-	// Возвращает созданный узел, если создание прошло успешно (nullptr - в противном случае)
+	/// \brief Creates a new node and adds it to the scene.
+	/// \param nodePath Sets the parent and name of the new node.
+	/// \param type Node type for the new node.
+	/// \return Returns the created node if creation was successful. Returns nullptr otherwise.
 	Node3D* CreateNewNodeInScene(const std::string& nodePath, NodeTypeEnum type);
 
-	// Удаляет узел со сцены
-	// Если destroy = true, узел удаляется полностью из памяти
-	// Возвращает true, если удаление прошло успешно
+	/// \brief Removes the node from the scene.
+	/// \param nodePath Node path of the node.
+	/// \param destroy If it is true, the node's component data is completely removed from memory.
+	/// \return Returns true if the deletion was successful. Returns false otherwise.
 	bool RemoveNodeFromScene(const std::string& nodePath, bool destroy = false);
 
-	// Полностью клонирует узел и добавляет клон на сцену
-	// Возвращает узел клона, если создание прошло успешно (nullptr - в противном случае)
-	Node3D* CloneNode(const std::string& nodePath, const std::string& pathOfNewParrent);
+	/// \brief Completely clones the node and adds the clone to the scene.
+	/// \param nodePath Node path of the original node.
+	/// \param pathOfNewParent Node path of the new parent for this clone.
+	/// \return Returns the clone node if creation was successful. Returns nullptr otherwise.
+	Node3D* CloneNode(const std::string& nodePath, const std::string& pathOfNewParent);
 
-	// Перемещает узел в узел нового родителя
-	// Возвращает true, если перемещение прошло успешно
-	bool MoveNode(const std::string& nodePath, const std::string& pathOfNewParrent);
+	/// \brief Moves the node to the new parent node
+	/// \param nodePath Node path of the node.
+	/// \param pathOfNewParent Node path of the new parent for this node.
+	/// \return Returns true if the move was successful. Returns false otherwise.
+	bool MoveNode(const std::string& nodePath, const std::string& pathOfNewParent);
 };

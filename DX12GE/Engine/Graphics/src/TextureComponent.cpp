@@ -133,7 +133,7 @@ void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandL
 
     if (!(metadata.miscFlags & TEX_MISC_TEXTURECUBE))
     {
-        printf("Файл не является кубической текстурой (cubemap DDS)\n");
+        printf("The file is not a cubic texture (cubemap DDS).\n");
         return;
     }
 

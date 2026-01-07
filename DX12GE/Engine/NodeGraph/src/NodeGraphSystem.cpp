@@ -331,16 +331,16 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 
 	if (GetNodeByPath(nodePath))
 	{
-		printf("Ошибка! Узел %s уже существует!\n", nodePath.c_str());
+		printf("Error! Node %s already exists!\n", nodePath.c_str());
 		return node;
 	}
 
 	ParsedNodePath parsed;
 	parsed.ParseNodePath(nodePath);
 
-	if (parsed.name == "" || parsed.parrentNodePath == "")
+	if (parsed.name == "" || parsed.ParentNodePath == "")
 	{
-		printf("Ошибка! Невозможно создать узел %s!\n", nodePath.c_str());
+		printf("Error! Unable to create node %s!\n", nodePath.c_str());
 		return node;
 	}	
 
@@ -377,31 +377,31 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 		node = new SkyBoxNode();
 		break;
 	default:
-		printf("Ошибка! Тип узла %d не поддерживается!\n", type);
+		printf("Error! Node type %d is not supported!\n", type);
 		return node;
 	}
 
-	Node3D* parrent = GetNodeByPath(parsed.parrentNodePath);
+	Node3D* Parent = GetNodeByPath(parsed.ParentNodePath);
 
-	if (!parrent)
+	if (!Parent)
 	{	
 		if (node)
 		{
 			delete node;
 			node = nullptr;
 		}
-		printf("Ошибка! Родительский узел %s не существует!\n", parsed.parrentNodePath.c_str());
+		printf("Error! Parent node %s does not exist!\n", parsed.ParentNodePath.c_str());
 		return node;
 	}
 
 	node->Rename(parsed.name);
 	
-	if (!parrent->AddChild(node))
+	if (!Parent->AddChild(node))
 	{
 		delete node;
 		node = nullptr;
 
-		printf("Ошибка! Невозможно добавить узел %s в родительский узел %s!\n", parsed.name.c_str(), parsed.parrentNodePath.c_str());
+		printf("Error! Unable to add node %s to parent node %s!\n", parsed.name.c_str(), parsed.ParentNodePath.c_str());
 	}
 
 	return node;
@@ -413,7 +413,7 @@ bool NodeGraphSystem::RemoveNodeFromScene(const std::string& nodePath, bool dest
 
 	if (!node)
 	{
-		printf("Ошибка! Узла %s не существует в сцене!\n", nodePath.c_str());
+		printf("Error! Node %s does not exist in the scene!\n", nodePath.c_str());
 		return false;
 	}
 
@@ -423,52 +423,52 @@ bool NodeGraphSystem::RemoveNodeFromScene(const std::string& nodePath, bool dest
 		return true;
 	}
 	
-	Node3D* parrent = node->GetParrent();
+	Node3D* Parent = node->GetParent();
 	return node->RemoveChild(node);
 }
 
-Node3D* NodeGraphSystem::CloneNode(const std::string& nodePath, const std::string& pathOfNewParrent)
+Node3D* NodeGraphSystem::CloneNode(const std::string& nodePath, const std::string& pathOfNewParent)
 {
 	Node3D* original = GetNodeByPath(nodePath);
 	if (!original)
 	{
-		printf("Ошибка! Узла %s не существует в сцене!\n", nodePath.c_str());
+		printf("Error! Node %s does not exist in the scene!\n", nodePath.c_str());
 		return nullptr;
 	}
 
-	Node3D* newParrent = GetNodeByPath(pathOfNewParrent);
-	if (!newParrent)
+	Node3D* newParent = GetNodeByPath(pathOfNewParent);
+	if (!newParent)
 	{
-		printf("Ошибка! Узла %s не существует в сцене!\n", pathOfNewParrent.c_str());
+		printf("Error! Node %s does not exist in the scene!\n", pathOfNewParent.c_str());
 		return nullptr;
 	}
 
-	Node3D* clone = original->Clone(newParrent, true);
+	Node3D* clone = original->Clone(newParent, true);
 
 	if (!clone)
 	{
-		printf("Ошибка! Не удалось создать клон!\n");
+		printf("Error! Failed to create clone!\n");
 		return nullptr;
 	}
 
 	return clone;
 }
 
-bool NodeGraphSystem::MoveNode(const std::string& nodePath, const std::string& pathOfNewParrent)
+bool NodeGraphSystem::MoveNode(const std::string& nodePath, const std::string& pathOfNewParent)
 {
 	Node3D* node = GetNodeByPath(nodePath);
 	if (!node)
 	{
-		printf("Ошибка! Узла %s не существует в сцене!\n", nodePath.c_str());
+		printf("Error! Node %s does not exist in the scene!\n", nodePath.c_str());
 		return false;
 	}
 
-	Node3D* newParrent = GetNodeByPath(pathOfNewParrent);
-	if (!newParrent)
+	Node3D* newParent = GetNodeByPath(pathOfNewParent);
+	if (!newParent)
 	{
-		printf("Ошибка! Узла %s не существует в сцене!\n", pathOfNewParrent.c_str());
+		printf("Error! Node %s does not exist in the scene!\n", pathOfNewParent.c_str());
 		return false;
 	}
 
-	return node->Move(newParrent);
+	return node->Move(newParent);
 }

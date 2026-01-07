@@ -147,7 +147,6 @@
     <ClCompile Include="Engine\Base\src\Window.cpp" />
     <ClCompile Include="Engine\Graphics\src\AssimpModelLoader.cpp" />
     <ClCompile Include="Engine\Graphics\src\CascadedShadowMap.cpp" />
-    <ClCompile Include="Engine\Graphics\src\CellularField.cpp" />
     <ClCompile Include="Engine\Graphics\src\CrossAdapterResource.cpp" />
     <ClCompile Include="Engine\Graphics\src\CurrentPass.cpp" />
     <ClCompile Include="Engine\Graphics\src\DebugRenderSystem.cpp" />
@@ -217,7 +216,6 @@
     <ClInclude Include="Engine\Base\Window.h" />
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h" />
     <ClInclude Include="Engine\Graphics\CascadedShadowMap.h" />
-    <ClInclude Include="Engine\Graphics\CellularField.h" />
     <ClInclude Include="Engine\Graphics\CrossAdapterResource.h" />
     <ClInclude Include="Engine\Graphics\CurrentPass.h" />
     <ClInclude Include="Engine\Graphics\DebugRenderSystem.h" />
@@ -410,12 +408,14 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets" Condition="Exists('..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets')" />
+    <Import Project="..\packages\directxtk12_desktop_2019.2025.10.28.1\build\native\directxtk12_desktop_2019.targets" Condition="Exists('..\packages\directxtk12_desktop_2019.2025.10.28.1\build\native\directxtk12_desktop_2019.targets')" />
+    <Import Project="..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets" Condition="Exists('..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtk12_desktop_2019.2025.10.28.1\build\native\directxtk12_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk12_desktop_2019.2025.10.28.1\build\native\directxtk12_desktop_2019.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets'))" />
   </Target>
 </Project>

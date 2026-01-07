@@ -60,7 +60,7 @@ static Node3D* CreateObj(const std::string& nodePath, ComPtr<ID3D12GraphicsComma
     {
         if (!obj3D->Create(commandList, filePath))
         {
-            printf("Предупреждение! Меш узла %s не инициализирован!\n", node->GetName().c_str());
+            printf("Warning! The mesh node %s has not been initialized!\n", node->GetName().c_str());
         }
     }
     return node;
@@ -119,8 +119,8 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     m_CascadedShadowMap.Update(cameraPos, ShaderResources::GetWorldCB()->DirLight.Direction);
     
     Singleton::GetDebugRender()->Clear();
+    Singleton::GetDebugRender()->DrawCellularFieldAndAxes(cameraPos);
     Singleton::GetSelection()->DrawDebug();
-    Singleton::GetCellularField()->Update();
 
     RefreshTitle(e);
 }

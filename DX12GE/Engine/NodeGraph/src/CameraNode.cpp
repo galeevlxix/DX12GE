@@ -24,14 +24,14 @@ const Matrix CameraNode::GetViewProjMatrixNoTranslation()
 	return viewNoTrans * proj;
 }
 
-Node3D* CameraNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* CameraNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new CameraNode();
 	}
 
-	Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+	Node3D::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
 	if (CameraNode* camera = dynamic_cast<CameraNode*>(cloneNode))
 	{
@@ -70,7 +70,7 @@ void CameraNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 
 void CameraNode::SetCurrent()
 {
-	if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(m_Parrent))
+	if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(m_Parent))
 	{
 		player->SetCamera(this);
 	}
@@ -78,7 +78,7 @@ void CameraNode::SetCurrent()
 
 bool CameraNode::IsCurrent()
 {
-	if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(m_Parrent))
+	if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(m_Parent))
 	{
 		return player->GetCamera() == this;
 	}

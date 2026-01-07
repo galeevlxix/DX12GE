@@ -42,7 +42,7 @@ void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 
 		Transform.SetRotationY(m_angle_h);
 
-		const Matrix& parMat = m_Parrent->GetWorldMatrix();
+		const Matrix& parMat = m_Parent->GetWorldMatrix();
 		Vector3 direction = GetWorldDirection();
 		
 		if (m_Camera)
@@ -107,14 +107,14 @@ bool FirstPersonPlayerNode::AddChild(Node3D* node)
 	return true;
 }
 
-Node3D* FirstPersonPlayerNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* FirstPersonPlayerNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new FirstPersonPlayerNode();
 	}
 
-	Object3DNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+	Object3DNode::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
@@ -171,7 +171,7 @@ void FirstPersonPlayerNode::SetCurrent()
 	}
 	else
 	{
-		printf("Внимание! Невозможно сделать FirstPersonPlayerNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
+		printf("Attention! Unable to make FirstPersonPlayerNode::%s active! The node is not in the scene tree!\n", m_Name.c_str());
 	}
 }
 
@@ -182,7 +182,7 @@ bool FirstPersonPlayerNode::IsCurrent()
 
 void FirstPersonPlayerNode::SetCamera(CameraNode* camera)
 {
-	if (camera == nullptr || camera->GetParrent() != this) return;
+	if (camera == nullptr || camera->GetParent() != this) return;
 	m_Camera = camera;
 	m_angle_h = Transform.GetRotation().y;
 	m_angle_v = m_Camera->Transform.GetRotation().x;

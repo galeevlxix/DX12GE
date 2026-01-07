@@ -13,14 +13,14 @@ void DirectionalLightNode::OnUpdate(const double& deltaTime)
 	LightData.Direction = Vector4(m_WorldDirectionCache);
 }
 
-Node3D* DirectionalLightNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* DirectionalLightNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new DirectionalLightNode();
 	}
 
-	Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+	Node3D::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
@@ -77,7 +77,7 @@ void DirectionalLightNode::SetCurrent()
 	}
 	else
 	{
-		printf("Внимание! Невозможно сделать DirectionalLightNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
+		printf("Attention! DirectionalLightNode::%s cannot be activated! The node is not located in the scene tree!\n", m_Name.c_str());
 	}
 }
 

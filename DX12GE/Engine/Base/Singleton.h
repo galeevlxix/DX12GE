@@ -6,7 +6,6 @@
 #include "../Graphics/DebugRenderSystem.h"
 #include "../NodeGraph/NodeGraphSystem.h"
 #include "../Graphics/CurrentPass.h"
-#include "../Graphics/CellularField.h"
 
 class Singleton
 {
@@ -20,7 +19,6 @@ public:
 	static NodeGraphSystem* GetNodeGraph();
 	static SceneJsonSerializer* GetSerializer();
 	static CurrentPass* GetCurrentPass();
-	static CellularField* GetCellularField();
 
 	static bool IsInitialized();
 };

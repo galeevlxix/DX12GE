@@ -14,14 +14,14 @@ void SpotLightNode::OnUpdate(const double& deltaTime)
 	LightData.PointLightProperties.WorldPosition = m_WorldPositionCache;
 }
 
-Node3D* SpotLightNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* SpotLightNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new SpotLightNode();
 	}
 
-	Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+	Node3D::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
