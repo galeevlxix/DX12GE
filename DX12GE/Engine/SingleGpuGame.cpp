@@ -89,6 +89,10 @@ bool SingleGpuGame::LoadContent()
     uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
 
+    // AUDIO
+    audioSystem.Init();
+    wav = bian_audio::LoadWavRiff(L"../../DX12GE/Resources/Sounds/music.wav");
+
     m_Initialized = true;
     return true;
 }
@@ -121,6 +125,25 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     Singleton::GetDebugRender()->Clear();
     Singleton::GetDebugRender()->DrawCellularFieldAndAxes(cameraPos);
     Singleton::GetSelection()->DrawDebug();
+
+    if (shot.sound.voice)
+    {
+        if (bian_audio::IsFinished(shot.sound.voice))
+        {
+            bian_audio::DestroyPlaying(shot.sound);
+        }
+        else
+        {
+            listener.Set(cameraPos, camera->GetWorldDirection(), Vector3(0, 1, 0), Vector3(1, 1, 1));
+            bian_audio::UpdateSpatialSound(audioSystem, listener, shot);
+            Singleton::GetDebugRender()->DrawSphere(0.2, DirectX::SimpleMath::Color(1, 1, 1), DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 2, 5 }), 30);
+        }        
+    }    
+    else
+    {
+        shot = bian_audio::SpawnSpatialWav(audioSystem, wav);
+        shot.emitter.Set({ 0, 2, 5 }, { 0, 0, 1 }, { 0, 1, 0 }, { 0, 0, 0 });
+    }
 
     RefreshTitle(e);
 }
@@ -477,6 +500,7 @@ void SingleGpuGame::RefreshTitle(UpdateEventArgs& e)
 void SingleGpuGame::UnloadContent()
 {
     Singleton::Destroy();
+    audioSystem.Shutdown();
 }
 
 void SingleGpuGame::Destroy()

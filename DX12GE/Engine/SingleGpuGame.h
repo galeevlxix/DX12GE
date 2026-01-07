@@ -7,6 +7,7 @@
 #include "Base/Window.h"
 #include "Base/CommandQueue.h"
 #include "Base/Singleton.h"
+#include "Base/AudioSystem.h"
 
 #include "Pipelines/Pipeline.h"
 #include "Pipelines/ShadowMapPipeline.h"
@@ -86,6 +87,12 @@ private:
     LightPassPipeline m_LightPassPipeline;
     SkyboxPipeline m_SkyboxPipeline;
 
+    // AUDIO
+
+    bian_audio::AudioSystem audioSystem;
+    bian_audio::WavData wav;
+    bian_audio::SpatialSound shot;
+    bian_audio::AudioListener listener;
 protected:
     virtual void OnUpdate(UpdateEventArgs& e) override;
     virtual void OnRender(RenderEventArgs& e) override final;
