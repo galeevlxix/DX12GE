@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['filepath_0',['filePath',['../struct_node_serializing_data.html#a848c5f737d2d625403731bfc803e7dcd',1,'NodeSerializingData']]],
-  ['fogcolor_1',['FogColor',['../class_environment_node.html#a9d8141135efb05be1cd25b82f776c8f3',1,'EnvironmentNode']]],
-  ['fogdistance_2',['FogDistance',['../class_environment_node.html#a8aad6ca243fdb3c65cce2fa9b8d68904',1,'EnvironmentNode']]],
-  ['fogenabled_3',['FogEnabled',['../class_environment_node.html#ad0c9b4df35f8ba307c22c730562f151c',1,'EnvironmentNode']]],
-  ['fogstart_4',['FogStart',['../class_environment_node.html#aacbc3e47be279f32118fb4616ae25a54',1,'EnvironmentNode']]],
-  ['fov_5',['Fov',['../class_camera_node.html#ac686705cc3f5613056cfd6472d118fe9',1,'CameraNode']]]
+  ['envfogcolor_0',['envFogColor',['../struct_node_serializing_data.html#ab9e5e99ca2be837c599e6e028439f1c5',1,'NodeSerializingData']]],
+  ['envfogdistance_1',['envFogDistance',['../struct_node_serializing_data.html#acea14e623e2d4cf2fd3dd42bce34d6d3',1,'NodeSerializingData']]],
+  ['envfogenabled_2',['envFogEnabled',['../struct_node_serializing_data.html#a70931bd3e8647235839297fa5b6c1bf1',1,'NodeSerializingData']]],
+  ['envfogstart_3',['envFogStart',['../struct_node_serializing_data.html#ab54cf1adc4e58960434b9a4181841dce',1,'NodeSerializingData']]],
+  ['envssrmaxdistance_4',['envSSRMaxDistance',['../struct_node_serializing_data.html#a8dc2e016c07e39fc458c1798a7824565',1,'NodeSerializingData']]],
+  ['envssrsteplength_5',['envSSRStepLength',['../struct_node_serializing_data.html#a817d4b36cf8f117d0a23014f9451b281',1,'NodeSerializingData']]],
+  ['envssrthickness_6',['envSSRThickness',['../struct_node_serializing_data.html#acb1e6e062eaf0f819dd7af5c74b25782',1,'NodeSerializingData']]]
 ];

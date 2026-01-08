@@ -1,5 +1,7 @@
 var annotated_dup =
 [
+    [ "AudioEmitterNode", "class_audio_emitter_node.html", "class_audio_emitter_node" ],
+    [ "AudioListenerNode", "class_audio_listener_node.html", "class_audio_listener_node" ],
     [ "CameraNode", "class_camera_node.html", "class_camera_node" ],
     [ "DirectionalLightNode", "class_directional_light_node.html", "class_directional_light_node" ],
     [ "EnvironmentNode", "class_environment_node.html", "class_environment_node" ],

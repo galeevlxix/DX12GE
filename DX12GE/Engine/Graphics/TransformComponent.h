@@ -53,4 +53,6 @@ public:
     const Vector3& GetScale();
 
     bool IsCacheDirty() { return m_CacheIsDirty; }
+
+    static Vector3 CalculateUpVector(Vector3 worldDirection);
 };

@@ -174,6 +174,31 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			newNode.CameraAnchor = Vector3(it->at("cam_anchor_x"), it->at("cam_anchor_y"), it->at("cam_anchor_z"));
 		}
 
+		if (it->contains("audio_volume"))
+		{
+			newNode.audioVolume = it->at("audio_volume");
+		}
+
+		if (it->contains("audio_pitch"))
+		{
+			newNode.audioPitch = it->at("audio_pitch");
+		}
+
+		if (it->contains("audio_loop"))
+		{
+			newNode.audioLoop = it->at("audio_loop");
+		}
+
+		if (it->contains("audio_doppler"))
+		{
+			newNode.audioDoppler = it->at("audio_doppler");
+		}
+
+		if (it->contains("audio_ubiquitous"))
+		{
+			newNode.audioUbiquitous = it->at("audio_ubiquitous");
+		}
+
 		nodesData.push_back(newNode);
 	}
 
@@ -188,8 +213,6 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			}
 		}
 	}
-
-	//std::map<std::string, Node3D*> createdNodes;
 
 	if (nodesData[0].type != NODE_TYPE_NODE3D || nodesData[0].nodePath != "root")
 	{
@@ -210,6 +233,11 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			{
 				printf("Warning! The mesh node %s has not been initialized!\n", node->GetName().c_str());
 			}
+		}
+		else if (AudioEmitterNode* emit = dynamic_cast<AudioEmitterNode*>(node))
+		{
+			emit->LoadWav(nodeData.filePath);
+			emit->SpawnPlayingSound();
 		}
 
 		node->LoadFromJsonData(nodeData);

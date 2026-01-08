@@ -109,6 +109,8 @@ Inheritance diagram for CameraNode:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6e93f1af26050fe9ec35645785e29824" id="r_a6e93f1af26050fe9ec35645785e29824"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a6e93f1af26050fe9ec35645785e29824">CameraNode</a> ()</td></tr>
+<tr class="memitem:a559722aa32a0e70c5c4ddf12cbc39a23" id="r_a559722aa32a0e70c5c4ddf12cbc39a23"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a559722aa32a0e70c5c4ddf12cbc39a23">OnUpdate</a> (const double &amp;deltaTime) override</td></tr>
+<tr class="memdesc:a559722aa32a0e70c5c4ddf12cbc39a23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called every tick on a node update.  <br /></td></tr>
 <tr class="memitem:a1c65f0aed51d3fe07bbd95ee1e05dfaa" id="r_a1c65f0aed51d3fe07bbd95ee1e05dfaa"><td class="memItemLeft">const Matrix&#160;</td><td class="memItemRight"><a class="el" href="#a1c65f0aed51d3fe07bbd95ee1e05dfaa">GetViewProjMatrix</a> ()</td></tr>
 <tr class="memdesc:a1c65f0aed51d3fe07bbd95ee1e05dfaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a matrix that combines the view matrix and the projection matrix. Used to display objects.  <br /></td></tr>
 <tr class="memitem:afab80f22180588227880fcc0f1812e84" id="r_afab80f22180588227880fcc0f1812e84"><td class="memItemLeft">const Matrix&#160;</td><td class="memItemRight"><a class="el" href="#afab80f22180588227880fcc0f1812e84">GetViewProjMatrixNoTranslation</a> ()</td></tr>
@@ -122,7 +124,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a87bbb9b121ad68ba479a3ef1625726ee" id="r_a87bbb9b121ad68ba479a3ef1625726ee"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a87bbb9b121ad68ba479a3ef1625726ee">LoadFromJsonData</a> (const <a class="el" href="struct_node_serializing_data.html">NodeSerializingData</a> &amp;nodeData) override</td></tr>
 <tr class="memdesc:a87bbb9b121ad68ba479a3ef1625726ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads node data from the <a class="el" href="struct_node_serializing_data.html" title="An additional structure that helps save the node to a file.">NodeSerializingData</a> structure.  <br /></td></tr>
 <tr class="memitem:a489c77651556bd2547d0d164dbac1a6b" id="r_a489c77651556bd2547d0d164dbac1a6b"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a489c77651556bd2547d0d164dbac1a6b">SetCurrent</a> () override</td></tr>
-<tr class="memdesc:a489c77651556bd2547d0d164dbac1a6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the node the only active one on the scene (e.g. <a class="el" href="class_camera_node.html" title="Camera node class.">CameraNode</a>, DirectionalLight, Environment, etc.).  <br /></td></tr>
+<tr class="memdesc:a489c77651556bd2547d0d164dbac1a6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the node the only active one on the scene.  <br /></td></tr>
 <tr class="memitem:a2d8f8f7b1a5f3f88b181ff09f7de360a" id="r_a2d8f8f7b1a5f3f88b181ff09f7de360a"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a2d8f8f7b1a5f3f88b181ff09f7de360a">IsCurrent</a> ()</td></tr>
 <tr class="memdesc:a2d8f8f7b1a5f3f88b181ff09f7de360a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether this camera is active in the scene.  <br /></td></tr>
 <tr class="memitem:a49853a6e9464af3cbc58e7962a3e347c" id="r_a49853a6e9464af3cbc58e7962a3e347c"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a49853a6e9464af3cbc58e7962a3e347c">OnWindowResize</a> (ResizeEventArgs &amp;e) override</td></tr>
@@ -135,8 +137,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac2ddc1263bda33618343280d69873ca5 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the node type.  <br /></td></tr>
 <tr class="memitem:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d" id="r_a53350cbe547936291c0f86b1e24308f2"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a53350cbe547936291c0f86b1e24308f2">GetNodePath</a> ()</td></tr>
 <tr class="memdesc:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the path of a node in the scene tree from the farthest parent to the given node. For example, "root/road/car/driver".  <br /></td></tr>
-<tr class="memitem:a56c86bc234ba5ac79612a352d1f00fe2 inherit pub_methods_class_node3_d" id="r_a56c86bc234ba5ac79612a352d1f00fe2"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a56c86bc234ba5ac79612a352d1f00fe2">OnUpdate</a> (const double &amp;deltaTime)</td></tr>
-<tr class="memdesc:a56c86bc234ba5ac79612a352d1f00fe2 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called every tick on a node update.  <br /></td></tr>
 <tr class="memitem:a6424900a9f7f00e323e545d800db9cad inherit pub_methods_class_node3_d" id="r_a6424900a9f7f00e323e545d800db9cad"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a6424900a9f7f00e323e545d800db9cad">Destroy</a> (bool keepComponent=true)</td></tr>
 <tr class="memdesc:a6424900a9f7f00e323e545d800db9cad inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys this node and all descendants of the node. The node is also removed from its parent's descendant list.  <br /></td></tr>
 <tr class="memitem:a1b76a53ee78642ef06ae869c91dd70f3 inherit pub_methods_class_node3_d" id="r_a1b76a53ee78642ef06ae869c91dd70f3"><td class="memItemLeft">const DirectX::XMMATRIX &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a1b76a53ee78642ef06ae869c91dd70f3">GetWorldMatrix</a> ()</td></tr>
@@ -439,6 +439,36 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a559722aa32a0e70c5c4ddf12cbc39a23" name="a559722aa32a0e70c5c4ddf12cbc39a23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a559722aa32a0e70c5c4ddf12cbc39a23">&#9670;&#160;</a></span>OnUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CameraNode::OnUpdate </td>
+          <td>(</td>
+          <td class="paramtype">const double &amp;</td>          <td class="paramname"><span class="paramname"><em>deltaTime</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Called every tick on a node update. </p>
+<dl class="section note"><dt>Note</dt><dd>Called automatically by the engine if the node is in the scene tree. No need to call it explicitly. </dd></dl>
+
+<p>Reimplemented from <a class="el" href="class_node3_d.html#a56c86bc234ba5ac79612a352d1f00fe2">Node3D</a>.</p>
+
+</div>
+</div>
 <a id="a49853a6e9464af3cbc58e7962a3e347c" name="a49853a6e9464af3cbc58e7962a3e347c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a49853a6e9464af3cbc58e7962a3e347c">&#9670;&#160;</a></span>OnWindowResize()</h2>
 
@@ -492,7 +522,8 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Makes the node the only active one on the scene (e.g. <a class="el" href="class_camera_node.html" title="Camera node class.">CameraNode</a>, DirectionalLight, Environment, etc.). </p>
+<p>Makes the node the only active one on the scene. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_camera_node.html" title="Camera node class.">CameraNode</a>, <a class="el" href="class_directional_light_node.html" title="Class of directional light source node.">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html" title="Class of scene environment node. Contains general 3D graphics parameters (ambient light,...">EnvironmentNode</a>, <a class="el" href="class_sky_box_node.html" title="Skybox class.">SkyBoxNode</a>, <a class="el" href="class_audio_listener_node.html" title="Node class for listening to sounds in a scene.">AudioListenerNode</a>, <a class="el" href="class_first_person_player_node.html" title="Player node class for first-person camera control.">FirstPersonPlayerNode</a>, <a class="el" href="class_third_person_player_node.html" title="Player node class for third-person camera control.">ThirdPersonPlayerNode</a> </dd></dl>
 
 <p>Reimplemented from <a class="el" href="class_node3_d.html#a19a263adc60007d6c65a8971a4591dd3">Node3D</a>.</p>
 

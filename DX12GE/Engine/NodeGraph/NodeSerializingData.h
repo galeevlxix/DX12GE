@@ -47,6 +47,12 @@ struct NodeSerializingData
 	float MinFlyRadius;
 	float MaxFlyRadius;
 	DirectX::SimpleMath::Vector3 CameraAnchor;
+
+	float audioVolume;
+	float audioPitch;
+	bool audioLoop;
+	bool audioDoppler;
+	bool audioUbiquitous;
 };
 
 /// An additional structure that helps create node.

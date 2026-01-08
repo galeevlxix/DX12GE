@@ -12,6 +12,8 @@
 #include "SpotLightNode.h"
 #include "ParticlesNode.h"
 #include "CameraNode.h"
+#include "AudioListenerNode.h"
+#include "AudioEmitterNode.h"
 
 #include "../Graphics/GraphicsComponents.h"
 
@@ -31,6 +33,9 @@ class NodeGraphSystem
 	FirstPersonPlayerNode* m_CurrentPlayer;
 	SkyBoxNode* m_CurrentSkyBox;
 
+	std::map<std::string, AudioEmitterNode*> m_AllAudioEmitters;
+	AudioListenerNode* m_CurrentListener;
+
 	EnvironmentNode* m_DefaultEnvironment;
 	DirectionalLightNode* m_DefaultDirectionalLight;
 	CameraNode* m_DefaultCamera;
@@ -46,6 +51,9 @@ class NodeGraphSystem
 
 	friend void SkyBoxNode::SetCurrent();
 	friend bool SkyBoxNode::IsCurrent();
+
+	friend void AudioListenerNode::SetCurrent();
+	friend bool AudioListenerNode::IsCurrent();
 
 	friend bool Node3D::AddChild(Node3D* node);
 	void OnNodeAdded(Node3D* node);
@@ -112,6 +120,13 @@ public:
 
 	/// \brief Returns the number of spotlight light sources in the scene.
 	const size_t GetSpotLightsCount() { return m_AllSpotLights.size(); }
+
+	/// \brief Returns all sound sources (audio emitters) in the scene as a dictionary (path to node -> node).
+	const std::map<std::string, AudioEmitterNode*>& GetAllAudioEmitters() { return m_AllAudioEmitters; }
+
+	/// \brief Returns the current listener node of the scene.
+	/// \return Returns the active listener if it exists. Returns nullptr otherwise.
+	AudioListenerNode* GetCurrentListener() { return m_CurrentListener; }
 
 	void OnKeyPressed(KeyEventArgs& e);
 	void OnKeyReleased(KeyEventArgs& e) { m_SceneRootNode->OnKeyReleased(e); }

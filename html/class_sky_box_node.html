@@ -135,7 +135,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0b6ea4de227919f33b25ab212ee72798" id="r_a0b6ea4de227919f33b25ab212ee72798"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a0b6ea4de227919f33b25ab212ee72798">LoadFromJsonData</a> (const <a class="el" href="struct_node_serializing_data.html">NodeSerializingData</a> &amp;nodeData) override</td></tr>
 <tr class="memdesc:a0b6ea4de227919f33b25ab212ee72798"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads node data from the <a class="el" href="struct_node_serializing_data.html" title="An additional structure that helps save the node to a file.">NodeSerializingData</a> structure.  <br /></td></tr>
 <tr class="memitem:ac7333e22571887a0c2bc852e079eb8e1" id="r_ac7333e22571887a0c2bc852e079eb8e1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ac7333e22571887a0c2bc852e079eb8e1">SetCurrent</a> () override</td></tr>
-<tr class="memdesc:ac7333e22571887a0c2bc852e079eb8e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the node the only active one on the scene (e.g. <a class="el" href="class_camera_node.html" title="Camera node class.">CameraNode</a>, DirectionalLight, Environment, etc.).  <br /></td></tr>
+<tr class="memdesc:ac7333e22571887a0c2bc852e079eb8e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the node the only active one on the scene.  <br /></td></tr>
 <tr class="memitem:ab871902fe7ebc10310dbe49df6477c53" id="r_ab871902fe7ebc10310dbe49df6477c53"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ab871902fe7ebc10310dbe49df6477c53">IsCurrent</a> ()</td></tr>
 <tr class="memdesc:ab871902fe7ebc10310dbe49df6477c53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether this skybox is active in the scene.  <br /></td></tr>
 <tr class="inherit_header pub_methods_class_object3_d_node"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_object3_d_node')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_object3_d_node.html">Object3DNode</a></td></tr>
@@ -676,7 +676,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Makes the node the only active one on the scene (e.g. <a class="el" href="class_camera_node.html" title="Camera node class.">CameraNode</a>, DirectionalLight, Environment, etc.). </p>
+<p>Makes the node the only active one on the scene. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_camera_node.html" title="Camera node class.">CameraNode</a>, <a class="el" href="class_directional_light_node.html" title="Class of directional light source node.">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html" title="Class of scene environment node. Contains general 3D graphics parameters (ambient light,...">EnvironmentNode</a>, <a class="el" href="class_sky_box_node.html" title="Skybox class.">SkyBoxNode</a>, <a class="el" href="class_audio_listener_node.html" title="Node class for listening to sounds in a scene.">AudioListenerNode</a>, <a class="el" href="class_first_person_player_node.html" title="Player node class for first-person camera control.">FirstPersonPlayerNode</a>, <a class="el" href="class_third_person_player_node.html" title="Player node class for third-person camera control.">ThirdPersonPlayerNode</a> </dd></dl>
 
 <p>Reimplemented from <a class="el" href="class_node3_d.html#a19a263adc60007d6c65a8971a4591dd3">Node3D</a>.</p>
 

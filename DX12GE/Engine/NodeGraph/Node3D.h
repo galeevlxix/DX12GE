@@ -7,7 +7,7 @@
 #include <vector>
 #include <stdexcept>
 
-/// Base class of a node in the scene tree.
+/// \brief Base class of a node in the scene tree.
 class Node3D
 {
 public:
@@ -18,26 +18,32 @@ public:
 protected:
 	/// \brief Direct descendants of the node.
 	/// \warning Direct modification of the this parameter is not permitted. Use the AddChild, RemoveChild, Move, or Clone methods instead.
+	/// \see AddChild, RemoveChild, Move, Clone
 	std::map<std::string, Node3D*> m_Children;
 
 	/// \brief Direct parent of the node.
 	/// \warning Direct modification of the this parameter is not permitted. Use the AddChild, RemoveChild, Move, or Clone methods instead.
+	/// \see AddChild, RemoveChild, Move, Clone
 	Node3D* m_Parent = nullptr;
 
 	/// \brief Name of the node.
 	/// \warning Direct modification of the this parameter is not permitted. Use the Rename method instead.
+	/// \see Rename
 	std::string m_Name;
 
 	/// \brief Transform matrix in world space.
 	/// \warning Direct modification of the this parameter is not permitted. This parameter is automatically updated after calling OnUpdate.
+	/// \see OnUpdate
 	DirectX::XMMATRIX m_WorldMatrixCache;
 
 	/// \brief World position vector.
 	/// \warning Direct modification of the this parameter is not permitted. This parameter is automatically updated after calling OnUpdate.
+	/// \see OnUpdate
 	DirectX::SimpleMath::Vector3 m_WorldPositionCache;
 
 	/// \brief World direction vector.
 	/// \warning Direct modification of the this parameter is not permitted. This parameter is automatically updated after calling OnUpdate.
+	/// \see OnUpdate
 	DirectX::SimpleMath::Vector3 m_WorldDirectionCache;
 
 	/// \brief Type of the node.
@@ -63,14 +69,17 @@ public:
     
 	/// \brief Returns the world matrix of the node.
 	/// \note Only updated after OnUpdate.
+	/// \see OnUpdate
 	const DirectX::XMMATRIX& GetWorldMatrix();
 	
 	/// \brief Returns the position of an node in world space.
 	/// \note Only updated after OnUpdate.
+	/// \see OnUpdate
 	const DirectX::SimpleMath::Vector3& GetWorldPosition() { return m_WorldPositionCache; }
 
 	/// \brief Returns the direction of an node in world space (Vector3(0, 0, 1) -> world space).
 	/// \note Only updated after OnUpdate.
+	/// \see OnUpdate
 	const DirectX::SimpleMath::Vector3& GetWorldDirection() { return m_WorldDirectionCache; }
 
 	/// \brief Returns the name of the node.
@@ -153,7 +162,8 @@ public:
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
 	virtual void DrawDebug();
 
-	/// \brief Makes the node the only active one on the scene (e.g. CameraNode, DirectionalLight, Environment, etc.).
+	/// \brief Makes the node the only active one on the scene.
+	/// \see CameraNode, DirectionalLightNode, EnvironmentNode, SkyBoxNode, AudioListenerNode, FirstPersonPlayerNode, ThirdPersonPlayerNode
 	virtual void SetCurrent() {};
 
 	/// \brief Creates JSON data for serializing a node.

@@ -144,5 +144,8 @@ void ThirdPersonPlayerNode::LoadFromJsonData(const NodeSerializingData& nodeData
 void ThirdPersonPlayerNode::OnMouseWheel(MouseWheelEventArgs& e)
 {
     Object3DNode::OnMouseWheel(e);
-    m_FlyRadius = std::clamp(m_FlyRadius - e.WheelDelta * WheelSensitivity, MinFlyRadius, MaxFlyRadius);
+    if (IsCurrent())
+    {
+        m_FlyRadius = std::clamp(m_FlyRadius - e.WheelDelta * WheelSensitivity, MinFlyRadius, MaxFlyRadius);
+    }
 }

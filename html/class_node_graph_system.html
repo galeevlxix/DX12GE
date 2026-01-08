@@ -130,6 +130,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a4c0e185769638a5b4928748d89fa0070"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of point light sources in the scene.  <br /></td></tr>
 <tr class="memitem:a77e156da5b01c46a34105491480c60f2" id="r_a77e156da5b01c46a34105491480c60f2"><td class="memItemLeft">const size_t&#160;</td><td class="memItemRight"><a class="el" href="#a77e156da5b01c46a34105491480c60f2">GetSpotLightsCount</a> ()</td></tr>
 <tr class="memdesc:a77e156da5b01c46a34105491480c60f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of spotlight light sources in the scene.  <br /></td></tr>
+<tr class="memitem:ae5c5dc2c1b42cd0cfd95f5b1357c6b90" id="r_ae5c5dc2c1b42cd0cfd95f5b1357c6b90"><td class="memItemLeft">const std::map&lt; std::string, <a class="el" href="class_audio_emitter_node.html">AudioEmitterNode</a> * &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ae5c5dc2c1b42cd0cfd95f5b1357c6b90">GetAllAudioEmitters</a> ()</td></tr>
+<tr class="memdesc:ae5c5dc2c1b42cd0cfd95f5b1357c6b90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all sound sources (audio emitters) in the scene as a dictionary (path to node -&gt; node).  <br /></td></tr>
+<tr class="memitem:adde43db017fd861cea5a2b403780c39d" id="r_adde43db017fd861cea5a2b403780c39d"><td class="memItemLeft"><a class="el" href="class_audio_listener_node.html">AudioListenerNode</a> *&#160;</td><td class="memItemRight"><a class="el" href="#adde43db017fd861cea5a2b403780c39d">GetCurrentListener</a> ()</td></tr>
+<tr class="memdesc:adde43db017fd861cea5a2b403780c39d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current listener node of the scene.  <br /></td></tr>
 <tr class="memitem:aee8adaab1c87d3d734332ffa781547b1" id="r_aee8adaab1c87d3d734332ffa781547b1"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aee8adaab1c87d3d734332ffa781547b1">OnKeyPressed</a> (KeyEventArgs &amp;e)</td></tr>
 <tr class="memitem:af41ea350d58bcfd581ecb9b06713953a" id="r_af41ea350d58bcfd581ecb9b06713953a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af41ea350d58bcfd581ecb9b06713953a">OnKeyReleased</a> (KeyEventArgs &amp;e)</td></tr>
 <tr class="memitem:a4d357565f641bb3d2fba72154a95c8c3" id="r_a4d357565f641bb3d2fba72154a95c8c3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a4d357565f641bb3d2fba72154a95c8c3">OnMouseWheel</a> (MouseWheelEventArgs &amp;e)</td></tr>
@@ -160,6 +164,8 @@ Friends</h2></td></tr>
 <tr class="memitem:a773ddda66d67e4a9f5632eb85426795b" id="r_a773ddda66d67e4a9f5632eb85426795b"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a773ddda66d67e4a9f5632eb85426795b">FirstPersonPlayerNode::IsCurrent</a> ()</td></tr>
 <tr class="memitem:aeb0470345d70ec479395ea04b901255a" id="r_aeb0470345d70ec479395ea04b901255a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aeb0470345d70ec479395ea04b901255a">SkyBoxNode::SetCurrent</a> ()</td></tr>
 <tr class="memitem:ac9f4b25804e91ed7106e16386b673c2d" id="r_ac9f4b25804e91ed7106e16386b673c2d"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ac9f4b25804e91ed7106e16386b673c2d">SkyBoxNode::IsCurrent</a> ()</td></tr>
+<tr class="memitem:a2c8c088788b9b954e5bbdfa722251cbb" id="r_a2c8c088788b9b954e5bbdfa722251cbb"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2c8c088788b9b954e5bbdfa722251cbb">AudioListenerNode::SetCurrent</a> ()</td></tr>
+<tr class="memitem:a67c387a4cba15fb1c5bacfb74fa0410e" id="r_a67c387a4cba15fb1c5bacfb74fa0410e"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a67c387a4cba15fb1c5bacfb74fa0410e">AudioListenerNode::IsCurrent</a> ()</td></tr>
 <tr class="memitem:a4fe482e97480621403f4e238b6d46c82" id="r_a4fe482e97480621403f4e238b6d46c82"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a4fe482e97480621403f4e238b6d46c82">Node3D::AddChild</a> (<a class="el" href="class_node3_d.html">Node3D</a> *node)</td></tr>
 <tr class="memitem:a0b194cd4d0b96fdc24823a5937d9cc35" id="r_a0b194cd4d0b96fdc24823a5937d9cc35"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a0b194cd4d0b96fdc24823a5937d9cc35">Node3D::RemoveChild</a> (const std::string &amp;name)</td></tr>
 </table>
@@ -292,6 +298,33 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a id="ae5c5dc2c1b42cd0cfd95f5b1357c6b90" name="ae5c5dc2c1b42cd0cfd95f5b1357c6b90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5c5dc2c1b42cd0cfd95f5b1357c6b90">&#9670;&#160;</a></span>GetAllAudioEmitters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::map&lt; std::string, <a class="el" href="class_audio_emitter_node.html">AudioEmitterNode</a> * &gt; &amp; NodeGraphSystem::GetAllAudioEmitters </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns all sound sources (audio emitters) in the scene as a dictionary (path to node -&gt; node). </p>
+
+</div>
+</div>
 <a id="a528d0a41262ccc7884cf3c2320e3e6f8" name="a528d0a41262ccc7884cf3c2320e3e6f8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a528d0a41262ccc7884cf3c2320e3e6f8">&#9670;&#160;</a></span>GetAllNodes()</h2>
 
@@ -376,6 +409,34 @@ Friends</h2></td></tr>
 
 <p>Returns the current scene environment node. </p>
 <dl class="section return"><dt>Returns</dt><dd>Returns the active environment if it exists. Returns default environment otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="adde43db017fd861cea5a2b403780c39d" name="adde43db017fd861cea5a2b403780c39d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adde43db017fd861cea5a2b403780c39d">&#9670;&#160;</a></span>GetCurrentListener()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_audio_listener_node.html">AudioListenerNode</a> * NodeGraphSystem::GetCurrentListener </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the current listener node of the scene. </p>
+<dl class="section return"><dt>Returns</dt><dd>Returns the active listener if it exists. Returns nullptr otherwise. </dd></dl>
 
 </div>
 </div>
@@ -819,6 +880,56 @@ Friends</h2></td></tr>
 </div>
 </div>
 <a name="doc-related-members" id="doc-related-members"></a><h2 id="header-doc-related-members" class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="a67c387a4cba15fb1c5bacfb74fa0410e" name="a67c387a4cba15fb1c5bacfb74fa0410e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67c387a4cba15fb1c5bacfb74fa0410e">&#9670;&#160;</a></span>AudioListenerNode::IsCurrent</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_audio_listener_node.html#a5c556dc21f6d97d4db0e0ef2ffabb947">AudioListenerNode::IsCurrent</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel friend">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2c8c088788b9b954e5bbdfa722251cbb" name="a2c8c088788b9b954e5bbdfa722251cbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c8c088788b9b954e5bbdfa722251cbb">&#9670;&#160;</a></span>AudioListenerNode::SetCurrent</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_audio_listener_node.html#a66c7300f8ce7fa8c401a6045cb1e71c0">AudioListenerNode::SetCurrent</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel friend">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="add888b0a1903d4c323387394b66b4275" name="add888b0a1903d4c323387394b66b4275"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#add888b0a1903d4c323387394b66b4275">&#9670;&#160;</a></span>DirectionalLightNode::IsCurrent</h2>
 

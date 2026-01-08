@@ -35,6 +35,7 @@ void PointLightNode::DrawDebug()
 {
 	Node3D::DrawDebug();
 	Singleton::GetDebugRender()->DrawPoint(m_WorldPositionCache, 0.5f, LightData.BaseLightProperties.Color);
+	Singleton::GetDebugRender()->DrawSphere(0.5f, LightData.BaseLightProperties.Color, m_WorldMatrixCache, 10);
 }
 
 void PointLightNode::CreateJsonData(json& j)

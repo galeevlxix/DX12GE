@@ -27,6 +27,9 @@ using namespace Microsoft::WRL;
 // DirectX 12 specific headers.
 #include <d3d12.h> // For ID3D12CommandQueue, ID3D12Device2, and ID3D12Fence
 #include <dxgi1_6.h>
+#include <xaudio2.h>
+#include <x3daudio.h>
+#include <wrl/client.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
@@ -48,6 +51,9 @@ using namespace Microsoft::WRL;
 #include <unordered_map>
 #include <thread>
 #include <vector>
+#include <cstdint>
+#include <fstream>
+#include <stdexcept>
 
 // Helper functions
 #include "Helpers.h"

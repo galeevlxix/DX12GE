@@ -35,11 +35,15 @@ Node3D* SpotLightNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Nod
 void SpotLightNode::DrawDebug()
 {
 	Node3D::DrawDebug();
-	Singleton::GetDebugRender()->DrawArrow(
-		m_WorldPositionCache,
-		m_WorldPositionCache + m_WorldDirectionCache,
-		LightData.PointLightProperties.BaseLightProperties.Color,
-		abs(m_WorldDirectionCache.y) == 1.0f ? Vector3::UnitX : Vector3::UnitY);
+
+	Singleton::GetDebugRender()->DrawCone(
+		m_WorldPositionCache, m_WorldDirectionCache, LightData.Cutoff,
+		{
+			LightData.PointLightProperties.BaseLightProperties.Color.x,
+			LightData.PointLightProperties.BaseLightProperties.Color.y,
+			LightData.PointLightProperties.BaseLightProperties.Color.z
+		}
+	);
 }
 
 void SpotLightNode::CreateJsonData(json& j)

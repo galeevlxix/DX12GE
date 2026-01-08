@@ -3,7 +3,7 @@
 #include "Node3D.h"
 #include "../Graphics/GraphicsComponents.h"
 
-/// \brief Class of scene environment node (ambient light, fog, post-processing effects, etc.).
+/// \brief Class of scene environment node. Contains general 3D graphics parameters (ambient light, fog, post-processing effects, etc.).
 /// \note Only one such node in the scene tree can be active. 
 class EnvironmentNode : public Node3D
 {

@@ -279,6 +279,11 @@ Node3D* Node3D::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cl
     cloneNode->Transform.SetRotation(Transform.GetRotation());
     cloneNode->Transform.SetScale(Transform.GetScale());
 
+    if (!newParent)
+    {
+        newParent = m_Parent;
+    }
+
     if (newParent && !newParent->AddChild(cloneNode))
     {
         delete cloneNode;

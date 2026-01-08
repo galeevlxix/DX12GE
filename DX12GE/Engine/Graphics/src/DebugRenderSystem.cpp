@@ -238,6 +238,67 @@ void DebugRenderSystem::DrawFrustrum(const DirectX::SimpleMath::Matrix& view, co
 	DrawLine(ToVec3(corners[3]), ToVec3(corners[7]), Vector4(0.5f, 0.0f, 0.0f, 1.0f));
 }
 
+static void BuildBasisFromForward(const Vector3& forward, Vector3& R, Vector3& U)
+{
+	Vector3 worldUp = (std::abs(forward.y) < 0.99f) ? Vector3{ 0, 1, 0 } : Vector3{ 1, 0, 0 };
+
+	R = worldUp.Cross(forward);
+	R.Normalize();
+
+	U = forward.Cross(R);
+	U.Normalize();
+}
+
+void DebugRenderSystem::DrawCone(const Vector3& pos, const Vector3& forward, float angle, const Color& color)
+{
+	float length = 1.0f;
+	int segments = 8;
+
+	if (forward.Length() < 0.0001f)
+	{
+		DrawSphere(0.2f, Color(1.0f, 1.0f, 1.0f), Matrix::CreateTranslation(pos), 10);
+		return;
+	}
+
+	if (angle <= 0.0001f)
+	{
+		CreateLine(pos, pos + forward * length, color);
+		return;
+	}
+
+	Vector3 R, U;
+	BuildBasisFromForward(forward, R, U);
+
+	float half = 0.5f * angle;
+	float c = std::cos(half);
+	float s = std::sin(half);
+
+	std::vector<Vector3> ring;
+	ring.reserve(segments);
+
+	for (int i = 0; i < segments; ++i)
+	{
+		float t = (2.0f * PI) * (float)i / (float)segments;
+		float ct = std::cos(t);
+		float st = std::sin(t);
+
+		Vector3 around = (R * ct) + (U * st); 
+		Vector3 dir = (forward * c) + (around * s);
+
+		Vector3 p = pos + dir * length;
+		ring.push_back(p);
+
+		CreateLine(pos, p, color);
+	}
+
+	for (int i = 0; i < segments; ++i)
+	{
+		const Vector3& a = ring[i];
+		const Vector3& b = ring[(i + 1) % segments];
+		CreateLine(a, b, color);
+	}
+}
+
 void DebugRenderSystem::DrawBoundingBox(const CollisionBox& box, const Matrix& transform)
 {
 	Vector3 center((box.x_max + box.x_min) / 2.0f, (box.y_max + box.y_min) / 2.0f, (box.z_max + box.z_min) / 2.0f);
@@ -246,7 +307,6 @@ void DebugRenderSystem::DrawBoundingBox(const CollisionBox& box, const Matrix& t
 	DrawBoundingBox(bounding, transform);
 }
 
-// Displaying the cell field and XYZ axes for the engine editor
 void DebugRenderSystem::DrawCellularFieldAndAxes(const Vector3& cameraPos)
 {
 	const float camPosX = roundf(cameraPos.x);

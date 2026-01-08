@@ -58,6 +58,7 @@ public:
 	void DrawSphere(const double& radius, const Vector3& color, const Matrix& transform, int density);
 	void DrawPlane(const Vector4& p, const Color& color, float sizeWidth, float sizeNormal, bool drawCenterCross);
 	void DrawFrustrum(const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj);
+	void DrawCone(const Vector3& pos, const Vector3& forward, float angle, const Color& color);
 
 	void DrawCellularFieldAndAxes(const Vector3& cameraPos);
 

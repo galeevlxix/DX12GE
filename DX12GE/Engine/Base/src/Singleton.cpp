@@ -6,6 +6,7 @@ static SelectionSystem* Selection = nullptr;
 static NodeGraphSystem* NodeGraph = nullptr;
 static SceneJsonSerializer* Serializer = nullptr;
 static CurrentPass* Pass = nullptr;
+static AudioSystem* Audio = nullptr;
 
 static bool m_IsInitialized = false;
 
@@ -19,6 +20,7 @@ void Singleton::Initialize()
 	NodeGraph = new NodeGraphSystem();
 	Serializer = new SceneJsonSerializer();
 	Pass = new CurrentPass();
+	Audio = new AudioSystem();
 
 	m_IsInitialized = true;
 }
@@ -33,6 +35,7 @@ void Singleton::Destroy()
 	DebugRender->Destroy();
 	Selection->Destroy();
 	NodeGraph->Destroy();
+	Audio->Shutdown();
 
 	//delete Executor;
 	delete DebugRender;
@@ -40,6 +43,7 @@ void Singleton::Destroy()
 	delete NodeGraph;
 	delete Serializer;
 	delete Pass;
+	delete Audio;
 
 	Executor = nullptr;
 	DebugRender = nullptr;
@@ -47,6 +51,7 @@ void Singleton::Destroy()
 	NodeGraph = nullptr;
 	Serializer = nullptr;
 	Pass = nullptr;
+	Audio = nullptr;
 }
 
 CommandExecutor* Singleton::GetExecutor()
@@ -77,6 +82,11 @@ SceneJsonSerializer* Singleton::GetSerializer()
 CurrentPass* Singleton::GetCurrentPass()
 {
 	return Pass;
+}
+
+AudioSystem* Singleton::GetAudioSystem()
+{
+	return Audio;
 }
 
 bool Singleton::IsInitialized()

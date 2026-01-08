@@ -1,6 +1,8 @@
 var dir_7a537ee6a5a261cdb03b7fbb4fb07a98 =
 [
     [ "src", "dir_83a3e0d5d695e7200c3b066590977d99.html", "dir_83a3e0d5d695e7200c3b066590977d99" ],
+    [ "AudioEmitterNode.h", "_audio_emitter_node_8h.html", "_audio_emitter_node_8h" ],
+    [ "AudioListenerNode.h", "_audio_listener_node_8h.html", "_audio_listener_node_8h" ],
     [ "CameraNode.h", "_camera_node_8h.html", "_camera_node_8h" ],
     [ "DirectionalLightNode.h", "_directional_light_node_8h.html", "_directional_light_node_8h" ],
     [ "EnvironmentNode.h", "_environment_node_8h.html", "_environment_node_8h" ],

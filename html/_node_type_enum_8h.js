@@ -11,6 +11,8 @@ var _node_type_enum_8h =
       [ "NODE_TYPE_POINT_LIGHT", "_node_type_enum_8h.html#aa38b727be25d2ce9d950bf7f610e7659aed3de568c88209265fc8e6de31cf9d79", null ],
       [ "NODE_TYPE_SPOT_LIGHT", "_node_type_enum_8h.html#aa38b727be25d2ce9d950bf7f610e7659a6ac9aa61f3c9a2ea8e8a4005220e1f77", null ],
       [ "NODE_TYPE_PARTICLES", "_node_type_enum_8h.html#aa38b727be25d2ce9d950bf7f610e7659a84045357af77cc17f8c54fd92a7efe60", null ],
-      [ "NODE_TYPE_SKYBOX", "_node_type_enum_8h.html#aa38b727be25d2ce9d950bf7f610e7659a66460aa3dfd9e22a2639da98c057fcc4", null ]
+      [ "NODE_TYPE_SKYBOX", "_node_type_enum_8h.html#aa38b727be25d2ce9d950bf7f610e7659a66460aa3dfd9e22a2639da98c057fcc4", null ],
+      [ "NODE_TYPE_AUDIO_LISTENER", "_node_type_enum_8h.html#aa38b727be25d2ce9d950bf7f610e7659a44b555239e9e53a7afb527b7c80539e1", null ],
+      [ "NODE_TYPE_AUDIO_EMITTER", "_node_type_enum_8h.html#aa38b727be25d2ce9d950bf7f610e7659a06cba2f1c6d64cc3bfb65b3790ac562f", null ]
     ] ]
 ];

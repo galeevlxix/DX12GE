@@ -1,5 +1,7 @@
 var dir_83a3e0d5d695e7200c3b066590977d99 =
 [
+    [ "AudioEmitterNode.cpp", "_audio_emitter_node_8cpp.html", null ],
+    [ "AudioListenerNode.cpp", "_audio_listener_node_8cpp.html", null ],
     [ "CameraNode.cpp", "_camera_node_8cpp.html", null ],
     [ "DirectionalLightNode.cpp", "_directional_light_node_8cpp.html", null ],
     [ "EnvironmentNode.cpp", "_environment_node_8cpp.html", null ],

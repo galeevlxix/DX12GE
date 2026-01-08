@@ -73,6 +73,10 @@ void NodeGraphSystem::OnNodeAdded(Node3D* node)
 		{
 			m_AllSpotLights[nodePath] = sLight;
 		}
+		else if (AudioEmitterNode* emitter = dynamic_cast<AudioEmitterNode*>(node))
+		{
+			m_AllAudioEmitters[nodePath] = emitter;
+		}
 		else if (!m_CurrentEnvironment)
 		{
 			if (EnvironmentNode* env = dynamic_cast<EnvironmentNode*>(node)) 
@@ -83,6 +87,13 @@ void NodeGraphSystem::OnNodeAdded(Node3D* node)
 			if (DirectionalLightNode* dirLight = dynamic_cast<DirectionalLightNode*>(node))
 			{
 				m_CurrentDirectionalLight = dirLight;
+			}
+		}
+		else if (!m_CurrentListener)
+		{
+			if (AudioListenerNode* listener = dynamic_cast<AudioListenerNode*>(node))
+			{
+				m_CurrentListener = listener;
 			}
 		}
 
@@ -128,6 +139,13 @@ void NodeGraphSystem::OnNodeRemoved(Node3D* node)
 				m_AllSpotLights.erase(nodePath);
 			}
 		}
+		else if (AudioEmitterNode* emitter = dynamic_cast<AudioEmitterNode*>(node))
+		{
+			if (m_AllAudioEmitters.contains(nodePath))
+			{
+				m_AllAudioEmitters.erase(nodePath);
+			}
+		}
 		else if (node == m_CurrentEnvironment)
 		{
 			m_CurrentEnvironment = nullptr;
@@ -143,6 +161,10 @@ void NodeGraphSystem::OnNodeRemoved(Node3D* node)
 		else if (node == m_CurrentSkyBox)
 		{
 			m_CurrentSkyBox = nullptr;
+		}
+		else if (node == m_CurrentListener)
+		{
+			m_CurrentListener = nullptr;
 		}
 
 		for (Node3D* child : node->GetChildren())
@@ -376,6 +398,12 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 	case NODE_TYPE_SKYBOX:
 		node = new SkyBoxNode();
 		break;
+	case NODE_TYPE_AUDIO_LISTENER:
+		node = new AudioListenerNode();
+		break;
+	case NODE_TYPE_AUDIO_EMITTER:
+		node = new AudioEmitterNode();
+		break;
 	default:
 		printf("Error! Node type %d is not supported!\n", type);
 		return node;
@@ -400,7 +428,6 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 	{
 		delete node;
 		node = nullptr;
-
 		printf("Error! Unable to add node %s to parent node %s!\n", parsed.name.c_str(), parsed.ParentNodePath.c_str());
 	}
 

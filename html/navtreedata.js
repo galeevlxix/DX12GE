@@ -51,8 +51,8 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_camera_node_8cpp.html",
-"class_sky_box_node.html#ada90232368e4f4e3cf5559868ef5067b"
+"_audio_emitter_node_8cpp.html",
+"class_node_graph_system.html#acbe7f91a73ca3bd483ff5ad971afef60"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

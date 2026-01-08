@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['environmentnode_0',['EnvironmentNode',['../class_environment_node.html',1,'']]]
+  ['directionallightnode_0',['DirectionalLightNode',['../class_directional_light_node.html',1,'']]]
 ];

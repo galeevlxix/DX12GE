@@ -1,6 +1,8 @@
 var hierarchy =
 [
     [ "Node3D", "class_node3_d.html", [
+      [ "AudioEmitterNode", "class_audio_emitter_node.html", null ],
+      [ "AudioListenerNode", "class_audio_listener_node.html", null ],
       [ "CameraNode", "class_camera_node.html", null ],
       [ "DirectionalLightNode", "class_directional_light_node.html", null ],
       [ "EnvironmentNode", "class_environment_node.html", null ],

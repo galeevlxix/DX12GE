@@ -102,15 +102,14 @@ Inheritance diagram for Node3D:</div>
  <div class="center">
   <img src="class_node3_d.png" usemap="#Node3D_map" alt=""/>
   <map id="Node3D_map" name="Node3D_map">
-<area href="class_camera_node.html" title="Camera node class." alt="CameraNode" shape="rect" coords="0,56,148,80"/>
-<area href="class_directional_light_node.html" title="Class of directional light source node." alt="DirectionalLightNode" shape="rect" coords="158,56,306,80"/>
-<area href="class_environment_node.html" title="Class of scene environment node (ambient light, fog, post-processing effects, etc...." alt="EnvironmentNode" shape="rect" coords="316,56,464,80"/>
-<area href="class_object3_d_node.html" title="3D object node class." alt="Object3DNode" shape="rect" coords="474,56,622,80"/>
-<area href="class_point_light_node.html" title="Point light source node class." alt="PointLightNode" shape="rect" coords="632,56,780,80"/>
-<area href="class_spot_light_node.html" title="Class of spotlight light source node." alt="SpotLightNode" shape="rect" coords="790,56,938,80"/>
-<area href="class_first_person_player_node.html" title="Player node class for first-person camera control." alt="FirstPersonPlayerNode" shape="rect" coords="395,112,543,136"/>
-<area href="class_sky_box_node.html" title="Skybox class." alt="SkyBoxNode" shape="rect" coords="553,112,701,136"/>
-<area href="class_third_person_player_node.html" title="Player node class for third-person camera control." alt="ThirdPersonPlayerNode" shape="rect" coords="395,168,543,192"/>
+<area href="class_audio_emitter_node.html" title="Node class of spatial sound source in a scene." alt="AudioEmitterNode" shape="rect" coords="140,56,270,80"/>
+<area href="class_audio_listener_node.html" title="Node class for listening to sounds in a scene." alt="AudioListenerNode" shape="rect" coords="140,112,270,136"/>
+<area href="class_camera_node.html" title="Camera node class." alt="CameraNode" shape="rect" coords="140,168,270,192"/>
+<area href="class_directional_light_node.html" title="Class of directional light source node." alt="DirectionalLightNode" shape="rect" coords="140,224,270,248"/>
+<area href="class_environment_node.html" title="Class of scene environment node. Contains general 3D graphics parameters (ambient light,..." alt="EnvironmentNode" shape="rect" coords="140,280,270,304"/>
+<area href="class_object3_d_node.html" title="3D object node class." alt="Object3DNode" shape="rect" coords="140,336,270,360"/>
+<area href="class_point_light_node.html" title="Point light source node class." alt="PointLightNode" shape="rect" coords="140,392,270,416"/>
+<area href="class_spot_light_node.html" title="Class of spotlight light source node." alt="SpotLightNode" shape="rect" coords="140,448,270,472"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -163,7 +162,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa0e8e724f1552643dddc8e7f69f9b929" id="r_aa0e8e724f1552643dddc8e7f69f9b929"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa0e8e724f1552643dddc8e7f69f9b929">DrawDebug</a> ()</td></tr>
 <tr class="memdesc:aa0e8e724f1552643dddc8e7f69f9b929"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recursively draws debugging primitives.  <br /></td></tr>
 <tr class="memitem:a19a263adc60007d6c65a8971a4591dd3" id="r_a19a263adc60007d6c65a8971a4591dd3"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a19a263adc60007d6c65a8971a4591dd3">SetCurrent</a> ()</td></tr>
-<tr class="memdesc:a19a263adc60007d6c65a8971a4591dd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the node the only active one on the scene (e.g. <a class="el" href="class_camera_node.html" title="Camera node class.">CameraNode</a>, DirectionalLight, Environment, etc.).  <br /></td></tr>
+<tr class="memdesc:a19a263adc60007d6c65a8971a4591dd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the node the only active one on the scene.  <br /></td></tr>
 <tr class="memitem:a54a7ce76efda753ab76c5497fa0e657f" id="r_a54a7ce76efda753ab76c5497fa0e657f"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a54a7ce76efda753ab76c5497fa0e657f">CreateJsonData</a> (<a class="el" href="_node_serializing_data_8h.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;j)</td></tr>
 <tr class="memdesc:a54a7ce76efda753ab76c5497fa0e657f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates JSON data for serializing a node.  <br /></td></tr>
 <tr class="memitem:a74beede1cbbf682e420b417064500f6e" id="r_a74beede1cbbf682e420b417064500f6e"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a74beede1cbbf682e420b417064500f6e">LoadFromJsonData</a> (const <a class="el" href="struct_node_serializing_data.html">NodeSerializingData</a> &amp;nodeData)</td></tr>
@@ -309,7 +308,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Returns a new node if cloning was successful. Returns nullptr otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="class_camera_node.html#a0af7c7bb35a5aae9922dd70f26caa5ee">CameraNode</a>, <a class="el" href="class_directional_light_node.html#ae23333e774ebbfc95428e4a6cac0b445">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html#a5003fe76d80bff2fa891c0b997adbeff">EnvironmentNode</a>, <a class="el" href="class_first_person_player_node.html#ad26515c59ad110d6d96dbc7b6775ef59">FirstPersonPlayerNode</a>, <a class="el" href="class_object3_d_node.html#a74c8013f5e84e78cf314429d4605afb2">Object3DNode</a>, <a class="el" href="class_point_light_node.html#a30de76491febf34631865a02bf6677a6">PointLightNode</a>, <a class="el" href="class_sky_box_node.html#ada90232368e4f4e3cf5559868ef5067b">SkyBoxNode</a>, <a class="el" href="class_spot_light_node.html#a04e262f8d8e1d54232d58f629731da31">SpotLightNode</a>, and <a class="el" href="class_third_person_player_node.html#a78148e53a8a498f4ea896e3f8a3ad60b">ThirdPersonPlayerNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_audio_emitter_node.html#a23a45354863fe1a559f8eb660a1d3a9a">AudioEmitterNode</a>, <a class="el" href="class_camera_node.html#a0af7c7bb35a5aae9922dd70f26caa5ee">CameraNode</a>, <a class="el" href="class_directional_light_node.html#ae23333e774ebbfc95428e4a6cac0b445">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html#a5003fe76d80bff2fa891c0b997adbeff">EnvironmentNode</a>, <a class="el" href="class_first_person_player_node.html#ad26515c59ad110d6d96dbc7b6775ef59">FirstPersonPlayerNode</a>, <a class="el" href="class_object3_d_node.html#a74c8013f5e84e78cf314429d4605afb2">Object3DNode</a>, <a class="el" href="class_point_light_node.html#a30de76491febf34631865a02bf6677a6">PointLightNode</a>, <a class="el" href="class_sky_box_node.html#ada90232368e4f4e3cf5559868ef5067b">SkyBoxNode</a>, <a class="el" href="class_spot_light_node.html#a04e262f8d8e1d54232d58f629731da31">SpotLightNode</a>, and <a class="el" href="class_third_person_player_node.html#a78148e53a8a498f4ea896e3f8a3ad60b">ThirdPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -339,7 +338,7 @@ Protected Attributes</h2></td></tr>
 <p>Creates JSON data for serializing a node. </p>
 <dl class="section note"><dt>Note</dt><dd>Called automatically by the engine if the node is in the scene tree. No need to call it explicitly. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="class_camera_node.html#a90975689d8a95328f70b583605aaf885">CameraNode</a>, <a class="el" href="class_directional_light_node.html#a7688501e957aaf6ae3aebb12fef1e81a">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html#a209dc9b6e6205167ac58d86414cb8b1f">EnvironmentNode</a>, <a class="el" href="class_first_person_player_node.html#a7b7f77bb64324441d653f62a3c9cc314">FirstPersonPlayerNode</a>, <a class="el" href="class_object3_d_node.html#a8168662691afaa1b2df6c67d40d60ec5">Object3DNode</a>, <a class="el" href="class_point_light_node.html#a15388e79911397981228accc6f8a0d7c">PointLightNode</a>, <a class="el" href="class_sky_box_node.html#a05da3bc08d39ffa03ac66cf515d07280">SkyBoxNode</a>, <a class="el" href="class_spot_light_node.html#a5e193fcdf93cd991520b3758874de258">SpotLightNode</a>, and <a class="el" href="class_third_person_player_node.html#aadc7eab990afbde23fc376b4c87f6c91">ThirdPersonPlayerNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_audio_emitter_node.html#ae282694217db97a845f80ac9754028dd">AudioEmitterNode</a>, <a class="el" href="class_audio_listener_node.html#a4c730c26d63290c4c8f20ea413907e2f">AudioListenerNode</a>, <a class="el" href="class_camera_node.html#a90975689d8a95328f70b583605aaf885">CameraNode</a>, <a class="el" href="class_directional_light_node.html#a7688501e957aaf6ae3aebb12fef1e81a">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html#a209dc9b6e6205167ac58d86414cb8b1f">EnvironmentNode</a>, <a class="el" href="class_first_person_player_node.html#a7b7f77bb64324441d653f62a3c9cc314">FirstPersonPlayerNode</a>, <a class="el" href="class_object3_d_node.html#a8168662691afaa1b2df6c67d40d60ec5">Object3DNode</a>, <a class="el" href="class_point_light_node.html#a15388e79911397981228accc6f8a0d7c">PointLightNode</a>, <a class="el" href="class_sky_box_node.html#a05da3bc08d39ffa03ac66cf515d07280">SkyBoxNode</a>, <a class="el" href="class_spot_light_node.html#a5e193fcdf93cd991520b3758874de258">SpotLightNode</a>, and <a class="el" href="class_third_person_player_node.html#aadc7eab990afbde23fc376b4c87f6c91">ThirdPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -374,7 +373,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="class_first_person_player_node.html#a69952966ceb3c679ff168fd2a41e8a50">FirstPersonPlayerNode</a>, <a class="el" href="class_object3_d_node.html#a8f81b6684a506b3ea555e7a1a783b771">Object3DNode</a>, <a class="el" href="class_sky_box_node.html#a460e83de41b92b5cb1356e0ef18088cd">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#a30c8e94c47902eb05ecafb518c6b9e08">ThirdPersonPlayerNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_audio_emitter_node.html#afda3c75f6c5e2114677f8e1a3637811b">AudioEmitterNode</a>, <a class="el" href="class_first_person_player_node.html#a69952966ceb3c679ff168fd2a41e8a50">FirstPersonPlayerNode</a>, <a class="el" href="class_object3_d_node.html#a8f81b6684a506b3ea555e7a1a783b771">Object3DNode</a>, <a class="el" href="class_sky_box_node.html#a460e83de41b92b5cb1356e0ef18088cd">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#a30c8e94c47902eb05ecafb518c6b9e08">ThirdPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -404,7 +403,7 @@ Protected Attributes</h2></td></tr>
 <p>Recursively draws debugging primitives. </p>
 <dl class="section note"><dt>Note</dt><dd>Called automatically by the engine if the node is in the scene tree. No need to call it explicitly. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="class_camera_node.html#a2166653e51f8a068cc02326fc1606f85">CameraNode</a>, <a class="el" href="class_directional_light_node.html#a81c5c7caffed58af85efef877860ac9a">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html#a34a40d63439c0cfcf0fa6315bae97b5c">EnvironmentNode</a>, <a class="el" href="class_object3_d_node.html#a60cdb4aa8d5a0d868586877a81d28224">Object3DNode</a>, <a class="el" href="class_point_light_node.html#a266b687a8a7aa6d92e131de20d4978c5">PointLightNode</a>, <a class="el" href="class_sky_box_node.html#ae75b1621d47638a01bd9d84eb3e920a3">SkyBoxNode</a>, and <a class="el" href="class_spot_light_node.html#a3369951ac3138624c5bcaba23e04ce49">SpotLightNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_audio_emitter_node.html#a75c6416dfe300adfc0ecfd59429de857">AudioEmitterNode</a>, <a class="el" href="class_audio_listener_node.html#a398ca13f406cb55eb893908ad6d86c0f">AudioListenerNode</a>, <a class="el" href="class_camera_node.html#a2166653e51f8a068cc02326fc1606f85">CameraNode</a>, <a class="el" href="class_directional_light_node.html#a81c5c7caffed58af85efef877860ac9a">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html#a34a40d63439c0cfcf0fa6315bae97b5c">EnvironmentNode</a>, <a class="el" href="class_object3_d_node.html#a60cdb4aa8d5a0d868586877a81d28224">Object3DNode</a>, <a class="el" href="class_point_light_node.html#a266b687a8a7aa6d92e131de20d4978c5">PointLightNode</a>, <a class="el" href="class_sky_box_node.html#ae75b1621d47638a01bd9d84eb3e920a3">SkyBoxNode</a>, and <a class="el" href="class_spot_light_node.html#a3369951ac3138624c5bcaba23e04ce49">SpotLightNode</a>.</p>
 
 </div>
 </div>
@@ -642,6 +641,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Returns the direction of an node in world space (Vector3(0, 0, 1) -&gt; world space). </p>
 <dl class="section note"><dt>Note</dt><dd>Only updated after OnUpdate. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a56c86bc234ba5ac79612a352d1f00fe2" title="Called every tick on a node update.">OnUpdate</a> </dd></dl>
 
 </div>
 </div>
@@ -662,6 +662,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Returns the world matrix of the node. </p>
 <dl class="section note"><dt>Note</dt><dd>Only updated after OnUpdate. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a56c86bc234ba5ac79612a352d1f00fe2" title="Called every tick on a node update.">OnUpdate</a> </dd></dl>
 
 </div>
 </div>
@@ -690,6 +691,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Returns the position of an node in world space. </p>
 <dl class="section note"><dt>Note</dt><dd>Only updated after OnUpdate. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a56c86bc234ba5ac79612a352d1f00fe2" title="Called every tick on a node update.">OnUpdate</a> </dd></dl>
 
 </div>
 </div>
@@ -765,7 +767,7 @@ Protected Attributes</h2></td></tr>
 <p>Loads node data from the <a class="el" href="struct_node_serializing_data.html" title="An additional structure that helps save the node to a file.">NodeSerializingData</a> structure. </p>
 <dl class="section note"><dt>Note</dt><dd>Called automatically by the engine if the node is in the scene tree. No need to call it explicitly. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="class_camera_node.html#a87bbb9b121ad68ba479a3ef1625726ee">CameraNode</a>, <a class="el" href="class_directional_light_node.html#ae7f6d09aea617c7c9c82a2a124ae0bdb">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html#a00371b2aab5f0f26984d5a02b05e8e92">EnvironmentNode</a>, <a class="el" href="class_first_person_player_node.html#a318db9cc3bfac19abc381dcae4d54d27">FirstPersonPlayerNode</a>, <a class="el" href="class_object3_d_node.html#a63123a3f9bcd5ce06331bc6fe9d02e25">Object3DNode</a>, <a class="el" href="class_point_light_node.html#a9a76bb606d3d00bb66d890bb7b327de5">PointLightNode</a>, <a class="el" href="class_sky_box_node.html#a0b6ea4de227919f33b25ab212ee72798">SkyBoxNode</a>, <a class="el" href="class_spot_light_node.html#a0467491895734cd1b8abdc4a4040f9e3">SpotLightNode</a>, and <a class="el" href="class_third_person_player_node.html#ab2377c44cd28b9f07302b8ffb6982e51">ThirdPersonPlayerNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_audio_emitter_node.html#a2a05ab6e2dce4d38f4722d1434b9a87c">AudioEmitterNode</a>, <a class="el" href="class_audio_listener_node.html#a2c91a67f9d90d48eb6c6428075f55abb">AudioListenerNode</a>, <a class="el" href="class_camera_node.html#a87bbb9b121ad68ba479a3ef1625726ee">CameraNode</a>, <a class="el" href="class_directional_light_node.html#ae7f6d09aea617c7c9c82a2a124ae0bdb">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html#a00371b2aab5f0f26984d5a02b05e8e92">EnvironmentNode</a>, <a class="el" href="class_first_person_player_node.html#a318db9cc3bfac19abc381dcae4d54d27">FirstPersonPlayerNode</a>, <a class="el" href="class_object3_d_node.html#a63123a3f9bcd5ce06331bc6fe9d02e25">Object3DNode</a>, <a class="el" href="class_point_light_node.html#a9a76bb606d3d00bb66d890bb7b327de5">PointLightNode</a>, <a class="el" href="class_sky_box_node.html#a0b6ea4de227919f33b25ab212ee72798">SkyBoxNode</a>, <a class="el" href="class_spot_light_node.html#a0467491895734cd1b8abdc4a4040f9e3">SpotLightNode</a>, and <a class="el" href="class_third_person_player_node.html#ab2377c44cd28b9f07302b8ffb6982e51">ThirdPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -1001,7 +1003,7 @@ Protected Attributes</h2></td></tr>
 <p>Called every tick on a node update. </p>
 <dl class="section note"><dt>Note</dt><dd>Called automatically by the engine if the node is in the scene tree. No need to call it explicitly. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="class_directional_light_node.html#a32ed0d08f8c4ec040121fd8bb197b5fa">DirectionalLightNode</a>, <a class="el" href="class_first_person_player_node.html#aec7cd7145f8976fbf3d23f2cce65565a">FirstPersonPlayerNode</a>, <a class="el" href="class_point_light_node.html#a2d9591da9007c97e429e4db71c0e32b8">PointLightNode</a>, <a class="el" href="class_spot_light_node.html#a3b87c14a37ac9a5d2887ae76d1483146">SpotLightNode</a>, and <a class="el" href="class_third_person_player_node.html#a107c85c5a0d7cd1c0f4bb1c83e00fe00">ThirdPersonPlayerNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_audio_emitter_node.html#a8d3a88b2aac237f85af5f5e12b471e89">AudioEmitterNode</a>, <a class="el" href="class_audio_listener_node.html#a35c337d1edf56b78826d37831d2c3a20">AudioListenerNode</a>, <a class="el" href="class_camera_node.html#a559722aa32a0e70c5c4ddf12cbc39a23">CameraNode</a>, <a class="el" href="class_directional_light_node.html#a32ed0d08f8c4ec040121fd8bb197b5fa">DirectionalLightNode</a>, <a class="el" href="class_first_person_player_node.html#aec7cd7145f8976fbf3d23f2cce65565a">FirstPersonPlayerNode</a>, <a class="el" href="class_point_light_node.html#a2d9591da9007c97e429e4db71c0e32b8">PointLightNode</a>, <a class="el" href="class_spot_light_node.html#a3b87c14a37ac9a5d2887ae76d1483146">SpotLightNode</a>, and <a class="el" href="class_third_person_player_node.html#a107c85c5a0d7cd1c0f4bb1c83e00fe00">ThirdPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -1136,9 +1138,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Makes the node the only active one on the scene (e.g. <a class="el" href="class_camera_node.html" title="Camera node class.">CameraNode</a>, DirectionalLight, Environment, etc.). </p>
+<p>Makes the node the only active one on the scene. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_camera_node.html" title="Camera node class.">CameraNode</a>, <a class="el" href="class_directional_light_node.html" title="Class of directional light source node.">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html" title="Class of scene environment node. Contains general 3D graphics parameters (ambient light,...">EnvironmentNode</a>, <a class="el" href="class_sky_box_node.html" title="Skybox class.">SkyBoxNode</a>, <a class="el" href="class_audio_listener_node.html" title="Node class for listening to sounds in a scene.">AudioListenerNode</a>, <a class="el" href="class_first_person_player_node.html" title="Player node class for first-person camera control.">FirstPersonPlayerNode</a>, <a class="el" href="class_third_person_player_node.html" title="Player node class for third-person camera control.">ThirdPersonPlayerNode</a> </dd></dl>
 
-<p>Reimplemented in <a class="el" href="class_camera_node.html#a489c77651556bd2547d0d164dbac1a6b">CameraNode</a>, <a class="el" href="class_directional_light_node.html#abc72d45425ca59e3aaf969e9d8921d7d">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html#a9ba99ee14a0e21ff58367ce7d69cecbb">EnvironmentNode</a>, <a class="el" href="class_first_person_player_node.html#a84058070630aba12220bc0cf3d0dbbb0">FirstPersonPlayerNode</a>, and <a class="el" href="class_sky_box_node.html#ac7333e22571887a0c2bc852e079eb8e1">SkyBoxNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_audio_listener_node.html#a66c7300f8ce7fa8c401a6045cb1e71c0">AudioListenerNode</a>, <a class="el" href="class_camera_node.html#a489c77651556bd2547d0d164dbac1a6b">CameraNode</a>, <a class="el" href="class_directional_light_node.html#abc72d45425ca59e3aaf969e9d8921d7d">DirectionalLightNode</a>, <a class="el" href="class_environment_node.html#a9ba99ee14a0e21ff58367ce7d69cecbb">EnvironmentNode</a>, <a class="el" href="class_first_person_player_node.html#a84058070630aba12220bc0cf3d0dbbb0">FirstPersonPlayerNode</a>, and <a class="el" href="class_sky_box_node.html#ac7333e22571887a0c2bc852e079eb8e1">SkyBoxNode</a>.</p>
 
 </div>
 </div>
@@ -1165,6 +1168,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Direct descendants of the node. </p>
 <dl class="section warning"><dt>Warning</dt><dd>Direct modification of the this parameter is not permitted. Use the AddChild, RemoveChild, Move, or Clone methods instead. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a6197b718bf132d72242f4ce5cfbce329" title="Adds a new direct descendant to this node.">AddChild</a>, <a class="el" href="#a9acaed4efd0e0b3b0fd9d0b7e864a2f0" title="Removes a node from the list of direct descendants by name, but does not destroy the descendant itsel...">RemoveChild</a>, <a class="el" href="#a7e5913dce74e7ab7a612407d3a0bf9b9" title="Moves this node to the new parent node.">Move</a>, <a class="el" href="#a39bf64d63215d0a77144c9b6a2d55507" title="Clones this node by copying data and parameters.">Clone</a> </dd></dl>
 
 </div>
 </div>
@@ -1190,6 +1194,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Name of the node. </p>
 <dl class="section warning"><dt>Warning</dt><dd>Direct modification of the this parameter is not permitted. Use the Rename method instead. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ac3c409d8a4cc8477550d6dfe9d33d0a3" title="Renames this node.">Rename</a> </dd></dl>
 
 </div>
 </div>
@@ -1215,6 +1220,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Direct parent of the node. </p>
 <dl class="section warning"><dt>Warning</dt><dd>Direct modification of the this parameter is not permitted. Use the AddChild, RemoveChild, Move, or Clone methods instead. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a6197b718bf132d72242f4ce5cfbce329" title="Adds a new direct descendant to this node.">AddChild</a>, <a class="el" href="#a9acaed4efd0e0b3b0fd9d0b7e864a2f0" title="Removes a node from the list of direct descendants by name, but does not destroy the descendant itsel...">RemoveChild</a>, <a class="el" href="#a7e5913dce74e7ab7a612407d3a0bf9b9" title="Moves this node to the new parent node.">Move</a>, <a class="el" href="#a39bf64d63215d0a77144c9b6a2d55507" title="Clones this node by copying data and parameters.">Clone</a> </dd></dl>
 
 </div>
 </div>
@@ -1265,6 +1271,7 @@ Protected Attributes</h2></td></tr>
 
 <p>World direction vector. </p>
 <dl class="section warning"><dt>Warning</dt><dd>Direct modification of the this parameter is not permitted. This parameter is automatically updated after calling OnUpdate. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a56c86bc234ba5ac79612a352d1f00fe2" title="Called every tick on a node update.">OnUpdate</a> </dd></dl>
 
 </div>
 </div>
@@ -1290,6 +1297,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Transform matrix in world space. </p>
 <dl class="section warning"><dt>Warning</dt><dd>Direct modification of the this parameter is not permitted. This parameter is automatically updated after calling OnUpdate. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a56c86bc234ba5ac79612a352d1f00fe2" title="Called every tick on a node update.">OnUpdate</a> </dd></dl>
 
 </div>
 </div>
@@ -1315,6 +1323,7 @@ Protected Attributes</h2></td></tr>
 
 <p>World position vector. </p>
 <dl class="section warning"><dt>Warning</dt><dd>Direct modification of the this parameter is not permitted. This parameter is automatically updated after calling OnUpdate. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a56c86bc234ba5ac79612a352d1f00fe2" title="Called every tick on a node update.">OnUpdate</a> </dd></dl>
 
 </div>
 </div>

@@ -1,5 +1,10 @@
 var struct_node_serializing_data =
 [
+    [ "audioDoppler", "struct_node_serializing_data.html#a5ce0b3e06b4a0b266e59c8a000c38f89", null ],
+    [ "audioLoop", "struct_node_serializing_data.html#ab94c09d6385ecc9eea63d2e3fe53c331", null ],
+    [ "audioPitch", "struct_node_serializing_data.html#aba4d302fe8fe15e32a939a66ce848ca1", null ],
+    [ "audioUbiquitous", "struct_node_serializing_data.html#ab9ca00e6fef28ef1a19978244831b7f3", null ],
+    [ "audioVolume", "struct_node_serializing_data.html#aa494d069fa142f0cb0569fede48b21f9", null ],
     [ "CameraAnchor", "struct_node_serializing_data.html#a176b36fad599440fb2f9897440745b28", null ],
     [ "camFov", "struct_node_serializing_data.html#acb1725e924dacdd2fbc2bb3b503cb237", null ],
     [ "camZFar", "struct_node_serializing_data.html#a0658fae4aed5b0ee217edfa7b94a2d37", null ],

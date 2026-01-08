@@ -6,6 +6,7 @@
 #include "../Graphics/DebugRenderSystem.h"
 #include "../NodeGraph/NodeGraphSystem.h"
 #include "../Graphics/CurrentPass.h"
+#include "AudioSystem.h"
 
 class Singleton
 {
@@ -19,6 +20,7 @@ public:
 	static NodeGraphSystem* GetNodeGraph();
 	static SceneJsonSerializer* GetSerializer();
 	static CurrentPass* GetCurrentPass();
+	static AudioSystem* GetAudioSystem();
 
 	static bool IsInitialized();
 };

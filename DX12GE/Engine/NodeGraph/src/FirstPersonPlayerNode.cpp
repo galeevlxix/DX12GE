@@ -191,57 +191,76 @@ void FirstPersonPlayerNode::SetCamera(CameraNode* camera)
 void FirstPersonPlayerNode::OnKeyPressed(KeyEventArgs& e)
 {
 	Object3DNode::OnKeyPressed(e);
-	m_PressedInputs.OnKeyPressed(e);
+	if (IsCurrent())
+	{
+		m_PressedInputs.OnKeyPressed(e);
+	}
 }
 
 void FirstPersonPlayerNode::OnKeyReleased(KeyEventArgs& e)
 {
 	Object3DNode::OnKeyReleased(e);
-	m_PressedInputs.OnKeyReleased(e);
+	if (IsCurrent())
+	{
+		m_PressedInputs.OnKeyReleased(e);
+	}
 }
 
 void FirstPersonPlayerNode::OnMouseMoved(MouseMotionEventArgs& e)
 {
 	Object3DNode::OnMouseMoved(e);
 
-	if (!m_PressedInputs.RBC) return;
+	if (IsCurrent() && m_PressedInputs.RBC)
+	{
+		m_dx = e.X - m_prevX;
+		m_dy = e.Y - m_prevY;
 
-	m_dx = e.X - m_prevX;
-	m_dy = e.Y - m_prevY;
+		m_angle_h -= m_dx * MouseSensitivity;
+		if (m_angle_v + m_dy * MouseSensitivity > -PI / 2.0f && m_angle_v + m_dy * MouseSensitivity < PI / 2.0f)
+			m_angle_v += m_dy * MouseSensitivity;
 
-	m_angle_h -= m_dx * MouseSensitivity;
-	if (m_angle_v + m_dy * MouseSensitivity > -PI / 2.0f && m_angle_v + m_dy * MouseSensitivity < PI / 2.0f)
-		m_angle_v += m_dy * MouseSensitivity;
-
-	m_prevX = e.X;
-	m_prevY = e.Y;
+		m_prevX = e.X;
+		m_prevY = e.Y;
+	}
 }
 
 void FirstPersonPlayerNode::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
 	Object3DNode::OnMouseButtonPressed(e);
-	m_PressedInputs.OnMouseButtonPressed(e);
 
-	if (e.Button == 2) //Right mouse
+	if (IsCurrent())
 	{
-		m_prevX = e.X;
-		m_prevY = e.Y;
+		m_PressedInputs.OnMouseButtonPressed(e);
+
+		if (e.Button == 2) //Right mouse
+		{
+			m_prevX = e.X;
+			m_prevY = e.Y;
+		}
 	}
 }
 
 void FirstPersonPlayerNode::OnMouseButtonReleased(MouseButtonEventArgs& e)
 {
 	Object3DNode::OnMouseButtonReleased(e);
-	m_PressedInputs.OnMouseButtonReleased(e);
 
-	if (e.Button == 2) //Right mouse
+	if (IsCurrent())
 	{
-		m_dx = 0;
+		m_PressedInputs.OnMouseButtonReleased(e);
+
+		if (e.Button == 2) //Right mouse
+		{
+			m_dx = 0;
+		}
 	}
 }
 
 void FirstPersonPlayerNode::OnMouseWheel(MouseWheelEventArgs& e)
 {
 	Object3DNode::OnMouseWheel(e);
-	m_Camera->Fov = std::clamp(m_Camera->Fov - e.WheelDelta * WheelSensitivity, 20.0f, 120.0f);
+
+	if (IsCurrent())
+	{
+		m_Camera->Fov = std::clamp(m_Camera->Fov - e.WheelDelta * WheelSensitivity, 20.0f, 120.0f);
+	}
 }
