@@ -9,11 +9,12 @@ Object3DNode::Object3DNode() : Node3D(), m_ComponentId(-1)
     Rename("Object3DNode");
 }
 
-bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
+bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath)
 {
     AssimpModelLoader modelLoader;
     float yOffset = 0.0f;
-    uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset);
+    
+    uint32_t id = modelLoader.LoadModelData(commandList, filePath, nodePath, yOffset);
     Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);
@@ -57,10 +58,24 @@ void Object3DNode::SetComponentId(uint32_t newId)
 {
     if (newId < 0 || newId >= ResourceStorage::ObjectsCount())
     {
+<<<<<<< HEAD
         printf("Error: Component ID of 3D object is outside the array size in ResourceStorage\n");
+=======
+        printf("������: Id ���������� 3� ������� �� ��������� ������� ������� � ResourceStorage\n");
+>>>>>>> master
         return;
     }
     m_ComponentId = newId;
+}
+
+void Object3DNode::UpdateTransform(SimpleMath::Matrix InTransform)
+{
+    Vector3 scale, translation;
+    Quaternion rotation;
+    
+    InTransform.Decompose(scale, rotation, translation);
+    Transform.SetPosition(translation);
+    Transform.SetRotation(rotation.ToEuler());
 }
 
 const std::string Object3DNode::GetObjectFilePath()

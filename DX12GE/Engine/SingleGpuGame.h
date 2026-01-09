@@ -43,9 +43,12 @@ public:
 
     virtual bool Initialize() override final;
     virtual bool LoadContent() override;
+    virtual void RemoveObjectFromScene(std::string name);
+    virtual void AddObjectOnScene(std::string name);
+    virtual Node3D* Get(std::string name);
     virtual void UnloadContent() override;
     virtual void Destroy() override;
-
+    
 private:
 
     // API
@@ -109,6 +112,8 @@ private:
     void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void GenerateCollisions()const;
+    void UpdateObjectsTransforms(UpdateEventArgs& e);
 
     void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 

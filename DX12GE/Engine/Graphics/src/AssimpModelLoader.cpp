@@ -1,23 +1,26 @@
 #include "../AssimpModelLoader.h"
 #include "../../Base/Application.h"
-#include "../VertexStructures.h"
 #include "../ResourceStorage.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, float& OutYOffset)
+uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> commandList, const string& filePath, const std::string& nodePath, float& OutYOffset, std::vector<Vector3>* OutVertices)
 {
     if (NotFoundFile(filePath.c_str())) return -1;
 
-    int id = ResourceStorage::AddObject3D(filePath);
+    int id = ResourceStorage::AddObject3D(nodePath);
     std::shared_ptr<Object3DComponent> object = ResourceStorage::GetObject3D(id);
 
     if (object->IsInitialized())
         return id;
 
+<<<<<<< HEAD
     printf("Loading component from object file: %s\n", filePath.c_str());
+=======
+    printf("�������� ���������� �� ����� �������: %s\n", filePath.c_str());
+>>>>>>> master
 
     Assimp::Importer importer;
     
@@ -77,7 +80,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     std::vector<Mesh3DComponent*> meshes;
 
     float yOffset = 0.0f;
-
+    
     for (unsigned int meshIndex = 0; meshIndex < pScene->mNumMeshes; meshIndex++)
     {
         meshes.push_back(new Mesh3DComponent());
@@ -127,6 +130,14 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
         }
 
         meshes[meshIndex]->OnLoad<VertexStruct>(commandList, Vertices, Indices);
+                
+        if (OutVertices != nullptr)
+        {
+            for (int i = 0; i < Indices.size(); ++i)
+            {
+                OutVertices->push_back(Vertices[Indices[i]].Position);
+            }
+        }
     }
 
     OutYOffset = yOffset;

@@ -1,16 +1,21 @@
 #include "SingleGpuGame.h"
 
+#include "Base/SceneJsonSerializer.h"
 #include "Graphics/ResourceStorage.h"
 #include "Graphics/ShaderResources.h"
+#include "Base/CommandExecutor.h"
+#include "../DX12GE/Engine/Physics/PhysicsManager.h"
 
 #include <sstream>
 #include <string>
 #include <chrono>
 #include <fstream>
 
+#include "NodeGraph/PhysicalObjectNode.h"
+
 SingleGpuGame::SingleGpuGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
-    , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
-    , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height))) { }
+                                                                                       , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
+                                                                                       , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height))) { }
 
 bool SingleGpuGame::Initialize()
 {
@@ -52,15 +57,50 @@ bool SingleGpuGame::Initialize()
     
     return true;
 }
+//
+// void SingleGpuGame::AddObjectOnScene(std::string name)
+// {
+//     if (!m_Objects.contains(name))
+//     {
+//         shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+//         ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+//
+//         Object3DEntity* entity = new Object3DEntity();
+//
+//         std::string modelPath = "../../DX12GE/Resources/Models/cars/buchanka/scene.gltf";
+//
+//         m_Objects.insert({ name, entity });
+//
+//         m_Objects[name]->OnLoad(commandList, modelPath);
+//
+//         m_Objects[name]->Transform.SetPosition(DirectX::SimpleMath::Vector3(.0f, .0f, .0f));
+//         m_Objects[name]->Transform.SetRotation(DirectX::SimpleMath::Vector3(.0f, .0f, .0f));
+//         m_Objects[name]->Transform.SetScale(DirectX::SimpleMath::Vector3(1.f, 1.f, 1.f));
+//     }
+// }
+//
+// void SingleGpuGame::RemoveObjectFromScene(std::string name)
+// {
+//     if (m_Objects.contains(name))
+//     {
+//         Object3DEntity* entity = m_Objects[name];
+//         m_Objects.erase(name);
+//         entity->Destroy();
+//     }
+// }
 
 static Node3D* CreateObj(const std::string& nodePath, ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
     Node3D* node = Singleton::GetNodeGraph()->CreateNewNodeInScene(nodePath, NODE_TYPE_OBJECT3D);
     if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
     {
-        if (!obj3D->Create(commandList, filePath))
+        if (!obj3D->Create(commandList, filePath, nodePath))
         {
+<<<<<<< HEAD
             printf("Warning! The mesh node %s has not been initialized!\n", node->GetName().c_str());
+=======
+            printf("��������������! ��� ���� %s �� ���������������!\n", node->GetName().c_str());
+>>>>>>> master
         }
     }
     return node;
@@ -75,6 +115,7 @@ bool SingleGpuGame::LoadContent()
     Singleton::GetSelection()->SetTextureBuffer(m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
     Singleton::GetNodeGraph()->WindowRatio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
     Singleton::GetSerializer()->Load(commandList);
+    GenerateCollisions();
 
     m_ParticleSystem.OnLoad(commandList);
 
@@ -93,6 +134,47 @@ bool SingleGpuGame::LoadContent()
     return true;
 }
 
+void SingleGpuGame::RemoveObjectFromScene(std::string name)
+{
+}
+
+void SingleGpuGame::AddObjectOnScene(std::string name)
+{
+}
+
+
+// void SingleGpuGame::AddObjectOnScene(std::string name)
+// {
+//     if (!m_Objects.contains(name))
+//     {
+//         shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+//         ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+//
+//         Object3DNode* node = new Object3DNode();
+//
+//         std::string modelPath = "../../DX12GE/Resources/Models/cars/buchanka/scene.gltf";
+//
+//         m_Objects.insert({ name, entity });
+//
+//         m_Objects[name]->OnLoad(commandList, modelPath);
+//
+//         m_Objects[name]->Transform.SetPosition(DirectX::SimpleMath::Vector3(.0f, .0f, .0f));
+//         m_Objects[name]->Transform.SetRotation(DirectX::SimpleMath::Vector3(.0f, .0f, .0f));
+//         m_Objects[name]->Transform.SetScale(DirectX::SimpleMath::Vector3(1.f, 1.f, 1.f));
+//     }
+// }
+//
+// void SingleGpuGame::RemoveObjectFromScene(std::string name)
+// {
+//     if (m_Objects.contains(name))
+//     {
+//         Object3DNode* entity = m_Objects[name];
+//         m_Objects.erase(name);
+//         entity->Destroy();
+//     }
+// }
+
+
 void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 {
     if (!m_Initialized || !Singleton::IsInitialized()) return;
@@ -103,11 +185,14 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     float elapsedTime = static_cast<float>(e.ElapsedTime);
 
     Singleton::GetNodeGraph()->GetRoot()->OnUpdate(e.ElapsedTime);
+    
+    UpdateObjectsTransforms(e);
+    
 
     m_Lights.OnUpdate(elapsedTime);
 
     CameraNode* camera = Singleton::GetNodeGraph()->GetCurrentCamera();
-	const Matrix viewProj = camera->GetViewProjMatrix();
+	const SimpleMath::Matrix viewProj = camera->GetViewProjMatrix();
 	const Vector3& cameraPos = camera->GetWorldPosition(); 
 
     ShaderResources::GetWorldCB()->LightProps.CameraPos = Vector4(cameraPos);
@@ -123,6 +208,76 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     Singleton::GetSelection()->DrawDebug();
 
     RefreshTitle(e);
+}
+
+void SingleGpuGame::GenerateCollisions() const
+{
+    const auto& Objects = Singleton::GetNodeGraph()->GetAll3DObjects();
+    for (auto obj : Objects)
+    {
+        if (PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(obj.second))
+        {
+            if (PhysRef->GetCollisionType() != COLLISION_TYPE_NONE)
+            {
+                Vector3 Rotation = PhysRef->Transform.GetRotation();
+                if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
+                {
+                    Rotation = Vector3(0.f, Rotation.y, 0.f);
+                }
+                
+                Singleton::GetPhysicsManager()->GenerateCollision(PhysRef->GetComponentId(), *PhysRef->GetVertices(), PhysRef->Transform.GetPosition(), Rotation, PhysRef->GetMass(), PhysRef->Transform.GetScale(), PhysRef->GetCollisionType());
+            }
+            
+            Singleton::GetPhysicsManager()->ApplyProperties(PhysRef->GetComponentId(), PhysRef->GetGravityScale(), PhysRef->GetFrictionScale());
+        }
+    }
+}
+
+void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
+{
+    map<uint32_t, SimpleMath::Matrix> PrePhysicsTransforms;
+    
+    for (const auto& object : Singleton::GetNodeGraph()->GetAll3DObjects())
+    {
+        PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(object.second);
+        if (PhysRef != nullptr && PhysRef->GetCollisionType() > COLLISION_TYPE_NONE && PhysRef->GetCollisionType() < COLLISION_TYPE_STATIC_MESH)
+        {
+            PrePhysicsTransforms.insert(pair(PhysRef->GetComponentId(), PhysRef->Transform.GetLocalMatrix()));
+            
+            if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
+            {
+                Vector3 Position, Scale;
+                Quaternion Rotation;
+                PrePhysicsTransforms[PhysRef->GetComponentId()].Decompose(Scale, Rotation, Position);
+                Vector3 RotationEuler = Rotation.ToEuler();
+                RotationEuler = Vector3(RotationEuler.y, 0.f, 0.f);
+                
+                PrePhysicsTransforms[PhysRef->GetComponentId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(RotationEuler) * SimpleMath::Matrix::CreateTranslation(Position);
+            }
+        }
+    }
+    
+    map<uint32_t, SimpleMath::Matrix> PostPhysicsTransforms = Singleton::GetPhysicsManager()->OnUpdate(e.ElapsedTime, PrePhysicsTransforms);
+    
+    for (const auto& object : Singleton::GetNodeGraph()->GetAll3DObjects())
+    {
+        PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(object.second);
+        if (PhysRef != nullptr && PostPhysicsTransforms.contains(PhysRef->GetComponentId()))
+        {
+            if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
+            {
+                Vector3 Position, Scale;
+                Quaternion Rotation;
+                PostPhysicsTransforms[PhysRef->GetComponentId()].Decompose(Scale, Rotation, Position);
+                
+                PostPhysicsTransforms[PhysRef->GetComponentId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(PhysRef->Transform.GetRotation()) * SimpleMath::Matrix::CreateTranslation(Position);
+            }
+            
+            PhysRef->UpdateTransform(PostPhysicsTransforms[PhysRef->GetComponentId()]);
+            
+            //PhysRef->SetCollisionGeometry(Singleton::GetPhysicsManager()->GetBodyCollision(PhysRef->GetComponentId(), PhysRef->GetVertices()));
+        }
+    }
 }
 
 void SingleGpuGame::DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -364,13 +519,13 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
         m_stopParticles = !m_stopParticles;
         break;
     case KeyCode::B:
-        if (Singleton::GetNodeGraph()->GetNodeByPath("root/player_fp") == Singleton::GetNodeGraph()->GetCurrentPlayer())
+        if (Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player") == Singleton::GetNodeGraph()->GetCurrentPlayer())
         {
-            Singleton::GetNodeGraph()->GetNodeByPath("root/player_tp")->SetCurrent();
+            Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player")->SetCurrent();
         }
         else
         {
-            Singleton::GetNodeGraph()->GetNodeByPath("root/player_fp")->SetCurrent();
+            Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player")->SetCurrent();
         }
         break;
     case KeyCode::R:
@@ -474,6 +629,11 @@ void SingleGpuGame::RefreshTitle(UpdateEventArgs& e)
     }
 }
 
+Node3D* SingleGpuGame::Get(std::string name)
+{
+    return nullptr;
+}
+
 void SingleGpuGame::UnloadContent()
 {
     Singleton::Destroy();
@@ -521,6 +681,16 @@ void SingleGpuGame::Destroy()
 
     super::Destroy();
 }
+
+
+// Object3DNode* SingleGpuGame::Get(std::string name)
+// {
+//     if (!m_Obbjects.contains(name)) return nullptr;
+//
+//     return m_Objects[name];
+// }
+
+
 
 SingleGpuGame::~SingleGpuGame()
 {

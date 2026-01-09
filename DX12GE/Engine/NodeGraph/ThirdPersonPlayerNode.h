@@ -2,8 +2,13 @@
 
 #include "FirstPersonPlayerNode.h"
 
+<<<<<<< HEAD
 /// \brief Player node class for third-person camera control.
 /// \note Only one such node in the scene tree can be active. 
+=======
+// ����� ���� ������ ��� ���������� ������� �� �������� ����
+// ������ ���� ����� ���� � ������ ����� ����� ���� �������� 
+>>>>>>> master
 class ThirdPersonPlayerNode : public FirstPersonPlayerNode
 {
 public:
@@ -21,6 +26,8 @@ protected:
 public:
 	ThirdPersonPlayerNode();
 
+	virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath) override;
+	
 	virtual void OnUpdate(const double& deltaTime) override;
 
 	virtual void Destroy(bool keepComponent = true) override;

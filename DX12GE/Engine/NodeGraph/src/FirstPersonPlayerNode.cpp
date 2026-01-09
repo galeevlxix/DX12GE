@@ -1,6 +1,6 @@
 #include "../../Base/Singleton.h"
 
-FirstPersonPlayerNode::FirstPersonPlayerNode() : Object3DNode()
+FirstPersonPlayerNode::FirstPersonPlayerNode() : PhysicalObjectNode()
 {
 	m_Type = NODE_TYPE_FIRST_PERSON_PLAYER;
 	Rename("FirstPersonPlayerNode");
@@ -23,6 +23,12 @@ FirstPersonPlayerNode::FirstPersonPlayerNode() : Object3DNode()
 	m_dy = 0;
 }
 
+bool FirstPersonPlayerNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath,
+	const std::string& nodePath)
+{
+	return PhysicalObjectNode::Create(commandList, filePath, nodePath);
+}
+
 void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 {
 	if (IsCurrent() && m_PressedInputs.RBC)
@@ -42,7 +48,11 @@ void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 
 		Transform.SetRotationY(m_angle_h);
 
+<<<<<<< HEAD
 		const Matrix& parMat = m_Parent->GetWorldMatrix();
+=======
+		const SimpleMath::Matrix& parMat = m_Parrent->GetWorldMatrix();
+>>>>>>> master
 		Vector3 direction = GetWorldDirection();
 		
 		if (m_Camera)
@@ -83,18 +93,18 @@ void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 		}
 	}
 
-	Object3DNode::OnUpdate(deltaTime);
+	PhysicalObjectNode::OnUpdate(deltaTime);
 }
 
 void FirstPersonPlayerNode::Destroy(bool keepComponent)
 {
 	m_Camera = nullptr;
-	Object3DNode::Destroy(keepComponent);
+	PhysicalObjectNode::Destroy(keepComponent);
 }
 
 bool FirstPersonPlayerNode::AddChild(Node3D* node)
 {
-	if (!Object3DNode::AddChild(node)) return false;
+	if (!PhysicalObjectNode::AddChild(node)) return false;
 
 	if (!m_Camera)
 	{
@@ -114,7 +124,11 @@ Node3D* FirstPersonPlayerNode::Clone(Node3D* newParent, bool cloneChildrenRecurs
 		cloneNode = new FirstPersonPlayerNode();
 	}
 
+<<<<<<< HEAD
 	Object3DNode::Clone(newParent, cloneChildrenRecursive, cloneNode);
+=======
+	PhysicalObjectNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+>>>>>>> master
 
 	if (cloneNode)
 	{
@@ -132,7 +146,7 @@ Node3D* FirstPersonPlayerNode::Clone(Node3D* newParent, bool cloneChildrenRecurs
 
 void FirstPersonPlayerNode::CreateJsonData(json& j)
 {
-	Object3DNode::CreateJsonData(j);
+	PhysicalObjectNode::CreateJsonData(j);
 
 	j["sens_mouse"] = MouseSensitivity;
 	j["sens_wheel"] = WheelSensitivity;
@@ -149,7 +163,7 @@ void FirstPersonPlayerNode::CreateJsonData(json& j)
 
 void FirstPersonPlayerNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 {
-	Object3DNode::LoadFromJsonData(nodeData);
+	PhysicalObjectNode::LoadFromJsonData(nodeData);
 
 	MouseSensitivity = nodeData.MouseSensitivity;
 	WheelSensitivity = nodeData.WheelSensitivity;
@@ -171,7 +185,11 @@ void FirstPersonPlayerNode::SetCurrent()
 	}
 	else
 	{
+<<<<<<< HEAD
 		printf("Attention! Unable to make FirstPersonPlayerNode::%s active! The node is not in the scene tree!\n", m_Name.c_str());
+=======
+		printf("��������! ���������� ������� FirstPersonPlayerNode::%s ��������! ���� �� ��������� � ������ �����!\n", m_Name.c_str());
+>>>>>>> master
 	}
 }
 

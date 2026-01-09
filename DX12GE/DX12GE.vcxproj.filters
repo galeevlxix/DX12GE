@@ -76,6 +76,12 @@
     <Filter Include="Файлы ресурсов\Shaders\Skybox">
       <UniqueIdentifier>{45e57c06-7f23-49e0-b921-5ad529d33b48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Engine\Lua">
+      <UniqueIdentifier>{43627609-ce85-4e0b-a1a7-fbc618dd303f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Lua\scripts">
+      <UniqueIdentifier>{8e12bf99-bc8f-4671-8b7a-0cdceb28242b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Исходные файлы\Engine\NodeGraph">
       <UniqueIdentifier>{76915497-05de-4cb3-b70d-73f56c1d4831}</UniqueIdentifier>
     </Filter>
@@ -264,6 +270,7 @@
     <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Engine\NodeGraph\src\AudioEmitterNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
@@ -272,6 +279,37 @@
     </ClCompile>
     <ClCompile Include="Engine\Base\src\AudioSystem.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
+=======
+    <ClCompile Include="Engine\AI\src\AIComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Behavior.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\BehaviorTree.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\BehaviorTreeBuilder.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Blackboard.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Composites.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Decorators.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\AI\src\Leaves.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Lua\LuaManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineConfig.cpp">
+      <Filter>Исходные файлы</Filter>
+>>>>>>> master
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -488,6 +526,7 @@
     <ClInclude Include="Engine\NodeGraph\SkyBoxNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Engine\Base\AudioWavComponent.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
@@ -499,6 +538,49 @@
     </ClInclude>
     <ClInclude Include="Engine\NodeGraph\AudioEmitterNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+=======
+    <ClInclude Include="Engine\AI\AIComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Behavior.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\BehaviorTree.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\BehaviorTreeBuilder.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Blackboard.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Composites.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Decorators.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AI\Leaves.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\LuaManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lualib.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lua.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lauxlib.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\luaconf.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineConfig.h">
+      <Filter>Файлы заголовков</Filter>
+>>>>>>> master
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -594,5 +676,8 @@
     <None Include="Resources\scene lite.json">
       <Filter>Файлы ресурсов</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Engine\Lua\scripts\TestScript.lua" />
   </ItemGroup>
 </Project>

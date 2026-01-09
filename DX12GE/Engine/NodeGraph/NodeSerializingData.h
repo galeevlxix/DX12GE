@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "NodeTypeEnum.h"
+#include "../Physics/PhysicsDataTypes.h"
 #include "../Base/SimpleMath.h"
 
 #include "../Base/json.hpp"
@@ -12,6 +13,8 @@ struct NodeSerializingData
 	std::string nodePath;
 	NodeTypeEnum type;
 	std::string filePath;
+
+	std::vector<std::string> scripts;
 
 	DirectX::SimpleMath::Vector3 pos;
 	DirectX::SimpleMath::Vector3 rot;
@@ -47,12 +50,21 @@ struct NodeSerializingData
 	float MinFlyRadius;
 	float MaxFlyRadius;
 	DirectX::SimpleMath::Vector3 CameraAnchor;
+<<<<<<< HEAD
 
 	float audioVolume;
 	float audioPitch;
 	bool audioLoop;
 	bool audioDoppler;
 	bool audioUbiquitous;
+=======
+	
+	// physics
+	CollisionTypeEnum collisionType;
+	float gravityScale;
+	float mass;
+	float frictionScale;
+>>>>>>> master
 };
 
 /// An additional structure that helps create node.

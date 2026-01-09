@@ -2,6 +2,7 @@
 #include "../resource.h"
 #include "../Window.h"
 #include "../CommandQueue.h"
+#include "../DX12GE/Engine/Lua/LuaManager.h"
 #include "../Game.h"
 
 constexpr wchar_t WINDOW_CLASS_NAME[] = L"DX12RenderWindowClass";
@@ -197,7 +198,7 @@ std::vector<ComPtr<IDXGIAdapter4>> Application::GetAdapters()
         }
     }
 
-    // Сортировка адаптеров по убыванию видеопамяти
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     for (int i = 0; i < adapters.size() - 1; ++i)
     {
         for (int j = 0; j < adapters.size() - i - 1; ++j)
@@ -347,6 +348,7 @@ int Application::Run(std::shared_ptr<Game> pGame)
     if (!pGame->LoadContent()) return 2;
 
     MSG msg = { 0 };
+    LuaManager::Start();
     while (msg.message != WM_QUIT)
     {
         if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))

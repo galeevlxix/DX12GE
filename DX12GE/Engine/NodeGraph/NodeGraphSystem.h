@@ -12,14 +12,22 @@
 #include "SpotLightNode.h"
 #include "ParticlesNode.h"
 #include "CameraNode.h"
+<<<<<<< HEAD
 #include "AudioListenerNode.h"
 #include "AudioEmitterNode.h"
+=======
+#include "PhysicalObjectNode.h"
+>>>>>>> master
 
 #include "../Graphics/GraphicsComponents.h"
 
 #include <vector> 
 
+<<<<<<< HEAD
 /// \brief Scene tree management system
+=======
+// ������� ���������� ������� �����
+>>>>>>> master
 class NodeGraphSystem
 {
 	Node3D* m_SceneRootNode;
@@ -70,6 +78,7 @@ private:
 public:
 	NodeGraphSystem();
 
+<<<<<<< HEAD
 	/// \brief Returns the root node of the scene.
 	Node3D* GetRoot() { return m_SceneRootNode; }
 
@@ -119,6 +128,51 @@ public:
 	const size_t GetPointLightsCount() { return m_AllPointLights.size(); }
 
 	/// \brief Returns the number of spotlight light sources in the scene.
+=======
+	// ���������� �������� ���� �����
+	Node3D* GetRoot() { return m_SceneRootNode; }
+
+	// ���������� ������ �����
+	void Destroy();
+	
+	// ���������� ��� ���� ����� � ���� �������
+	const std::vector<Node3D*> GetAllNodes() { return GetNodesRecursive(m_SceneRootNode); }
+
+	// ���������� ��� 3� ������� � ����� � ���� ������� (���� � ���� -> ��������� �� ����)
+	const std::map<std::string, Object3DNode*>& GetAll3DObjects() { return m_All3DObjects; }
+
+	// ������� ���� �� ��� ���� � ������ �����
+	Node3D* GetNodeByPath(const std::string& nodePath);
+
+	// ���������� ��������� ������������� ������ �����
+	const std::string Print(Node3D* current = nullptr, int depth = 0);
+
+	// ���������� ������� ���� ��������� �����
+	EnvironmentNode* GetCurrentEnvironment();
+
+	// ���������� ������� ���� ������������� ����� �����
+	DirectionalLightNode* GetCurrentDirectionalLight();
+
+	// ���������� ������� ���� ������ �����
+	FirstPersonPlayerNode* GetCurrentPlayer() { return m_CurrentPlayer; }
+
+	// ���������� ������� ������ �����
+	CameraNode* GetCurrentCamera();
+
+	// ���������� ������� ���� ��������� �����
+	SkyBoxNode* GetCurrentSkyBox() { return m_CurrentSkyBox; }
+
+	// ���������� ������ ���� ����������� �������� ���������� ����� � �����
+	const std::vector<PointLightComponent> GetPointLightComponents();
+
+	// ���������� ������ ���� ����������� ������������ ���������� ����� � �����
+	const std::vector<SpotLightComponent> GetSpotLightComponents();
+
+	// ���������� ���������� �������� ���������� ����� � �����
+	const size_t GetPointLightsCount() { return m_AllPointLights.size(); }
+
+	// ���������� ���������� ������������ ���������� ����� � �����
+>>>>>>> master
 	const size_t GetSpotLightsCount() { return m_AllSpotLights.size(); }
 
 	/// \brief Returns all sound sources (audio emitters) in the scene as a dictionary (path to node -> node).
@@ -136,6 +190,7 @@ public:
 	void OnMouseButtonReleased(MouseButtonEventArgs& e) { m_SceneRootNode->OnMouseButtonReleased(e); }
 	void OnResize(ResizeEventArgs& e);
 
+<<<<<<< HEAD
 	/// \brief Creates a new node and adds it to the scene.
 	/// \param nodePath Sets the parent and name of the new node.
 	/// \param type Node type for the new node.
@@ -159,4 +214,22 @@ public:
 	/// \param pathOfNewParent Node path of the new parent for this node.
 	/// \return Returns true if the move was successful. Returns false otherwise.
 	bool MoveNode(const std::string& nodePath, const std::string& pathOfNewParent);
+=======
+	// ������ ����� ���� � ��������� ��� �� �����
+	// ���������� ��������� ����, ���� �������� ������ ������� (nullptr - � ��������� ������)
+	Node3D* CreateNewNodeInScene(const std::string& nodePath, NodeTypeEnum type);
+
+	// ������� ���� �� �����
+	// ���� destroy = true, ���� ��������� ��������� �� ������
+	// ���������� true, ���� �������� ������ �������
+	bool RemoveNodeFromScene(const std::string& nodePath, bool destroy = false);
+
+	// ��������� ��������� ���� � ��������� ���� �� �����
+	// ���������� ���� �����, ���� �������� ������ ������� (nullptr - � ��������� ������)
+	Node3D* CloneNode(const std::string& nodePath, const std::string& pathOfNewParrent);
+
+	// ���������� ���� � ���� ������ ��������
+	// ���������� true, ���� ����������� ������ �������
+	bool MoveNode(const std::string& nodePath, const std::string& pathOfNewParrent);
+>>>>>>> master
 };

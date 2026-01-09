@@ -1,5 +1,6 @@
 #include "../NodeGraphSystem.h"
 #include "../../Base/Singleton.h"
+#include "LuaManager.h"
 
 NodeGraphSystem::NodeGraphSystem()
 {
@@ -13,6 +14,7 @@ NodeGraphSystem::NodeGraphSystem()
 	m_DefaultEnvironment = nullptr;
 	m_DefaultDirectionalLight = nullptr;
 	m_DefaultCamera = nullptr;
+	LuaManager::SetGraspSystem(this);
 }
 
 void NodeGraphSystem::Destroy()
@@ -353,7 +355,11 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 
 	if (GetNodeByPath(nodePath))
 	{
+<<<<<<< HEAD
 		printf("Error! Node %s already exists!\n", nodePath.c_str());
+=======
+		printf("������! ���� %s ��� ����������!\n", nodePath.c_str());
+>>>>>>> master
 		return node;
 	}
 
@@ -362,7 +368,11 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 
 	if (parsed.name == "" || parsed.ParentNodePath == "")
 	{
+<<<<<<< HEAD
 		printf("Error! Unable to create node %s!\n", nodePath.c_str());
+=======
+		printf("������! ���������� ������� ���� %s!\n", nodePath.c_str());
+>>>>>>> master
 		return node;
 	}	
 
@@ -373,6 +383,9 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 		break;
 	case NODE_TYPE_OBJECT3D:
 		node = new Object3DNode();
+		break;
+	case NODE_TYPE_PHYSICAL_OBJECT3D:
+		node = new PhysicalObjectNode();
 		break;
 	case NODE_TYPE_FIRST_PERSON_PLAYER:
 		node = new FirstPersonPlayerNode();
@@ -405,7 +418,11 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 		node = new AudioEmitterNode();
 		break;
 	default:
+<<<<<<< HEAD
 		printf("Error! Node type %d is not supported!\n", type);
+=======
+		printf("������! ��� ���� %d �� ��������������!\n", type);
+>>>>>>> master
 		return node;
 	}
 
@@ -418,7 +435,11 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 			delete node;
 			node = nullptr;
 		}
+<<<<<<< HEAD
 		printf("Error! Parent node %s does not exist!\n", parsed.ParentNodePath.c_str());
+=======
+		printf("������! ������������ ���� %s �� ����������!\n", parsed.parrentNodePath.c_str());
+>>>>>>> master
 		return node;
 	}
 
@@ -428,7 +449,12 @@ Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeT
 	{
 		delete node;
 		node = nullptr;
+<<<<<<< HEAD
 		printf("Error! Unable to add node %s to parent node %s!\n", parsed.name.c_str(), parsed.ParentNodePath.c_str());
+=======
+
+		printf("������! ���������� �������� ���� %s � ������������ ���� %s!\n", parsed.name.c_str(), parsed.parrentNodePath.c_str());
+>>>>>>> master
 	}
 
 	return node;
@@ -440,7 +466,11 @@ bool NodeGraphSystem::RemoveNodeFromScene(const std::string& nodePath, bool dest
 
 	if (!node)
 	{
+<<<<<<< HEAD
 		printf("Error! Node %s does not exist in the scene!\n", nodePath.c_str());
+=======
+		printf("������! ���� %s �� ���������� � �����!\n", nodePath.c_str());
+>>>>>>> master
 		return false;
 	}
 
@@ -459,14 +489,22 @@ Node3D* NodeGraphSystem::CloneNode(const std::string& nodePath, const std::strin
 	Node3D* original = GetNodeByPath(nodePath);
 	if (!original)
 	{
+<<<<<<< HEAD
 		printf("Error! Node %s does not exist in the scene!\n", nodePath.c_str());
+=======
+		printf("������! ���� %s �� ���������� � �����!\n", nodePath.c_str());
+>>>>>>> master
 		return nullptr;
 	}
 
 	Node3D* newParent = GetNodeByPath(pathOfNewParent);
 	if (!newParent)
 	{
+<<<<<<< HEAD
 		printf("Error! Node %s does not exist in the scene!\n", pathOfNewParent.c_str());
+=======
+		printf("������! ���� %s �� ���������� � �����!\n", pathOfNewParrent.c_str());
+>>>>>>> master
 		return nullptr;
 	}
 
@@ -474,7 +512,11 @@ Node3D* NodeGraphSystem::CloneNode(const std::string& nodePath, const std::strin
 
 	if (!clone)
 	{
+<<<<<<< HEAD
 		printf("Error! Failed to create clone!\n");
+=======
+		printf("������! �� ������� ������� ����!\n");
+>>>>>>> master
 		return nullptr;
 	}
 
@@ -486,14 +528,22 @@ bool NodeGraphSystem::MoveNode(const std::string& nodePath, const std::string& p
 	Node3D* node = GetNodeByPath(nodePath);
 	if (!node)
 	{
+<<<<<<< HEAD
 		printf("Error! Node %s does not exist in the scene!\n", nodePath.c_str());
+=======
+		printf("������! ���� %s �� ���������� � �����!\n", nodePath.c_str());
+>>>>>>> master
 		return false;
 	}
 
 	Node3D* newParent = GetNodeByPath(pathOfNewParent);
 	if (!newParent)
 	{
+<<<<<<< HEAD
 		printf("Error! Node %s does not exist in the scene!\n", pathOfNewParent.c_str());
+=======
+		printf("������! ���� %s �� ���������� � �����!\n", pathOfNewParrent.c_str());
+>>>>>>> master
 		return false;
 	}
 

@@ -6,7 +6,11 @@ static SelectionSystem* Selection = nullptr;
 static NodeGraphSystem* NodeGraph = nullptr;
 static SceneJsonSerializer* Serializer = nullptr;
 static CurrentPass* Pass = nullptr;
+<<<<<<< HEAD
 static AudioSystem* Audio = nullptr;
+=======
+static PhysicsManager* PhysMgr = nullptr;
+>>>>>>> master
 
 static bool m_IsInitialized = false;
 
@@ -20,7 +24,12 @@ void Singleton::Initialize()
 	NodeGraph = new NodeGraphSystem();
 	Serializer = new SceneJsonSerializer();
 	Pass = new CurrentPass();
+<<<<<<< HEAD
 	Audio = new AudioSystem();
+=======
+	PhysMgr = new PhysicsManager();
+	PhysMgr->Initialize();
+>>>>>>> master
 
 	m_IsInitialized = true;
 }
@@ -84,9 +93,15 @@ CurrentPass* Singleton::GetCurrentPass()
 	return Pass;
 }
 
+<<<<<<< HEAD
 AudioSystem* Singleton::GetAudioSystem()
 {
 	return Audio;
+=======
+PhysicsManager* Singleton::GetPhysicsManager()
+{
+	return PhysMgr;
+>>>>>>> master
 }
 
 bool Singleton::IsInitialized()

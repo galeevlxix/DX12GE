@@ -4,7 +4,11 @@
 #include "../Base/DX12LibPCH.h"
 #include "../Base/CollisionBox.h"
 
+<<<<<<< HEAD
 /// \brief 3D object node class.
+=======
+// ����� ���� 3� �������
+>>>>>>> master
 class Object3DNode : public Node3D
 {
 protected:
@@ -17,6 +21,7 @@ public:
 
 	Object3DNode();
 
+<<<<<<< HEAD
 	/// \brief Loads node data.
 	/// \param filePath The path to the file that stores data about meshes, vertices, and indices. For example, .obj or .gltf.
 	/// \return Returns true if creation was successful. Returns false otherwise.
@@ -32,6 +37,25 @@ public:
 	virtual void SetComponentId(uint32_t newId);
 
 	/// \brief Returns the id of a component (resource with data) in the resource storage.
+=======
+	// ��������� ������ ����
+	virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath);
+
+	// ��������� 3� �������
+	virtual void Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const DirectX::XMMATRIX& viewProjMatrix);
+	
+	// ���������� ������ ���� � ���� �������� ����
+	// ���� ����� ��������� �� ������ �������� ������ ��������
+	// ��� keepComponent = false �� ������ ����� ��������� ��������� � �������, ���� � ������ ����� ��� ������ �����, ������������ ���� ��������� (���������������� �� ��������)
+	virtual void Destroy(bool keepComponent = true) override;
+	
+	// ������������� ����� ��������� ������� (������ � �������) �� id ��� ������� ����
+	virtual void SetComponentId(uint32_t newId);
+
+	virtual void UpdateTransform(DirectX::SimpleMath::Matrix InTransform = DirectX::SimpleMath::Matrix());
+	
+	// ���������� id ���������� (������� � �������) � ResourceStorage
+>>>>>>> master
 	virtual uint32_t GetComponentId() { return m_ComponentId; }
 
 	/// \brief Checks whether a 3D object is valid for rendering.
@@ -54,5 +78,10 @@ public:
 	virtual void LoadFromJsonData(const NodeSerializingData& nodeData) override;
 
 private:
+<<<<<<< HEAD
+=======
+	// ���������� true, ���� � ������ ���������� ���� � ����� �� id ����������
+	// ���� root ���������, ����� ������ ���������� � ����
+>>>>>>> master
 	bool TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current = nullptr);
 };

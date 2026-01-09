@@ -1,7 +1,10 @@
 #include "../Application.h"
 #include "../CommandQueue.h"
+#include "../DX12GE/Engine/Lua/LuaManager.h"
 #include "../Window.h"
 #include "../Game.h"
+#include "LuaManager.h"
+#include "../DX12GE/EngineConfig.h"
 
 Window::Window(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync)
     : m_hWnd(hWnd)
@@ -170,7 +173,7 @@ void Window::OnUpdate(UpdateEventArgs&)
     if (auto pGame = m_pGame.lock())
     {
         m_FrameCounter++;
-
+        LuaManager::PerformUpdate();
         UpdateEventArgs updateEventArgs(m_UpdateClock.GetDeltaSeconds(), m_UpdateClock.GetTotalSeconds());
         pGame->OnUpdate(updateEventArgs);
     }
@@ -189,53 +192,99 @@ void Window::OnRender(RenderEventArgs&)
 
 void Window::OnKeyPressed(KeyEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsReleaseMode)
     {
-        pGame->OnKeyPressed(e);
+        LuaManager::ProceedKeyBoardInput(e.Key, true);
+    }
+    else
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnKeyPressed(e);
+        }
     }
 }
 
 void Window::OnKeyReleased(KeyEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsReleaseMode)
     {
-        pGame->OnKeyReleased(e);
+        LuaManager::ProceedKeyBoardInput(e.Key, false);
+    }
+    else
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnKeyReleased(e);
+        }
     }
 }
 
 // The mouse was moved
 void Window::OnMouseMoved(MouseMotionEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsReleaseMode)
     {
-        pGame->OnMouseMoved(e);
+        LuaManager::ProceedMouseMovementInput(e);
+    }
+    else 
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnMouseMoved(e);
+
+        }
     }
 }
 
 // A button on the mouse was pressed
 void Window::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsReleaseMode)
     {
-        pGame->OnMouseButtonPressed(e);
+        LuaManager::ProceedMouseClickInput(e, true);
+
     }
+    else
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnMouseButtonPressed(e);
+        }
+    }
+
 }
 
 // A button on the mouse was released
 void Window::OnMouseButtonReleased(MouseButtonEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsReleaseMode)
     {
-        pGame->OnMouseButtonReleased(e);
+        LuaManager::ProceedMouseClickInput(e, false);
+    }
+    else
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnMouseButtonReleased(e);
+        }
     }
 }
 
 // The mouse wheel was moved.
 void Window::OnMouseWheel(MouseWheelEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsReleaseMode)
     {
-        pGame->OnMouseWheel(e);
+        LuaManager::ProceedMouseWheelInput(e);
+    }
+    else
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnMouseWheel(e);
+        }
+    
     }
 }
 
