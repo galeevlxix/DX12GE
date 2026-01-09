@@ -111,10 +111,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6e93f1af26050fe9ec35645785e29824" id="r_a6e93f1af26050fe9ec35645785e29824"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a6e93f1af26050fe9ec35645785e29824">CameraNode</a> ()</td></tr>
 <tr class="memitem:a559722aa32a0e70c5c4ddf12cbc39a23" id="r_a559722aa32a0e70c5c4ddf12cbc39a23"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a559722aa32a0e70c5c4ddf12cbc39a23">OnUpdate</a> (const double &amp;deltaTime) override</td></tr>
 <tr class="memdesc:a559722aa32a0e70c5c4ddf12cbc39a23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called every tick on a node update.  <br /></td></tr>
-<tr class="memitem:a1c65f0aed51d3fe07bbd95ee1e05dfaa" id="r_a1c65f0aed51d3fe07bbd95ee1e05dfaa"><td class="memItemLeft">const Matrix&#160;</td><td class="memItemRight"><a class="el" href="#a1c65f0aed51d3fe07bbd95ee1e05dfaa">GetViewProjMatrix</a> ()</td></tr>
-<tr class="memdesc:a1c65f0aed51d3fe07bbd95ee1e05dfaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a matrix that combines the view matrix and the projection matrix. Used to display objects.  <br /></td></tr>
-<tr class="memitem:afab80f22180588227880fcc0f1812e84" id="r_afab80f22180588227880fcc0f1812e84"><td class="memItemLeft">const Matrix&#160;</td><td class="memItemRight"><a class="el" href="#afab80f22180588227880fcc0f1812e84">GetViewProjMatrixNoTranslation</a> ()</td></tr>
-<tr class="memdesc:afab80f22180588227880fcc0f1812e84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a matrix that combines the no-trasnslation-view matrix and the projection matrix. Used to display the skybox.  <br /></td></tr>
+<tr class="memitem:ad06be0b17ed74850b5b91513f637f5be" id="r_ad06be0b17ed74850b5b91513f637f5be"><td class="memItemLeft">const DirectX::SimpleMath::Matrix&#160;</td><td class="memItemRight"><a class="el" href="#ad06be0b17ed74850b5b91513f637f5be">GetViewProjMatrix</a> ()</td></tr>
+<tr class="memdesc:ad06be0b17ed74850b5b91513f637f5be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a matrix that combines the view matrix and the projection matrix. Used to display objects.  <br /></td></tr>
+<tr class="memitem:ac3b62170d61c8975e88296644e3b3ef0" id="r_ac3b62170d61c8975e88296644e3b3ef0"><td class="memItemLeft">const DirectX::SimpleMath::Matrix&#160;</td><td class="memItemRight"><a class="el" href="#ac3b62170d61c8975e88296644e3b3ef0">GetViewProjMatrixNoTranslation</a> ()</td></tr>
+<tr class="memdesc:ac3b62170d61c8975e88296644e3b3ef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a matrix that combines the no-trasnslation-view matrix and the projection matrix. Used to display the skybox.  <br /></td></tr>
 <tr class="memitem:a0af7c7bb35a5aae9922dd70f26caa5ee" id="r_a0af7c7bb35a5aae9922dd70f26caa5ee"><td class="memItemLeft">virtual <a class="el" href="class_node3_d.html">Node3D</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a0af7c7bb35a5aae9922dd70f26caa5ee">Clone</a> (<a class="el" href="class_node3_d.html">Node3D</a> *newParent=nullptr, bool cloneChildrenRecursive=false, <a class="el" href="class_node3_d.html">Node3D</a> *cloneNode=nullptr) override</td></tr>
 <tr class="memdesc:a0af7c7bb35a5aae9922dd70f26caa5ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clones this node by copying data and parameters.  <br /></td></tr>
 <tr class="memitem:a2166653e51f8a068cc02326fc1606f85" id="r_a2166653e51f8a068cc02326fc1606f85"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a2166653e51f8a068cc02326fc1606f85">DrawDebug</a> () override</td></tr>
@@ -137,6 +137,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac2ddc1263bda33618343280d69873ca5 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the node type.  <br /></td></tr>
 <tr class="memitem:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d" id="r_a53350cbe547936291c0f86b1e24308f2"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a53350cbe547936291c0f86b1e24308f2">GetNodePath</a> ()</td></tr>
 <tr class="memdesc:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the path of a node in the scene tree from the farthest parent to the given node. For example, "root/road/car/driver".  <br /></td></tr>
+<tr class="memitem:a43e1b9fb82ed5f2f1562a2deff3bdaa8 inherit pub_methods_class_node3_d" id="r_a43e1b9fb82ed5f2f1562a2deff3bdaa8"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a43e1b9fb82ed5f2f1562a2deff3bdaa8">GetNodeScripts</a> ()</td></tr>
+<tr class="memdesc:a43e1b9fb82ed5f2f1562a2deff3bdaa8 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Lua scripts attached to this node as a single string.  <br /></td></tr>
 <tr class="memitem:a6424900a9f7f00e323e545d800db9cad inherit pub_methods_class_node3_d" id="r_a6424900a9f7f00e323e545d800db9cad"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a6424900a9f7f00e323e545d800db9cad">Destroy</a> (bool keepComponent=true)</td></tr>
 <tr class="memdesc:a6424900a9f7f00e323e545d800db9cad inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys this node and all descendants of the node. The node is also removed from its parent's descendant list.  <br /></td></tr>
 <tr class="memitem:a1b76a53ee78642ef06ae869c91dd70f3 inherit pub_methods_class_node3_d" id="r_a1b76a53ee78642ef06ae869c91dd70f3"><td class="memItemLeft">const DirectX::XMMATRIX &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a1b76a53ee78642ef06ae869c91dd70f3">GetWorldMatrix</a> ()</td></tr>
@@ -184,6 +186,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aeffd4659575b539b724322b4bff4cc1d inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the mouse button is pressed.  <br /></td></tr>
 <tr class="memitem:afdfe9d7d92e51af989cabefc7a2e86b6 inherit pub_methods_class_node3_d" id="r_afdfe9d7d92e51af989cabefc7a2e86b6"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#afdfe9d7d92e51af989cabefc7a2e86b6">OnMouseButtonReleased</a> (MouseButtonEventArgs &amp;e)</td></tr>
 <tr class="memdesc:afdfe9d7d92e51af989cabefc7a2e86b6 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the mouse button is released.  <br /></td></tr>
+<tr class="memitem:a88fbe2732b99c407d475743fb80c3361 inherit pub_methods_class_node3_d" id="r_a88fbe2732b99c407d475743fb80c3361"><td class="memItemLeft">uint32_t&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a88fbe2732b99c407d475743fb80c3361">GetNodeId</a> ()</td></tr>
+<tr class="memdesc:a88fbe2732b99c407d475743fb80c3361 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique ID of the node.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -346,19 +350,20 @@ Protected Attributes</h2></td></tr>
 
 <p>Recursively draws debugging primitives. </p>
 <dl class="section note"><dt>Note</dt><dd>Called automatically by the engine if the node is in the scene tree. No need to call it explicitly. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>DEBUG MODE ONLY. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="class_node3_d.html#aa0e8e724f1552643dddc8e7f69f9b929">Node3D</a>.</p>
 
 </div>
 </div>
-<a id="a1c65f0aed51d3fe07bbd95ee1e05dfaa" name="a1c65f0aed51d3fe07bbd95ee1e05dfaa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c65f0aed51d3fe07bbd95ee1e05dfaa">&#9670;&#160;</a></span>GetViewProjMatrix()</h2>
+<a id="ad06be0b17ed74850b5b91513f637f5be" name="ad06be0b17ed74850b5b91513f637f5be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad06be0b17ed74850b5b91513f637f5be">&#9670;&#160;</a></span>GetViewProjMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Matrix CameraNode::GetViewProjMatrix </td>
+          <td class="memname">const SimpleMath::Matrix CameraNode::GetViewProjMatrix </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -370,14 +375,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="afab80f22180588227880fcc0f1812e84" name="afab80f22180588227880fcc0f1812e84"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afab80f22180588227880fcc0f1812e84">&#9670;&#160;</a></span>GetViewProjMatrixNoTranslation()</h2>
+<a id="ac3b62170d61c8975e88296644e3b3ef0" name="ac3b62170d61c8975e88296644e3b3ef0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3b62170d61c8975e88296644e3b3ef0">&#9670;&#160;</a></span>GetViewProjMatrixNoTranslation()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const Matrix CameraNode::GetViewProjMatrixNoTranslation </td>
+          <td class="memname">const SimpleMath::Matrix CameraNode::GetViewProjMatrixNoTranslation </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -494,6 +499,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Called when the window size changes. </p>
 <dl class="section note"><dt>Note</dt><dd>Called automatically by the engine if the node is in the scene tree. No need to call it explicitly. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>DEBUG MODE ONLY. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="class_node3_d.html#aa62613273e80a9342d3bd46dfb3b373b">Node3D</a>.</p>
 

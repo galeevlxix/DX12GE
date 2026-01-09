@@ -23,10 +23,9 @@ FirstPersonPlayerNode::FirstPersonPlayerNode() : PhysicalObjectNode()
 	m_dy = 0;
 }
 
-bool FirstPersonPlayerNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath,
-	const std::string& nodePath)
+bool FirstPersonPlayerNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
-	return PhysicalObjectNode::Create(commandList, filePath, nodePath);
+	return PhysicalObjectNode::Create(commandList, filePath);
 }
 
 void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
@@ -48,11 +47,7 @@ void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 
 		Transform.SetRotationY(m_angle_h);
 
-<<<<<<< HEAD
-		const Matrix& parMat = m_Parent->GetWorldMatrix();
-=======
-		const SimpleMath::Matrix& parMat = m_Parrent->GetWorldMatrix();
->>>>>>> master
+		const SimpleMath::Matrix& parMat = m_Parent->GetWorldMatrix();
 		Vector3 direction = GetWorldDirection();
 		
 		if (m_Camera)
@@ -124,11 +119,7 @@ Node3D* FirstPersonPlayerNode::Clone(Node3D* newParent, bool cloneChildrenRecurs
 		cloneNode = new FirstPersonPlayerNode();
 	}
 
-<<<<<<< HEAD
-	Object3DNode::Clone(newParent, cloneChildrenRecursive, cloneNode);
-=======
-	PhysicalObjectNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
->>>>>>> master
+	PhysicalObjectNode::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
@@ -185,11 +176,7 @@ void FirstPersonPlayerNode::SetCurrent()
 	}
 	else
 	{
-<<<<<<< HEAD
 		printf("Attention! Unable to make FirstPersonPlayerNode::%s active! The node is not in the scene tree!\n", m_Name.c_str());
-=======
-		printf("��������! ���������� ������� FirstPersonPlayerNode::%s ��������! ���� �� ��������� � ������ �����!\n", m_Name.c_str());
->>>>>>> master
 	}
 }
 
@@ -208,7 +195,7 @@ void FirstPersonPlayerNode::SetCamera(CameraNode* camera)
 
 void FirstPersonPlayerNode::OnKeyPressed(KeyEventArgs& e)
 {
-	Object3DNode::OnKeyPressed(e);
+	PhysicalObjectNode::OnKeyPressed(e);
 	if (IsCurrent())
 	{
 		m_PressedInputs.OnKeyPressed(e);
@@ -217,7 +204,7 @@ void FirstPersonPlayerNode::OnKeyPressed(KeyEventArgs& e)
 
 void FirstPersonPlayerNode::OnKeyReleased(KeyEventArgs& e)
 {
-	Object3DNode::OnKeyReleased(e);
+	PhysicalObjectNode::OnKeyReleased(e);
 	if (IsCurrent())
 	{
 		m_PressedInputs.OnKeyReleased(e);
@@ -226,7 +213,7 @@ void FirstPersonPlayerNode::OnKeyReleased(KeyEventArgs& e)
 
 void FirstPersonPlayerNode::OnMouseMoved(MouseMotionEventArgs& e)
 {
-	Object3DNode::OnMouseMoved(e);
+	PhysicalObjectNode::OnMouseMoved(e);
 
 	if (IsCurrent() && m_PressedInputs.RBC)
 	{
@@ -244,7 +231,7 @@ void FirstPersonPlayerNode::OnMouseMoved(MouseMotionEventArgs& e)
 
 void FirstPersonPlayerNode::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
-	Object3DNode::OnMouseButtonPressed(e);
+	PhysicalObjectNode::OnMouseButtonPressed(e);
 
 	if (IsCurrent())
 	{
@@ -260,7 +247,7 @@ void FirstPersonPlayerNode::OnMouseButtonPressed(MouseButtonEventArgs& e)
 
 void FirstPersonPlayerNode::OnMouseButtonReleased(MouseButtonEventArgs& e)
 {
-	Object3DNode::OnMouseButtonReleased(e);
+	PhysicalObjectNode::OnMouseButtonReleased(e);
 
 	if (IsCurrent())
 	{
@@ -275,7 +262,7 @@ void FirstPersonPlayerNode::OnMouseButtonReleased(MouseButtonEventArgs& e)
 
 void FirstPersonPlayerNode::OnMouseWheel(MouseWheelEventArgs& e)
 {
-	Object3DNode::OnMouseWheel(e);
+	PhysicalObjectNode::OnMouseWheel(e);
 
 	if (IsCurrent())
 	{

@@ -1,18 +1,20 @@
-#include "../PhysicalObjectNode.h"
 #include "../../Graphics/AssimpModelLoader.h"
 #include "../../Base/Singleton.h"
 
 PhysicalObjectNode::PhysicalObjectNode() : Object3DNode()
 {    
+	m_Type = NODE_TYPE_PHYSICAL_OBJECT3D;
+    Rename("PhysicalObjectNode");
+
     ModelVertices = new std::vector<Vector3>();
 }
 
-bool PhysicalObjectNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath)
+bool PhysicalObjectNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
     AssimpModelLoader modelLoader;
     float yOffset = 0.0f;
     
-    uint32_t id = modelLoader.LoadModelData(commandList, filePath, nodePath, yOffset, ModelVertices);
+    uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset, ModelVertices);
     Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);
@@ -35,9 +37,9 @@ bool PhysicalObjectNode::AddChild(Node3D* node)
     return Object3DNode::AddChild(node);
 }
 
-Node3D* PhysicalObjectNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* PhysicalObjectNode::Clone(Node3D* newparent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
-    return Object3DNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+    return Object3DNode::Clone(newparent, cloneChildrenRecursive, cloneNode);
 }
 
 void PhysicalObjectNode::CreateJsonData(json& j)

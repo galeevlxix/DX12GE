@@ -13,6 +13,7 @@ var class_object3_d_node =
     [ "LoadFromJsonData", "class_object3_d_node.html#a63123a3f9bcd5ce06331bc6fe9d02e25", null ],
     [ "Render", "class_object3_d_node.html#aabaa4a3e97627a0c420433df4d8bb17b", null ],
     [ "SetComponentId", "class_object3_d_node.html#a3679ef41638a3df652db5afe84f53a03", null ],
+    [ "UpdateTransform", "class_object3_d_node.html#a54065b3a90229b66f2fd27fe69b3280c", null ],
     [ "IsVisible", "class_object3_d_node.html#a528a59a9653b796cbb29bb6d166012ea", null ],
     [ "m_ComponentId", "class_object3_d_node.html#ae1bfd8beddecd16eb0393db047ff716f", null ]
 ];

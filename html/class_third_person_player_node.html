@@ -102,7 +102,8 @@ Inheritance diagram for ThirdPersonPlayerNode:</div>
  <div class="center">
   <img src="class_third_person_player_node.png" usemap="#ThirdPersonPlayerNode_map" alt=""/>
   <map id="ThirdPersonPlayerNode_map" name="ThirdPersonPlayerNode_map">
-<area href="class_first_person_player_node.html" title="Player node class for first-person camera control." alt="FirstPersonPlayerNode" shape="rect" coords="0,112,148,136"/>
+<area href="class_first_person_player_node.html" title="Player node class for first-person camera control." alt="FirstPersonPlayerNode" shape="rect" coords="0,168,148,192"/>
+<area href="class_physical_object_node.html" alt="PhysicalObjectNode" shape="rect" coords="0,112,148,136"/>
 <area href="class_object3_d_node.html" title="3D object node class." alt="Object3DNode" shape="rect" coords="0,56,148,80"/>
 <area href="class_node3_d.html" title="Base class of a node in the scene tree." alt="Node3D" shape="rect" coords="0,0,148,24"/>
   </map>
@@ -111,6 +112,8 @@ Inheritance diagram for ThirdPersonPlayerNode:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a2760050189f1beadc98c87267670df48" id="r_a2760050189f1beadc98c87267670df48"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a2760050189f1beadc98c87267670df48">ThirdPersonPlayerNode</a> ()</td></tr>
+<tr class="memitem:a1e2b00dc002116aa4f88d68aa56221b2" id="r_a1e2b00dc002116aa4f88d68aa56221b2"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a1e2b00dc002116aa4f88d68aa56221b2">Create</a> (ComPtr&lt; ID3D12GraphicsCommandList2 &gt; commandList, const std::string &amp;filePath) override</td></tr>
+<tr class="memdesc:a1e2b00dc002116aa4f88d68aa56221b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads node data.  <br /></td></tr>
 <tr class="memitem:a107c85c5a0d7cd1c0f4bb1c83e00fe00" id="r_a107c85c5a0d7cd1c0f4bb1c83e00fe00"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a107c85c5a0d7cd1c0f4bb1c83e00fe00">OnUpdate</a> (const double &amp;deltaTime) override</td></tr>
 <tr class="memdesc:a107c85c5a0d7cd1c0f4bb1c83e00fe00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called every tick on a node update.  <br /></td></tr>
 <tr class="memitem:a30c8e94c47902eb05ecafb518c6b9e08" id="r_a30c8e94c47902eb05ecafb518c6b9e08"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a30c8e94c47902eb05ecafb518c6b9e08">Destroy</a> (bool keepComponent=true) override</td></tr>
@@ -145,30 +148,39 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a422309d4dd843368410cf6abfd6fba99 inherit pub_methods_class_first_person_player_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the mouse button is pressed.  <br /></td></tr>
 <tr class="memitem:a47956f05cb814e1fe356dde23f2bc077 inherit pub_methods_class_first_person_player_node" id="r_a47956f05cb814e1fe356dde23f2bc077"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_first_person_player_node.html#a47956f05cb814e1fe356dde23f2bc077">OnMouseButtonReleased</a> (MouseButtonEventArgs &amp;e) override</td></tr>
 <tr class="memdesc:a47956f05cb814e1fe356dde23f2bc077 inherit pub_methods_class_first_person_player_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the mouse button is released.  <br /></td></tr>
+<tr class="inherit_header pub_methods_class_physical_object_node"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_physical_object_node')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_physical_object_node.html">PhysicalObjectNode</a></td></tr>
+<tr class="memitem:ab9b0f6e0be6f44af7fb0db822093cdbe inherit pub_methods_class_physical_object_node" id="r_ab9b0f6e0be6f44af7fb0db822093cdbe"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#ab9b0f6e0be6f44af7fb0db822093cdbe">PhysicalObjectNode</a> ()</td></tr>
+<tr class="memitem:a9e87a069e2209ae069391bec29f26072 inherit pub_methods_class_physical_object_node" id="r_a9e87a069e2209ae069391bec29f26072"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#a9e87a069e2209ae069391bec29f26072">DrawDebug</a> () override</td></tr>
+<tr class="memdesc:a9e87a069e2209ae069391bec29f26072 inherit pub_methods_class_physical_object_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recursively draws debugging primitives.  <br /></td></tr>
+<tr class="memitem:aacc0480608cc26e57500fb80dc841c22 inherit pub_methods_class_physical_object_node" id="r_aacc0480608cc26e57500fb80dc841c22"><td class="memItemLeft">std::vector&lt; Vector3 &gt; *&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#aacc0480608cc26e57500fb80dc841c22">GetVertices</a> ()</td></tr>
+<tr class="memitem:a6de0a2e2ebc114e119a1a60bbfa95917 inherit pub_methods_class_physical_object_node" id="r_a6de0a2e2ebc114e119a1a60bbfa95917"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#a6de0a2e2ebc114e119a1a60bbfa95917">SetCollisionGeometry</a> (std::vector&lt; Vector3 &gt; *vertices)</td></tr>
+<tr class="memitem:af26cd96b2575a405610cc9ef12ea38cf inherit pub_methods_class_physical_object_node" id="r_af26cd96b2575a405610cc9ef12ea38cf"><td class="memItemLeft">const CollisionTypeEnum &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#af26cd96b2575a405610cc9ef12ea38cf">GetCollisionType</a> ()</td></tr>
+<tr class="memitem:a35c3448b421de7d341ae0752bc5988fd inherit pub_methods_class_physical_object_node" id="r_a35c3448b421de7d341ae0752bc5988fd"><td class="memItemLeft">const float &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#a35c3448b421de7d341ae0752bc5988fd">GetGravityScale</a> ()</td></tr>
+<tr class="memitem:a9d7df7c4c71e23eef09463498e2228a9 inherit pub_methods_class_physical_object_node" id="r_a9d7df7c4c71e23eef09463498e2228a9"><td class="memItemLeft">const float &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#a9d7df7c4c71e23eef09463498e2228a9">GetMass</a> ()</td></tr>
+<tr class="memitem:a36020b01f4b11c6cb6a3d1147be16cce inherit pub_methods_class_physical_object_node" id="r_a36020b01f4b11c6cb6a3d1147be16cce"><td class="memItemLeft">const float &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#a36020b01f4b11c6cb6a3d1147be16cce">GetFrictionScale</a> ()</td></tr>
 <tr class="inherit_header pub_methods_class_object3_d_node"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_object3_d_node')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_object3_d_node.html">Object3DNode</a></td></tr>
 <tr class="memitem:a9affd2ac995506f562a187bf3452df8e inherit pub_methods_class_object3_d_node" id="r_a9affd2ac995506f562a187bf3452df8e"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#a9affd2ac995506f562a187bf3452df8e">Object3DNode</a> ()</td></tr>
-<tr class="memitem:ad83ab1c10003f47952c4d0038e520c77 inherit pub_methods_class_object3_d_node" id="r_ad83ab1c10003f47952c4d0038e520c77"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#ad83ab1c10003f47952c4d0038e520c77">Create</a> (ComPtr&lt; ID3D12GraphicsCommandList2 &gt; commandList, const std::string &amp;filePath)</td></tr>
-<tr class="memdesc:ad83ab1c10003f47952c4d0038e520c77 inherit pub_methods_class_object3_d_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads node data.  <br /></td></tr>
 <tr class="memitem:aabaa4a3e97627a0c420433df4d8bb17b inherit pub_methods_class_object3_d_node" id="r_aabaa4a3e97627a0c420433df4d8bb17b"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#aabaa4a3e97627a0c420433df4d8bb17b">Render</a> (ComPtr&lt; ID3D12GraphicsCommandList2 &gt; commandList, const DirectX::XMMATRIX &amp;viewProjMatrix)</td></tr>
 <tr class="memdesc:aabaa4a3e97627a0c420433df4d8bb17b inherit pub_methods_class_object3_d_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">3D object rendering.  <br /></td></tr>
 <tr class="memitem:a3679ef41638a3df652db5afe84f53a03 inherit pub_methods_class_object3_d_node" id="r_a3679ef41638a3df652db5afe84f53a03"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#a3679ef41638a3df652db5afe84f53a03">SetComponentId</a> (uint32_t newId)</td></tr>
 <tr class="memdesc:a3679ef41638a3df652db5afe84f53a03 inherit pub_methods_class_object3_d_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a new object component (resource with data) by id for this node.  <br /></td></tr>
 <tr class="memitem:ae1b322dbc4fb8f4be164648d98147a0d inherit pub_methods_class_object3_d_node" id="r_ae1b322dbc4fb8f4be164648d98147a0d"><td class="memItemLeft">virtual uint32_t&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#ae1b322dbc4fb8f4be164648d98147a0d">GetComponentId</a> ()</td></tr>
 <tr class="memdesc:ae1b322dbc4fb8f4be164648d98147a0d inherit pub_methods_class_object3_d_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the id of a component (resource with data) in the resource storage.  <br /></td></tr>
+<tr class="memitem:a54065b3a90229b66f2fd27fe69b3280c inherit pub_methods_class_object3_d_node" id="r_a54065b3a90229b66f2fd27fe69b3280c"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#a54065b3a90229b66f2fd27fe69b3280c">UpdateTransform</a> (DirectX::SimpleMath::Matrix InTransform=DirectX::SimpleMath::Matrix())</td></tr>
 <tr class="memitem:a1fb66608ccbc43fae79fe6e69c3dc60c inherit pub_methods_class_object3_d_node" id="r_a1fb66608ccbc43fae79fe6e69c3dc60c"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#a1fb66608ccbc43fae79fe6e69c3dc60c">IsValid</a> ()</td></tr>
 <tr class="memdesc:a1fb66608ccbc43fae79fe6e69c3dc60c inherit pub_methods_class_object3_d_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a 3D object is valid for rendering.  <br /></td></tr>
 <tr class="memitem:a3583ff95adf651e6075931829357fd2a inherit pub_methods_class_object3_d_node" id="r_a3583ff95adf651e6075931829357fd2a"><td class="memItemLeft">virtual const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#a3583ff95adf651e6075931829357fd2a">GetObjectFilePath</a> ()</td></tr>
 <tr class="memdesc:a3583ff95adf651e6075931829357fd2a inherit pub_methods_class_object3_d_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the data file of a 3D object.  <br /></td></tr>
 <tr class="memitem:a6736180cc534d5010be4c392a8805170 inherit pub_methods_class_object3_d_node" id="r_a6736180cc534d5010be4c392a8805170"><td class="memItemLeft">const CollisionBox &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#a6736180cc534d5010be4c392a8805170">GetCollisionBox</a> ()</td></tr>
 <tr class="memdesc:a6736180cc534d5010be4c392a8805170 inherit pub_methods_class_object3_d_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns AABB of object 3d component.  <br /></td></tr>
-<tr class="memitem:a60cdb4aa8d5a0d868586877a81d28224 inherit pub_methods_class_object3_d_node" id="r_a60cdb4aa8d5a0d868586877a81d28224"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#a60cdb4aa8d5a0d868586877a81d28224">DrawDebug</a> () override</td></tr>
-<tr class="memdesc:a60cdb4aa8d5a0d868586877a81d28224 inherit pub_methods_class_object3_d_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recursively draws debugging primitives.  <br /></td></tr>
 <tr class="inherit_header pub_methods_class_node3_d"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_node3_d')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_node3_d.html">Node3D</a></td></tr>
 <tr class="memitem:ab99fbabe69656236e823ed23a8298c92 inherit pub_methods_class_node3_d" id="r_ab99fbabe69656236e823ed23a8298c92"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#ab99fbabe69656236e823ed23a8298c92">Node3D</a> ()</td></tr>
 <tr class="memitem:ac2ddc1263bda33618343280d69873ca5 inherit pub_methods_class_node3_d" id="r_ac2ddc1263bda33618343280d69873ca5"><td class="memItemLeft"><a class="el" href="_node_type_enum_8h.html#aa38b727be25d2ce9d950bf7f610e7659">NodeTypeEnum</a>&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#ac2ddc1263bda33618343280d69873ca5">GetType</a> ()</td></tr>
 <tr class="memdesc:ac2ddc1263bda33618343280d69873ca5 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the node type.  <br /></td></tr>
 <tr class="memitem:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d" id="r_a53350cbe547936291c0f86b1e24308f2"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a53350cbe547936291c0f86b1e24308f2">GetNodePath</a> ()</td></tr>
 <tr class="memdesc:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the path of a node in the scene tree from the farthest parent to the given node. For example, "root/road/car/driver".  <br /></td></tr>
+<tr class="memitem:a43e1b9fb82ed5f2f1562a2deff3bdaa8 inherit pub_methods_class_node3_d" id="r_a43e1b9fb82ed5f2f1562a2deff3bdaa8"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a43e1b9fb82ed5f2f1562a2deff3bdaa8">GetNodeScripts</a> ()</td></tr>
+<tr class="memdesc:a43e1b9fb82ed5f2f1562a2deff3bdaa8 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Lua scripts attached to this node as a single string.  <br /></td></tr>
 <tr class="memitem:a1b76a53ee78642ef06ae869c91dd70f3 inherit pub_methods_class_node3_d" id="r_a1b76a53ee78642ef06ae869c91dd70f3"><td class="memItemLeft">const DirectX::XMMATRIX &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a1b76a53ee78642ef06ae869c91dd70f3">GetWorldMatrix</a> ()</td></tr>
 <tr class="memdesc:a1b76a53ee78642ef06ae869c91dd70f3 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the world matrix of the node.  <br /></td></tr>
 <tr class="memitem:af5f893d5ce05158108b755b5a8f679cb inherit pub_methods_class_node3_d" id="r_af5f893d5ce05158108b755b5a8f679cb"><td class="memItemLeft">const DirectX::SimpleMath::Vector3 &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#af5f893d5ce05158108b755b5a8f679cb">GetWorldPosition</a> ()</td></tr>
@@ -202,6 +214,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a7e5913dce74e7ab7a612407d3a0bf9b9 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves this node to the new parent node.  <br /></td></tr>
 <tr class="memitem:aa62613273e80a9342d3bd46dfb3b373b inherit pub_methods_class_node3_d" id="r_aa62613273e80a9342d3bd46dfb3b373b"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#aa62613273e80a9342d3bd46dfb3b373b">OnWindowResize</a> (ResizeEventArgs &amp;e)</td></tr>
 <tr class="memdesc:aa62613273e80a9342d3bd46dfb3b373b inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the window size changes.  <br /></td></tr>
+<tr class="memitem:a88fbe2732b99c407d475743fb80c3361 inherit pub_methods_class_node3_d" id="r_a88fbe2732b99c407d475743fb80c3361"><td class="memItemLeft">uint32_t&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a88fbe2732b99c407d475743fb80c3361">GetNodeId</a> ()</td></tr>
+<tr class="memdesc:a88fbe2732b99c407d475743fb80c3361 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique ID of the node.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -222,6 +236,7 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:ae89a9f2e92602b32c44a1203de3af78e inherit pub_attribs_class_first_person_player_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normal movement speed.  <br /></td></tr>
 <tr class="memitem:ac3e46b13d187c0ff2fc459e59451126f inherit pub_attribs_class_first_person_player_node" id="r_ac3e46b13d187c0ff2fc459e59451126f"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="class_first_person_player_node.html#ac3e46b13d187c0ff2fc459e59451126f">MaxMovementSpeed</a></td></tr>
 <tr class="memdesc:ac3e46b13d187c0ff2fc459e59451126f inherit pub_attribs_class_first_person_player_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fast movement speed.  <br /></td></tr>
+<tr class="memitem:a0f0b40a9368d22b2172f53061606bdfc inherit pub_attribs_class_first_person_player_node" id="r_a0f0b40a9368d22b2172f53061606bdfc"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="class_first_person_player_node.html#a0f0b40a9368d22b2172f53061606bdfc">JumpImpulse</a></td></tr>
 <tr class="inherit_header pub_attribs_class_object3_d_node"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_class_object3_d_node')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="class_object3_d_node.html">Object3DNode</a></td></tr>
 <tr class="memitem:a528a59a9653b796cbb29bb6d166012ea inherit pub_attribs_class_object3_d_node" id="r_a528a59a9653b796cbb29bb6d166012ea"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#a528a59a9653b796cbb29bb6d166012ea">IsVisible</a></td></tr>
 <tr class="inherit_header pub_attribs_class_node3_d"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_class_node3_d')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="class_node3_d.html">Node3D</a></td></tr>
@@ -245,6 +260,12 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a18abf77a63db3231689b6706d7829088 inherit pro_attribs_class_first_person_player_node" id="r_a18abf77a63db3231689b6706d7829088"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="class_first_person_player_node.html#a18abf77a63db3231689b6706d7829088">m_prevY</a></td></tr>
 <tr class="memitem:a87a34a08de7bc41a401b88909390d1ff inherit pro_attribs_class_first_person_player_node" id="r_a87a34a08de7bc41a401b88909390d1ff"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="class_first_person_player_node.html#a87a34a08de7bc41a401b88909390d1ff">m_dx</a></td></tr>
 <tr class="memitem:ab762d451aa32a8efc1cd8cea40e078a6 inherit pro_attribs_class_first_person_player_node" id="r_ab762d451aa32a8efc1cd8cea40e078a6"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="class_first_person_player_node.html#ab762d451aa32a8efc1cd8cea40e078a6">m_dy</a></td></tr>
+<tr class="inherit_header pro_attribs_class_physical_object_node"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_class_physical_object_node')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="class_physical_object_node.html">PhysicalObjectNode</a></td></tr>
+<tr class="memitem:a8a14d55e13a537cd1029962ba137a4c0 inherit pro_attribs_class_physical_object_node" id="r_a8a14d55e13a537cd1029962ba137a4c0"><td class="memItemLeft">std::vector&lt; Vector3 &gt; *&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#a8a14d55e13a537cd1029962ba137a4c0">ModelVertices</a></td></tr>
+<tr class="memitem:aee2e57550c08b5e743d8c094ee59c366 inherit pro_attribs_class_physical_object_node" id="r_aee2e57550c08b5e743d8c094ee59c366"><td class="memItemLeft">CollisionTypeEnum&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#aee2e57550c08b5e743d8c094ee59c366">collisionType</a> = COLLISION_TYPE_STATIC_MESH</td></tr>
+<tr class="memitem:aa78dc96769b0cda13a3f4a8c515a24dd inherit pro_attribs_class_physical_object_node" id="r_aa78dc96769b0cda13a3f4a8c515a24dd"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#aa78dc96769b0cda13a3f4a8c515a24dd">gravityScale</a> = 1.0f</td></tr>
+<tr class="memitem:a790e1cbf07ade1f31ff5ef3e3563883b inherit pro_attribs_class_physical_object_node" id="r_a790e1cbf07ade1f31ff5ef3e3563883b"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#a790e1cbf07ade1f31ff5ef3e3563883b">mass</a> = 1.0f</td></tr>
+<tr class="memitem:a8014d71390da0b8e209e6eb744d801c8 inherit pro_attribs_class_physical_object_node" id="r_a8014d71390da0b8e209e6eb744d801c8"><td class="memItemLeft">float&#160;</td><td class="memItemRight"><a class="el" href="class_physical_object_node.html#a8014d71390da0b8e209e6eb744d801c8">frictionScale</a> = 0.2f</td></tr>
 <tr class="inherit_header pro_attribs_class_object3_d_node"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_class_object3_d_node')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="class_object3_d_node.html">Object3DNode</a></td></tr>
 <tr class="memitem:ae1bfd8beddecd16eb0393db047ff716f inherit pro_attribs_class_object3_d_node" id="r_ae1bfd8beddecd16eb0393db047ff716f"><td class="memItemLeft">uint32_t&#160;</td><td class="memItemRight"><a class="el" href="class_object3_d_node.html#ae1bfd8beddecd16eb0393db047ff716f">m_ComponentId</a></td></tr>
 <tr class="inherit_header pro_attribs_class_node3_d"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_class_node3_d')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="class_node3_d.html">Node3D</a></td></tr>
@@ -319,8 +340,9 @@ Protected Attributes</h2></td></tr>
 
 <p>Clones this node by copying data and parameters. </p>
 <div class="fragment"><div class="line"><span class="comment">// Example of use:  </span></div>
-<div class="line"><a class="code hl_function" href="class_node3_d.html#ab99fbabe69656236e823ed23a8298c92">Node3D</a>* newNode = oldNode-&gt;Clone(someParent, <span class="keyword">true</span>);</div>
-<div class="ttc" id="aclass_node3_d_html_ab99fbabe69656236e823ed23a8298c92"><div class="ttname"><a href="class_node3_d.html#ab99fbabe69656236e823ed23a8298c92">Node3D::Node3D</a></div><div class="ttdeci">Node3D()</div><div class="ttdef"><b>Definition</b> Node3D.cpp:3</div></div>
+<div class="line"><a class="code hl_class" href="class_node3_d.html">Node3D</a>* newNode = oldNode-&gt;<a class="code hl_function" href="class_node3_d.html#a39bf64d63215d0a77144c9b6a2d55507">Clone</a>(someParent, <span class="keyword">true</span>);</div>
+<div class="ttc" id="aclass_node3_d_html"><div class="ttname"><a href="class_node3_d.html">Node3D</a></div><div class="ttdoc">Base class of a node in the scene tree.</div><div class="ttdef"><b>Definition</b> Node3D.h:12</div></div>
+<div class="ttc" id="aclass_node3_d_html_a39bf64d63215d0a77144c9b6a2d55507"><div class="ttname"><a href="class_node3_d.html#a39bf64d63215d0a77144c9b6a2d55507">Node3D::Clone</a></div><div class="ttdeci">virtual Node3D * Clone(Node3D *newParent=nullptr, bool cloneChildrenRecursive=false, Node3D *cloneNode=nullptr)</div><div class="ttdoc">Clones this node by copying data and parameters.</div><div class="ttdef"><b>Definition</b> Node3D.cpp:276</div></div>
 </div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">newParent</td><td>If it is defined, the new node will be added to this parent node. </td></tr>
@@ -332,6 +354,46 @@ Protected Attributes</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Returns a new node if cloning was successful. Returns nullptr otherwise. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="class_first_person_player_node.html#ad26515c59ad110d6d96dbc7b6775ef59">FirstPersonPlayerNode</a>.</p>
+
+</div>
+</div>
+<a id="a1e2b00dc002116aa4f88d68aa56221b2" name="a1e2b00dc002116aa4f88d68aa56221b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e2b00dc002116aa4f88d68aa56221b2">&#9670;&#160;</a></span>Create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ThirdPersonPlayerNode::Create </td>
+          <td>(</td>
+          <td class="paramtype">ComPtr&lt; ID3D12GraphicsCommandList2 &gt;</td>          <td class="paramname"><span class="paramname"><em>commandList</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>filePath</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Loads node data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filePath</td><td>The path to the file that stores data about meshes, vertices, and indices. For example, .obj or .gltf. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns true if creation was successful. Returns false otherwise. </dd></dl>
+
+<p>Reimplemented from <a class="el" href="class_first_person_player_node.html#a930fc6c7748d1347ef55740b8ea9be43">FirstPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -455,6 +517,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Called when the mouse wheel is moved. </p>
 <dl class="section note"><dt>Note</dt><dd>Called automatically by the engine if the node is in the scene tree. No need to call it explicitly. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>DEBUG MODE ONLY. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="class_first_person_player_node.html#aef42b1e6f93d010e6a7750205bd05086">FirstPersonPlayerNode</a>.</p>
 

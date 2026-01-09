@@ -5,6 +5,7 @@
 #include "Graphics/ShaderResources.h"
 #include "Base/CommandExecutor.h"
 #include "../DX12GE/Engine/Physics/PhysicsManager.h"
+#include "../DX12GE/EngineConfig.h"
 
 #include <sstream>
 #include <string>
@@ -94,13 +95,9 @@ static Node3D* CreateObj(const std::string& nodePath, ComPtr<ID3D12GraphicsComma
     Node3D* node = Singleton::GetNodeGraph()->CreateNewNodeInScene(nodePath, NODE_TYPE_OBJECT3D);
     if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
     {
-        if (!obj3D->Create(commandList, filePath, nodePath))
+        if (!obj3D->Create(commandList, filePath))
         {
-<<<<<<< HEAD
             printf("Warning! The mesh node %s has not been initialized!\n", node->GetName().c_str());
-=======
-            printf("��������������! ��� ���� %s �� ���������������!\n", node->GetName().c_str());
->>>>>>> master
         }
     }
     return node;
@@ -187,7 +184,6 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     Singleton::GetNodeGraph()->GetRoot()->OnUpdate(e.ElapsedTime);
     
     UpdateObjectsTransforms(e);
-    
 
     m_Lights.OnUpdate(elapsedTime);
 
@@ -203,9 +199,12 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     m_ParticleSystem.OnUpdate(elapsedTime, m_stopParticles, viewProj, cameraPos);
     m_CascadedShadowMap.Update(cameraPos, ShaderResources::GetWorldCB()->DirLight.Direction);
     
-    Singleton::GetDebugRender()->Clear();
-    Singleton::GetDebugRender()->DrawCellularFieldAndAxes(cameraPos);
-    Singleton::GetSelection()->DrawDebug();
+    if (!EngineConfig::IsReleaseMode)
+    {
+        Singleton::GetDebugRender()->Clear();
+        Singleton::GetDebugRender()->DrawCellularFieldAndAxes(cameraPos);
+        Singleton::GetSelection()->DrawDebug();
+    }    
 
     RefreshTitle(e);
 }
@@ -225,10 +224,10 @@ void SingleGpuGame::GenerateCollisions() const
                     Rotation = Vector3(0.f, Rotation.y, 0.f);
                 }
                 
-                Singleton::GetPhysicsManager()->GenerateCollision(PhysRef->GetComponentId(), *PhysRef->GetVertices(), PhysRef->Transform.GetPosition(), Rotation, PhysRef->GetMass(), PhysRef->Transform.GetScale(), PhysRef->GetCollisionType());
+                Singleton::GetPhysicsManager()->GenerateCollision(PhysRef->GetNodeId(), *PhysRef->GetVertices(), PhysRef->Transform.GetPosition(), Rotation, PhysRef->GetMass(), PhysRef->Transform.GetScale(), PhysRef->GetCollisionType());
             }
             
-            Singleton::GetPhysicsManager()->ApplyProperties(PhysRef->GetComponentId(), PhysRef->GetGravityScale(), PhysRef->GetFrictionScale());
+            Singleton::GetPhysicsManager()->ApplyProperties(PhysRef->GetNodeId(), PhysRef->GetGravityScale(), PhysRef->GetFrictionScale());
         }
     }
 }
@@ -242,17 +241,17 @@ void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
         PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(object.second);
         if (PhysRef != nullptr && PhysRef->GetCollisionType() > COLLISION_TYPE_NONE && PhysRef->GetCollisionType() < COLLISION_TYPE_STATIC_MESH)
         {
-            PrePhysicsTransforms.insert(pair(PhysRef->GetComponentId(), PhysRef->Transform.GetLocalMatrix()));
+            PrePhysicsTransforms.insert(pair(PhysRef->GetNodeId(), PhysRef->Transform.GetLocalMatrix()));
             
             if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
             {
                 Vector3 Position, Scale;
                 Quaternion Rotation;
-                PrePhysicsTransforms[PhysRef->GetComponentId()].Decompose(Scale, Rotation, Position);
+                PrePhysicsTransforms[PhysRef->GetNodeId()].Decompose(Scale, Rotation, Position);
                 Vector3 RotationEuler = Rotation.ToEuler();
                 RotationEuler = Vector3(RotationEuler.y, 0.f, 0.f);
                 
-                PrePhysicsTransforms[PhysRef->GetComponentId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(RotationEuler) * SimpleMath::Matrix::CreateTranslation(Position);
+                PrePhysicsTransforms[PhysRef->GetNodeId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(RotationEuler) * SimpleMath::Matrix::CreateTranslation(Position);
             }
         }
     }
@@ -262,20 +261,20 @@ void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
     for (const auto& object : Singleton::GetNodeGraph()->GetAll3DObjects())
     {
         PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(object.second);
-        if (PhysRef != nullptr && PostPhysicsTransforms.contains(PhysRef->GetComponentId()))
+        if (PhysRef != nullptr && PostPhysicsTransforms.contains(PhysRef->GetNodeId()))
         {
             if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
             {
                 Vector3 Position, Scale;
                 Quaternion Rotation;
-                PostPhysicsTransforms[PhysRef->GetComponentId()].Decompose(Scale, Rotation, Position);
+                PostPhysicsTransforms[PhysRef->GetNodeId()].Decompose(Scale, Rotation, Position);
                 
-                PostPhysicsTransforms[PhysRef->GetComponentId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(PhysRef->Transform.GetRotation()) * SimpleMath::Matrix::CreateTranslation(Position);
+                PostPhysicsTransforms[PhysRef->GetNodeId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(PhysRef->Transform.GetRotation()) * SimpleMath::Matrix::CreateTranslation(Position);
             }
             
-            PhysRef->UpdateTransform(PostPhysicsTransforms[PhysRef->GetComponentId()]);
+            PhysRef->UpdateTransform(PostPhysicsTransforms[PhysRef->GetNodeId()]);
             
-            //PhysRef->SetCollisionGeometry(Singleton::GetPhysicsManager()->GetBodyCollision(PhysRef->GetComponentId(), PhysRef->GetVertices()));
+            //PhysRef->SetCollisionGeometry(Singleton::GetPhysicsManager()->GetBodyCollision(PhysRef->GetNodeID(), PhysRef->GetVertices()));
         }
     }
 }

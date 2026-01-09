@@ -127,6 +127,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac2ddc1263bda33618343280d69873ca5 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the node type.  <br /></td></tr>
 <tr class="memitem:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d" id="r_a53350cbe547936291c0f86b1e24308f2"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a53350cbe547936291c0f86b1e24308f2">GetNodePath</a> ()</td></tr>
 <tr class="memdesc:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the path of a node in the scene tree from the farthest parent to the given node. For example, "root/road/car/driver".  <br /></td></tr>
+<tr class="memitem:a43e1b9fb82ed5f2f1562a2deff3bdaa8 inherit pub_methods_class_node3_d" id="r_a43e1b9fb82ed5f2f1562a2deff3bdaa8"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a43e1b9fb82ed5f2f1562a2deff3bdaa8">GetNodeScripts</a> ()</td></tr>
+<tr class="memdesc:a43e1b9fb82ed5f2f1562a2deff3bdaa8 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Lua scripts attached to this node as a single string.  <br /></td></tr>
 <tr class="memitem:a56c86bc234ba5ac79612a352d1f00fe2 inherit pub_methods_class_node3_d" id="r_a56c86bc234ba5ac79612a352d1f00fe2"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a56c86bc234ba5ac79612a352d1f00fe2">OnUpdate</a> (const double &amp;deltaTime)</td></tr>
 <tr class="memdesc:a56c86bc234ba5ac79612a352d1f00fe2 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called every tick on a node update.  <br /></td></tr>
 <tr class="memitem:a6424900a9f7f00e323e545d800db9cad inherit pub_methods_class_node3_d" id="r_a6424900a9f7f00e323e545d800db9cad"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a6424900a9f7f00e323e545d800db9cad">Destroy</a> (bool keepComponent=true)</td></tr>
@@ -178,6 +180,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:afdfe9d7d92e51af989cabefc7a2e86b6 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the mouse button is released.  <br /></td></tr>
 <tr class="memitem:aa62613273e80a9342d3bd46dfb3b373b inherit pub_methods_class_node3_d" id="r_aa62613273e80a9342d3bd46dfb3b373b"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#aa62613273e80a9342d3bd46dfb3b373b">OnWindowResize</a> (ResizeEventArgs &amp;e)</td></tr>
 <tr class="memdesc:aa62613273e80a9342d3bd46dfb3b373b inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the window size changes.  <br /></td></tr>
+<tr class="memitem:a88fbe2732b99c407d475743fb80c3361 inherit pub_methods_class_node3_d" id="r_a88fbe2732b99c407d475743fb80c3361"><td class="memItemLeft">uint32_t&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a88fbe2732b99c407d475743fb80c3361">GetNodeId</a> ()</td></tr>
+<tr class="memdesc:a88fbe2732b99c407d475743fb80c3361 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique ID of the node.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -346,6 +350,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Recursively draws debugging primitives. </p>
 <dl class="section note"><dt>Note</dt><dd>Called automatically by the engine if the node is in the scene tree. No need to call it explicitly. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>DEBUG MODE ONLY. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="class_node3_d.html#aa0e8e724f1552643dddc8e7f69f9b929">Node3D</a>.</p>
 

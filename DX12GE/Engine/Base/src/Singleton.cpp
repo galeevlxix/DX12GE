@@ -6,11 +6,9 @@ static SelectionSystem* Selection = nullptr;
 static NodeGraphSystem* NodeGraph = nullptr;
 static SceneJsonSerializer* Serializer = nullptr;
 static CurrentPass* Pass = nullptr;
-<<<<<<< HEAD
 static AudioSystem* Audio = nullptr;
-=======
 static PhysicsManager* PhysMgr = nullptr;
->>>>>>> master
+static NodeIdGenerator* NodeIdGen = nullptr;
 
 static bool m_IsInitialized = false;
 
@@ -18,18 +16,16 @@ void Singleton::Initialize()
 {
 	if (m_IsInitialized) return;
 
+	NodeIdGen = new NodeIdGenerator();
 	Executor = new CommandExecutor();
 	DebugRender = new DebugRenderSystem();
 	Selection = new SelectionSystem();
 	NodeGraph = new NodeGraphSystem();
 	Serializer = new SceneJsonSerializer();
 	Pass = new CurrentPass();
-<<<<<<< HEAD
 	Audio = new AudioSystem();
-=======
 	PhysMgr = new PhysicsManager();
 	PhysMgr->Initialize();
->>>>>>> master
 
 	m_IsInitialized = true;
 }
@@ -53,6 +49,7 @@ void Singleton::Destroy()
 	delete Serializer;
 	delete Pass;
 	delete Audio;
+	delete NodeIdGen;
 
 	Executor = nullptr;
 	DebugRender = nullptr;
@@ -61,6 +58,7 @@ void Singleton::Destroy()
 	Serializer = nullptr;
 	Pass = nullptr;
 	Audio = nullptr;
+	NodeIdGen = nullptr;
 }
 
 CommandExecutor* Singleton::GetExecutor()
@@ -93,15 +91,19 @@ CurrentPass* Singleton::GetCurrentPass()
 	return Pass;
 }
 
-<<<<<<< HEAD
 AudioSystem* Singleton::GetAudioSystem()
 {
 	return Audio;
-=======
+}
+
 PhysicsManager* Singleton::GetPhysicsManager()
 {
 	return PhysMgr;
->>>>>>> master
+}
+
+NodeIdGenerator* Singleton::GetNodeIdGenerator()
+{
+	return NodeIdGen;
 }
 
 bool Singleton::IsInitialized()

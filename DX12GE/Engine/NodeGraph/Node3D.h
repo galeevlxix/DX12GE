@@ -7,11 +7,7 @@
 #include <vector>
 #include <stdexcept>
 
-<<<<<<< HEAD
 /// \brief Base class of a node in the scene tree.
-=======
-// ������� ����� ���� � ������ �����
->>>>>>> master
 class Node3D
 {
 public:
@@ -57,21 +53,15 @@ protected:
 public:
 	Node3D();
 
-<<<<<<< HEAD
 	/// \brief Returns the node type.
 	NodeTypeEnum GetType() { return m_Type; }
 
 	/// \brief Returns the path of a node in the scene tree from the farthest parent to the given node. For example, "root/road/car/driver".
-=======
-	// ���������� ��� ����
-	NodeTypeEnum GetType() { return m_Type; }
-
-	// ���������� ���� ���� � ������ ����� �� ������ �������� �������� �� ������� ����
->>>>>>> master
 	const std::string GetNodePath();
+
+	/// \brief Returns the Lua scripts attached to this node as a single string.
 	const std::string GetNodeScripts();
 	
-<<<<<<< HEAD
 	/// \brief Called every tick on a node update.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
 	virtual void OnUpdate(const double& deltaTime);
@@ -173,6 +163,7 @@ public:
 
 	/// \brief Recursively draws debugging primitives.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
+	/// \warning DEBUG MODE ONLY.
 	virtual void DrawDebug();
 
 	/// \brief Makes the node the only active one on the scene.
@@ -185,104 +176,6 @@ public:
 
 	/// \brief Loads node data from the NodeSerializingData structure.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
-=======
-
-	// ?????????? ??? ???????? ????
-	virtual void OnLoad() {};
-
-	
-	// ��������� ������ ���� � ���� �������� ����
-	virtual void OnUpdate(const double& deltaTime);
-
-	// ���������� ������ ���� � ���� �������� ����
-	// ���� ����� ��������� �� ������ �������� ������ ��������
-	// ��� keepComponent = false �� ������ ����� ��������� ��������� � �������, ���� � ������ ����� ��� ������ �����, ������������ ���� ��������� (keepComponent ���������������� �� ��������)
-	virtual void Destroy(bool keepComponent = true);
-    
-	// ���������� ������� ������� �������
-	// ����������� ������ ����� OnUpdate
-	const DirectX::XMMATRIX& GetWorldMatrix();
-
-	// ���������� ������� ������� � ������� ������������
-	// ����������� ������ ����� OnUpdate
-	const DirectX::SimpleMath::Vector3& GetWorldPosition() { return m_WorldPositionCache; }
-
-	// ���������� ����������� ������� � ������� ������������
-	// ����������� ������ ����� OnUpdate
-	const DirectX::SimpleMath::Vector3& GetWorldDirection() { return m_WorldDirectionCache; }
-
-	// ���������� ��� ����
-	const std::string GetName() { return m_Name; }
-	
-	// ��������������� ������ ����
-	// ���� ����� ������ �������� �������� ����� ���� ��� ����������� ������� � ����� ������, � ������ ����� ����������� �����, ����� �������� ���������� ���� ����� �������� ��������
-	// ��� �� ������ ��������� �������: '/', '%'
-	void Rename(const std::string& name);
-
-	// ���������� true, ���� ���� ��������� � ������ �����
-	bool IsInsideTree();
-
-	// ���������� ������� �������
-	Node3D* GetChild(const std::string& name);
-
-	// ���������� ��� �������� ���� 
-	// ��������! ������ ����� ����� ���� ���������!
-	const std::vector<Node3D*> GetChildren();
-
-	// ���������� ����� ���� �������� �����
-	// ��������! ������ ����� ����� ���� ���������!
-	const std::vector<std::string> GetChildrenNames();
-
-	// ���������� ������� ��������
-	Node3D* GetParrent();
-
-	// ������� ������ ����, ��� ��� ��������� � name
-	// ��������! ������ ����� ����� ���� ���������!
-	Node3D* FindNodeRecursive(const std::string& name);
-
-	// ������� ������� ��������, ��� ��� ��������� � name
-	Node3D* FindParrentRecursive(const std::string& name);
-
-	// ��������� � ������ ���� ������ ������� �������
-	// ���������� true, ���� ���������� ������ �������
-	// ��������! ������� �� ���������, ���� � ���� ��� ���� ��������. ����������� ����� Move � ���� ������.
-	virtual bool AddChild(Node3D* node);
-
-	// ������� ���� �� ������ ������ �������� �� �����, �� �� ���������� ������ �������
-	// ���������� true, ���� �������� ������ �������
-	bool RemoveChild(const std::string& name);
-
-	// ������� ���� �� ������ ������ ��������, �� �� ���������� ������ �������
-	// ���������� true, ���� �������� ������ �������
-	bool RemoveChild(Node3D* node);
-
-	// ���������� true, ���� ������� ������ ������� � ����� ������
-	bool HasChild(const std::string& name);
-
-	// ���������� ������ ���� � ���� ������ ��������
-	// ���������� true, ���� ����������� ������ �������
-	bool Move(Node3D* newParrent);
-
-	// ��������� ������ ����, ������� ������ � ��������� � cloneNode
-	// ������ �������������:
-	//		Node3D* newNode = oldNode->Clone(someParrent, true);
-	// ���� parrent ���������, ����� ���� ��������� � ���� ����� ��������
-	// ���� cloneChildrenRecursive ����� true, ��� ������� ����� ������������
-	// ���������� nullptr, ���� ������������ �� ������ �������
-	// ��������! ������ ����� ����� ���� ���������!
-	virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr);
-
-	// ������ ���������� ���������
-	virtual void DrawDebug();
-
-	// ������ ���� ������������ �������� �� ����� (�-� CameraNode, DirectionalLight, Environment � ��)
-	virtual void SetCurrent() {};
-
-	// ������� JSON ������ ��� ������������ ����
-	virtual void CreateJsonData(json& j);
-
-	// ��������� ������ ���� �� ��������� NodeSerializingData
->>>>>>> master
 	virtual void LoadFromJsonData(const NodeSerializingData& nodeData);
 
 private:
@@ -293,29 +186,43 @@ public:
 
 	/// \brief Called when the keyboard key is pressed.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
+	/// \warning DEBUG MODE ONLY.
 	virtual void OnKeyPressed(KeyEventArgs& e);
 
 	/// \brief Called when the keyboard key is released.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
+	/// \warning DEBUG MODE ONLY.
 	virtual void OnKeyReleased(KeyEventArgs& e);
 
 	/// \brief Called when the mouse wheel is moved.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
+	/// \warning DEBUG MODE ONLY.
 	virtual void OnMouseWheel(MouseWheelEventArgs& e);
 
 	/// \brief Called when the mouse is moved.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
+	/// \warning DEBUG MODE ONLY.
 	virtual void OnMouseMoved(MouseMotionEventArgs& e);
 	
 	/// \brief Called when the mouse button is pressed.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
+	/// \warning DEBUG MODE ONLY.
 	virtual void OnMouseButtonPressed(MouseButtonEventArgs& e);
 	
 	/// \brief Called when the mouse button is released.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
+	/// \warning DEBUG MODE ONLY.
 	virtual void OnMouseButtonReleased(MouseButtonEventArgs& e);
 	
 	/// \brief Called when the window size changes.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
+	/// \warning DEBUG MODE ONLY.
 	virtual void OnWindowResize(ResizeEventArgs& e);
+
+private:
+	uint32_t m_UniqueID;
+
+public:
+	/// \brief Returns unique ID of the node.
+	uint32_t GetNodeId() { return m_UniqueID; }
 };

@@ -5,15 +5,9 @@
 #include "PhysicalObjectNode.h"
 #include "../Base/InputSystem.h"
 
-<<<<<<< HEAD
 /// \brief Player node class for first-person camera control
 /// \note Only one such node in the scene tree can be active. 
-class FirstPersonPlayerNode : public Object3DNode
-=======
-// ����� ���� ������ ��� ���������� ������� �� ������� ����
-// ������ ���� ����� ���� � ������ ����� ����� ���� �������� 
 class FirstPersonPlayerNode : public PhysicalObjectNode
->>>>>>> master
 {
 public:
 	/// \brief Mouse movement sensitivity
@@ -53,7 +47,7 @@ protected:
 public:
 	FirstPersonPlayerNode();
 
-	virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath) override;
+	virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath) override;
 	
 	virtual void OnUpdate(const double& deltaTime) override;
 
@@ -73,18 +67,10 @@ public:
 	/// \return Returns true if this player is current. Returns false otherwise.
 	bool IsCurrent();
 
-<<<<<<< HEAD
 	/// \brief Makes the camera the active camera for this player if the camera node is a child of this node. Makes the camera the active camera for the scene if this player node is active.
 	void SetCamera(CameraNode* camera);
 
 	/// \brief Returns the current camera of the player
-=======
-	// ������ ������ �������� ������� ����� ������, ���� ���� ������ - �������� ������� ����
-	// ������ ������ �������� ������� �����, ���� ������ ���� ������ �������
-	void SetCamera(CameraNode* camera);
-
-	// ���������� �������� ������ ������� ����
->>>>>>> master
 	CameraNode* GetCamera() { return m_Camera; }
 
 	virtual void OnKeyPressed(KeyEventArgs& e) override;

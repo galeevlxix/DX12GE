@@ -1,6 +1,9 @@
 var searchData=
 [
-  ['name_0',['name',['../struct_parsed_node_path.html#a36ac1e7a26f054a1fc1f4bd57c1225da',1,'ParsedNodePath']]],
-  ['nodepath_1',['nodePath',['../struct_node_serializing_data.html#a51557c1a960715e348debc7be08d6c13',1,'NodeSerializingData']]],
-  ['normalmovementspeed_2',['NormalMovementSpeed',['../class_first_person_player_node.html#ae89a9f2e92602b32c44a1203de3af78e',1,'FirstPersonPlayerNode::NormalMovementSpeed'],['../struct_node_serializing_data.html#af2301e575a7cf37cf156948a71cdb3a6',1,'NodeSerializingData::NormalMovementSpeed']]]
+  ['lightattenuation_0',['lightAttenuation',['../struct_node_serializing_data.html#ad65447c7611ea9558bdbbf0eb4b776d5',1,'NodeSerializingData']]],
+  ['lightcolor_1',['lightColor',['../struct_node_serializing_data.html#abb2dc1f4d9a1bac25eac45be54f6b2a4',1,'NodeSerializingData']]],
+  ['lightcutoff_2',['lightCutoff',['../struct_node_serializing_data.html#acd40ab4d6964331454d412992db2d2ba',1,'NodeSerializingData']]],
+  ['lightdata_3',['LightData',['../class_directional_light_node.html#a44e77902bdc88efb1d0d37aa6048a0a1',1,'DirectionalLightNode::LightData'],['../class_point_light_node.html#aaac3730291051df6a647d500af61013c',1,'PointLightNode::LightData'],['../class_spot_light_node.html#aecef66dd80fae3b929730ee5bd350a7e',1,'SpotLightNode::LightData']]],
+  ['lightintensity_4',['lightIntensity',['../struct_node_serializing_data.html#a52dec307bb22db466607c4d7cea3e51d',1,'NodeSerializingData']]],
+  ['loop_5',['Loop',['../class_audio_emitter_node.html#ad0a8867f179cb9e1cec35b6e43b078ce',1,'AudioEmitterNode']]]
 ];

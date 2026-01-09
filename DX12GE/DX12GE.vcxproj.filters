@@ -88,6 +88,21 @@
     <Filter Include="Файлы заголовков\Engine\NodeGraph">
       <UniqueIdentifier>{6d1d8e36-d9d2-417f-b9c3-ecfb75a793f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Engine\AI">
+      <UniqueIdentifier>{6260afcd-df7b-4a57-b96f-4834c6b684c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\AI">
+      <UniqueIdentifier>{44162801-cdb6-43e4-9e1c-33c14b85dd23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Lua">
+      <UniqueIdentifier>{1162423b-9f7f-4568-8234-c3ad8bae6558}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Physics">
+      <UniqueIdentifier>{a3c7615e-09b8-40b2-8892-b3b94bf11000}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Physics">
+      <UniqueIdentifier>{c09e36a5-5355-4b3d-a842-3bbc7e3bbc39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX12GE.cpp">
@@ -270,7 +285,6 @@
     <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="Engine\NodeGraph\src\AudioEmitterNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
@@ -279,37 +293,42 @@
     </ClCompile>
     <ClCompile Include="Engine\Base\src\AudioSystem.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
-=======
+    </ClCompile>
     <ClCompile Include="Engine\AI\src\AIComponent.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="Engine\AI\src\Behavior.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="Engine\AI\src\BehaviorTree.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="Engine\AI\src\BehaviorTreeBuilder.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="Engine\AI\src\Blackboard.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="Engine\AI\src\Composites.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="Engine\AI\src\Decorators.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="Engine\AI\src\Leaves.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Engine\AI</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Lua\LuaManager.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Engine\Lua</Filter>
     </ClCompile>
     <ClCompile Include="EngineConfig.cpp">
-      <Filter>Исходные файлы</Filter>
->>>>>>> master
+      <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Physics\PhysicsManager.cpp">
+      <Filter>Исходные файлы\Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\PhysicalObjectNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -526,7 +545,6 @@
     <ClInclude Include="Engine\NodeGraph\SkyBoxNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="Engine\Base\AudioWavComponent.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
@@ -538,49 +556,66 @@
     </ClInclude>
     <ClInclude Include="Engine\NodeGraph\AudioEmitterNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
-=======
+    </ClInclude>
     <ClInclude Include="Engine\AI\AIComponent.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="Engine\AI\Behavior.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="Engine\AI\BehaviorTree.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="Engine\AI\BehaviorTreeBuilder.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="Engine\AI\Blackboard.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="Engine\AI\Composites.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="Engine\AI\Decorators.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="Engine\AI\Leaves.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Engine\AI</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Lua\LuaManager.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Lua\include\lualib.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Engine\AI\Utility.h">
+      <Filter>Файлы заголовков\Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Lua\include\lua.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Lua\include\lauxlib.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Engine\Lua</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Lua\include\luaconf.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Engine\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lualib.h">
+      <Filter>Файлы заголовков\Engine\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\LuaManager.h">
+      <Filter>Файлы заголовков\Engine\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Lua\include\lauxlib.h">
+      <Filter>Файлы заголовков\Engine\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\NodeIdGenerator.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\AINode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\PhysicalObjectNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
     <ClInclude Include="EngineConfig.h">
-      <Filter>Файлы заголовков</Filter>
->>>>>>> master
+      <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Physics\PhysicsDataTypes.h">
+      <Filter>Файлы заголовков\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Physics\PhysicsManager.h">
+      <Filter>Файлы заголовков\Engine\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -676,8 +711,16 @@
     <None Include="Resources\scene lite.json">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="Resources\scene lite(Timur).json">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
+    <None Include="Resources\scenePhysics.json">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Engine\Lua\scripts\TestScript.lua" />
+    <Text Include="Engine\Lua\scripts\TestScript.lua">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
 </Project>

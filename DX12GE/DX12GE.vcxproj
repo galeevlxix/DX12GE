@@ -71,9 +71,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Real Engine\GameEngineDev\Lua\sol2\include\sol;D:\Real Engine\GameEngineDev\DX12GE\Engine;D:\Real Engine\GameEngineDev\Lua;D:\Real Engine\GameEngineDev\Lua\include;$(SolutionDir)\Engine;$(SolutionDir)\Engine\Lua;$(SolutionDir)\Engine\Lua\include;$(SolutionDir)\Engine\Lua\sol2\include\sol;..\Include\Jolt;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Engine\Lua;..\ThirdPartyLibs\Jolt\Debug-x64;$(LibraryPath);</LibraryPath>
-    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\Include\Jolt;</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)DX12GE\Engine\Lua;$(SolutionDir)Include\Jolt;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Engine\Lua;..\ThirdPartyLibs\Jolt\Debug-x64;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\Include\Jolt</ExternalIncludePath>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -113,7 +113,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Include;$(SolutionDir)DX12GE\Engine\Lua</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Include;$(SolutionDir)DX12GE\Engine\Lua</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/FS</AdditionalOptions>
     </ClCompile>
@@ -121,7 +121,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(SolutionDir)Windows\lib\assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;DirectXTex.lib;lua54.lib;Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)DX12GE\Engine\Lua;$(SolutionDir)\Windows\dll;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)DX12GE\Engine\Lua;$(SolutionDir)Windows\dll;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -426,18 +426,16 @@
     <ClInclude Include="Engine\Graphics\Texture3D.h" />
     <ClInclude Include="Engine\Graphics\TransformComponent.h" />
     <ClInclude Include="Engine\Graphics\VertexStructures.h" />
-<<<<<<< HEAD
     <ClInclude Include="Engine\NodeGraph\AudioEmitterNode.h" />
     <ClInclude Include="Engine\NodeGraph\AudioListenerNode.h" />
-=======
     <ClInclude Include="Engine\NodeGraph\AINode.h" />
->>>>>>> master
     <ClInclude Include="Engine\NodeGraph\CameraNode.h" />
     <ClInclude Include="Engine\NodeGraph\DirectionalLightNode.h" />
     <ClInclude Include="Engine\NodeGraph\EnvironmentNode.h" />
     <ClInclude Include="Engine\NodeGraph\FirstPersonPlayerNode.h" />
     <ClInclude Include="Engine\NodeGraph\Node3D.h" />
     <ClInclude Include="Engine\NodeGraph\NodeGraphSystem.h" />
+    <ClInclude Include="Engine\NodeGraph\NodeIdGenerator.h" />
     <ClInclude Include="Engine\NodeGraph\NodeSerializingData.h" />
     <ClInclude Include="Engine\NodeGraph\NodeTypeEnum.h" />
     <ClInclude Include="Engine\NodeGraph\Object3DNode.h" />

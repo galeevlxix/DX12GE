@@ -6,6 +6,8 @@ Node3D::Node3D() : m_Parent(nullptr)
     m_WorldMatrixCache = DirectX::XMMATRIX();
     Transform.SetDefault();
     Rename("Node3D");
+
+    m_UniqueID = Singleton::GetNodeIdGenerator()->GetNextId();
 }
 
 const std::string Node3D::GetNodePath()

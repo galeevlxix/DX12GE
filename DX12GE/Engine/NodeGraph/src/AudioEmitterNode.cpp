@@ -432,7 +432,7 @@ bool AudioEmitterNode::TreeHasEmittersWithComponentId(uint32_t id, Node3D* curre
 void AudioEmitterNode::DrawDebug()
 {
     Node3D::DrawDebug();
-    Singleton::GetDebugRender()->DrawSphere(0.2, Color(1, 1, 1), m_WorldMatrixCache, 8);
+    Singleton::GetDebugRender()->DrawSphere(0.2, SimpleMath::Color(1, 1, 1), m_WorldMatrixCache, 8);
 }
 
 void AudioEmitterNode::CreateJsonData(json& j)

@@ -14,10 +14,9 @@ ThirdPersonPlayerNode::ThirdPersonPlayerNode() : FirstPersonPlayerNode()
 	Rename("ThirdPersonPlayerNode");
 }
 
-bool ThirdPersonPlayerNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath,
-    const std::string& nodePath)
+bool ThirdPersonPlayerNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
-    return FirstPersonPlayerNode::Create(commandList, filePath, nodePath);
+    return FirstPersonPlayerNode::Create(commandList, filePath);
 }
 
 void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)

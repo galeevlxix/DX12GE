@@ -6,8 +6,8 @@
 /// \note Only one such node in the scene tree can be active. 
 class CameraNode : public Node3D
 {
-	Matrix m_ViewMatrixCache;
-	Matrix m_ViewMatrixNoTransCache;
+	DirectX::SimpleMath::Matrix m_ViewMatrixCache;
+	DirectX::SimpleMath::Matrix m_ViewMatrixNoTransCache;
 
 protected:
 	/// \brief Camera Up vector. Usually equal to (0, 1, 0).
@@ -32,10 +32,10 @@ public:
 	virtual void OnUpdate(const double& deltaTime) override;
 
 	/// \brief Returns a matrix that combines the view matrix and the projection matrix. Used to display objects.
-	const Matrix GetViewProjMatrix();
+	const DirectX::SimpleMath::Matrix GetViewProjMatrix();
 
 	/// \brief Returns a matrix that combines the no-trasnslation-view matrix and the projection matrix. Used to display the skybox.
-	const Matrix GetViewProjMatrixNoTranslation();
+	const DirectX::SimpleMath::Matrix GetViewProjMatrixNoTranslation();
 
 	virtual Node3D* Clone(Node3D* newParent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
 

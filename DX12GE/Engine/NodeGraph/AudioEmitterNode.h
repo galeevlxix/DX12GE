@@ -14,7 +14,7 @@
 class AudioEmitterNode : public Node3D
 {
 	X3DAUDIO_EMITTER m_EmitterData;
-	Vector3 m_PrevWorldPosition;
+	SimpleMath::Vector3 m_PrevWorldPosition;
 	std::vector<float> m_MatrixCoeffs;
 	IXAudio2SourceVoice* m_Voice = nullptr;
 	uint32_t m_AudioComponentId;

@@ -4,8 +4,6 @@
 #include "LuaManager.h"
 #include <fstream>
 
-#include "../../NodeGraph/PhysicalObjectNode.h"
-
 static const std::string path = "../../DX12GE/Resources/scene lite.json";
 
 
@@ -45,12 +43,12 @@ static const ParsedNodePath ParseNodePath(const std::string& nodePath)
 	if (last_slash_idx != string::npos)
 	{
 		output.name = nodePath.substr(last_slash_idx + 1);
-		output.parrentNodePath = nodePath.substr(0, last_slash_idx);
+		output.ParentNodePath = nodePath.substr(0, last_slash_idx);
 	}
 	else
 	{
 		output.name = nodePath;
-		output.parrentNodePath = "";
+		output.ParentNodePath = "";
 	}
 
 	return output;
@@ -80,14 +78,16 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	std::ifstream in;
 	in.open(path);
 
+	if (!in.is_open())
+	{
+		std::cout << "Error! Could not open scene file " + path << std::endl;
+		return;
+	}
+
 	json scene;
 	in >> scene;
 
-<<<<<<< HEAD
 	std::cout << "Start loading scene objects from file " + path << std::endl;
-=======
-	std::cout << "������ �������� �������� ����� �� ����� " + path << std::endl;
->>>>>>> master
 
 	std::vector<NodeSerializingData> nodesData;
 
@@ -98,7 +98,11 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		newNode.nodePath = it->at("node_path");
 		
 		newNode.type = it->at("node_type");
-		newNode.scripts = it->at("scripts");
+
+		if (it->contains("scripts"))
+		{
+			newNode.scripts = it->at("scripts");
+		}	
 		
 		newNode.filePath = it->contains("file_path") ? it->at("file_path") : "";
 
@@ -230,7 +234,6 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		{
 			newNode.CameraAnchor = Vector3(it->at("cam_anchor_x"), it->at("cam_anchor_y"), it->at("cam_anchor_z"));
 		}
-<<<<<<< HEAD
 
 		if (it->contains("audio_volume"))
 		{
@@ -256,8 +259,6 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		{
 			newNode.audioUbiquitous = it->at("audio_ubiquitous");
 		}
-
-=======
 		
 		//Physics
 		if (it->contains("collision_type"))
@@ -280,7 +281,6 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			newNode.frictionScale = it->at("friction_scale");
 		}
 		
->>>>>>> master
 		nodesData.push_back(newNode);
 	}
 
@@ -298,11 +298,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 	if (nodesData[0].type != NODE_TYPE_NODE3D || nodesData[0].nodePath != "root")
 	{
-<<<<<<< HEAD
 		throw "Error! File is corrupted! Scene file does not contain a root node!";
-=======
-		throw "������! ���� ���������! ���� ����� �� �������� �������� ����";
->>>>>>> master
 	}
 
 	for (int i = 1; i < nodesData.size(); ++i)
@@ -315,13 +311,9 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 		if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
 		{
-			if (!obj3D->Create(commandList, nodeData.filePath, nodeData.nodePath))
+			if (!obj3D->Create(commandList, nodeData.filePath))
 			{
-<<<<<<< HEAD
 				printf("Warning! The mesh node %s has not been initialized!\n", node->GetName().c_str());
-=======
-				printf("��������������! ��� ���� %s �� ���������������!\n", node->GetName().c_str());
->>>>>>> master
 			}
 		}
 		else if (AudioEmitterNode* emit = dynamic_cast<AudioEmitterNode*>(node))
@@ -333,9 +325,8 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		node->LoadFromJsonData(nodeData);
 	}
 
-<<<<<<< HEAD
 	std::cout << "End of scene object loading." << std::endl;
-=======
+	
 	for (const auto& node : nodesData)
 	{
 		for (const auto& script : node.scripts)
@@ -343,9 +334,6 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			LuaManager::CreateValidClass(script, node.nodePath);
 		}
 	}
-
-	std::cout << "����� �������� �������� �����." << std::endl;
->>>>>>> master
 
 	in.close();
 }

@@ -32,7 +32,7 @@ void AudioListenerNode::OnUpdate(const double& deltaTime)
 void AudioListenerNode::DrawDebug()
 {
 	Node3D::DrawDebug();
-	Singleton::GetDebugRender()->DrawSphere(0.2, Color(1, 1, 0), m_WorldMatrixCache, 8);
+	Singleton::GetDebugRender()->DrawSphere(0.2, SimpleMath::Color(1, 1, 0), m_WorldMatrixCache, 8);
 }
 
 void AudioListenerNode::CreateJsonData(json& j)

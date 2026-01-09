@@ -103,9 +103,10 @@ Inheritance diagram for Object3DNode:</div>
   <img src="class_object3_d_node.png" usemap="#Object3DNode_map" alt=""/>
   <map id="Object3DNode_map" name="Object3DNode_map">
 <area href="class_node3_d.html" title="Base class of a node in the scene tree." alt="Node3D" shape="rect" coords="79,0,227,24"/>
-<area href="class_first_person_player_node.html" title="Player node class for first-person camera control." alt="FirstPersonPlayerNode" shape="rect" coords="0,112,148,136"/>
+<area href="class_physical_object_node.html" alt="PhysicalObjectNode" shape="rect" coords="0,112,148,136"/>
 <area href="class_sky_box_node.html" title="Skybox class." alt="SkyBoxNode" shape="rect" coords="158,112,306,136"/>
-<area href="class_third_person_player_node.html" title="Player node class for third-person camera control." alt="ThirdPersonPlayerNode" shape="rect" coords="0,168,148,192"/>
+<area href="class_first_person_player_node.html" title="Player node class for first-person camera control." alt="FirstPersonPlayerNode" shape="rect" coords="0,168,148,192"/>
+<area href="class_third_person_player_node.html" title="Player node class for third-person camera control." alt="ThirdPersonPlayerNode" shape="rect" coords="0,224,148,248"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -122,6 +123,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a3679ef41638a3df652db5afe84f53a03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a new object component (resource with data) by id for this node.  <br /></td></tr>
 <tr class="memitem:ae1b322dbc4fb8f4be164648d98147a0d" id="r_ae1b322dbc4fb8f4be164648d98147a0d"><td class="memItemLeft">virtual uint32_t&#160;</td><td class="memItemRight"><a class="el" href="#ae1b322dbc4fb8f4be164648d98147a0d">GetComponentId</a> ()</td></tr>
 <tr class="memdesc:ae1b322dbc4fb8f4be164648d98147a0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the id of a component (resource with data) in the resource storage.  <br /></td></tr>
+<tr class="memitem:a54065b3a90229b66f2fd27fe69b3280c" id="r_a54065b3a90229b66f2fd27fe69b3280c"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a54065b3a90229b66f2fd27fe69b3280c">UpdateTransform</a> (DirectX::SimpleMath::Matrix InTransform=DirectX::SimpleMath::Matrix())</td></tr>
 <tr class="memitem:a1fb66608ccbc43fae79fe6e69c3dc60c" id="r_a1fb66608ccbc43fae79fe6e69c3dc60c"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a1fb66608ccbc43fae79fe6e69c3dc60c">IsValid</a> ()</td></tr>
 <tr class="memdesc:a1fb66608ccbc43fae79fe6e69c3dc60c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether a 3D object is valid for rendering.  <br /></td></tr>
 <tr class="memitem:a3583ff95adf651e6075931829357fd2a" id="r_a3583ff95adf651e6075931829357fd2a"><td class="memItemLeft">virtual const std::string&#160;</td><td class="memItemRight"><a class="el" href="#a3583ff95adf651e6075931829357fd2a">GetObjectFilePath</a> ()</td></tr>
@@ -142,6 +144,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac2ddc1263bda33618343280d69873ca5 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the node type.  <br /></td></tr>
 <tr class="memitem:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d" id="r_a53350cbe547936291c0f86b1e24308f2"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a53350cbe547936291c0f86b1e24308f2">GetNodePath</a> ()</td></tr>
 <tr class="memdesc:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the path of a node in the scene tree from the farthest parent to the given node. For example, "root/road/car/driver".  <br /></td></tr>
+<tr class="memitem:a43e1b9fb82ed5f2f1562a2deff3bdaa8 inherit pub_methods_class_node3_d" id="r_a43e1b9fb82ed5f2f1562a2deff3bdaa8"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a43e1b9fb82ed5f2f1562a2deff3bdaa8">GetNodeScripts</a> ()</td></tr>
+<tr class="memdesc:a43e1b9fb82ed5f2f1562a2deff3bdaa8 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Lua scripts attached to this node as a single string.  <br /></td></tr>
 <tr class="memitem:a56c86bc234ba5ac79612a352d1f00fe2 inherit pub_methods_class_node3_d" id="r_a56c86bc234ba5ac79612a352d1f00fe2"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a56c86bc234ba5ac79612a352d1f00fe2">OnUpdate</a> (const double &amp;deltaTime)</td></tr>
 <tr class="memdesc:a56c86bc234ba5ac79612a352d1f00fe2 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called every tick on a node update.  <br /></td></tr>
 <tr class="memitem:a1b76a53ee78642ef06ae869c91dd70f3 inherit pub_methods_class_node3_d" id="r_a1b76a53ee78642ef06ae869c91dd70f3"><td class="memItemLeft">const DirectX::XMMATRIX &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a1b76a53ee78642ef06ae869c91dd70f3">GetWorldMatrix</a> ()</td></tr>
@@ -193,6 +197,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:afdfe9d7d92e51af989cabefc7a2e86b6 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the mouse button is released.  <br /></td></tr>
 <tr class="memitem:aa62613273e80a9342d3bd46dfb3b373b inherit pub_methods_class_node3_d" id="r_aa62613273e80a9342d3bd46dfb3b373b"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#aa62613273e80a9342d3bd46dfb3b373b">OnWindowResize</a> (ResizeEventArgs &amp;e)</td></tr>
 <tr class="memdesc:aa62613273e80a9342d3bd46dfb3b373b inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the window size changes.  <br /></td></tr>
+<tr class="memitem:a88fbe2732b99c407d475743fb80c3361 inherit pub_methods_class_node3_d" id="r_a88fbe2732b99c407d475743fb80c3361"><td class="memItemLeft">uint32_t&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a88fbe2732b99c407d475743fb80c3361">GetNodeId</a> ()</td></tr>
+<tr class="memdesc:a88fbe2732b99c407d475743fb80c3361 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique ID of the node.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -289,7 +295,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="class_node3_d.html#a39bf64d63215d0a77144c9b6a2d55507">Node3D</a>.</p>
 
-<p>Reimplemented in <a class="el" href="class_first_person_player_node.html#ad26515c59ad110d6d96dbc7b6775ef59">FirstPersonPlayerNode</a>, <a class="el" href="class_sky_box_node.html#ada90232368e4f4e3cf5559868ef5067b">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#a78148e53a8a498f4ea896e3f8a3ad60b">ThirdPersonPlayerNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_first_person_player_node.html#ad26515c59ad110d6d96dbc7b6775ef59">FirstPersonPlayerNode</a>, <a class="el" href="class_physical_object_node.html#a50e3bd7fb6f4cab82c0fcf401529a90d">PhysicalObjectNode</a>, <a class="el" href="class_sky_box_node.html#ada90232368e4f4e3cf5559868ef5067b">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#a78148e53a8a498f4ea896e3f8a3ad60b">ThirdPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -329,7 +335,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Returns true if creation was successful. Returns false otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="class_sky_box_node.html#af291f4c0aa391a9f2ef11b65fb313c67">SkyBoxNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_first_person_player_node.html#a930fc6c7748d1347ef55740b8ea9be43">FirstPersonPlayerNode</a>, <a class="el" href="class_physical_object_node.html#acca227b97225b7e4ef8bd3bdc5cc649e">PhysicalObjectNode</a>, <a class="el" href="class_sky_box_node.html#af291f4c0aa391a9f2ef11b65fb313c67">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#a1e2b00dc002116aa4f88d68aa56221b2">ThirdPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -361,7 +367,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="class_node3_d.html#a54a7ce76efda753ab76c5497fa0e657f">Node3D</a>.</p>
 
-<p>Reimplemented in <a class="el" href="class_first_person_player_node.html#a7b7f77bb64324441d653f62a3c9cc314">FirstPersonPlayerNode</a>, <a class="el" href="class_sky_box_node.html#a05da3bc08d39ffa03ac66cf515d07280">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#aadc7eab990afbde23fc376b4c87f6c91">ThirdPersonPlayerNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_first_person_player_node.html#a7b7f77bb64324441d653f62a3c9cc314">FirstPersonPlayerNode</a>, <a class="el" href="class_physical_object_node.html#a249926df8d594cdced5564da3dde5e94">PhysicalObjectNode</a>, <a class="el" href="class_sky_box_node.html#a05da3bc08d39ffa03ac66cf515d07280">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#aadc7eab990afbde23fc376b4c87f6c91">ThirdPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -398,7 +404,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="class_node3_d.html#a6424900a9f7f00e323e545d800db9cad">Node3D</a>.</p>
 
-<p>Reimplemented in <a class="el" href="class_first_person_player_node.html#a69952966ceb3c679ff168fd2a41e8a50">FirstPersonPlayerNode</a>, <a class="el" href="class_sky_box_node.html#a460e83de41b92b5cb1356e0ef18088cd">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#a30c8e94c47902eb05ecafb518c6b9e08">ThirdPersonPlayerNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_first_person_player_node.html#a69952966ceb3c679ff168fd2a41e8a50">FirstPersonPlayerNode</a>, <a class="el" href="class_physical_object_node.html#a4ebbfe29f6f2765d413293f5f066d56d">PhysicalObjectNode</a>, <a class="el" href="class_sky_box_node.html#a460e83de41b92b5cb1356e0ef18088cd">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#a30c8e94c47902eb05ecafb518c6b9e08">ThirdPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -427,10 +433,11 @@ Protected Attributes</h2></td></tr>
 
 <p>Recursively draws debugging primitives. </p>
 <dl class="section note"><dt>Note</dt><dd>Called automatically by the engine if the node is in the scene tree. No need to call it explicitly. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>DEBUG MODE ONLY. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="class_node3_d.html#aa0e8e724f1552643dddc8e7f69f9b929">Node3D</a>.</p>
 
-<p>Reimplemented in <a class="el" href="class_sky_box_node.html#ae75b1621d47638a01bd9d84eb3e920a3">SkyBoxNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_physical_object_node.html#a9e87a069e2209ae069391bec29f26072">PhysicalObjectNode</a>, and <a class="el" href="class_sky_box_node.html#ae75b1621d47638a01bd9d84eb3e920a3">SkyBoxNode</a>.</p>
 
 </div>
 </div>
@@ -575,7 +582,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="class_node3_d.html#a74beede1cbbf682e420b417064500f6e">Node3D</a>.</p>
 
-<p>Reimplemented in <a class="el" href="class_first_person_player_node.html#a318db9cc3bfac19abc381dcae4d54d27">FirstPersonPlayerNode</a>, <a class="el" href="class_sky_box_node.html#a0b6ea4de227919f33b25ab212ee72798">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#ab2377c44cd28b9f07302b8ffb6982e51">ThirdPersonPlayerNode</a>.</p>
+<p>Reimplemented in <a class="el" href="class_first_person_player_node.html#a318db9cc3bfac19abc381dcae4d54d27">FirstPersonPlayerNode</a>, <a class="el" href="class_physical_object_node.html#aef55567414597cee952d0fba788048cc">PhysicalObjectNode</a>, <a class="el" href="class_sky_box_node.html#a0b6ea4de227919f33b25ab212ee72798">SkyBoxNode</a>, and <a class="el" href="class_third_person_player_node.html#ab2377c44cd28b9f07302b8ffb6982e51">ThirdPersonPlayerNode</a>.</p>
 
 </div>
 </div>
@@ -639,6 +646,31 @@ Protected Attributes</h2></td></tr>
 <p>Sets a new object component (resource with data) by id for this node. </p>
 
 <p>Reimplemented in <a class="el" href="class_sky_box_node.html#ac620592cddbdf8a71ec561dcfe56479d">SkyBoxNode</a>.</p>
+
+</div>
+</div>
+<a id="a54065b3a90229b66f2fd27fe69b3280c" name="a54065b3a90229b66f2fd27fe69b3280c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54065b3a90229b66f2fd27fe69b3280c">&#9670;&#160;</a></span>UpdateTransform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Object3DNode::UpdateTransform </td>
+          <td>(</td>
+          <td class="paramtype">DirectX::SimpleMath::Matrix</td>          <td class="paramname"><span class="paramname"><em>InTransform</em></span><span class="paramdefsep"> = </span><span class="paramdefval">DirectX::SimpleMath::Matrix()</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

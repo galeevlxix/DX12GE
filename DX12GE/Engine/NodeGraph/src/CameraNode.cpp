@@ -20,20 +20,20 @@ void CameraNode::OnUpdate(const double& deltaTime)
 	if (dirty)
 	{
 		m_Up = TransformComponent::CalculateUpVector(m_WorldDirectionCache);
-		m_ViewMatrixCache = Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
-		m_ViewMatrixNoTransCache = Matrix::CreateLookAt(Vector3::Zero, m_WorldDirectionCache, m_Up);
+		m_ViewMatrixCache = SimpleMath::Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
+		m_ViewMatrixNoTransCache = SimpleMath::Matrix::CreateLookAt(SimpleMath::Vector3::Zero, m_WorldDirectionCache, m_Up);
 	}
 }
 
-const Matrix CameraNode::GetViewProjMatrix()
+const SimpleMath::Matrix CameraNode::GetViewProjMatrix()
 {
-	Matrix proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
+	SimpleMath::Matrix proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
 	return m_ViewMatrixCache * proj;
 }
 
-const Matrix CameraNode::GetViewProjMatrixNoTranslation()
+const SimpleMath::Matrix CameraNode::GetViewProjMatrixNoTranslation()
 {
-	Matrix proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, 1000.0);
+	SimpleMath::Matrix proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, 1000.0);
 	return m_ViewMatrixNoTransCache * proj;
 }
 
@@ -59,7 +59,7 @@ Node3D* CameraNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D
 void CameraNode::DrawDebug()
 {
 	Node3D::DrawDebug();
-	Matrix proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
+	SimpleMath::Matrix proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
 	Singleton::GetDebugRender()->DrawFrustrum(m_ViewMatrixCache, proj);
 }
 

@@ -2,6 +2,7 @@ var class_third_person_player_node =
 [
     [ "ThirdPersonPlayerNode", "class_third_person_player_node.html#a2760050189f1beadc98c87267670df48", null ],
     [ "Clone", "class_third_person_player_node.html#a78148e53a8a498f4ea896e3f8a3ad60b", null ],
+    [ "Create", "class_third_person_player_node.html#a1e2b00dc002116aa4f88d68aa56221b2", null ],
     [ "CreateJsonData", "class_third_person_player_node.html#aadc7eab990afbde23fc376b4c87f6c91", null ],
     [ "Destroy", "class_third_person_player_node.html#a30c8e94c47902eb05ecafb518c6b9e08", null ],
     [ "LoadFromJsonData", "class_third_person_player_node.html#ab2377c44cd28b9f07302b8ffb6982e51", null ],
