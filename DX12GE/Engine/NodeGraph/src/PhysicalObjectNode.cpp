@@ -1,4 +1,4 @@
-#include "../NodeGraph/PhysicalObjectNode.h"
+#include "../PhysicalObjectNode.h"
 #include "../../Graphics/AssimpModelLoader.h"
 #include "../../Base/Singleton.h"
 

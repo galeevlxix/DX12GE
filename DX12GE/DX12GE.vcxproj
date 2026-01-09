@@ -598,6 +598,7 @@
     <None Include="packages.config" />
     <None Include="Resources\scene lite(Timur).json" />
     <None Include="Resources\scene lite.json" />
+    <None Include="Resources\scenePhysics.json" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Engine\Lua\scripts\TestScript.lua" />
