@@ -18,7 +18,7 @@ protected:
 public:
     PhysicalObjectNode();
 
-    virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath) override;
+    virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath) override;
     
     virtual void OnUpdate(const double& deltaTime) override;
 
@@ -26,7 +26,7 @@ public:
 
     virtual bool AddChild(Node3D* node) override;
 
-    virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
+    virtual Node3D* Clone(Node3D* newparent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
 
     virtual void CreateJsonData(json& j) override;
 

@@ -7,6 +7,7 @@
 #include "Base/Window.h"
 #include "Base/CommandQueue.h"
 #include "Base/Singleton.h"
+#include "Base/AudioSystem.h"
 
 #include "Pipelines/Pipeline.h"
 #include "Pipelines/ShadowMapPipeline.h"

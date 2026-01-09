@@ -9,12 +9,12 @@ Object3DNode::Object3DNode() : Node3D(), m_ComponentId(-1)
     Rename("Object3DNode");
 }
 
-bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath, const std::string& nodePath)
+bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
     AssimpModelLoader modelLoader;
     float yOffset = 0.0f;
     
-    uint32_t id = modelLoader.LoadModelData(commandList, filePath, nodePath, yOffset);
+    uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset);
     Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);
@@ -58,7 +58,7 @@ void Object3DNode::SetComponentId(uint32_t newId)
 {
     if (newId < 0 || newId >= ResourceStorage::ObjectsCount())
     {
-        printf("������: Id ���������� 3� ������� �� ��������� ������� ������� � ResourceStorage\n");
+        printf("Error: Component ID of 3D object is outside the array size in ResourceStorage\n");
         return;
     }
     m_ComponentId = newId;
@@ -84,19 +84,19 @@ const CollisionBox& Object3DNode::GetCollisionBox()
 {
     if (!IsValid())
     {
-        throw;
+        throw std::runtime_error("Object3D node is invalid");
     }
     return ResourceStorage::GetObject3D(m_ComponentId)->Box;
 }
 
-Node3D* Object3DNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* Object3DNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
         cloneNode = new Object3DNode();
     }
 
-    Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+    Node3D::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
     if (cloneNode)
     {

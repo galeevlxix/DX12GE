@@ -14,10 +14,9 @@ ThirdPersonPlayerNode::ThirdPersonPlayerNode() : FirstPersonPlayerNode()
 	Rename("ThirdPersonPlayerNode");
 }
 
-bool ThirdPersonPlayerNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath,
-    const std::string& nodePath)
+bool ThirdPersonPlayerNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
-    return FirstPersonPlayerNode::Create(commandList, filePath, nodePath);
+    return FirstPersonPlayerNode::Create(commandList, filePath);
 }
 
 void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
@@ -45,7 +44,7 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
                 direction = m_Camera->GetWorldDirection();
             }
 
-            const Matrix& parMat = m_Parrent->GetWorldMatrix();
+            const Matrix& parMat = m_Parent->GetWorldMatrix();
             direction = Vector3::Transform(direction, parMat.Invert());
             direction.y = 0.0f;
 
@@ -85,9 +84,6 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
 
         if (m_Camera)
         {
-            /*m_angle_h += deltaTime * PI / 8.0f;
-            m_angle_v = PI / 4;*/
-
             Vector3 camLocalPos = CameraAnchor + Vector3(
                 m_FlyRadius * cos(m_angle_v) * cos(-m_angle_h),
                 m_FlyRadius * sin(m_angle_v),
@@ -109,14 +105,14 @@ void ThirdPersonPlayerNode::Destroy(bool keepComponent)
 	Object3DNode::Destroy(keepComponent);
 }
 
-Node3D* ThirdPersonPlayerNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* ThirdPersonPlayerNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
         cloneNode = new ThirdPersonPlayerNode();
     }
 
-    FirstPersonPlayerNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+    FirstPersonPlayerNode::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
     if (cloneNode)
     {
@@ -153,5 +149,8 @@ void ThirdPersonPlayerNode::LoadFromJsonData(const NodeSerializingData& nodeData
 void ThirdPersonPlayerNode::OnMouseWheel(MouseWheelEventArgs& e)
 {
     Object3DNode::OnMouseWheel(e);
-    m_FlyRadius = std::clamp(m_FlyRadius - e.WheelDelta * WheelSensitivity, MinFlyRadius, MaxFlyRadius);
+    if (IsCurrent())
+    {
+        m_FlyRadius = std::clamp(m_FlyRadius - e.WheelDelta * WheelSensitivity, MinFlyRadius, MaxFlyRadius);
+    }
 }

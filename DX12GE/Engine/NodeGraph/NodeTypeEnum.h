@@ -2,6 +2,7 @@
 #include <string>
 #include "../Base/SimpleMath.h"
 
+/// Types of all possible nodes in the scene tree
 enum NodeTypeEnum
 {
 	NODE_TYPE_NODE3D,
@@ -13,8 +14,10 @@ enum NodeTypeEnum
 	NODE_TYPE_DIRECTIONAL_LIGHT,
 	NODE_TYPE_POINT_LIGHT,
 	NODE_TYPE_SPOT_LIGHT,
-	NODE_TYPE_PARTICLES, // �� ����������
+	NODE_TYPE_PARTICLES, // not implemented
 	NODE_TYPE_SKYBOX,
+	NODE_TYPE_AUDIO_LISTENER,
+	NODE_TYPE_AUDIO_EMITTER,
 	NODE_TYPE_AI,
 	NODE_TYPE_PHYSICAL_OBJECT3D
 };

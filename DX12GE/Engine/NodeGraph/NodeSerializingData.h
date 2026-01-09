@@ -7,6 +7,7 @@
 #include "../Base/json.hpp"
 using json = nlohmann::json;
 
+/// An additional structure that helps save the node to a file.
 struct NodeSerializingData
 {
 	std::string nodePath;
@@ -22,13 +23,11 @@ struct NodeSerializingData
 	bool isCurrent = false;
 	bool isVisible = false;
 
-	// lights
 	DirectX::SimpleMath::Vector3 lightColor;
 	float lightIntensity;
 	DirectX::SimpleMath::Vector3 lightAttenuation;
 	float lightCutoff;
 
-	//environment
 	bool envFogEnabled;
 	DirectX::SimpleMath::Vector3 envFogColor;
 	float envFogStart;
@@ -38,12 +37,10 @@ struct NodeSerializingData
 	float envSSRStepLength;
 	float envSSRThickness;
 
-	// camera
 	float camFov;
 	float camZNear;
 	float camZFar;
 
-	// player
 	float MouseSensitivity;
 	float WheelSensitivity;
 	float MinMovementSpeed;
@@ -53,6 +50,12 @@ struct NodeSerializingData
 	float MinFlyRadius;
 	float MaxFlyRadius;
 	DirectX::SimpleMath::Vector3 CameraAnchor;
+
+	float audioVolume;
+	float audioPitch;
+	bool audioLoop;
+	bool audioDoppler;
+	bool audioUbiquitous;
 	
 	// physics
 	CollisionTypeEnum collisionType;
@@ -61,10 +64,11 @@ struct NodeSerializingData
 	float frictionScale;
 };
 
+/// An additional structure that helps create node.
 struct ParsedNodePath
 {
 	std::string name = "";
-	std::string parrentNodePath = "";
+	std::string ParentNodePath = "";
 
 	void ParseNodePath(const std::string& nodePath)
 	{
@@ -72,12 +76,12 @@ struct ParsedNodePath
 		if (last_slash_idx != std::string::npos)
 		{
 			name = nodePath.substr(last_slash_idx + 1);
-			parrentNodePath = nodePath.substr(0, last_slash_idx);
+			ParentNodePath = nodePath.substr(0, last_slash_idx);
 		}
 		else
 		{
 			name = nodePath;
-			parrentNodePath = "";
+			ParentNodePath = "";
 		}
 	}
 };

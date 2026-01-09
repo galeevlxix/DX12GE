@@ -71,9 +71,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Real Engine\GameEngineDev\Lua\sol2\include\sol;D:\Real Engine\GameEngineDev\DX12GE\Engine;D:\Real Engine\GameEngineDev\Lua;D:\Real Engine\GameEngineDev\Lua\include;$(SolutionDir)\Engine;$(SolutionDir)\Engine\Lua;$(SolutionDir)\Engine\Lua\include;$(SolutionDir)\Engine\Lua\sol2\include\sol;..\Include\Jolt;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Engine\Lua;..\ThirdPartyLibs\Jolt\Debug-x64;$(LibraryPath);</LibraryPath>
-    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\Include\Jolt;</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)DX12GE\Engine\Lua;$(SolutionDir)Include\Jolt;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Engine\Lua;..\ThirdPartyLibs\Jolt\Debug-x64;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\Include\Jolt</ExternalIncludePath>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -113,7 +113,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Include;$(SolutionDir)DX12GE\Engine\Lua</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Include;$(SolutionDir)DX12GE\Engine\Lua</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/FS</AdditionalOptions>
     </ClCompile>
@@ -121,7 +121,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(SolutionDir)Windows\lib\assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;DirectXTex.lib;lua54.lib;Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)DX12GE\Engine\Lua;$(SolutionDir)\Windows\dll;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)DX12GE\Engine\Lua;$(SolutionDir)Windows\dll;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -153,6 +153,7 @@
     <ClCompile Include="Engine\AI\src\Decorators.cpp" />
     <ClCompile Include="Engine\AI\src\Leaves.cpp" />
     <ClCompile Include="Engine\Base\src\Application.cpp" />
+    <ClCompile Include="Engine\Base\src\AudioSystem.cpp" />
     <ClCompile Include="Engine\Base\src\CommandExecutor.cpp" />
     <ClCompile Include="Engine\Base\src\CommandQueue.cpp" />
     <ClCompile Include="Engine\Base\src\DX12LibPCH.cpp" />
@@ -186,6 +187,8 @@
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp" />
     <ClCompile Include="Engine\Graphics\src\TransformComponent.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\AudioEmitterNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\AudioListenerNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\CameraNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\DirectionalLightNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\EnvironmentNode.cpp" />
@@ -378,6 +381,8 @@
     <ClInclude Include="Engine\AI\Leaves.h" />
     <ClInclude Include="Engine\AI\Utility.h" />
     <ClInclude Include="Engine\Base\Application.h" />
+    <ClInclude Include="Engine\Base\AudioSystem.h" />
+    <ClInclude Include="Engine\Base\AudioWavComponent.h" />
     <ClInclude Include="Engine\Base\CollisionBox.h" />
     <ClInclude Include="Engine\Base\CommandExecutor.h" />
     <ClInclude Include="Engine\Base\CommandQueue.h" />
@@ -421,6 +426,8 @@
     <ClInclude Include="Engine\Graphics\Texture3D.h" />
     <ClInclude Include="Engine\Graphics\TransformComponent.h" />
     <ClInclude Include="Engine\Graphics\VertexStructures.h" />
+    <ClInclude Include="Engine\NodeGraph\AudioEmitterNode.h" />
+    <ClInclude Include="Engine\NodeGraph\AudioListenerNode.h" />
     <ClInclude Include="Engine\NodeGraph\AINode.h" />
     <ClInclude Include="Engine\NodeGraph\CameraNode.h" />
     <ClInclude Include="Engine\NodeGraph\DirectionalLightNode.h" />
@@ -428,6 +435,7 @@
     <ClInclude Include="Engine\NodeGraph\FirstPersonPlayerNode.h" />
     <ClInclude Include="Engine\NodeGraph\Node3D.h" />
     <ClInclude Include="Engine\NodeGraph\NodeGraphSystem.h" />
+    <ClInclude Include="Engine\NodeGraph\NodeIdGenerator.h" />
     <ClInclude Include="Engine\NodeGraph\NodeSerializingData.h" />
     <ClInclude Include="Engine\NodeGraph\NodeTypeEnum.h" />
     <ClInclude Include="Engine\NodeGraph\Object3DNode.h" />
@@ -612,12 +620,14 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets" Condition="Exists('..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets')" />
+    <Import Project="..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets" Condition="Exists('..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets')" />
+    <Import Project="..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets" Condition="Exists('..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets'))" />
   </Target>
 </Project>
