@@ -94,6 +94,20 @@
     "scripts": []
   },
   {
+    "is_current": true,
+    "node_path": "root/fp_player/main_camera/AudioListenerNode",
+    "node_type": 13,
+    "trans_pos_x": 0.0,
+    "trans_pos_y": -0.0,
+    "trans_pos_z": 0.0,
+    "trans_rot_x": 0.0,
+    "trans_rot_y": 0.0,
+    "trans_rot_z": 0.0,
+    "trans_scl_x": 1.0,
+    "trans_scl_y": 1.0,
+    "trans_scl_z": 1.0
+  },
+  {
     "file_path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1",
@@ -1679,6 +1693,25 @@
     "scripts": []
   },
   {
+    "audio_doppler": true,
+    "audio_loop": true,
+    "audio_pitch": 1.0,
+    "audio_ubiquitous": false,
+    "audio_volume": 1.0,
+    "file_path": "../../DX12GE/Resources/Sounds/blob-001 rev.wav",
+    "node_path": "root/gas2/AudioEmitterNode2",
+    "node_type": 14,
+    "trans_pos_x": 0.0,
+    "trans_pos_y": 5.0,
+    "trans_pos_z": 0.0,
+    "trans_rot_x": 0.0,
+    "trans_rot_y": 0.0,
+    "trans_rot_z": 0.0,
+    "trans_scl_x": 1.0,
+    "trans_scl_y": 1.0,
+    "trans_scl_z": 1.0
+  },
+  {
     "cam_anchor_x": 0.0,
     "cam_anchor_y": 4.5,
     "cam_anchor_z": 0.0,
@@ -1704,6 +1737,25 @@
     "trans_scl_z": 0.3333300054073334,
     "collision_type": 5,
     "scripts": []
+  },
+  {
+    "audio_doppler": false,
+    "audio_loop": false,
+    "audio_pitch": 1.0,
+    "audio_ubiquitous": false,
+    "audio_volume": 1.0,
+    "file_path": "../../DX12GE/Resources/Sounds/music.wav",
+    "node_path": "root/tp_player/AudioEmitterNode",
+    "node_type": 14,
+    "trans_pos_x": 0.0,
+    "trans_pos_y": -0.0,
+    "trans_pos_z": 0.0,
+    "trans_rot_x": 0.0,
+    "trans_rot_y": 0.0,
+    "trans_rot_z": 0.0,
+    "trans_scl_x": 1.0,
+    "trans_scl_y": 1.0,
+    "trans_scl_z": 1.0
   },
   {
     "cam_fov": 60.0,
