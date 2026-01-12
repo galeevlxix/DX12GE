@@ -211,6 +211,8 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 
 void SingleGpuGame::GenerateCollisions() const
 {
+    Singleton::GetNodeGraph()->GetRoot()->OnUpdate(0.f);
+    
     const auto& Objects = Singleton::GetNodeGraph()->GetAll3DObjects();
     for (auto obj : Objects)
     {
@@ -218,13 +220,12 @@ void SingleGpuGame::GenerateCollisions() const
         {
             if (PhysRef->GetCollisionType() != COLLISION_TYPE_NONE)
             {
-                Vector3 Rotation = PhysRef->Transform.GetRotation();
-                if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
-                {
-                    Rotation = Vector3(0.f, Rotation.y, 0.f);
-                }
+                SimpleMath::Matrix WorldMatrix = PhysRef->GetWorldMatrix();
+                Vector3 Scale, Position;
+                Quaternion Rotation;
+                WorldMatrix.Decompose(Scale, Rotation, Position);
                 
-                Singleton::GetPhysicsManager()->GenerateCollision(PhysRef->GetNodeId(), *PhysRef->GetVertices(), PhysRef->Transform.GetPosition(), Rotation, PhysRef->GetMass(), PhysRef->Transform.GetScale(), PhysRef->GetCollisionType());
+                Singleton::GetPhysicsManager()->GenerateCollision(PhysRef->GetNodeId(), *PhysRef->GetVertices(), Position, Rotation.ToEuler(), PhysRef->GetMass(), Scale, PhysRef->GetCollisionType());
             }
             
             Singleton::GetPhysicsManager()->ApplyProperties(PhysRef->GetNodeId(), PhysRef->GetGravityScale(), PhysRef->GetFrictionScale());
@@ -241,18 +242,7 @@ void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
         PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(object.second);
         if (PhysRef != nullptr && PhysRef->GetCollisionType() > COLLISION_TYPE_NONE && PhysRef->GetCollisionType() < COLLISION_TYPE_STATIC_MESH)
         {
-            PrePhysicsTransforms.insert(pair(PhysRef->GetNodeId(), PhysRef->Transform.GetLocalMatrix()));
-            
-            if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
-            {
-                Vector3 Position, Scale;
-                Quaternion Rotation;
-                PrePhysicsTransforms[PhysRef->GetNodeId()].Decompose(Scale, Rotation, Position);
-                Vector3 RotationEuler = Rotation.ToEuler();
-                RotationEuler = Vector3(RotationEuler.y, 0.f, 0.f);
-                
-                PrePhysicsTransforms[PhysRef->GetNodeId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(RotationEuler) * SimpleMath::Matrix::CreateTranslation(Position);
-            }
+            PrePhysicsTransforms.insert(pair(PhysRef->GetNodeId(), PhysRef->GetWorldMatrix()));
         }
     }
     
@@ -262,19 +252,12 @@ void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
     {
         PhysicalObjectNode* PhysRef = dynamic_cast<PhysicalObjectNode*>(object.second);
         if (PhysRef != nullptr && PostPhysicsTransforms.contains(PhysRef->GetNodeId()))
-        {
-            if (PhysRef->GetCollisionType() == COLLISION_TYPE_PLAYER)
-            {
-                Vector3 Position, Scale;
-                Quaternion Rotation;
-                PostPhysicsTransforms[PhysRef->GetNodeId()].Decompose(Scale, Rotation, Position);
-                
-                PostPhysicsTransforms[PhysRef->GetNodeId()] = SimpleMath::Matrix::CreateScale(Scale) * SimpleMath::Matrix::CreateFromYawPitchRoll(PhysRef->Transform.GetRotation()) * SimpleMath::Matrix::CreateTranslation(Position);
-            }
-            
+        {                 
             PhysRef->UpdateTransform(PostPhysicsTransforms[PhysRef->GetNodeId()]);
             
-            //PhysRef->SetCollisionGeometry(Singleton::GetPhysicsManager()->GetBodyCollision(PhysRef->GetNodeID(), PhysRef->GetVertices()));
+            //For debug rendering
+            //std::vector<Vector3>* Vertices = new std::vector<Vector3>;
+            //PhysRef->SetCollisionGeometry(Singleton::GetPhysicsManager()->GetBodyCollision(PhysRef->GetNodeId(), Vertices));
         }
     }
 }
