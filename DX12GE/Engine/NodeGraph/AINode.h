@@ -17,6 +17,8 @@ public:
     }
 
     void OnUpdate(const double& deltaTime) override {
+        if (!m_Enabled) return;
+
         // Cast parent to Object3DNode because our Behaviors expect it
         if (m_Parent && m_BehaviorTree) {
             Object3DNode* owner = dynamic_cast<Object3DNode*>(m_Parent);
@@ -36,7 +38,11 @@ public:
     Blackboard* GetBlackboard() const {
         return &m_BehaviorTree->GetBlackboard();
     }
+    
+    void SetEnabled(bool enabled) { m_Enabled = enabled; }
+    bool IsEnabled() const { return m_Enabled; }
 
 protected:
     std::unique_ptr<BehaviorTree> m_BehaviorTree;
+    bool m_Enabled = true;
 };
