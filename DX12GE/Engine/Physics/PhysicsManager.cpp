@@ -245,7 +245,7 @@ namespace Physics
 		BodyIDVector bodies;
 		m_PhysicsSystem.GetBodies(bodies);
 		const BodyLockInterface &lockInterface = m_PhysicsSystem.GetBodyLockInterface();
-		
+				
 		for (auto& bodyID : bodies)
 		{
 			BodyLockRead lock(lockInterface, bodyID);
@@ -270,11 +270,22 @@ namespace Physics
 								
 				ObjectsTransforms.insert(pair(BodiesMap[bodyID], ObjectTransform));
 			}
-				
+							
 			lock.ReleaseLock();
 		}
 		
+		map<BodyID, BodyID> collidingBodies = contact_listener.GetCollidingBodies();
+		
+		for (const auto& bodyKey : collidingBodies)
+		{
+			OnBodiesOverlap(BodiesMap[bodyKey.first], BodiesMap[bodyKey.second]);
+		}
 		return ObjectsTransforms;
+	}
+
+	void PhysicsManager::OnBodiesOverlap(uint32_t ObjectID1, uint32_t ObjectID2)
+	{
+		//cout << "Collision detected, first body index - " << ObjectID1 << ", second body index - " << ObjectID2 << endl;
 	}
 
 	std::vector<Vector3>* PhysicsManager::GetBodyCollision(uint32_t inID, std::vector<Vector3>* outTriangles)
