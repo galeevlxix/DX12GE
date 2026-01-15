@@ -15,6 +15,5 @@ var class_sky_box_node =
     [ "RenderTexture", "class_sky_box_node.html#a4725266470216d20ab77c6a17d0e9066", null ],
     [ "SetComponentId", "class_sky_box_node.html#ac620592cddbdf8a71ec561dcfe56479d", null ],
     [ "SetCurrent", "class_sky_box_node.html#ac7333e22571887a0c2bc852e079eb8e1", null ],
-    [ "m_BoxMesh", "class_sky_box_node.html#a2688486a353fa5cded43a22d33a3af9b", null ],
     [ "m_TextureId", "class_sky_box_node.html#ae191ff826aac72060d0c0800055991d7", null ]
 ];

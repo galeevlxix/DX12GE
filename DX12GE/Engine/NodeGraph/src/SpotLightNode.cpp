@@ -37,7 +37,7 @@ void SpotLightNode::DrawDebug()
 	Node3D::DrawDebug();
 
 	Singleton::GetDebugRender()->DrawCone(
-		m_WorldPositionCache, m_WorldDirectionCache, LightData.Cutoff,
+		m_WorldPositionCache, m_WorldDirectionCache, acos(LightData.Cutoff) * 2.0f,
 		{
 			LightData.PointLightProperties.BaseLightProperties.Color.x,
 			LightData.PointLightProperties.BaseLightProperties.Color.y,

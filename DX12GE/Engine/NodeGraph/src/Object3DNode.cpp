@@ -15,7 +15,6 @@ bool Object3DNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const 
     float yOffset = 0.0f;
     
     uint32_t id = modelLoader.LoadModelData(commandList, filePath, yOffset);
-    Transform.SetDefault(yOffset);
     if (id == -1) return false;
     SetComponentId(id);
     IsVisible = true;
@@ -84,7 +83,7 @@ const CollisionBox& Object3DNode::GetCollisionBox()
 {
     if (!IsValid())
     {
-        throw std::runtime_error("Object3D node is invalid");
+        return DefaultCollisionBox;
     }
     return ResourceStorage::GetObject3D(m_ComponentId)->Box;
 }

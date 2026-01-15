@@ -4,9 +4,6 @@
 #include "LuaManager.h"
 #include <fstream>
 
-static const std::string path = "../../DX12GE/Resources/scenePhysics.json";
-
-
 struct NodeData
 {
 	std::string nodePath;

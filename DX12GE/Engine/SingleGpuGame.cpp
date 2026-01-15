@@ -1,5 +1,6 @@
 #include "SingleGpuGame.h"
 
+#include "ImGui/ImGuiController.h"
 #include "Base/SceneJsonSerializer.h"
 #include "Graphics/ResourceStorage.h"
 #include "Graphics/ShaderResources.h"
@@ -25,6 +26,7 @@ bool SingleGpuGame::Initialize()
     // INITIALIZE
     ShaderResources::Create(true);
     DescriptorHeaps::OnInit(m_Device, GraphicAdapterPrimary);
+    
 
     // PIPELINES
     m_GeometryPassPipeline.Initialize(m_Device);
@@ -108,6 +110,8 @@ bool SingleGpuGame::LoadContent()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
+    ImGuiController::Create(m_pWindow->GetWindowHandle());
+
     Singleton::Initialize();
     Singleton::GetSelection()->SetTextureBuffer(m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
     Singleton::GetNodeGraph()->WindowRatio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
@@ -176,6 +180,8 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 {
     if (!m_Initialized || !Singleton::IsInitialized()) return;
     super::OnUpdate(e);
+
+    ImGuiController::OnRenderStart();
 
     Singleton::GetExecutor()->Update();
 
@@ -387,7 +393,8 @@ void SingleGpuGame::DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
     if (SkyBoxNode* skybox = Singleton::GetNodeGraph()->GetCurrentSkyBox())
     {
-        skybox->RenderTexture(commandList, 5);
+        if (skybox->IsValid())
+            skybox->RenderTexture(commandList, 5);
     }    
 
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -421,6 +428,9 @@ void SingleGpuGame::MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList)
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
 
+    
+    ImGuiController::OnRenderEnd(1, commandList);
+
     TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 }
 
@@ -448,7 +458,8 @@ void SingleGpuGame::DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
     if (SkyBoxNode* skybox = Singleton::GetNodeGraph()->GetCurrentSkyBox())
     {
-        skybox->Render(commandList, Singleton::GetNodeGraph()->GetCurrentCamera()->GetViewProjMatrixNoTranslation());
+        if (skybox->IsValid())
+            skybox->Render(commandList, Singleton::GetNodeGraph()->GetCurrentCamera()->GetViewProjMatrixNoTranslation());
     }
 }
 
@@ -643,6 +654,8 @@ void SingleGpuGame::Destroy()
     if (!m_Initialized) return;
 
     m_Initialized = false;
+
+    SkyBoxNode::DestroyBoxMesh();
 
     m_CascadedShadowMap.Destroy();
 

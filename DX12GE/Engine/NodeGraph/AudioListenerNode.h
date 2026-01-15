@@ -26,6 +26,8 @@ public:
 
 	virtual void SetCurrent() override;
 
+	virtual Node3D* Clone(Node3D* newParent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
+
 	/// \brief Checks whether this listener is active in the scene.
 	/// \return Returns true if this listener is current. Returns false otherwise.
 	bool IsCurrent();

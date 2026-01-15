@@ -29,6 +29,7 @@ var class_node_graph_system =
     [ "OnResize", "class_node_graph_system.html#ade32900386af31dc50ea7e69c31af6d8", null ],
     [ "Print", "class_node_graph_system.html#a1940b573b06c52bdc578d4c6f116b364", null ],
     [ "RemoveNodeFromScene", "class_node_graph_system.html#a787dc77fb7a5c3b40e8a2f220ce796f0", null ],
+    [ "Reset", "class_node_graph_system.html#ae794a91b9f559734efbc16ebe439a6aa", null ],
     [ "AudioListenerNode::IsCurrent", "class_node_graph_system.html#a67c387a4cba15fb1c5bacfb74fa0410e", null ],
     [ "AudioListenerNode::SetCurrent", "class_node_graph_system.html#a2c8c088788b9b954e5bbdfa722251cbb", null ],
     [ "DirectionalLightNode::IsCurrent", "class_node_graph_system.html#add888b0a1903d4c323387394b66b4275", null ],

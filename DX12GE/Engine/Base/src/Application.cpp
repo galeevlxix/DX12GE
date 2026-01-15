@@ -4,6 +4,9 @@
 #include "../CommandQueue.h"
 #include "../DX12GE/Engine/Lua/LuaManager.h"
 #include "../Game.h"
+#include "../ImGui/ImGuiController.h"
+
+#include "../ImGui/imgui_impl_win32.h"
 
 constexpr wchar_t WINDOW_CLASS_NAME[] = L"DX12RenderWindowClass";
 
@@ -16,6 +19,9 @@ static WindowMap gs_Windows;
 static WindowNameMap gs_WindowByName;
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // A wrapper struct to allow shared pointers for the window class.
 struct MakeWindow : public Window
@@ -507,6 +513,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 
     if (pWindow)
     {
+        if (ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam))
+            return true;
+
         switch (message)
         {
         case WM_PAINT:
@@ -523,6 +532,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         case WM_SYSKEYDOWN:
         case WM_KEYDOWN:
         {
+            if (ImGuiController::CursorOnWindow())
+                break;
+
             MSG charMsg;
             // Get the Unicode character (UTF-16)
             unsigned int c = 0;
@@ -575,6 +587,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
             break;
         case WM_MOUSEMOVE:
         {
+            if (ImGuiController::CursorOnWindow())
+                break;
+
             bool lButton = (wParam & MK_LBUTTON) != 0;
             bool rButton = (wParam & MK_RBUTTON) != 0;
             bool mButton = (wParam & MK_MBUTTON) != 0;
@@ -592,6 +607,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         case WM_RBUTTONDOWN:
         case WM_MBUTTONDOWN:
         {
+            if (ImGuiController::CursorOnWindow())
+                break;
+
             bool lButton = (wParam & MK_LBUTTON) != 0;
             bool rButton = (wParam & MK_RBUTTON) != 0;
             bool mButton = (wParam & MK_MBUTTON) != 0;
@@ -624,6 +642,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         break;
         case WM_MOUSEWHEEL:
         {
+            if (ImGuiController::CursorOnWindow())
+                break;
+
             // The distance the mouse wheel is rotated.
             // A positive value indicates the wheel was rotated to the right.
             // A negative value indicates the wheel was rotated to the left.
