@@ -34,6 +34,14 @@ public:
 		intptr_t* dataPtr;
 		LuaTypes type;
 	};
+
+	struct Vector3
+	{
+		float x;
+		float y;
+		float z;
+	};
+
 private:
 	LuaManager();
 	virtual ~LuaManager();

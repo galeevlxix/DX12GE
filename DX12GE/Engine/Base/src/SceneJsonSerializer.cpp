@@ -2,6 +2,7 @@
 #include "../../Graphics/ResourceStorage.h"
 #include "../Singleton.h"
 #include "LuaManager.h"
+#include "../DX12GE/EngineConfig.h"
 #include <fstream>
 
 struct NodeData
@@ -328,12 +329,15 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 	}
 
 	std::cout << "End of scene object loading." << std::endl;
-	
-	for (const auto& node : nodesData)
+
+	if (!EngineConfig::IsReleaseMode)
 	{
-		for (const auto& script : node.scripts)
+		for (const auto& node : nodesData)
 		{
-			LuaManager::CreateValidClass(script, node.nodePath);
+			for (const auto& script : node.scripts)
+			{
+				LuaManager::CreateValidClass(script, node.nodePath);
+			}
 		}
 	}
 
