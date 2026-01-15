@@ -105,7 +105,6 @@ bool FirstPersonPlayerNode::AddChild(Node3D* node)
 	{
 		if (CameraNode* camera = dynamic_cast<CameraNode*>(node))
 		{
-			camera->SetRatio(Singleton::GetNodeGraph()->WindowRatio);
 			SetCamera(camera);
 		}
 	}

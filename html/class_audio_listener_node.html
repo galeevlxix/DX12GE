@@ -121,6 +121,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2c91a67f9d90d48eb6c6428075f55abb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads node data from the <a class="el" href="struct_node_serializing_data.html" title="An additional structure that helps save the node to a file.">NodeSerializingData</a> structure.  <br /></td></tr>
 <tr class="memitem:a66c7300f8ce7fa8c401a6045cb1e71c0" id="r_a66c7300f8ce7fa8c401a6045cb1e71c0"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a66c7300f8ce7fa8c401a6045cb1e71c0">SetCurrent</a> () override</td></tr>
 <tr class="memdesc:a66c7300f8ce7fa8c401a6045cb1e71c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the node the only active one on the scene.  <br /></td></tr>
+<tr class="memitem:a10ab40aa703b8388d5ef00bb10a0bcdf" id="r_a10ab40aa703b8388d5ef00bb10a0bcdf"><td class="memItemLeft">virtual <a class="el" href="class_node3_d.html">Node3D</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a10ab40aa703b8388d5ef00bb10a0bcdf">Clone</a> (<a class="el" href="class_node3_d.html">Node3D</a> *newParent=nullptr, bool cloneChildrenRecursive=false, <a class="el" href="class_node3_d.html">Node3D</a> *cloneNode=nullptr) override</td></tr>
+<tr class="memdesc:a10ab40aa703b8388d5ef00bb10a0bcdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clones this node by copying data and parameters.  <br /></td></tr>
 <tr class="memitem:a5c556dc21f6d97d4db0e0ef2ffabb947" id="r_a5c556dc21f6d97d4db0e0ef2ffabb947"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a5c556dc21f6d97d4db0e0ef2ffabb947">IsCurrent</a> ()</td></tr>
 <tr class="memdesc:a5c556dc21f6d97d4db0e0ef2ffabb947"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether this listener is active in the scene.  <br /></td></tr>
 <tr class="inherit_header pub_methods_class_node3_d"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_node3_d')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_node3_d.html">Node3D</a></td></tr>
@@ -166,8 +168,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a9fc9e6602995bda56591fd6cb939f95e inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looking for a direct descendant.  <br /></td></tr>
 <tr class="memitem:a7e5913dce74e7ab7a612407d3a0bf9b9 inherit pub_methods_class_node3_d" id="r_a7e5913dce74e7ab7a612407d3a0bf9b9"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a7e5913dce74e7ab7a612407d3a0bf9b9">Move</a> (<a class="el" href="class_node3_d.html">Node3D</a> *newParent)</td></tr>
 <tr class="memdesc:a7e5913dce74e7ab7a612407d3a0bf9b9 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves this node to the new parent node.  <br /></td></tr>
-<tr class="memitem:a39bf64d63215d0a77144c9b6a2d55507 inherit pub_methods_class_node3_d" id="r_a39bf64d63215d0a77144c9b6a2d55507"><td class="memItemLeft">virtual <a class="el" href="class_node3_d.html">Node3D</a> *&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a39bf64d63215d0a77144c9b6a2d55507">Clone</a> (<a class="el" href="class_node3_d.html">Node3D</a> *newParent=nullptr, bool cloneChildrenRecursive=false, <a class="el" href="class_node3_d.html">Node3D</a> *cloneNode=nullptr)</td></tr>
-<tr class="memdesc:a39bf64d63215d0a77144c9b6a2d55507 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clones this node by copying data and parameters.  <br /></td></tr>
 <tr class="memitem:a1c2015e68564041e29463b57777eb14a inherit pub_methods_class_node3_d" id="r_a1c2015e68564041e29463b57777eb14a"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a1c2015e68564041e29463b57777eb14a">OnKeyPressed</a> (KeyEventArgs &amp;e)</td></tr>
 <tr class="memdesc:a1c2015e68564041e29463b57777eb14a inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the keyboard key is pressed.  <br /></td></tr>
 <tr class="memitem:aa54e6ea8888be5346bd6611aa58ef879 inherit pub_methods_class_node3_d" id="r_aa54e6ea8888be5346bd6611aa58ef879"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#aa54e6ea8888be5346bd6611aa58ef879">OnKeyReleased</a> (KeyEventArgs &amp;e)</td></tr>
@@ -228,6 +228,56 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a10ab40aa703b8388d5ef00bb10a0bcdf" name="a10ab40aa703b8388d5ef00bb10a0bcdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10ab40aa703b8388d5ef00bb10a0bcdf">&#9670;&#160;</a></span>Clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_node3_d.html">Node3D</a> * AudioListenerNode::Clone </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_node3_d.html">Node3D</a> *</td>          <td class="paramname"><span class="paramname"><em>newParent</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>cloneChildrenRecursive</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_node3_d.html">Node3D</a> *</td>          <td class="paramname"><span class="paramname"><em>cloneNode</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clones this node by copying data and parameters. </p>
+<div class="fragment"><div class="line"><span class="comment">// Example of use:  </span></div>
+<div class="line"><a class="code hl_function" href="class_node3_d.html#ab99fbabe69656236e823ed23a8298c92">Node3D</a>* newNode = oldNode-&gt;Clone(someParent, <span class="keyword">true</span>);</div>
+<div class="ttc" id="aclass_node3_d_html_ab99fbabe69656236e823ed23a8298c92"><div class="ttname"><a href="class_node3_d.html#ab99fbabe69656236e823ed23a8298c92">Node3D::Node3D</a></div><div class="ttdeci">Node3D()</div><div class="ttdef"><b>Definition</b> Node3D.cpp:3</div></div>
+</div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newParent</td><td>If it is defined, the new node will be added to this parent node. </td></tr>
+    <tr><td class="paramname">cloneChildrenRecursive</td><td>If it is true, all descendants are also cloned. </td></tr>
+    <tr><td class="paramname">cloneNode</td><td>should be nullptr </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns a new node if cloning was successful. Returns nullptr otherwise. </dd></dl>
+
+<p>Reimplemented from <a class="el" href="class_node3_d.html#a39bf64d63215d0a77144c9b6a2d55507">Node3D</a>.</p>
+
+</div>
+</div>
 <a id="a4c730c26d63290c4c8f20ea413907e2f" name="a4c730c26d63290c4c8f20ea413907e2f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4c730c26d63290c4c8f20ea413907e2f">&#9670;&#160;</a></span>CreateJsonData()</h2>
 

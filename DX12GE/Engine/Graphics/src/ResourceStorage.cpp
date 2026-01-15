@@ -17,7 +17,8 @@ uint32_t ResourceStorage::Find(const std::string& name)
 uint32_t ResourceStorage::AddObject3D(const std::string& name)
 {
     uint32_t foundId = Find(name);
-    if (foundId != -1) return foundId;
+    if (foundId != -1 && GetObject3D(foundId) != nullptr)
+        return foundId;
 
     uint32_t id = static_cast<uint32_t>(m_Objects.size());
     m_Objects.push_back(std::make_shared<Object3DComponent>());
@@ -29,7 +30,7 @@ uint32_t ResourceStorage::AddObject3D(const std::string& name)
 uint32_t ResourceStorage::AddTexture(const std::string& name)
 {
     uint32_t foundId = Find(name);
-    if (foundId != -1) 
+    if (foundId != -1 && GetTexture(foundId) != nullptr)
         return foundId;
 
     uint32_t id = static_cast<uint32_t>(m_Textures.size());
@@ -42,7 +43,7 @@ uint32_t ResourceStorage::AddTexture(const std::string& name)
 uint32_t ResourceStorage::AddAudio(const std::string& name)
 {
     uint32_t foundId = Find(name);
-    if (foundId != -1)
+    if (foundId != -1 && GetAudio(foundId) != nullptr)
         return foundId;
 
     uint32_t id = static_cast<uint32_t>(m_Audio.size());

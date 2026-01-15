@@ -67,6 +67,16 @@ void AudioListenerNode::SetCurrent()
 	}
 }
 
+Node3D* AudioListenerNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
+{
+	if (!cloneNode)
+	{
+		cloneNode = new AudioListenerNode();
+	}
+	Node3D::Clone(newParent, cloneChildrenRecursive, cloneNode);
+	return cloneNode;
+}
+
 bool AudioListenerNode::IsCurrent()
 {
 	return Singleton::GetNodeGraph()->m_CurrentListener == this;

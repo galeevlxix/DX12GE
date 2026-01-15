@@ -19,6 +19,22 @@ NodeGraphSystem::NodeGraphSystem()
 	LuaManager::SetGraspSystem(this);
 }
 
+void NodeGraphSystem::Reset(bool keepComponent)
+{
+	Singleton::GetSelection()->DeselectAll();
+
+	m_SceneRootNode->Destroy(keepComponent);
+	delete m_SceneRootNode;
+	m_SceneRootNode = new Node3D();
+	m_SceneRootNode->Rename("root");
+
+	m_CurrentEnvironment = nullptr;
+	m_CurrentDirectionalLight = nullptr;
+	m_CurrentPlayer = nullptr;
+	m_CurrentSkyBox = nullptr;
+	m_CurrentListener = nullptr;
+}
+
 void NodeGraphSystem::Destroy()
 {
 	m_SceneRootNode->Destroy(false);
@@ -321,7 +337,7 @@ void NodeGraphSystem::OnKeyPressed(KeyEventArgs& e)
 		Singleton::GetSelection()->DeselectAll();
 		for (int i = 0; i < objects.size(); i++)
 		{
-			if (objects[i])
+			if (objects[i] && objects[i] != GetRoot())
 				objects[i]->Destroy(false);
 		}
 		break;
@@ -333,12 +349,12 @@ void NodeGraphSystem::OnKeyPressed(KeyEventArgs& e)
 			Singleton::GetSelection()->DeselectAll();
 			for (int i = 0; i < objects.size(); i++)
 			{
-				if (objects[i])
+				if (objects[i] && objects[i] != GetRoot())
 				{
 					Node3D* clone = objects[i]->Clone(nullptr, true);
 					if (clone)
 					{
-						Singleton::GetSelection()->SelectedNode(clone);
+						Singleton::GetSelection()->SelectNode(clone);
 					}
 				}
 			}
@@ -357,12 +373,6 @@ void NodeGraphSystem::OnResize(ResizeEventArgs& e)
 Node3D* NodeGraphSystem::CreateNewNodeInScene(const std::string& nodePath, NodeTypeEnum type)
 {
 	Node3D* node = nullptr;
-
-	if (GetNodeByPath(nodePath))
-	{
-		printf("Error! Node %s already exists!\n", nodePath.c_str());
-		return node;
-	}
 
 	ParsedNodePath parsed;
 	parsed.ParseNodePath(nodePath);

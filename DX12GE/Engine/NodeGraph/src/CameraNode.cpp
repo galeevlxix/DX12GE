@@ -23,6 +23,7 @@ void CameraNode::OnUpdate(const double& deltaTime)
 		m_ViewMatrixCache = SimpleMath::Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
 		m_ViewMatrixNoTransCache = SimpleMath::Matrix::CreateLookAt(SimpleMath::Vector3::Zero, m_WorldDirectionCache, m_Up);
 	}
+	SetRatio(Singleton::GetNodeGraph()->WindowRatio);
 }
 
 const SimpleMath::Matrix CameraNode::GetViewProjMatrix()

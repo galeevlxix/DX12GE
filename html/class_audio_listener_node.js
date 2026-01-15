@@ -1,6 +1,7 @@
 var class_audio_listener_node =
 [
     [ "AudioListenerNode", "class_audio_listener_node.html#a9308a9d1a68782d4b1f5423a113d24e3", null ],
+    [ "Clone", "class_audio_listener_node.html#a10ab40aa703b8388d5ef00bb10a0bcdf", null ],
     [ "CreateJsonData", "class_audio_listener_node.html#a4c730c26d63290c4c8f20ea413907e2f", null ],
     [ "DrawDebug", "class_audio_listener_node.html#a398ca13f406cb55eb893908ad6d86c0f", null ],
     [ "GetListenerData", "class_audio_listener_node.html#afebda9529d57657e97e5a824ce643600", null ],

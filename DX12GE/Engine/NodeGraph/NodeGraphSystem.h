@@ -74,7 +74,10 @@ public:
 	/// \brief Returns the root node of the scene.
 	Node3D* GetRoot() { return m_SceneRootNode; }
 
-	/// \brief Destroys the stage tree.
+	/// \brief Reset the scene tree.
+	void Reset(bool keepComponent = true);
+
+	/// \brief Destroys the scene tree.
 	void Destroy();
 	
 	/// \brief Returns all scene nodes as a list.

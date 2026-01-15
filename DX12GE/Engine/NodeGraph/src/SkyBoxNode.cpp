@@ -1,6 +1,9 @@
 #include "../../Base/Singleton.h"
 #include "../../Graphics/ResourceStorage.h"
 
+/// \brief Box mesh.
+static Mesh3DComponent m_BoxMesh;
+
 SkyBoxNode::SkyBoxNode() : Object3DNode()
 {
 	m_Type = NODE_TYPE_SKYBOX;
@@ -11,55 +14,22 @@ SkyBoxNode::SkyBoxNode() : Object3DNode()
 
 bool SkyBoxNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
-    std::vector<XMFLOAT3> cubeVertices =
+    CreateBoxMesh(commandList);
+
+	uint32_t id = ResourceStorage::AddTexture(filePath);
+	auto textureComponent = ResourceStorage::GetTexture(id);
+    
+    if (!textureComponent->IsInitialized())
     {
-        {-1.0f,  1.0f, -1.0f},
-        { 1.0f,  1.0f, -1.0f},
-        { 1.0f,  1.0f,  1.0f},
-        {-1.0f,  1.0f,  1.0f},
-        {-1.0f, -1.0f, -1.0f},
-        { 1.0f, -1.0f, -1.0f},
-        { 1.0f, -1.0f,  1.0f},
-        {-1.0f, -1.0f,  1.0f}
-    };
-
-    std::vector<WORD> indices =
-    {
-        // Front face
-        0, 1, 2,
-        0, 2, 3,
-
-        // Back face
-        5, 4, 7,
-        5, 7, 6,
-
-        // Left face
-        4, 0, 3,
-        4, 3, 7,
-
-        // Right face
-        1, 5, 6,
-        1, 6, 2,
-
-        // Top face
-        4, 5, 1,
-        4, 1, 0,
-
-        // Bottom face
-        3, 2, 6,
-        3, 6, 7
-    };
-
-	m_TextureId = ResourceStorage::AddTexture(filePath);
-	auto textureComponent = ResourceStorage::GetTexture(m_TextureId);
-    textureComponent->OnLoadCubemap(commandList, filePath);
-    m_BoxMesh.OnLoad(commandList, cubeVertices, indices);
+        textureComponent->OnLoadCubemap(commandList, filePath);
+    }
 
     if (!textureComponent->IsInitialized() || !m_BoxMesh.IsInitialized())
     {
-        m_TextureId = -1;
 		return false;
     }
+
+    m_TextureId = id;
     IsVisible = true;
 	return true;
 }
@@ -84,11 +54,11 @@ void SkyBoxNode::RenderTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, i
 
 void SkyBoxNode::Destroy(bool keepComponent)
 {
-    m_BoxMesh.Destroy();
-    if (m_TextureId != -1 && !(keepComponent || TreeHasSkyboxesWithComponentId(m_TextureId)))
+    // to do: fix bug
+    /*if (m_TextureId != -1 && !(keepComponent || TreeHasSkyboxesWithComponentId(m_TextureId)))
     {
         ResourceStorage::DeleteTextureComponentForever(m_TextureId);
-    }
+    }*/
     m_TextureId = -1;
     Object3DNode::Destroy(keepComponent);
 }
@@ -122,7 +92,6 @@ Node3D* SkyBoxNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D
     {
         SkyBoxNode* obj3D = dynamic_cast<SkyBoxNode*>(cloneNode);
         obj3D->m_TextureId = m_TextureId;
-        obj3D->m_BoxMesh = m_BoxMesh;
     }
 
     return cloneNode;
@@ -187,4 +156,55 @@ bool SkyBoxNode::TreeHasSkyboxesWithComponentId(uint32_t id, Node3D* current)
     }
 
     return false;
+}
+
+void SkyBoxNode::CreateBoxMesh(ComPtr<ID3D12GraphicsCommandList2> commandList)
+{
+    if (m_BoxMesh.IsInitialized()) return;
+
+    std::vector<XMFLOAT3> cubeVertices =
+    {
+        {-1.0f,  1.0f, -1.0f},
+        { 1.0f,  1.0f, -1.0f},
+        { 1.0f,  1.0f,  1.0f},
+        {-1.0f,  1.0f,  1.0f},
+        {-1.0f, -1.0f, -1.0f},
+        { 1.0f, -1.0f, -1.0f},
+        { 1.0f, -1.0f,  1.0f},
+        {-1.0f, -1.0f,  1.0f}
+    };
+
+    std::vector<WORD> indices =
+    {
+        // Front face
+        0, 1, 2,
+        0, 2, 3,
+
+        // Back face
+        5, 4, 7,
+        5, 7, 6,
+
+        // Left face
+        4, 0, 3,
+        4, 3, 7,
+
+        // Right face
+        1, 5, 6,
+        1, 6, 2,
+
+        // Top face
+        4, 5, 1,
+        4, 1, 0,
+
+        // Bottom face
+        3, 2, 6,
+        3, 6, 7
+    };
+
+    m_BoxMesh.OnLoad(commandList, cubeVertices, indices);
+}
+
+void SkyBoxNode::DestroyBoxMesh()
+{
+    m_BoxMesh.Destroy();
 }

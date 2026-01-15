@@ -8,8 +8,6 @@
 class SkyBoxNode : public Object3DNode
 {
 protected:
-	/// \brief Box mesh.
-	Mesh3DComponent m_BoxMesh;
 	/// \brief Texture component id in the resource storage.
 	uint32_t m_TextureId;
 
@@ -51,4 +49,8 @@ public:
 
 private:
 	bool TreeHasSkyboxesWithComponentId(uint32_t id, Node3D* current = nullptr);
+	static void CreateBoxMesh(ComPtr<ID3D12GraphicsCommandList2> commandList);
+
+public:
+	static void DestroyBoxMesh();
 };	
