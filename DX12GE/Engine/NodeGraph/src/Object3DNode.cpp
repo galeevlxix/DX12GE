@@ -68,6 +68,12 @@ void Object3DNode::UpdateTransform(SimpleMath::Matrix InTransform)
     Vector3 scale, translation;
     Quaternion rotation;
     
+    if (m_Parent)
+    {
+        SimpleMath::Matrix ParentTransform = m_Parent->GetWorldMatrix();
+        InTransform = InTransform * ParentTransform.Invert();
+    }
+    
     InTransform.Decompose(scale, rotation, translation);
     Transform.SetPosition(translation);
     Transform.SetRotation(rotation.ToEuler());

@@ -199,7 +199,7 @@ namespace Physics
 				Quaternion Rotation;
 				ObjectsTransforms[BodiesMap[bodyID]].Decompose(Scale, Rotation, Translation);
 				
-				m_BodyInterface->SetPositionAndRotation(bodyID, RVec3Arg(Translation.x, Translation.y, Translation.z), QuatArg(Rotation.y, Rotation.x, Rotation.z, Rotation.w), EActivation::Activate);
+				m_BodyInterface->SetPositionAndRotation(bodyID, RVec3Arg(Translation.x, Translation.y, Translation.z), QuatArg(Rotation.x, Rotation.y, Rotation.z, Rotation.w), EActivation::Activate);
 			}
 		}
 	}
@@ -211,16 +211,17 @@ namespace Physics
 			return;
 		}
 		
-		int CurrentFramerate = static_cast<int> (1.f / inDeltaTime);
-		if (CurrentFramerate == 0)
+		float CurrentFramerate = 1.f / inDeltaTime;
+		
+		if (CurrentFramerate < 1.f)
 		{
 			CurrentFramerate = 60.f;
 		}
 		// If you take larger steps than 1 / 60th of a second you need to do multiple collision steps in order to keep the simulation stable. Do 1 collision step per 1 / 60th of a second (round up).
-		const int cCollisionSteps = ceil(static_cast<float> (CurrentFramerate) / 60.f);
+		const int cCollisionSteps = ceil(CurrentFramerate / 60.f);
 
 		// Step the world
-		m_PhysicsSystem.Update(1.f / static_cast<float> (CurrentFramerate), cCollisionSteps, m_pTempAllocator.get(), m_pJobSystem.get());
+		m_PhysicsSystem.Update(1.f / CurrentFramerate, cCollisionSteps, m_pTempAllocator.get(), m_pJobSystem.get());
 		
 		BodyIDVector bodies;
 		m_PhysicsSystem.GetBodies(bodies);
@@ -244,7 +245,7 @@ namespace Physics
 		BodyIDVector bodies;
 		m_PhysicsSystem.GetBodies(bodies);
 		const BodyLockInterface &lockInterface = m_PhysicsSystem.GetBodyLockInterface();
-		
+				
 		for (auto& bodyID : bodies)
 		{
 			BodyLockRead lock(lockInterface, bodyID);
@@ -261,23 +262,30 @@ namespace Physics
 				Mat44 RotTrans = body.GetWorldTransform().Decompose(Scale); 
 				Vec3 Translation = RotTrans.GetTranslation();
 				Quat Rotation = RotTrans.GetRotationSafe().GetQuaternion();
-				Vec3 RotationEuler = Rotation.GetEulerAngles();
-				
-				//cout << Translation.GetX() << " " << Translation.GetY() << " " << Translation.GetZ() << endl;
-				
+												
 				DirectX::SimpleMath::Matrix T = DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(Translation.GetX(), Translation.GetY(), Translation.GetZ()));
-				//DirectX::SimpleMath::Matrix R = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(Quaternion(Rotation.GetY(), Rotation.GetX(), Rotation.GetZ(), Rotation.GetW()).ToEuler());
-				DirectX::SimpleMath::Matrix R = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(RotationEuler.GetX(), RotationEuler.GetY(), RotationEuler.GetZ());
+				DirectX::SimpleMath::Matrix R = DirectX::SimpleMath::Matrix::CreateFromQuaternion(Quaternion(Rotation.GetX(), Rotation.GetY(), Rotation.GetZ(), Rotation.GetW()));
 				DirectX::SimpleMath::Matrix S = DirectX::SimpleMath::Matrix::CreateScale(Scale.GetX(), Scale.GetY(), Scale.GetZ());
 				DirectX::SimpleMath::Matrix ObjectTransform = S * R * T;
-				
+								
 				ObjectsTransforms.insert(pair(BodiesMap[bodyID], ObjectTransform));
 			}
-				
+							
 			lock.ReleaseLock();
 		}
 		
+		map<BodyID, BodyID> collidingBodies = contact_listener.GetCollidingBodies();
+		
+		for (const auto& bodyKey : collidingBodies)
+		{
+			OnBodiesOverlap(BodiesMap[bodyKey.first], BodiesMap[bodyKey.second]);
+		}
 		return ObjectsTransforms;
+	}
+
+	void PhysicsManager::OnBodiesOverlap(uint32_t ObjectID1, uint32_t ObjectID2)
+	{
+		//cout << "Collision detected, first body index - " << ObjectID1 << ", second body index - " << ObjectID2 << endl;
 	}
 
 	std::vector<Vector3>* PhysicsManager::GetBodyCollision(uint32_t inID, std::vector<Vector3>* outTriangles)
@@ -293,11 +301,9 @@ namespace Physics
 				Float3* Triangles = new Float3[999];
 				int FoundTriangles = Shape.GetTrianglesNext(context, 999, Triangles);
 				
-				outTriangles->clear();
-				outTriangles = new std::vector<Vector3>(FoundTriangles);
 				for (int i = 0; i < FoundTriangles; ++i)
 				{
-					(*outTriangles)[i] = Vector3(Triangles[i].x, Triangles[i].y, Triangles[i].z);
+					outTriangles->push_back(Vector3(Triangles[i].x, Triangles[i].y, Triangles[i].z));
 				}
 				return outTriangles;
 			}

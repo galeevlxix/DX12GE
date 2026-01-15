@@ -10,9 +10,7 @@ const DirectX::XMMATRIX& TransformComponent::GetLocalMatrix()
     {
         m_LocalMatrixCache = 
             DirectX::XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
-            DirectX::XMMatrixRotationX(m_Rotation.x) *
-            DirectX::XMMatrixRotationY(m_Rotation.y) *
-            DirectX::XMMatrixRotationZ(m_Rotation.z) *
+            DirectX::XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y, m_Rotation.z) *
             DirectX::XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
     }
     return m_LocalMatrixCache;

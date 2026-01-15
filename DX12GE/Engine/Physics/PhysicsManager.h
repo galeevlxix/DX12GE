@@ -191,6 +191,7 @@ namespace Physics
         virtual void			OnContactAdded(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
         {
             //cout << "A contact was added" << endl;
+            colliding_bodies.emplace(inBody1.GetID(), inBody2.GetID());
         }
 
         virtual void			OnContactPersisted(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
@@ -202,6 +203,14 @@ namespace Physics
         {
             //cout << "A contact was removed" << endl;
         }
+        
+        std::map<BodyID, BodyID> GetCollidingBodies()
+        {
+            return move(colliding_bodies);
+        }
+        
+    private:
+         std::map<BodyID, BodyID> colliding_bodies;
     };
 
     // An example activation listener
@@ -239,6 +248,8 @@ namespace Physics
         void DuringPhysics(double inDeltaTime);
         
         map<uint32_t, DirectX::SimpleMath::Matrix> PostPhysics(double inDeltaTime);
+        
+        void OnBodiesOverlap(uint32_t ObjectID1, uint32_t ObjectID2);
         
         std::vector<Vector3>* GetBodyCollision(uint32_t inID, std::vector<Vector3>* outTriangles);
         

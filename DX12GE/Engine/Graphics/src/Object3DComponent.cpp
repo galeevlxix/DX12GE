@@ -2,10 +2,11 @@
 #include "../../Base/DX12LibPCH.h"
 #include "../../Base/Singleton.h"
 
-void Object3DComponent::OnLoad(std::vector<Mesh3DComponent*>& meshes)
+void Object3DComponent::OnLoad(std::vector<Mesh3DComponent*>& meshes, std::vector<Vector3>* modelVertices)
 {
     m_Meshes = meshes;
-
+    m_Vertices = *modelVertices;
+    
     bool init = true;
     for (auto mesh : m_Meshes)
     {

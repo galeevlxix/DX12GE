@@ -4,9 +4,7 @@
 
 class PhysicalObjectNode: public Object3DNode
 {
-protected:
-	std::vector<Vector3>* ModelVertices;
-            
+protected:            
     CollisionTypeEnum collisionType = COLLISION_TYPE_STATIC_MESH;
         
     float gravityScale = 1.0f;
@@ -36,7 +34,7 @@ public:
     
 	virtual void DrawDebug() override;
     
-    std::vector<Vector3>* GetVertices() { return ModelVertices; };
+    std::vector<Vector3>* GetVertices();
     
     void SetCollisionGeometry(std::vector<Vector3>* vertices);
     
