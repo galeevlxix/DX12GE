@@ -51,7 +51,7 @@ namespace Physics
 	}
 
 	bool PhysicsManager::GenerateCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position,
-		Vector3 Rotation, float Mass, Vector3 Scale, CollisionTypeEnum CollisionType)
+		Vector3 Rotation, float Mass, Vector3 Scale, CollisionTypeEnum CollisionType, DOFEnum DOF)
 	{		
 		if (CollisionType >= COLLISION_TYPE_CAPSULE && Vertices.size() == 0)
 		{
@@ -84,7 +84,6 @@ namespace Physics
 		case COLLISION_TYPE_PLAYER:
 			AddConvexCollision(Vertices, Scale);
 			CollisionShape = CurrentShape;
-			//CollisionShape = new CapsuleShape(CollisionShape->GetLocalBounds().GetExtent().GetY(), CollisionShape->GetLocalBounds().GetExtent().GetX());
 			break;
 		
 		case COLLISION_TYPE_STATIC_MESH:
@@ -121,11 +120,27 @@ namespace Physics
 		meshSettings.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
 		meshSettings.mMassPropertiesOverride = MassProperties;
 		
-		if (CollisionType == COLLISION_TYPE_PLAYER)
+		switch (DOF)
 		{
+		case DOF_Player:
 			meshSettings.mAllowedDOFs = EAllowedDOFs::TranslationX | EAllowedDOFs::TranslationY | EAllowedDOFs::TranslationZ;
+			break;
+			
+		case DOF_WHEEL:
+			meshSettings.mAllowedDOFs = EAllowedDOFs::TranslationX | EAllowedDOFs::TranslationY | EAllowedDOFs::TranslationZ | EAllowedDOFs::RotationX | EAllowedDOFs::RotationY;
+			break;
+			
+		case DOF_NOJUMP:
+			meshSettings.mAllowedDOFs = EAllowedDOFs::TranslationX | EAllowedDOFs::TranslationZ | EAllowedDOFs::RotationX | EAllowedDOFs::RotationY | EAllowedDOFs::RotationZ;
+			
+		case DOF_2D:
+			meshSettings.mAllowedDOFs = EAllowedDOFs::Plane2D;
+			break;
+			
+		default:
+			break;
 		}
-								
+							
 		BodyID meshID = m_BodyInterface->CreateAndAddBody(meshSettings, activationType);
 		BodiesMap.insert(pair(meshID, ObjectID));
 		
@@ -202,6 +217,8 @@ namespace Physics
 				m_BodyInterface->SetPositionAndRotation(bodyID, RVec3Arg(Translation.x, Translation.y, Translation.z), QuatArg(Rotation.x, Rotation.y, Rotation.z, Rotation.w), EActivation::Activate);
 			}
 		}
+		
+		contact_listener.ClearCollidingBodies();
 	}
 
 	void PhysicsManager::DuringPhysics(double inDeltaTime)
@@ -281,6 +298,48 @@ namespace Physics
 			OnBodiesOverlap(BodiesMap[bodyKey.first], BodiesMap[bodyKey.second]);
 		}
 		return ObjectsTransforms;
+	}
+
+	void PhysicsManager::AddImpulse(uint32_t ObjectID, Vector3 Direction, float Magnitude)
+	{
+		for (const auto& bodyID : BodiesMap)
+		{
+			if (bodyID.second == ObjectID)
+			{
+				m_BodyInterface->AddImpulse(bodyID.first, Vec3Arg(Direction * Magnitude));
+				return;
+			}
+		}
+		
+		std::cout << "Object not found" << std::endl;
+	}
+
+	Vector3 PhysicsManager::GetObjectVelocity(uint32_t ObjectID)
+	{
+		for (const auto& bodyID : BodiesMap)
+		{
+			if (bodyID.second == ObjectID)
+			{
+				Vec3 velocity = m_BodyInterface->GetLinearVelocity(bodyID.first);
+				return Vector3(velocity.GetX(), velocity.GetY(), velocity.GetZ());
+			}
+		}
+		
+		std::cout << "Object not found" << std::endl;
+		return Vector3::Zero;
+	}
+
+	bool PhysicsManager::ObjectWasHit(uint32_t ObjectID)
+	{
+		for (auto Bodies : contact_listener.GetCollidingBodies())
+		{
+			if (ObjectID == BodiesMap[Bodies.first] || ObjectID == BodiesMap[Bodies.second])
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	void PhysicsManager::OnBodiesOverlap(uint32_t ObjectID1, uint32_t ObjectID2)

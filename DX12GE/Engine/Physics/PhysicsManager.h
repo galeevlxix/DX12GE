@@ -206,7 +206,12 @@ namespace Physics
         
         std::map<BodyID, BodyID> GetCollidingBodies()
         {
-            return move(colliding_bodies);
+            return colliding_bodies;
+        }
+        
+        void ClearCollidingBodies()
+        {
+            colliding_bodies.clear();
         }
         
     private:
@@ -233,7 +238,7 @@ namespace Physics
     public:
         void Initialize();
         
-        bool GenerateCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position, Vector3 Rotation, float Mass = 1.f, Vector3 Scale = Vector3::One, CollisionTypeEnum CollisionType = COLLISION_TYPE_STATIC_MESH);
+        bool GenerateCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position, Vector3 Rotation, float Mass = 1.f, Vector3 Scale = Vector3::One, CollisionTypeEnum CollisionType = COLLISION_TYPE_STATIC_MESH, DOFEnum DOF = DOF_ALL);
         
         void AddConvexCollision(const vector<Vector3>& Vertices, Vector3 Scale = Vector3::One);
         
@@ -248,6 +253,12 @@ namespace Physics
         void DuringPhysics(double inDeltaTime);
         
         map<uint32_t, DirectX::SimpleMath::Matrix> PostPhysics(double inDeltaTime);
+        
+        void AddImpulse(uint32_t ObjectID, Vector3 Direction, float Magnitude);
+        
+        Vector3 GetObjectVelocity(uint32_t ObjectID);
+        
+        bool ObjectWasHit(uint32_t ObjectID);
         
         void OnBodiesOverlap(uint32_t ObjectID1, uint32_t ObjectID2);
         

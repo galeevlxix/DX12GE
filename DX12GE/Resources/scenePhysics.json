@@ -1404,6 +1404,7 @@
     "trans_scl_y": 3.333329916000366,
     "trans_scl_z": 3.333329916000366,
     "collision_type": 4,
+    "DOF": 2,
     "mass": 2000.0,
     "friction_scale": 1.0,
     "scripts": [
@@ -1425,6 +1426,7 @@
     "trans_scl_y": 1.0,
     "trans_scl_z": 1.0,
     "collision_type": 4,
+    "DOF": 2,
     "mass": 2000.0,
     "friction_scale": 1.0,
     "scripts": []
@@ -1688,6 +1690,7 @@
     "trans_scl_y": 3.3329999446868896,
     "trans_scl_z": 3.3329999446868896,
     "collision_type": 4,
+    "DOF": 2,
     "mass": 2000.0,
     "friction_scale": 1.0,
     "scripts": []
@@ -1736,6 +1739,10 @@
     "trans_scl_y": 0.3333300054073334,
     "trans_scl_z": 0.3333300054073334,
     "collision_type": 5,
+    "DOF": 1,
+    "gravity_scale": 1.0,
+    "mass": 1.0,
+    "friction_scale": 0.2,
     "scripts": []
   },
   {

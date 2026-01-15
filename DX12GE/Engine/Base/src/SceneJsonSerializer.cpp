@@ -265,6 +265,11 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		{
 			newNode.collisionType = it->at("collision_type");
 		}
+		
+		if (it->contains("DOF"))
+		{
+			newNode.DOF = it->at("DOF");
+		}
 				
 		if (it->contains("gravity_scale"))
 		{

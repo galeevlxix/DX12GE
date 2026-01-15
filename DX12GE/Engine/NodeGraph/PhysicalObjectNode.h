@@ -6,6 +6,8 @@ class PhysicalObjectNode: public Object3DNode
 {
 protected:            
     CollisionTypeEnum collisionType = COLLISION_TYPE_STATIC_MESH;
+    
+    DOFEnum DOF = DOF_ALL;
         
     float gravityScale = 1.0f;
         
@@ -33,6 +35,12 @@ public:
     virtual void SetCurrent() override;
     
 	virtual void DrawDebug() override;
+    
+    void AddImpulse(Vector3 direction, float Magnitude);
+    
+    Vector3 GetVelocity();
+    
+    bool WasHit();
     
     std::vector<Vector3>* GetVertices();
     

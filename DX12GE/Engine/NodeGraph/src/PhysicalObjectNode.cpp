@@ -39,6 +39,8 @@ void PhysicalObjectNode::CreateJsonData(json& j)
     
     j["collision_type"] = collisionType;
     
+    j["DOF"] = DOF;
+    
     j["mass"] = mass;
     
     j["gravity_scale"] = gravityScale;
@@ -68,6 +70,21 @@ void PhysicalObjectNode::DrawDebug()
     }
 }
 
+void PhysicalObjectNode::AddImpulse(Vector3 direction, float Magnitude)
+{
+    Singleton::GetPhysicsManager()->AddImpulse(GetNodeId(), direction, Magnitude);
+}
+
+Vector3 PhysicalObjectNode::GetVelocity()
+{
+    return Singleton::GetPhysicsManager()->GetObjectVelocity(GetNodeId());
+}
+
+bool PhysicalObjectNode::WasHit()
+{
+    return Singleton::GetPhysicsManager()->ObjectWasHit(GetNodeId());
+}
+
 std::vector<Vector3>* PhysicalObjectNode::GetVertices()
 {
     return ResourceStorage::GetObject3D(m_ComponentId)->GetVertices();
@@ -88,7 +105,12 @@ void PhysicalObjectNode::LoadFromJsonData(const NodeSerializingData& nodeData)
         collisionType = nodeData.collisionType;
     }
     
-    if (nodeData.gravityScale >= -1.f)
+    if (nodeData.DOF >= 0)
+    {
+        DOF = nodeData.DOF;
+    }
+    
+    if (nodeData.gravityScale >= -10.f)
     {
         gravityScale = nodeData.gravityScale;
     }

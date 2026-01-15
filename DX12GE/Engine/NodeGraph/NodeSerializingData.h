@@ -59,6 +59,7 @@ struct NodeSerializingData
 	
 	// physics
 	CollisionTypeEnum collisionType;
+	DOFEnum DOF;
 	float gravityScale;
 	float mass;
 	float frictionScale;
