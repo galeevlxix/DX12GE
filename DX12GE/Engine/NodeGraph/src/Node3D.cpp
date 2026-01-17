@@ -120,7 +120,7 @@ void Node3D::NotifyParentChanged()
 
 void Node3D::Rename(const std::string& name)
 {
-    if (name.find('/') != std::string::npos || name.find('%') != std::string::npos) throw std::invalid_argument(name + " contains ‘/’ or '%'");
+    if (name.find('/') != std::string::npos || name.find('%') != std::string::npos) throw std::invalid_argument(name + " contains ï¿½/ï¿½ or '%'");
     
     std::string newName = name;
     if (m_Parent)
@@ -308,14 +308,6 @@ Node3D* Node3D::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cl
     }
 
     return cloneNode;
-}
-
-void Node3D::DrawDebug()
-{
-    for (auto child : m_Children)
-    {
-        child.second->DrawDebug();
-    }
 }
 
 void Node3D::DrawDebug()

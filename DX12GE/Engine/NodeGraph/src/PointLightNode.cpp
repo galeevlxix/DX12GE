@@ -62,9 +62,3 @@ void PointLightNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 	LightData.AttenuationProperties.Linear = nodeData.lightAttenuation.y;
 	LightData.AttenuationProperties.Exp = nodeData.lightAttenuation.z;
 }
-
-void PointLightNode::DrawDebug()
-{
-	Node3D::DrawDebug();
-	Singleton::GetDebugRender()->DrawPoint(m_WorldPositionCache, 0.5f, LightData.BaseLightProperties.Color);
-}
