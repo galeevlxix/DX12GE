@@ -1446,6 +1446,7 @@
     "trans_scl_y": 0.004049999639391899,
     "trans_scl_z": 0.004049999639391899,
     "collision_type": 4,
+    "DOF": 1,
     "mass": 200.0,
     "friction_scale": 0.8,
     "scripts": []

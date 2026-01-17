@@ -197,6 +197,19 @@ void NodeGraphSystem::OnNodeRemoved(Node3D* node)
 	}
 }
 
+Object3DNode* NodeGraphSystem::GetObjectByID(uint32_t ID)
+{
+	for (auto Object : m_All3DObjects)
+	{
+		if (Object.second->GetNodeId() == ID)
+		{
+			return Object.second;
+		}
+	}
+	
+	return nullptr;
+}
+
 Node3D* NodeGraphSystem::GetNodeByPath(const std::string& nodePath)
 {
 	std::vector<std::string> arr;

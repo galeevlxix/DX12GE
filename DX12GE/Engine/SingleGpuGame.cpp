@@ -231,7 +231,7 @@ void SingleGpuGame::GenerateCollisions() const
                 Quaternion Rotation;
                 WorldMatrix.Decompose(Scale, Rotation, Position);
                 
-                Singleton::GetPhysicsManager()->GenerateCollision(PhysRef->GetNodeId(), *PhysRef->GetVertices(), Position, Rotation.ToEuler(), PhysRef->GetMass(), Scale, PhysRef->GetCollisionType());
+                Singleton::GetPhysicsManager()->GenerateCollision(PhysRef->GetNodeId(), *PhysRef->GetVertices(), Position, Rotation.ToEuler(), PhysRef->GetMass(), Scale, PhysRef->GetCollisionType(), PhysRef->GetDOF());
             }
             
             Singleton::GetPhysicsManager()->ApplyProperties(PhysRef->GetNodeId(), PhysRef->GetGravityScale(), PhysRef->GetFrictionScale());

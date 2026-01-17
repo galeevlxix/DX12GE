@@ -2,6 +2,9 @@
 
 #include "../Base/Helpers.h"
 #include "Jolt/Physics/Collision/Shape/Shape.h"
+#include <Jolt/Physics/Collision/RayCast.h>
+#include <Jolt/Physics/Collision/CastResult.h>
+#include <Jolt/Physics/Collision/CollisionCollectorImpl.h>
 
 namespace Physics
 {
@@ -345,6 +348,24 @@ namespace Physics
 	void PhysicsManager::OnBodiesOverlap(uint32_t ObjectID1, uint32_t ObjectID2)
 	{
 		//cout << "Collision detected, first body index - " << ObjectID1 << ", second body index - " << ObjectID2 << endl;
+	}
+
+	std::map<uint32_t, Vector3> PhysicsManager::CastRay(Vector3 Origin, Vector3 Direction, float Length)
+	{
+		RayCast CastedRay = RayCast(Vec3Arg(Origin), Vec3Arg(Direction * Length));
+		RayCastSettings Settings;
+		AllHitCollisionCollector<CastRayCollector> Collector;
+		DefaultBroadPhaseLayerFilter layerFilter(object_vs_broadphase_layer_filter, Layers::MOVING);
+		
+		m_PhysicsSystem.GetNarrowPhaseQuery().CastRay(RRayCast(CastedRay), Settings, Collector);
+		
+		std::map<uint32_t, Vector3> CollidingIDs;
+		for (const auto& Hit : Collector.mHits)
+		{
+			CollidingIDs.emplace(BodiesMap[Hit.mBodyID], Origin + Direction * Length * Hit.mFraction);
+		}
+		
+		return CollidingIDs;
 	}
 
 	std::vector<Vector3>* PhysicsManager::GetBodyCollision(uint32_t inID, std::vector<Vector3>* outTriangles)

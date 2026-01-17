@@ -48,6 +48,8 @@ public:
     
     const CollisionTypeEnum& GetCollisionType() { return collisionType; }
     
+    const DOFEnum& GetDOF() { return DOF; }
+    
     const float& GetGravityScale() { return gravityScale; }
     
     const float& GetMass() { return mass; }

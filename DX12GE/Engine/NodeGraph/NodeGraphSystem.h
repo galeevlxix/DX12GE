@@ -85,6 +85,9 @@ public:
 
 	/// \brief Returns all 3D objects in the scene as a dictionary (path to node -> node).
 	const std::map<std::string, Object3DNode*>& GetAll3DObjects() { return m_All3DObjects; }
+	
+	/// \return Returns Object reference with matching ID
+	Object3DNode* GetObjectByID(uint32_t ID);
 
 	/// \brief Finds a node along its path in the scene tree.
 	/// \return Returns the node if it is found. Returns nullptr otherwise.

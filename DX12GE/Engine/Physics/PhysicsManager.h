@@ -262,6 +262,8 @@ namespace Physics
         
         void OnBodiesOverlap(uint32_t ObjectID1, uint32_t ObjectID2);
         
+        std::map<uint32_t, Vector3> CastRay(Vector3 Origin, Vector3 Direction, float Length);
+        
         std::vector<Vector3>* GetBodyCollision(uint32_t inID, std::vector<Vector3>* outTriangles);
         
         void OnDestroy();
