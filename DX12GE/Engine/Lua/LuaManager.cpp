@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 
 lua_State* LuaManager::L = nullptr;
 LuaManager* LuaManager::p_instance = nullptr;
-std::string const luaSciptsFolder = "../DX12GE/Engine/Lua/scripts/";
+std::string const luaSciptsFolder = "../GameEngineDev/x64/Debug/scripts/";
 static SingleGpuGame* p_scene;
 static NodeGraphSystem* p_grapsh_system;
 static std::vector<std::string> lua_classes_vector;
@@ -29,18 +29,52 @@ static sol::state lua;
 //LUA API ZONE
 Node3D* lua_get_object_on_scene(std::string name)
 {
-	const auto object = p_grapsh_system->GetNodeByPath(name);
-	//object->AddScriptComponent();
+	const auto& object = p_grapsh_system->GetNodeByPath(name);
 
 	return object;
+}
+
+int lua_get_node_type(Node3D* object)
+{
+	return object->GetType();
 }
 
 int lua_rotate_object_by_rotator(Node3D* object, float y, float p, float r)
 {
 	assert(object != nullptr, "Attempt to call rotate on null object!");
-	object->Transform.SetRotation(DirectX::SimpleMath::Vector3(y, p, r));
+	object->Transform.Rotate(DirectX::SimpleMath::Vector3(y, p, r));
 
 	return 1;
+}
+
+int lua_call_assert(std::string text)
+{
+	std::cout << "Error: " << text << std::endl;
+
+	return 1;
+}
+
+int lua_set_rotation_to_rotator(Node3D* object, float y, float p, float r)
+{
+	assert(object != nullptr, "Attempt to call rotate on null object!");
+
+	object->Transform.SetRotation(DirectX::SimpleMath::Vector3(y, p, r));
+	return 1;
+}
+
+int lua_add_impulse(PhysicalObjectNode* object, float x, float y, float z, float m)
+{
+	assert(object != nullptr, "Attempt to call add impulse on null object!");
+
+	object->AddImpulse(DirectX::SimpleMath::Vector3(x, y, z), m);
+	return 1;
+}
+
+DirectX::SimpleMath::Vector3 lua_get_velocity(PhysicalObjectNode* object)
+{
+	assert(object != nullptr, "Attempt to call get velocity on null object!");
+
+	return object->GetVelocity();
 }
 
 std::map<std::string, float> lua_get_object_pos(Node3D* object)
@@ -243,48 +277,42 @@ std::vector<std::string> FindAllLuaFiles(const std::string& rootPath,
 LuaManager::LuaManager()
 {
 	//sol::state lua;
-	lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
-
-	lua.set_function("Register", &lua_register_class);
-	lua.set_function("LoadObjectWithModel", &lua_load_object_with_model);
-//	lua.set_function("GetCamera", &lua_get_camera);
-	lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
-	lua.set_function("TranslateTo", &lua_transform_move_to);
-	lua.set_function("GetObjectOnScene", &lua_get_object_on_scene);
-	lua.set_function("GetTransfromPosition", &lua_get_object_pos);
-	lua.set_function("GetClass", &get_lua_class);
-	lua.set_function("TranslateBy", &lua_transform_move_by);
-
-	fs::path currentDir = fs::current_path().parent_path().parent_path();
-	std::cout << currentDir << std::endl;
-	std::vector<std::string> luaFiles;
-	size_t count = FindAllLuaFiles(currentDir.string(), luaFiles);
-
-	std::cout << "\nFound " << count << " Lua files:" << std::endl;
-	for (size_t i = 0; i < luaFiles.size(); ++i) {
-		std::cout << "  [" << (i + 1) << "/" << count << "] " << luaFiles[i] << std::endl;
-		//lua.safe_script_file(luaFiles[i]);
-	}
-
-	if (!EngineConfig::IsReleaseMode)
+	if (EngineConfig::IsReleaseMode)
 	{
-		lua.safe_script_file(luaSciptsFolder + "Core.lua");
-		lua.safe_script_file(luaSciptsFolder + "Car.lua");
-		lua.safe_script_file(luaSciptsFolder + "Player.lua");
-		lua.safe_script_file(luaSciptsFolder + "TestScript.lua");
-		lua.safe_script_file(luaSciptsFolder + "TestScript2.lua");
+
 	}
 	else
 	{
-		lua.safe_script_file(luaSciptsFolder + "Core.lua");
-		lua.safe_script_file(luaSciptsFolder + "Car.lua");
-		lua.safe_script_file(luaSciptsFolder + "Player.lua");
-		//	lua.safe_script_file("TestScript.lua");
-			//lua.safe_script_file("TestScript2.lua");
-	}
-	
+		lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
 
-	//*/
+		lua.set_function("Register", &lua_register_class);
+		lua.set_function("LoadObjectWithModel", &lua_load_object_with_model);
+		//	lua.set_function("GetCamera", &lua_get_camera);
+		lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
+		lua.set_function("TranslateTo", &lua_transform_move_to);
+		lua.set_function("GetObjectOnScene", &lua_get_object_on_scene);
+		lua.set_function("GetTransfromPosition", &lua_get_object_pos);
+		lua.set_function("GetClass", &get_lua_class);
+		lua.set_function("TranslateBy", &lua_transform_move_by);
+		lua.set_function("CallError", &lua_call_assert);
+		lua.set_function("GetVelocity", &lua_get_velocity);
+		lua.set_function("AddImpule", &lua_add_impulse);
+		lua.set_function("GetNodeType", &lua_get_node_type);
+
+		fs::path currentDir = fs::current_path().parent_path().parent_path();
+		std::cout << currentDir << std::endl;
+		std::vector<std::string> luaFiles;
+		size_t count = FindAllLuaFiles(currentDir.string(), luaFiles);
+
+
+		std::cout << "\nFound " << count << " Lua files:" << std::endl;
+		for (size_t i = 0; i < luaFiles.size(); ++i) {
+			std::cout << "  [" << (i + 1) << "/" << count << "] " << luaFiles[i] << std::endl;
+			lua.safe_script_file(luaFiles[i]);
+		}
+		lua.safe_script_file(luaSciptsFolder + "Core.lua");
+	}
+
 
 }
 
@@ -292,127 +320,6 @@ LuaManager::~LuaManager()
 {
 }
 
-///////////////////////////////////////////////////////////////// ABOUT TO BE CUTTED
-bool LuaManager::CheckLua(lua_State* L, int r)
-{
-	if (r != LUA_OK)
-	{
-		const std::string errormsg = lua_tostring(L, -1);
-		std::cout << errormsg << std::endl;
-		return false;
-	}
-	return true;
-}
-
-void LuaManager::LoadErrorStack()
-{
-	const std::string error = lua_tostring(L, -1);
-	std::cout << error << std::endl;
-}
-
-std::string LuaManager::ReadStringFromTable(std::string tableName, std::string keyName)
-{
-	lua_getglobal(L, tableName.c_str());
-
-	if (!lua_istable(L, -1))
-	{
-		std::cout << "No Such string: " << keyName << "in table" << std::endl;
-		return "error";
-	}
-
-	lua_pushstring(L, keyName.c_str());
-	lua_gettable(L, -2);
-	const std::string res = lua_tostring(L, -1);
-	lua_pop(L, 1);
-	return res;
-}
-
-long double LuaManager::ReadNumderFromTable(std::string tableName, std::string keyName)
-{
-	lua_getglobal(L, tableName.c_str());
-
-	if (!lua_istable(L, -1))
-	{
-		std::cout << "No Such number: " << keyName << "in table" << std::endl;
-		return -1;
-	}
-
-	lua_pushstring(L, keyName.c_str());
-	lua_gettable(L, -2);
-	const long double res = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-	return res;
-}
-
-bool LuaManager::ReadBoolFromTable(std::string tableName, std::string keyName)
-{
-	lua_getglobal(L, tableName.c_str());
-
-	if (!lua_istable(L, -1))
-	{
-		std::cout << "No Such bool: " << keyName << "in table" << std::endl;
-		return false;
-	}
-
-	lua_pushstring(L, keyName.c_str());
-	lua_gettable(L, -2);
-	const bool res = lua_toboolean(L, -1);
-	lua_pop(L, 1);
-	return res;
-}
-
-template<typename... Args>
-void LuaManager::CallLuaFunction(std::string functionName, const std::tuple<Args...>& inputs, const int ouputsCount)
-{
-	lua_getglobal(L, functionName.c_str());
-
-	if (lua_isfunction(L, -1))
-	{
-		std::apply([this](const Args&... args) {
-			(PushToLua(args), ...);
-			}, inputs);
-
-		if (lua_pcall(L, sizeof...(Args), ouputsCount, 0) != LUA_OK) {
-			const char* error = lua_tostring(L, -1);
-			std::cerr << "Lua error: " << error << std::endl;
-			lua_pop(L, 1);
-		}
-	}
-	else
-	{
-		lua_pop(L, 1);
-		std::cerr << "Function '" << functionName << "' not found" << std::endl;
-	}
-}
-
-template<typename T>
-void LuaManager::PushToLua(const T& value)
-{
-	if constexpr (std::is_integral_v<T> && !std::is_same_v<T, bool>) {
-		lua_pushinteger(L, value);
-	}
-	else if constexpr (std::is_floating_point_v<T>) {
-		lua_pushnumber(L, value);
-	}
-	else if constexpr (std::is_same_v<T, bool>) {
-		lua_pushboolean(L, value);
-	}
-	else if constexpr (std::is_convertible_v<T, std::string>) {
-		lua_pushstring(L, std::string(value).c_str());
-	}
-	else
-	{
-		const void* val = &value;
-		lua_pushlightuserdata(L, const_cast<void*>(val));
-	}
-}
-
-
-std::string LuaManager::ReadUserDataFromTable(std::string tableName, std::string keyName)
-{
-	return std::string();
-}
-///////////////////////////////////////////////////////////////// ABOUT TO BE CUTTED END ZONE
 
 
 void LuaManager::SetGraspSystem(NodeGraphSystem* system)
@@ -476,7 +383,6 @@ void LuaManager::Start()
 	}
 }
 
-
 std::string LuaManager::CreateValidClass(std::string className, std::string objId)
 {
 	if (lua_classes_map.find(className) == lua_classes_map.end())
@@ -490,7 +396,7 @@ std::string LuaManager::CreateValidClass(std::string className, std::string objI
 	std::string highCaseName = className;
 	std::transform(highCaseName.begin(), highCaseName.end(), highCaseName.begin(), ::toupper);
 	lua.safe_script("if " + actualName + " ~= nil then return end \n" + actualName + " = " + highCaseName + ":new(\"" + actualName + "\")" +
-		"\n" + actualName + ":SetEntityName(\"" + objId + "\")\n" + actualName + ":AddComponent(Transform)\n");
+		"\n" + actualName + ":SetEntityName(\"" + objId + "\")\n");
 
 	lua_register_class(actualName);
 	return actualName;

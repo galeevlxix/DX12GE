@@ -5,6 +5,7 @@ Node3D::Node3D() : m_Parent(nullptr)
     m_Type = NODE_TYPE_NODE3D;
     m_WorldMatrixCache = DirectX::XMMATRIX();
     Transform.SetDefault();
+    Scripts = std::vector<std::string>();
     Rename("Node3D");
 
     m_UniqueID = Singleton::GetNodeIdGenerator()->GetNextId();
@@ -22,9 +23,9 @@ const std::string Node3D::GetNodePath()
     return nodePath;
 }
 
-const std::string Node3D::GetNodeScripts()
+const std::vector<std::string>& Node3D::GetNodeScripts()
 {
-    return std::string();
+    return Scripts;
 }
 
 void SetTransformCacheStatus(TransformComponent& transform, bool cacheIsDirty)
@@ -307,6 +308,14 @@ Node3D* Node3D::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cl
     }
 
     return cloneNode;
+}
+
+void Node3D::DrawDebug()
+{
+    for (auto child : m_Children)
+    {
+        child.second->DrawDebug();
+    }
 }
 
 void Node3D::DrawDebug()

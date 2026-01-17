@@ -24,7 +24,6 @@ end
 function PLAYER:OnMouseClickInput( k, pressed )
 	if self.transform ~= nil then
 		local pos = self.transform:GetPosition()
-
 		--[[local object = LoadObjectWithModel("ddd")
 		if object ~= nil then
 			if object.transform == nil then

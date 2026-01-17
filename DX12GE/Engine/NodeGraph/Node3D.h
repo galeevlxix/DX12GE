@@ -14,6 +14,7 @@ public:
 	/// \brief Modifying the transformation of the node (position, rotation, scale).
 	/// \note Transform changes will only take effect after OnUpdate is called.
 	TransformComponent Transform;
+	std::vector<std::string> Scripts;
 
 protected:
 	/// \brief Direct descendants of the node.
@@ -60,7 +61,7 @@ public:
 	const std::string GetNodePath();
 
 	/// \brief Returns the Lua scripts attached to this node as a single string.
-	const std::string GetNodeScripts();
+	const std::vector<std::string>& GetNodeScripts();
 	
 	/// \brief Called every tick on a node update.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.

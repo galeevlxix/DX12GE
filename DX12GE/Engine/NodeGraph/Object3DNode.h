@@ -55,6 +55,8 @@ public:
 
 	virtual void LoadFromJsonData(const NodeSerializingData& nodeData) override;
 
+	virtual void DrawDebug() override;
+
 private:
 	bool TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current = nullptr);
 };
