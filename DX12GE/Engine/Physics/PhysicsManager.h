@@ -258,6 +258,8 @@ namespace Physics
         
         Vector3 GetObjectVelocity(uint32_t ObjectID);
         
+        void SetObjectVelocity(uint32_t ObjectID, Vector3 Velocity);
+        
         bool ObjectWasHit(uint32_t ObjectID);
         
         void OnBodiesOverlap(uint32_t ObjectID1, uint32_t ObjectID2);

@@ -135,6 +135,7 @@ namespace Physics
 			
 		case DOF_NOJUMP:
 			meshSettings.mAllowedDOFs = EAllowedDOFs::TranslationX | EAllowedDOFs::TranslationZ | EAllowedDOFs::RotationX | EAllowedDOFs::RotationY | EAllowedDOFs::RotationZ;
+			break;
 			
 		case DOF_2D:
 			meshSettings.mAllowedDOFs = EAllowedDOFs::Plane2D;
@@ -330,6 +331,18 @@ namespace Physics
 		
 		std::cout << "Object not found" << std::endl;
 		return Vector3::Zero;
+	}
+
+	void PhysicsManager::SetObjectVelocity(uint32_t ObjectID, Vector3 Velocity)
+	{				
+		for (const auto& bodyID : BodiesMap)
+		{
+			if (bodyID.second == ObjectID)
+			{
+				m_BodyInterface->SetLinearVelocity(bodyID.first, Vec3Arg(Velocity));
+				return;
+			}
+		}
 	}
 
 	bool PhysicsManager::ObjectWasHit(uint32_t ObjectID)
