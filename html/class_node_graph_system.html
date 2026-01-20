@@ -110,6 +110,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a528d0a41262ccc7884cf3c2320e3e6f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all scene nodes as a list.  <br /></td></tr>
 <tr class="memitem:a53ad5e3a684f706ab1e81b36fd64ae26" id="r_a53ad5e3a684f706ab1e81b36fd64ae26"><td class="memItemLeft">const std::map&lt; std::string, <a class="el" href="class_object3_d_node.html">Object3DNode</a> * &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a53ad5e3a684f706ab1e81b36fd64ae26">GetAll3DObjects</a> ()</td></tr>
 <tr class="memdesc:a53ad5e3a684f706ab1e81b36fd64ae26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all 3D objects in the scene as a dictionary (path to node -&gt; node).  <br /></td></tr>
+<tr class="memitem:a04840a3248739097662c7e72136039df" id="r_a04840a3248739097662c7e72136039df"><td class="memItemLeft"><a class="el" href="class_object3_d_node.html">Object3DNode</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a04840a3248739097662c7e72136039df">GetObjectByID</a> (uint32_t ID)</td></tr>
 <tr class="memitem:a7a8e138e326bd42b99a496c4c7d7d611" id="r_a7a8e138e326bd42b99a496c4c7d7d611"><td class="memItemLeft"><a class="el" href="class_node3_d.html">Node3D</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a7a8e138e326bd42b99a496c4c7d7d611">GetNodeByPath</a> (const std::string &amp;nodePath)</td></tr>
 <tr class="memdesc:a7a8e138e326bd42b99a496c4c7d7d611"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a node along its path in the scene tree.  <br /></td></tr>
 <tr class="memitem:a1940b573b06c52bdc578d4c6f116b364" id="r_a1940b573b06c52bdc578d4c6f116b364"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="#a1940b573b06c52bdc578d4c6f116b364">Print</a> (<a class="el" href="class_node3_d.html">Node3D</a> *current=nullptr, int depth=0)</td></tr>
@@ -515,6 +516,24 @@ Friends</h2></td></tr>
 
 <p>Finds a node along its path in the scene tree. </p>
 <dl class="section return"><dt>Returns</dt><dd>Returns the node if it is found. Returns nullptr otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a04840a3248739097662c7e72136039df" name="a04840a3248739097662c7e72136039df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04840a3248739097662c7e72136039df">&#9670;&#160;</a></span>GetObjectByID()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_object3_d_node.html">Object3DNode</a> * NodeGraphSystem::GetObjectByID </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>ID</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Returns Object reference with matching ID </dd></dl>
 
 </div>
 </div>

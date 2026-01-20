@@ -2,6 +2,7 @@ var class_node3_d =
 [
     [ "Node3D", "class_node3_d.html#ab99fbabe69656236e823ed23a8298c92", null ],
     [ "AddChild", "class_node3_d.html#a6197b718bf132d72242f4ce5cfbce329", null ],
+    [ "AddScript", "class_node3_d.html#a0421bb1286ac10ff10089ca0ec530db6", null ],
     [ "Clone", "class_node3_d.html#a39bf64d63215d0a77144c9b6a2d55507", null ],
     [ "CreateJsonData", "class_node3_d.html#a54a7ce76efda753ab76c5497fa0e657f", null ],
     [ "Destroy", "class_node3_d.html#a6424900a9f7f00e323e545d800db9cad", null ],
@@ -14,7 +15,7 @@ var class_node3_d =
     [ "GetName", "class_node3_d.html#a184081bf3ee2e7f70f84964c15acec55", null ],
     [ "GetNodeId", "class_node3_d.html#a88fbe2732b99c407d475743fb80c3361", null ],
     [ "GetNodePath", "class_node3_d.html#a53350cbe547936291c0f86b1e24308f2", null ],
-    [ "GetNodeScripts", "class_node3_d.html#a43e1b9fb82ed5f2f1562a2deff3bdaa8", null ],
+    [ "GetNodeScripts", "class_node3_d.html#a6ea3cbfdeef3e4257e3833436ee986bf", null ],
     [ "GetParent", "class_node3_d.html#ab16016fa3659a0d8744390549a736a93", null ],
     [ "GetType", "class_node3_d.html#ac2ddc1263bda33618343280d69873ca5", null ],
     [ "GetWorldDirection", "class_node3_d.html#ab6d2b33d0b016c4f14a58a14bf69f64a", null ],
@@ -34,6 +35,7 @@ var class_node3_d =
     [ "OnWindowResize", "class_node3_d.html#aa62613273e80a9342d3bd46dfb3b373b", null ],
     [ "RemoveChild", "class_node3_d.html#a9acaed4efd0e0b3b0fd9d0b7e864a2f0", null ],
     [ "RemoveChild", "class_node3_d.html#a57cfbd4381deb1f04e80142ff74cbd32", null ],
+    [ "RemoveScript", "class_node3_d.html#ae3b6ad309180d07af80de50529268a24", null ],
     [ "Rename", "class_node3_d.html#ac3c409d8a4cc8477550d6dfe9d33d0a3", null ],
     [ "SetCurrent", "class_node3_d.html#a19a263adc60007d6c65a8971a4591dd3", null ],
     [ "m_Children", "class_node3_d.html#a37bbfb305f1bad29b53683e89f60c1b9", null ],
@@ -43,5 +45,6 @@ var class_node3_d =
     [ "m_WorldDirectionCache", "class_node3_d.html#aa1d89a9287626fee2aa70bc9c6dc5814", null ],
     [ "m_WorldMatrixCache", "class_node3_d.html#abc37452e380b96dc7ff2aae46136fc5d", null ],
     [ "m_WorldPositionCache", "class_node3_d.html#aa309787af1998da8e61b35cda0837298", null ],
+    [ "Scripts", "class_node3_d.html#a7982f9f91d8d1eed48864fe6b053a1e1", null ],
     [ "Transform", "class_node3_d.html#a78bff25697317e4e8013d74f469c0744", null ]
 ];

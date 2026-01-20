@@ -275,7 +275,7 @@ void ImGuiController::OnRenderStart()
 				try
 				{
 					emitter->LoadWav(filePath);
-					emitter->SpawnPlayingSound();
+					emitter->SpawnPlayingSound(false);
 					OutputText += "Audio data has loaded\n";
 				}
 				catch(const std::runtime_error& e)

@@ -11,9 +11,12 @@ var class_object3_d_node =
     [ "GetObjectFilePath", "class_object3_d_node.html#a3583ff95adf651e6075931829357fd2a", null ],
     [ "IsValid", "class_object3_d_node.html#a1fb66608ccbc43fae79fe6e69c3dc60c", null ],
     [ "LoadFromJsonData", "class_object3_d_node.html#a63123a3f9bcd5ce06331bc6fe9d02e25", null ],
+    [ "LoadOverrideMaterials", "class_object3_d_node.html#af9cd0e41d6f79675964cd353ec9d16dd", null ],
     [ "Render", "class_object3_d_node.html#aabaa4a3e97627a0c420433df4d8bb17b", null ],
     [ "SetComponentId", "class_object3_d_node.html#a3679ef41638a3df652db5afe84f53a03", null ],
     [ "UpdateTransform", "class_object3_d_node.html#a54065b3a90229b66f2fd27fe69b3280c", null ],
     [ "IsVisible", "class_object3_d_node.html#a528a59a9653b796cbb29bb6d166012ea", null ],
-    [ "m_ComponentId", "class_object3_d_node.html#ae1bfd8beddecd16eb0393db047ff716f", null ]
+    [ "m_ComponentId", "class_object3_d_node.html#ae1bfd8beddecd16eb0393db047ff716f", null ],
+    [ "MaterialsOverride", "class_object3_d_node.html#afeec43bb25b26fdf4b38d6151734d32f", null ],
+    [ "SelectedMaterial", "class_object3_d_node.html#ad7ba52d6dd8ecb46c198fdf1b2b46dfd", null ]
 ];

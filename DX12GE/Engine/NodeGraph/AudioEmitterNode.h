@@ -65,14 +65,22 @@ public:
 	/// \return Returns false if playback cannot be started.
 	/// \note The sound must be spawned before playback is started. 
 	/// \see SpawnPlayingSound
-	bool StartPlayingSound();
+	bool StartOrContinuePlayingSound();
 
 	/// \brief Pauses audio playback.
 	/// \return Returns true if playback paused successfully. 
 	/// \return Returns false if playback cannot be paused.
 	/// \note The sound must be spawned before playback is stopped. 
 	/// \see SpawnPlayingSound
-	bool StopPlayingSound();
+	bool PausePlayingSound();
+
+	/// \brief Restarts audio playback.
+	/// \return Returns true if sound restarting was successful.
+	/// \return Returns false if audio component (wav data) is not initialized.
+	/// \return Returns false if the sound source could not be created.
+	/// \return Returns false if playback could not be started.
+	/// \see LoadWav
+	bool RestartPlayingSound();
 
 	/// \brief Audio playback has finished.
 	bool IsFinished();

@@ -117,10 +117,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a85478b106ceb3b1b9564b682ca4a3694"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies the loaded audio data and spawns the sound source.  <br /></td></tr>
 <tr class="memitem:ac9c7dcdcd26fcda2a07fea3c989ef15b" id="r_ac9c7dcdcd26fcda2a07fea3c989ef15b"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ac9c7dcdcd26fcda2a07fea3c989ef15b">DestroyPlayingSound</a> ()</td></tr>
 <tr class="memdesc:ac9c7dcdcd26fcda2a07fea3c989ef15b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops playback and destroys the sound source.  <br /></td></tr>
-<tr class="memitem:ab54a34dc1af9c694c0c1f9522df75bb3" id="r_ab54a34dc1af9c694c0c1f9522df75bb3"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ab54a34dc1af9c694c0c1f9522df75bb3">StartPlayingSound</a> ()</td></tr>
-<tr class="memdesc:ab54a34dc1af9c694c0c1f9522df75bb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts or continues audio playback.  <br /></td></tr>
-<tr class="memitem:a5ff30ef2657e7e7f92cc7272ef4ac768" id="r_a5ff30ef2657e7e7f92cc7272ef4ac768"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a5ff30ef2657e7e7f92cc7272ef4ac768">StopPlayingSound</a> ()</td></tr>
-<tr class="memdesc:a5ff30ef2657e7e7f92cc7272ef4ac768"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses audio playback.  <br /></td></tr>
+<tr class="memitem:a21ad1e40fa31ebc643458ff9b9f63f32" id="r_a21ad1e40fa31ebc643458ff9b9f63f32"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a21ad1e40fa31ebc643458ff9b9f63f32">StartOrContinuePlayingSound</a> ()</td></tr>
+<tr class="memdesc:a21ad1e40fa31ebc643458ff9b9f63f32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts or continues audio playback.  <br /></td></tr>
+<tr class="memitem:a28fbf2cd4b1bda60f99095bbc53eb18a" id="r_a28fbf2cd4b1bda60f99095bbc53eb18a"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a28fbf2cd4b1bda60f99095bbc53eb18a">PausePlayingSound</a> ()</td></tr>
+<tr class="memdesc:a28fbf2cd4b1bda60f99095bbc53eb18a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses audio playback.  <br /></td></tr>
+<tr class="memitem:a427a6d3a25da623ffd0c269120e16abb" id="r_a427a6d3a25da623ffd0c269120e16abb"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a427a6d3a25da623ffd0c269120e16abb">RestartPlayingSound</a> ()</td></tr>
+<tr class="memdesc:a427a6d3a25da623ffd0c269120e16abb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restarts audio playback.  <br /></td></tr>
 <tr class="memitem:af92079736192b7420f5e0fcc61a6cbe1" id="r_af92079736192b7420f5e0fcc61a6cbe1"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#af92079736192b7420f5e0fcc61a6cbe1">IsFinished</a> ()</td></tr>
 <tr class="memdesc:af92079736192b7420f5e0fcc61a6cbe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Audio playback has finished.  <br /></td></tr>
 <tr class="memitem:a29eab041f5cc56c4243d25eda1f42b24" id="r_a29eab041f5cc56c4243d25eda1f42b24"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a29eab041f5cc56c4243d25eda1f42b24">IsPlaying</a> ()</td></tr>
@@ -157,8 +159,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac2ddc1263bda33618343280d69873ca5 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the node type.  <br /></td></tr>
 <tr class="memitem:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d" id="r_a53350cbe547936291c0f86b1e24308f2"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a53350cbe547936291c0f86b1e24308f2">GetNodePath</a> ()</td></tr>
 <tr class="memdesc:a53350cbe547936291c0f86b1e24308f2 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the path of a node in the scene tree from the farthest parent to the given node. For example, "root/road/car/driver".  <br /></td></tr>
-<tr class="memitem:a43e1b9fb82ed5f2f1562a2deff3bdaa8 inherit pub_methods_class_node3_d" id="r_a43e1b9fb82ed5f2f1562a2deff3bdaa8"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a43e1b9fb82ed5f2f1562a2deff3bdaa8">GetNodeScripts</a> ()</td></tr>
-<tr class="memdesc:a43e1b9fb82ed5f2f1562a2deff3bdaa8 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Lua scripts attached to this node as a single string.  <br /></td></tr>
+<tr class="memitem:a6ea3cbfdeef3e4257e3833436ee986bf inherit pub_methods_class_node3_d" id="r_a6ea3cbfdeef3e4257e3833436ee986bf"><td class="memItemLeft">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a6ea3cbfdeef3e4257e3833436ee986bf">GetNodeScripts</a> ()</td></tr>
+<tr class="memdesc:a6ea3cbfdeef3e4257e3833436ee986bf inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Lua scripts attached to this node as a single string.  <br /></td></tr>
+<tr class="memitem:a0421bb1286ac10ff10089ca0ec530db6 inherit pub_methods_class_node3_d" id="r_a0421bb1286ac10ff10089ca0ec530db6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a0421bb1286ac10ff10089ca0ec530db6">AddScript</a> (const std::string &amp;scriptClass)</td></tr>
+<tr class="memitem:ae3b6ad309180d07af80de50529268a24 inherit pub_methods_class_node3_d" id="r_ae3b6ad309180d07af80de50529268a24"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#ae3b6ad309180d07af80de50529268a24">RemoveScript</a> (std::string &amp;scriptClass)</td></tr>
 <tr class="memitem:a1b76a53ee78642ef06ae869c91dd70f3 inherit pub_methods_class_node3_d" id="r_a1b76a53ee78642ef06ae869c91dd70f3"><td class="memItemLeft">const DirectX::XMMATRIX &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a1b76a53ee78642ef06ae869c91dd70f3">GetWorldMatrix</a> ()</td></tr>
 <tr class="memdesc:a1b76a53ee78642ef06ae869c91dd70f3 inherit pub_methods_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the world matrix of the node.  <br /></td></tr>
 <tr class="memitem:af5f893d5ce05158108b755b5a8f679cb inherit pub_methods_class_node3_d" id="r_af5f893d5ce05158108b755b5a8f679cb"><td class="memItemLeft">const DirectX::SimpleMath::Vector3 &amp;&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#af5f893d5ce05158108b755b5a8f679cb">GetWorldPosition</a> ()</td></tr>
@@ -222,6 +226,7 @@ Public Attributes</h2></td></tr>
 <tr class="inherit_header pub_attribs_class_node3_d"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_class_node3_d')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="class_node3_d.html">Node3D</a></td></tr>
 <tr class="memitem:a78bff25697317e4e8013d74f469c0744 inherit pub_attribs_class_node3_d" id="r_a78bff25697317e4e8013d74f469c0744"><td class="memItemLeft">TransformComponent&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a78bff25697317e4e8013d74f469c0744">Transform</a></td></tr>
 <tr class="memdesc:a78bff25697317e4e8013d74f469c0744 inherit pub_attribs_class_node3_d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifying the transformation of the node (position, rotation, scale).  <br /></td></tr>
+<tr class="memitem:a7982f9f91d8d1eed48864fe6b053a1e1 inherit pub_attribs_class_node3_d" id="r_a7982f9f91d8d1eed48864fe6b053a1e1"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="class_node3_d.html#a7982f9f91d8d1eed48864fe6b053a1e1">Scripts</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -248,7 +253,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line">emitter-&gt;LoadWavRiff(<span class="stringliteral">&quot;project/resources/hit_sound.wav&quot;</span>);</div>
 <div class="line">emitter-&gt;<a class="code hl_function" href="#a85478b106ceb3b1b9564b682ca4a3694">SpawnPlayingSound</a>();</div>
 <div class="line">someNode-&gt;AddChild(emitter);</div>
-<div class="ttc" id="aclass_audio_emitter_node_html_a85478b106ceb3b1b9564b682ca4a3694"><div class="ttname"><a href="#a85478b106ceb3b1b9564b682ca4a3694">AudioEmitterNode::SpawnPlayingSound</a></div><div class="ttdeci">bool SpawnPlayingSound(bool startPlay=true)</div><div class="ttdoc">Applies the loaded audio data and spawns the sound source.</div><div class="ttdef"><b>Definition</b> AudioEmitterNode.cpp:119</div></div>
+<div class="ttc" id="aclass_audio_emitter_node_html_a85478b106ceb3b1b9564b682ca4a3694"><div class="ttname"><a href="#a85478b106ceb3b1b9564b682ca4a3694">AudioEmitterNode::SpawnPlayingSound</a></div><div class="ttdeci">bool SpawnPlayingSound(bool startPlay=true)</div><div class="ttdoc">Applies the loaded audio data and spawns the sound source.</div><div class="ttdef"><b>Definition</b> AudioEmitterNode.cpp:121</div></div>
 <div class="ttc" id="aclass_audio_emitter_node_html_a8fefd5ecb3411a58015fc3339b9c8286"><div class="ttname"><a href="#a8fefd5ecb3411a58015fc3339b9c8286">AudioEmitterNode::AudioEmitterNode</a></div><div class="ttdeci">AudioEmitterNode()</div><div class="ttdef"><b>Definition</b> AudioEmitterNode.cpp:4</div></div>
 </div><!-- fragment --> </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a8fefd5ecb3411a58015fc3339b9c8286" name="a8fefd5ecb3411a58015fc3339b9c8286"></a>
@@ -685,6 +690,57 @@ Returns false if the sound was not spawned. </dd></dl>
 
 </div>
 </div>
+<a id="a28fbf2cd4b1bda60f99095bbc53eb18a" name="a28fbf2cd4b1bda60f99095bbc53eb18a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28fbf2cd4b1bda60f99095bbc53eb18a">&#9670;&#160;</a></span>PausePlayingSound()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool AudioEmitterNode::PausePlayingSound </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pauses audio playback. </p>
+<dl class="section return"><dt>Returns</dt><dd>Returns true if playback paused successfully. </dd>
+<dd>
+Returns false if playback cannot be paused. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The sound must be spawned before playback is stopped. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a85478b106ceb3b1b9564b682ca4a3694" title="Applies the loaded audio data and spawns the sound source.">SpawnPlayingSound</a> </dd></dl>
+
+</div>
+</div>
+<a id="a427a6d3a25da623ffd0c269120e16abb" name="a427a6d3a25da623ffd0c269120e16abb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a427a6d3a25da623ffd0c269120e16abb">&#9670;&#160;</a></span>RestartPlayingSound()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool AudioEmitterNode::RestartPlayingSound </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restarts audio playback. </p>
+<dl class="section return"><dt>Returns</dt><dd>Returns true if sound restarting was successful. </dd>
+<dd>
+Returns false if audio component (wav data) is not initialized. </dd>
+<dd>
+Returns false if the sound source could not be created. </dd>
+<dd>
+Returns false if playback could not be started. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#af73c9a6a28f53fdcb0a99473ab1db407" title="Loads audio component data from a Wav file.">LoadWav</a> </dd></dl>
+
+</div>
+</div>
 <a id="ad65961771d70c4b04f62da2035b94681" name="ad65961771d70c4b04f62da2035b94681"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad65961771d70c4b04f62da2035b94681">&#9670;&#160;</a></span>SetComponentId()</h2>
 
@@ -775,14 +831,14 @@ Returns false if the startPlay parameter is true but playback could not be start
 
 </div>
 </div>
-<a id="ab54a34dc1af9c694c0c1f9522df75bb3" name="ab54a34dc1af9c694c0c1f9522df75bb3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab54a34dc1af9c694c0c1f9522df75bb3">&#9670;&#160;</a></span>StartPlayingSound()</h2>
+<a id="a21ad1e40fa31ebc643458ff9b9f63f32" name="a21ad1e40fa31ebc643458ff9b9f63f32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21ad1e40fa31ebc643458ff9b9f63f32">&#9670;&#160;</a></span>StartOrContinuePlayingSound()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool AudioEmitterNode::StartPlayingSound </td>
+          <td class="memname">bool AudioEmitterNode::StartOrContinuePlayingSound </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -795,30 +851,6 @@ Returns false if the startPlay parameter is true but playback could not be start
 <dd>
 Returns false if playback cannot be started. </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The sound must be spawned before playback is started. </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a85478b106ceb3b1b9564b682ca4a3694" title="Applies the loaded audio data and spawns the sound source.">SpawnPlayingSound</a> </dd></dl>
-
-</div>
-</div>
-<a id="a5ff30ef2657e7e7f92cc7272ef4ac768" name="a5ff30ef2657e7e7f92cc7272ef4ac768"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ff30ef2657e7e7f92cc7272ef4ac768">&#9670;&#160;</a></span>StopPlayingSound()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool AudioEmitterNode::StopPlayingSound </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Pauses audio playback. </p>
-<dl class="section return"><dt>Returns</dt><dd>Returns true if playback paused successfully. </dd>
-<dd>
-Returns false if playback cannot be paused. </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>The sound must be spawned before playback is stopped. </dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="#a85478b106ceb3b1b9564b682ca4a3694" title="Applies the loaded audio data and spawns the sound source.">SpawnPlayingSound</a> </dd></dl>
 
 </div>

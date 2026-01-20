@@ -7,6 +7,7 @@ var annotated_dup =
     [ "DirectionalLightNode", "class_directional_light_node.html", "class_directional_light_node" ],
     [ "EnvironmentNode", "class_environment_node.html", "class_environment_node" ],
     [ "FirstPersonPlayerNode", "class_first_person_player_node.html", "class_first_person_player_node" ],
+    [ "MaterialSerializingData", "struct_material_serializing_data.html", "struct_material_serializing_data" ],
     [ "Node3D", "class_node3_d.html", "class_node3_d" ],
     [ "NodeGraphSystem", "class_node_graph_system.html", "class_node_graph_system" ],
     [ "NodeIdGenerator", "class_node_id_generator.html", "class_node_id_generator" ],

@@ -392,7 +392,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		else if (AudioEmitterNode* emit = dynamic_cast<AudioEmitterNode*>(node))
 		{
 			emit->LoadWav(nodeData.filePath);
-			emit->SpawnPlayingSound();
+			emit->SpawnPlayingSound(false);
 		}
 
 		node->LoadFromJsonData(nodeData);

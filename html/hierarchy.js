@@ -1,5 +1,6 @@
 var hierarchy =
 [
+    [ "MaterialSerializingData", "struct_material_serializing_data.html", null ],
     [ "Node3D", "class_node3_d.html", [
       [ "AINode", "class_a_i_node.html", null ],
       [ "AudioEmitterNode", "class_audio_emitter_node.html", null ],
