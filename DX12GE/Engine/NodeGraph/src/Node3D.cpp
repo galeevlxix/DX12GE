@@ -28,6 +28,16 @@ const std::vector<std::string>& Node3D::GetNodeScripts()
     return Scripts;
 }
 
+void Node3D::AddScript(const std::string& scriptClass)
+{
+    Scripts.push_back(scriptClass);
+}
+
+void Node3D::RemoveScript(std::string& scriptClass)
+{
+    Scripts.erase(find(Scripts.begin(), Scripts.end(), scriptClass));
+}
+
 void SetTransformCacheStatus(TransformComponent& transform, bool cacheIsDirty)
 {
     transform.m_CacheIsDirty = cacheIsDirty;
@@ -104,6 +114,11 @@ void Node3D::CreateJsonData(json& j)
     j["trans_scl_x"] = scl.x;
     j["trans_scl_y"] = scl.y;
     j["trans_scl_z"] = scl.z;
+
+    if (Scripts.size() > 0)
+    {
+        j["scripts"] = Scripts;
+    }
 }
 
 void Node3D::LoadFromJsonData(const NodeSerializingData& nodeData)
@@ -111,6 +126,10 @@ void Node3D::LoadFromJsonData(const NodeSerializingData& nodeData)
     Transform.SetPosition(nodeData.pos);
     Transform.SetRotation(nodeData.rot);
     Transform.SetScale(nodeData.scl);
+    if (nodeData.scripts.size() > 0)
+    {
+        Scripts = nodeData.scripts;
+    }
 }
 
 void Node3D::NotifyParentChanged()

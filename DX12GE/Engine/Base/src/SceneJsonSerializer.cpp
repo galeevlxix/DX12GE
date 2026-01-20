@@ -401,7 +401,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		{
 			for (const auto& script : node.scripts)
 			{
-				LuaManager::CreateValidClass(script, node.nodePath);
+				LuaManager::CreateValidClass(script, node.nodePath, node.type);
 			}
 		}
 	}

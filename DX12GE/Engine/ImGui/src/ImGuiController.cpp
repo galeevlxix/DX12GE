@@ -6,6 +6,7 @@
 #include <tchar.h>
 
 #include "../Base/Application.h"
+#include "LuaManager.h"
 #include "../Base/CommandQueue.h"
 #include "../Base/Singleton.h"
 #include "../Base/SceneJsonSerializer.h"
@@ -14,7 +15,8 @@
 #include "../Graphics/ResourceStorage.h"
 
 static bool isInitialized = false;
-
+static bool isShowingScriptsToAdd = false;
+static bool isShowingScriptsToRemove = false;
 /////////////////////////// FOR FILE SYSTEM MANAGER
 
 struct FileBrowserState
@@ -691,6 +693,77 @@ void ImGuiController::UpdateInspector(Node3D* node)
 	}
 
 	// ZAKHAR - SCRIPTS
+	std::vector<std::string> scripts{ node->GetNodeScripts() };
+	ImGui::SeparatorText("Lua Scripts");
+	ImGui::Text("Current scripts list:");
+	int counter = 1;
+	for (const auto& item : scripts)
+	{
+		std::string format = std::format("{}. {}", counter, item);
+		ImGui::Text(format.c_str());
+		counter++;
+	}
+
+	if (ImGui::Button("Add script to node"))
+	{
+		isShowingScriptsToAdd = !isShowingScriptsToAdd;
+	}
+
+	if (isShowingScriptsToAdd)
+	{
+		ImGui::SeparatorText("Founded Scripts");
+		for (std::string& item : LuaManager::GetAllFoundScriptClasses())
+		{
+			bool clear = true;
+			for (const std::string& sc : scripts)
+			{
+				if (sc + ".lua" == item)
+				{
+					clear = false;
+					break;
+				}
+			}
+			if (clear)
+			{
+				if (ImGui::Button(item.c_str()))
+				{
+					size_t lastDot = item.find_last_of('.');
+					if (lastDot != std::string::npos && lastDot > 0) 
+					{
+						node->AddScript(item.substr(0, lastDot));
+					} 
+					else
+					{
+						node->AddScript(item);
+					}
+				}
+			}
+		}
+	}
+
+	if (scripts.size() > 0)
+	{
+		if (ImGui::Button("Remove script from node"))
+		{
+			isShowingScriptsToRemove = !isShowingScriptsToRemove;
+		}
+
+		if (isShowingScriptsToRemove)
+		{
+			for (auto& item : scripts)
+			{
+				if (ImGui::Button(item.c_str()))
+				{
+					node->RemoveScript(item);
+				}
+			}
+		}
+	}
+
+	if (ImGui::Button("Reload all scripts"))
+	{
+
+	}
 
 	if (AudioEmitterNode* emitter = dynamic_cast<AudioEmitterNode*>(node))
 	{
