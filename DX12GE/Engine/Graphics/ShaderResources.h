@@ -72,6 +72,7 @@ struct GeometryPassConstantBuffer
 {
 	Vector4 HasDiffuseNormalEmissive;
 	Vector4 HasOcclusionRoughnessMetallicCombined;
+	Vector4 AlbedoColor;
 	UINT ObjectId;
 };
 

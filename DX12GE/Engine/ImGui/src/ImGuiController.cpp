@@ -1271,6 +1271,19 @@ void ImGuiController::UpdateMaterialInspector(Node3D* node)
 	ImGui::Text(materialToEdit->GetType() == MaterialEntity::ORIGINAL ? "Original" : "Copy");
 	
 	UpdateTexture("Diffuse", materialToEdit->m_DiffuseTextureId, TextureType::DIFFUSE);
+
+	Vector3 color = Vector3(materialToEdit->m_AlbedoColor);
+	if (AddColor3Edit("AlbedoColor", color))
+	{
+		if (materialToEdit->GetType() == MaterialEntity::ORIGINAL)
+		{
+			materialToEdit = materialToEdit->Duplicate();
+			obj->MaterialsOverride[obj->SelectedMaterial] = materialToEdit;
+		}
+
+		materialToEdit->m_AlbedoColor = Vector4(color.x, color.y, color.z, 1.0f);
+	}
+
 	UpdateTexture("Normal", materialToEdit->m_NormalTextureId, TextureType::NORMALS);
 	UpdateTexture("Emissive", materialToEdit->m_EmissiveTextureId, TextureType::EMISSIVE);
 	UpdateTexture("Metallic", materialToEdit->m_MetallicTextureId, TextureType::METALNESS);

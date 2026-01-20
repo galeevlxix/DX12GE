@@ -341,6 +341,11 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 					material.AmbientOcclusion = mat.at("ao_map");
 				}
 
+				if (mat.contains("albedo_color_x") && mat.contains("albedo_color_y") && mat.contains("albedo_color_z"))
+				{
+					material.AlbedoColor = Vector3(mat.at("albedo_color_x"), mat.at("albedo_color_y"), mat.at("albedo_color_z"));
+				}
+
 				newNode.materials_override.push_back(material);
 			}
 		}
