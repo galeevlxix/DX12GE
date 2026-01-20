@@ -283,6 +283,67 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		{
 			newNode.frictionScale = it->at("friction_scale");
 		}
+
+		// materials 
+
+		if (it->contains("materials_override") && it->at("materials_override").is_array())
+		{
+			for (const auto& mat : it->at("materials_override"))
+			{
+				MaterialSerializingData material;
+
+				if (mat.contains("index"))
+				{
+					material.index = mat.at("index");
+				}
+				else
+				{
+					continue;
+				}
+
+				if (mat.contains("name"))
+				{
+					material.Name = mat.at("name");
+				}
+
+				if (mat.contains("diffuse_map"))
+				{
+					material.Diffuse = mat.at("diffuse_map");
+				}
+
+				if (mat.contains("emissive_map"))
+				{
+					material.Emissive = mat.at("emissive_map");
+				}
+
+				if (mat.contains("normal_map"))
+				{
+					material.Normal = mat.at("normal_map");
+				}
+
+				if (mat.contains("metallic_map"))
+				{
+					material.Metallic = mat.at("metallic_map");
+				}
+
+				if (mat.contains("roughness_map"))
+				{
+					material.Roughness = mat.at("roughness_map");
+				}
+
+				if (mat.contains("metallic_roughness_map"))
+				{
+					material.GltfMetallicRoughness = mat.at("metallic_roughness_map");
+				}
+
+				if (mat.contains("ao_map"))
+				{
+					material.AmbientOcclusion = mat.at("ao_map");
+				}
+
+				newNode.materials_override.push_back(material);
+			}
+		}
 		
 		nodesData.push_back(newNode);
 	}
@@ -317,6 +378,10 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 			if (!obj3D->Create(commandList, nodeData.filePath))
 			{
 				printf("Warning! The mesh node %s has not been initialized!\n", node->GetName().c_str());
+			}
+			else
+			{
+				obj3D->LoadOverrideMaterials(commandList, nodeData);
 			}
 		}
 		else if (AudioEmitterNode* emit = dynamic_cast<AudioEmitterNode*>(node))

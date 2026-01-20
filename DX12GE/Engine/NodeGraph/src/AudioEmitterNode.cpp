@@ -44,6 +44,12 @@ void AudioEmitterNode::OnUpdate(const double& deltaTime)
     AudioSystem* system = Singleton::GetAudioSystem();
     AudioListenerNode* listener = Singleton::GetNodeGraph()->GetCurrentListener();
 
+    if (!listener || (!m_Voice || IsFinished()))
+    {
+        StopPlayingSound();
+        return;
+    }
+
     if (Ubiquitous)
     {
         m_EmitterData.Position = listener->GetWorldPosition();
@@ -57,12 +63,6 @@ void AudioEmitterNode::OnUpdate(const double& deltaTime)
 
     m_EmitterData.Velocity = (m_WorldPositionCache - m_PrevWorldPosition) / static_cast<float>(deltaTime);
     m_PrevWorldPosition = m_WorldPositionCache;
-
-    if (!m_Voice || IsFinished())
-    {
-        m_IsPlaying = false;
-        return;
-    }
 
     // Calculate3D
 

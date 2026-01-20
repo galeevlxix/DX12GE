@@ -120,7 +120,7 @@ void Node3D::NotifyParentChanged()
 
 void Node3D::Rename(const std::string& name)
 {
-    if (name.find('/') != std::string::npos || name.find('%') != std::string::npos) throw std::invalid_argument(name + " contains �/� or '%'");
+    if (name.find('/') != std::string::npos || name.find('%') != std::string::npos) return;// throw std::invalid_argument(name + " contains '/' or '%'");
     
     std::string newName = name;
     if (m_Parent)

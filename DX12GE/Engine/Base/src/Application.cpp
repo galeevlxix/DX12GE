@@ -204,7 +204,6 @@ std::vector<ComPtr<IDXGIAdapter4>> Application::GetAdapters()
         }
     }
 
-    // ���������� ��������� �� �������� �����������
     for (int i = 0; i < adapters.size() - 1; ++i)
     {
         for (int j = 0; j < adapters.size() - i - 1; ++j)

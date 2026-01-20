@@ -3,17 +3,26 @@
 #include "Node3D.h"
 #include "../Base/DX12LibPCH.h"
 #include "../Base/CollisionBox.h"
+#include "../Graphics/MaterialEntity.h"
 
 /// \brief 3D object node class.
 class Object3DNode : public Node3D
 {
 protected:
 
-	// \brief ID of the 3D object component in the resource storage.
+	/// \brief ID of the 3D object component in the resource storage.
 	uint32_t m_ComponentId;
 
 public:
+
+	/// \brief Visibility of the 3D object.
 	bool IsVisible;
+
+	/// \brief List of material overrides for the 3D object. If the array is empty, the object's original materials are used.
+	std::vector<MaterialEntity*> MaterialsOverride;
+
+	/// \brief Index of the selected material in the Materials array.
+	int SelectedMaterial = 0;
 
 	Object3DNode();
 
@@ -54,7 +63,9 @@ public:
 	virtual void CreateJsonData(json& j) override;
 
 	virtual void LoadFromJsonData(const NodeSerializingData& nodeData) override;
+	void LoadOverrideMaterials(ComPtr<ID3D12GraphicsCommandList2> commandList, const NodeSerializingData& nodeData);
 
 private:
 	bool TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current = nullptr);
+	void ClearMaterialsOverride();
 };

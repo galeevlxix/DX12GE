@@ -8,9 +8,12 @@
 #include "../Base/Application.h"
 #include "../Base/CommandQueue.h"
 #include "../Base/Singleton.h"
-#include "../Graphics/DescriptorHeaps.h"
-
 #include "../Base/SceneJsonSerializer.h"
+
+#include "../Graphics/DescriptorHeaps.h"
+#include "../Graphics/ResourceStorage.h"
+
+static bool isInitialized = false;
 
 /////////////////////////// FOR FILE SYSTEM MANAGER
 
@@ -45,11 +48,13 @@ static ComPtr<ID3D12Device2> device;
 static std::shared_ptr<CommandQueue> commandQueue;
 static DescriptorHeaps* heaps;
 
-static bool sceneTreeIsOpen = true;
-static bool inspectorIsOpen = true;
-static bool managerIsOpen = true;
-
 static std::string OutputText = "";
+
+///////////////////////////
+
+const ImVec2 wSize = ImVec2(500.0f, 375.0f);
+
+///////////////////////////
 
 enum ImGuiControllerCommandExecute
 {
@@ -57,7 +62,8 @@ enum ImGuiControllerCommandExecute
 	COMMAND_EXECUTE_SAVE_SCENE,
 	COMMAND_EXECUTE_DELETE_SELECTED,
 	COMMAND_EXECUTE_ADD_NODE,
-	COMMAND_EXECUTE_RECREATE_3D_OBJECT
+	COMMAND_EXECUTE_RECREATE_3D_OBJECT,
+	COMMAND_EXECUTE_LOAD_TEXTURE
 };
 static std::vector<ImGuiControllerCommandExecute> Commands;
 
@@ -70,11 +76,43 @@ static GUIManagerMode managerMode = ManagerModeOutput;
 
 static NodeTypeEnum objectTypeToCreate = NODE_TYPE_NODE3D;
 
-static std::string obj3dFile = "";
-static Object3DNode* obj3dNode = nullptr;
+static std::string filePath = "";
+static MaterialEntity* materialToEdit = nullptr;
+static TextureType textureToEdit = TextureType::NONE;
+
+static Node3D* selectedNode = nullptr;
+static char selectedNameEdit[256];
+
+static std::string GetMultilineText(const std::string& text, int lineLength)
+{
+	if (lineLength <= 0) return text;
+
+	std::string out;
+	out.reserve(text.size() + text.size() / lineLength);
+
+	int count = 0;
+	for (char c : text)
+	{
+		out.push_back(c);
+		count++;
+
+		if (count >= lineLength && c != '\n')
+		{
+			out.push_back('\n');
+			count = 0;
+		}
+
+		if (c == '\n')
+			count = 0;
+	}
+
+	return out;
+}
 
 void ImGuiController::Create(HWND hWnd)
 {
+	if (isInitialized) return;
+
 	device = Application::Get().GetPrimaryDevice();
 	commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
 	heaps = DescriptorHeaps::GetHeaps(GraphicAdapterPrimary);
@@ -120,10 +158,14 @@ void ImGuiController::Create(HWND hWnd)
 		fb.root = "D:/GameEngineDev/DX12GE/Resources";
 		fb.current = fb.root;
 	}
+
+	isInitialized = true;
 }
 
 void ImGuiController::OnRenderStart()
 {
+	if (!isInitialized) return;
+
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -210,15 +252,97 @@ void ImGuiController::OnRenderStart()
 		{
 			auto commandList = commandQueue->GetCommandList();
 
-			obj3dNode->Create(commandList, obj3dFile);
+			Object3DNode* obj = dynamic_cast<Object3DNode*>(selectedNode);
+			if (!obj) break;
+
+			if (obj->Create(commandList, filePath))
+			{
+				OutputText += "3D object data has loaded\n";
+			}
+			else
+			{
+				OutputText += "Error: 3D object data has not loaded\n";
+			}
 
 			uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
 			commandQueue->WaitForFenceValue(fenceValue);
+			filePath = "";
+		}
+		break;
 
-			obj3dNode = nullptr;
-			obj3dFile = "";
+		case COMMAND_EXECUTE_LOAD_TEXTURE:
+		{
+			Object3DNode* obj = dynamic_cast<Object3DNode*>(selectedNode);
+			if (!obj) break;
 
-			OutputText += "3D object data has loaded\n";
+			uint32_t newID = -1;
+
+			if (filePath != "")
+			{
+				newID = ResourceStorage::AddTexture(filePath);
+				auto textureComponent = ResourceStorage::GetTexture(newID);
+
+				if (!textureComponent->IsInitialized())
+				{
+					auto commandList = commandQueue->GetCommandList();
+					textureComponent->OnLoad(commandList, filePath);
+					uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+					commandQueue->WaitForFenceValue(fenceValue);
+				}
+
+				if (textureComponent->IsInitialized())
+				{
+					OutputText += "Texture successfully replaced\n";
+				}
+				else
+				{
+					OutputText += "Error: Texture has not replaced! \n";
+					textureToEdit = TextureType::NONE;
+					filePath = "";
+					break;
+				}
+			}
+
+			if (materialToEdit->GetType() == MaterialEntity::ORIGINAL)
+			{
+				materialToEdit = materialToEdit->Duplicate();
+				obj->MaterialsOverride[obj->SelectedMaterial] = materialToEdit;
+			}
+
+			switch (textureToEdit)
+			{
+			case TextureType::DIFFUSE:
+				materialToEdit->m_DiffuseTextureId = newID;
+				materialToEdit->m_HasDiffuseNormalEmissive.x = (newID != -1) ? 1.0f : 0.0f;
+				break;
+			case TextureType::NORMALS:
+				materialToEdit->m_NormalTextureId = newID;
+				materialToEdit->m_HasDiffuseNormalEmissive.y = (newID != -1) ? 1.0f : 0.0f;
+				break;
+			case TextureType::EMISSIVE:
+				materialToEdit->m_EmissiveTextureId = newID;
+				materialToEdit->m_HasDiffuseNormalEmissive.z = (newID != -1) ? 1.0f : 0.0f;
+				break;
+			case TextureType::METALNESS:
+				materialToEdit->m_MetallicTextureId = newID;
+				materialToEdit->m_HasOcclusionRoughnessMetallicCombined.z = (newID != -1) ? 1.0f : 0.0f;
+				break;
+			case TextureType::DIFFUSE_ROUGHNESS:
+				materialToEdit->m_RoughnessTextureId = newID;
+				materialToEdit->m_HasOcclusionRoughnessMetallicCombined.y = (newID != -1) ? 1.0f : 0.0f;
+				break;
+			case TextureType::GLTF_METALLIC_ROUGHNESS:
+				materialToEdit->m_GltfMetallicRoughnessTextureId = newID;
+				materialToEdit->m_HasOcclusionRoughnessMetallicCombined.w = (newID != -1) ? 1.0f : 0.0f;
+				break;
+			case TextureType::AMBIENT_OCCLUSION:
+				materialToEdit->m_AOTextureId = newID;
+				materialToEdit->m_HasOcclusionRoughnessMetallicCombined.x = (newID != -1) ? 1.0f : 0.0f;
+				break;
+			}
+
+			textureToEdit = TextureType::NONE;
+			filePath = "";
 		}
 		break;
 
@@ -232,15 +356,23 @@ void ImGuiController::OnRenderStart()
 
 void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	bool show_demo_window = true;
+	if (!isInitialized) return;
+
+	bool show_demo_window = false;
 
 	if (show_demo_window)
 	{
 		ImGui::ShowDemoWindow(&show_demo_window);
 	}
 
+	ImGuiViewport* vp = ImGui::GetMainViewport();
+	ImVec2 windowSize = vp->WorkSize;
+
 	{
-		ImGui::Begin("Scene Tree", &sceneTreeIsOpen, ImGuiWindowFlags_MenuBar);
+		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(wSize.x, windowSize.y), ImGuiCond_Always);
+
+		ImGui::Begin("Scene Tree", (bool*)0, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 		if (ImGui::BeginMenuBar())
 		{
@@ -291,24 +423,53 @@ void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommand
 	}
 
 	{
-		ImGui::Begin("Inspector");
+		ImGui::SetNextWindowPos(ImVec2(windowSize.x - wSize.x, 0), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(wSize.x, windowSize.y / 2.0f), ImGuiCond_Always);
 
-		auto selectedArray = Singleton::GetSelection()->GetSelected();
+		ImGui::Begin("Inspector", (bool*)0, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+		auto selectedArray = Singleton::GetSelection()->GetSelected(); 
 
 		if (selectedArray.size() == 1)
 		{
-			Node3D* selected = selectedArray[0];
+			if (!selectedNode || selectedArray[0] != selectedNode)
+			{
+				selectedNode = selectedArray[0];
 
-			ImGui::Text(GetTypeName(selected->GetType()));
+				memset(selectedNameEdit, 0, sizeof(selectedNameEdit));
+				size_t nameLength = selectedNode->GetName().length();
+				strcpy_s(selectedNameEdit, nameLength + 1, selectedNode->GetName().c_str());
+			}
+
+			ImGui::Text(GetTypeName(selectedNode->GetType()));
 			ImGui::Text("Id: ");
 			ImGui::SameLine();
-			ImGui::Text((to_string(static_cast<int>(selected->GetNodeId()))).c_str());
-			ImGui::Text(selected->GetName().c_str());
-			ImGui::SameLine();
-			ImGui::Button("Confirm");
+			ImGui::Text((to_string(static_cast<int>(selectedNode->GetNodeId()))).c_str());
 
-			UpdateInspector(selected);
-		}	
+			ImGui::InputText("Name", selectedNameEdit, IM_COUNTOF(selectedNameEdit));
+			ImGui::SameLine();
+			if (ImGui::Button("Confirm"))
+			{
+				selectedNode->Rename(selectedNameEdit);
+			}
+
+			UpdateInspector(selectedNode);
+		}
+		else
+		{
+			selectedNode = nullptr;
+		}
+
+		ImGui::End();
+	}
+
+	{
+		ImGui::SetNextWindowPos(ImVec2(windowSize.x - wSize.x, windowSize.y / 2.0f), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(wSize.x, windowSize.y / 2.0f), ImGuiCond_Always);
+
+		ImGui::Begin("Material Editor", (bool*)0, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+		UpdateMaterialInspector(selectedNode);
 
 		ImGui::End();
 	}
@@ -326,7 +487,11 @@ void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommand
 			break;
 		}
 
-		ImGui::Begin(title, &managerIsOpen, ImGuiWindowFlags_MenuBar);
+		ImGui::SetNextWindowPos(ImVec2(wSize.x, windowSize.y - wSize.y), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(windowSize.x - 2 * wSize.x, wSize.y), ImGuiCond_Always);
+
+		ImGui::Begin(title, (bool*)0, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("Manager Mode"))
@@ -369,14 +534,19 @@ void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommand
 
 bool ImGuiController::CursorOnWindow()
 {
+	if (!isInitialized) return false;
 	return ImGui::GetIO().WantCaptureMouse;
 }
 
 void ImGuiController::ShutDown()
 {
+	if (!isInitialized) return;
+
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+
+	isInitialized = false;
 }
 
 
@@ -804,13 +974,13 @@ void ImGuiController::UpdateInspector(Node3D* node)
 		else
 		{
 			ImGui::SeparatorText("Object3D");
-		}		
+		}
 
 		ImGui::Checkbox("IsVisible", &obj->IsVisible);
 
 		ImGui::Text("Resource File: ");
 		ImGui::SameLine();
-		ImGui::Text(obj->GetObjectFilePath().c_str());
+		ImGui::Text(GetMultilineText(obj->GetObjectFilePath(), 25).c_str());
 		ImGui::Button("Drop new Resource file here");
 
 		if (ImGui::BeginDragDropTarget())
@@ -820,8 +990,8 @@ void ImGuiController::UpdateInspector(Node3D* node)
 				const char* pathCStr = (const char*)payload->Data;
 				std::string droppedPath(pathCStr);
 				std::replace(droppedPath.begin(), droppedPath.end(), '\\', '/');
-				obj3dFile = droppedPath;
-				obj3dNode = obj;
+
+				filePath = droppedPath;
 				Commands.push_back(COMMAND_EXECUTE_RECREATE_3D_OBJECT);
 			}
 			ImGui::EndDragDropTarget();
@@ -922,7 +1092,118 @@ void ImGuiController::UpdateInspector(Node3D* node)
 	//{
 	//	
 	//}
+}
 
+static void AppendStr(char*& dst, const char* add)
+{
+	if (!add) return;
+
+	size_t oldLen = dst ? strlen(dst) : 0;
+	size_t addLen = strlen(add);
+
+	char* newBuf = new char[oldLen + addLen + 1];
+
+	if (dst)
+		memcpy(newBuf, dst, oldLen);
+
+	memcpy(newBuf + oldLen, add, addLen);
+	newBuf[oldLen + addLen] = '\0';
+
+	delete[] dst;
+	dst = newBuf;
+}
+
+void ImGuiController::UpdateTexture(const std::string& label, uint32_t id, TextureType type)
+{
+	std::shared_ptr<TextureComponent> texture = nullptr;
+
+	ImGui::SeparatorText(label.c_str());
+
+	ImGui::Text("Path: ");
+	ImGui::SameLine();
+
+	if (id != -1)
+	{
+		texture = ResourceStorage::GetTexture(id);
+
+		if (!texture)
+		{
+			ImGui::Text("-");
+		}
+		else
+		{
+			ImGui::Text(GetMultilineText(texture->GetResourcePath(), 35).c_str());
+		}		
+	}
+	else
+	{
+		ImGui::Text("-");
+	}
+
+	if (ImGui::Button(("Remove " + label).c_str()))
+	{
+		textureToEdit = type;
+		filePath = "";
+		Commands.push_back(COMMAND_EXECUTE_LOAD_TEXTURE);
+	}
+
+	ImGui::Button(("Drop new " + label + " file here").c_str());
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FILE_PATH"))
+		{
+			const char* pathCStr = (const char*)payload->Data;
+			std::string droppedPath(pathCStr);
+			std::replace(droppedPath.begin(), droppedPath.end(), '\\', '/');
+
+			textureToEdit = type;
+			filePath = droppedPath;
+			Commands.push_back(COMMAND_EXECUTE_LOAD_TEXTURE);
+		}
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void ImGuiController::UpdateMaterialInspector(Node3D* node)
+{
+	if (!node) return;
+
+	Object3DNode* obj = dynamic_cast<Object3DNode*>(node);
+	if (!obj) return;
+
+	if (node->GetType() == NODE_TYPE_SKYBOX) return;
+
+	std::shared_ptr<Object3DComponent> component = ResourceStorage::GetObject3D(obj->GetComponentId());
+	if (!component) return;
+
+	size_t meshCount = component->GetMeshCount();
+	if (meshCount == 0) return;
+
+	std::vector<const char*> citems;
+	citems.reserve(meshCount);
+
+	for (size_t i = 0; i < meshCount; i++)
+	{
+		citems.push_back(component->GetMesh(i)->Material->Name.c_str());
+	}
+
+	ImGui::Combo("Current Material", &obj->SelectedMaterial, citems.data(), (int)citems.size());
+
+	MaterialEntity* overrideMaterial = obj->MaterialsOverride[obj->SelectedMaterial];
+	materialToEdit = overrideMaterial ? overrideMaterial : component->GetMesh(obj->SelectedMaterial)->Material;
+
+	ImGui::Text("Material Type: ");
+	ImGui::SameLine();
+	ImGui::Text(materialToEdit->GetType() == MaterialEntity::ORIGINAL ? "Original" : "Copy");
+	
+	UpdateTexture("Diffuse", materialToEdit->m_DiffuseTextureId, TextureType::DIFFUSE);
+	UpdateTexture("Normal", materialToEdit->m_NormalTextureId, TextureType::NORMALS);
+	UpdateTexture("Emissive", materialToEdit->m_EmissiveTextureId, TextureType::EMISSIVE);
+	UpdateTexture("Metallic", materialToEdit->m_MetallicTextureId, TextureType::METALNESS);
+	UpdateTexture("Roughness", materialToEdit->m_RoughnessTextureId, TextureType::DIFFUSE_ROUGHNESS);
+	UpdateTexture("GltfMetallicRoughness", materialToEdit->m_GltfMetallicRoughnessTextureId, TextureType::GLTF_METALLIC_ROUGHNESS);
+	UpdateTexture("AmbientOcclusion", materialToEdit->m_AOTextureId, TextureType::AMBIENT_OCCLUSION);
 }
 
 void ImGuiController::DrawDirContents()
