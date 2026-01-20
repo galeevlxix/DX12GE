@@ -252,22 +252,40 @@ void ImGuiController::OnRenderStart()
 
 		case COMMAND_EXECUTE_RECREATE_3D_OBJECT:
 		{
-			auto commandList = commandQueue->GetCommandList();
 
-			Object3DNode* obj = dynamic_cast<Object3DNode*>(selectedNode);
-			if (!obj) break;
-
-			if (obj->Create(commandList, filePath))
+			if (Object3DNode* obj = dynamic_cast<Object3DNode*>(selectedNode))
 			{
-				OutputText += "3D object data has loaded\n";
+				auto commandList = commandQueue->GetCommandList();
+
+				if (obj->Create(commandList, filePath))
+				{
+					OutputText += "3D object data has loaded\n";
+				}
+				else
+				{
+					OutputText += "Error: 3D object data has not loaded\n";
+				}
+				uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+				commandQueue->WaitForFenceValue(fenceValue);
 			}
-			else
+			else if (AudioEmitterNode* emitter = dynamic_cast<AudioEmitterNode*>(selectedNode))
 			{
-				OutputText += "Error: 3D object data has not loaded\n";
+				emitter->DestroyPlayingSound();
+
+				try
+				{
+					emitter->LoadWav(filePath);
+					emitter->SpawnPlayingSound();
+					OutputText += "Audio data has loaded\n";
+				}
+				catch(const std::runtime_error& e)
+				{
+					OutputText += "Error: Audio data has not loaded (";
+					OutputText += e.what();
+					OutputText += ")\n";
+				}				
 			}
 
-			uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-			commandQueue->WaitForFenceValue(fenceValue);
 			filePath = "";
 		}
 		break;
@@ -768,6 +786,25 @@ void ImGuiController::UpdateInspector(Node3D* node)
 	if (AudioEmitterNode* emitter = dynamic_cast<AudioEmitterNode*>(node))
 	{
 		ImGui::SeparatorText("AudioEmitter");
+
+		ImGui::Text("Resource File: ");
+		ImGui::SameLine();
+		ImGui::Text(GetMultilineText(emitter->GetWavFilePath(), 25).c_str());
+		ImGui::Button("Drop new Wav file here");
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FILE_PATH"))
+			{
+				const char* pathCStr = (const char*)payload->Data;
+				std::string droppedPath(pathCStr);
+				std::replace(droppedPath.begin(), droppedPath.end(), '\\', '/');
+
+				filePath = droppedPath;
+				Commands.push_back(COMMAND_EXECUTE_RECREATE_3D_OBJECT);
+			}
+			ImGui::EndDragDropTarget();
+		}
 
 		if (emitter->IsPlaying())
 		{
