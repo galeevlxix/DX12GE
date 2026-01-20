@@ -84,5 +84,7 @@ public:
 	static void ReloadScripts();
 	static void UpdateScript(std::string script);
 	static std::vector<std::string>& GetAllFoundScriptClasses();
+	static void LoadScrtipts();
+	//static void CallCollision(int32_t ObjectID1, uint32_t ObjectID2);
 };
 
