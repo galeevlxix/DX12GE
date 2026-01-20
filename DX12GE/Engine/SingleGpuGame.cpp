@@ -110,7 +110,10 @@ bool SingleGpuGame::LoadContent()
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
 
-    ImGuiController::Create(m_pWindow->GetWindowHandle());
+    if (!EngineConfig::IsReleaseMode)
+    {
+        ImGuiController::Create(m_pWindow->GetWindowHandle());
+    }    
 
     Singleton::Initialize();
     Singleton::GetSelection()->SetTextureBuffer(m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
@@ -181,9 +184,11 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     if (!m_Initialized || !Singleton::IsInitialized()) return;
     super::OnUpdate(e);
 
-    ImGuiController::OnRenderStart();
-
-    Singleton::GetExecutor()->Update();
+    if (!EngineConfig::IsReleaseMode)
+    {
+        ImGuiController::OnRenderStart();
+        Singleton::GetExecutor()->Update();
+    }   
 
     float elapsedTime = static_cast<float>(e.ElapsedTime);
 
@@ -411,8 +416,10 @@ void SingleGpuGame::MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList)
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
 
-    
-    ImGuiController::OnRenderEnd(1, commandList);
+    if (!EngineConfig::IsReleaseMode)
+    {
+        ImGuiController::OnRenderEnd(1, commandList);
+    }
 
     TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 }
@@ -630,6 +637,10 @@ Node3D* SingleGpuGame::Get(std::string name)
 void SingleGpuGame::UnloadContent()
 {
     Singleton::Destroy();
+    if (!EngineConfig::IsReleaseMode)
+    {
+		ImGuiController::ShutDown();
+	}
 }
 
 void SingleGpuGame::Destroy()

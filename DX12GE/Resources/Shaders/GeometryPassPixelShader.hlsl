@@ -55,7 +55,7 @@ PSOutput main(PSInput IN)
     OUT.Emissive = HasDiffuseNormalEmissive.z > 0.5f ? EmissiveTextureSB.Sample(StaticSampler, IN.TextCoord) : float4(0.0f, 0.0f, 0.0f, 1.0f);
     
     float occlusion = HasOcclusionRoughnessMetallicCombined.x > 0.5f ? OcclusionTextureSB.Sample(StaticSampler, IN.TextCoord).r : 0.0f;
-    float roughness = 0.0f, metallic = 0.0f;
+    float roughness = 1.0f, metallic = 0.0f;
     
     if (HasOcclusionRoughnessMetallicCombined.w > 0.5f)
     {

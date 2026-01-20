@@ -7,6 +7,21 @@
 #include "../Base/json.hpp"
 using json = nlohmann::json;
 
+struct MaterialSerializingData
+{
+	int index;
+
+	std::string Name;
+
+	std::string Diffuse;
+	std::string Normal;
+	std::string Emissive;
+	std::string Metallic;
+	std::string Roughness;
+	std::string GltfMetallicRoughness;
+	std::string AmbientOcclusion;
+};
+
 /// An additional structure that helps save the node to a file.
 struct NodeSerializingData
 {
@@ -63,6 +78,8 @@ struct NodeSerializingData
 	float gravityScale;
 	float mass;
 	float frictionScale;
+
+	std::vector<MaterialSerializingData> materials_override;
 };
 
 /// An additional structure that helps create node.

@@ -70,6 +70,11 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
             }
         }
 
+        materials[i]->Name = pScene->mMaterials[i]->GetName().C_Str();
+        if (materials[i]->Name == "")
+        {
+            materials[i]->Name = "NewMaterial";
+        }
         materials[i]->Load(commandList, imagePaths);
     }
 
@@ -116,7 +121,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
             Vertices.push_back(v);
         }
 
-        meshes[meshIndex]->m_Material = materials[paiMesh->mMaterialIndex];
+        meshes[meshIndex]->Material = materials[paiMesh->mMaterialIndex];
 
         for (unsigned int faceIndex = 0; faceIndex < paiMesh->mNumFaces; faceIndex++)
         {

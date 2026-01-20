@@ -26,5 +26,8 @@ private:
 	static void UpdateSceneTree(Node3D* node);
 	static void UpdateInspector(Node3D* node);
 
+	static void UpdateTexture(const std::string& label, uint32_t id, TextureType type);
+	static void UpdateMaterialInspector(Node3D* node);
+
 	static void DrawDirContents();
 };
