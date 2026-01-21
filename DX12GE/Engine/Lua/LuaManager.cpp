@@ -311,7 +311,7 @@ void LuaManager::LoadScrtipts()
 	}
 	else
 	{
-		lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
+		lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io, sol::lib::math);
 		lua.set_function("Register", &lua_register_class);
 		lua.set_function("LoadObjectWithModel", &lua_load_object_with_model);
 		lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
