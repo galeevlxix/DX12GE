@@ -62,7 +62,10 @@ public:
 
 	/// \brief Returns the Lua scripts attached to this node as a single string.
 	const std::vector<std::string>& GetNodeScripts();
-	
+
+	void AddScript(const std::string& scriptClass);
+	void RemoveScript(std::string& scriptClass);
+
 	/// \brief Called every tick on a node update.
 	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
 	virtual void OnUpdate(const double& deltaTime);

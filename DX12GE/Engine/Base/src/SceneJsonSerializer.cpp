@@ -341,6 +341,11 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 					material.AmbientOcclusion = mat.at("ao_map");
 				}
 
+				if (mat.contains("albedo_color_x") && mat.contains("albedo_color_y") && mat.contains("albedo_color_z"))
+				{
+					material.AlbedoColor = Vector3(mat.at("albedo_color_x"), mat.at("albedo_color_y"), mat.at("albedo_color_z"));
+				}
+
 				newNode.materials_override.push_back(material);
 			}
 		}
@@ -387,7 +392,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		else if (AudioEmitterNode* emit = dynamic_cast<AudioEmitterNode*>(node))
 		{
 			emit->LoadWav(nodeData.filePath);
-			emit->SpawnPlayingSound();
+			emit->SpawnPlayingSound(false);
 		}
 
 		node->LoadFromJsonData(nodeData);
@@ -401,7 +406,7 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 		{
 			for (const auto& script : node.scripts)
 			{
-				LuaManager::CreateValidClass(script, node.nodePath);
+				LuaManager::CreateValidClass(script, node.nodePath, node.type);
 			}
 		}
 	}

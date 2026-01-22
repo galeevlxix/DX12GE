@@ -28,6 +28,8 @@ public:
     DirectX::SimpleMath::Vector4 m_HasDiffuseNormalEmissive = DirectX::SimpleMath::Vector4(0, 0, 0, 0);
     DirectX::SimpleMath::Vector4 m_HasOcclusionRoughnessMetallicCombined = DirectX::SimpleMath::Vector4(0, 0, 0, 0);
 
+    DirectX::SimpleMath::Vector4 m_AlbedoColor = DirectX::SimpleMath::Vector4::One;
+
 private:
     bool m_DrawIt = false;
 	Type m_MaterialType = Type::ORIGINAL;

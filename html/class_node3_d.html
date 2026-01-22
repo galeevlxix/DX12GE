@@ -121,8 +121,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac2ddc1263bda33618343280d69873ca5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the node type.  <br /></td></tr>
 <tr class="memitem:a53350cbe547936291c0f86b1e24308f2" id="r_a53350cbe547936291c0f86b1e24308f2"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="#a53350cbe547936291c0f86b1e24308f2">GetNodePath</a> ()</td></tr>
 <tr class="memdesc:a53350cbe547936291c0f86b1e24308f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the path of a node in the scene tree from the farthest parent to the given node. For example, "root/road/car/driver".  <br /></td></tr>
-<tr class="memitem:a43e1b9fb82ed5f2f1562a2deff3bdaa8" id="r_a43e1b9fb82ed5f2f1562a2deff3bdaa8"><td class="memItemLeft">const std::string&#160;</td><td class="memItemRight"><a class="el" href="#a43e1b9fb82ed5f2f1562a2deff3bdaa8">GetNodeScripts</a> ()</td></tr>
-<tr class="memdesc:a43e1b9fb82ed5f2f1562a2deff3bdaa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Lua scripts attached to this node as a single string.  <br /></td></tr>
+<tr class="memitem:a6ea3cbfdeef3e4257e3833436ee986bf" id="r_a6ea3cbfdeef3e4257e3833436ee986bf"><td class="memItemLeft">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a6ea3cbfdeef3e4257e3833436ee986bf">GetNodeScripts</a> ()</td></tr>
+<tr class="memdesc:a6ea3cbfdeef3e4257e3833436ee986bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Lua scripts attached to this node as a single string.  <br /></td></tr>
+<tr class="memitem:a0421bb1286ac10ff10089ca0ec530db6" id="r_a0421bb1286ac10ff10089ca0ec530db6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a0421bb1286ac10ff10089ca0ec530db6">AddScript</a> (const std::string &amp;scriptClass)</td></tr>
+<tr class="memitem:ae3b6ad309180d07af80de50529268a24" id="r_ae3b6ad309180d07af80de50529268a24"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae3b6ad309180d07af80de50529268a24">RemoveScript</a> (std::string &amp;scriptClass)</td></tr>
 <tr class="memitem:a56c86bc234ba5ac79612a352d1f00fe2" id="r_a56c86bc234ba5ac79612a352d1f00fe2"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a56c86bc234ba5ac79612a352d1f00fe2">OnUpdate</a> (const double &amp;deltaTime)</td></tr>
 <tr class="memdesc:a56c86bc234ba5ac79612a352d1f00fe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called every tick on a node update.  <br /></td></tr>
 <tr class="memitem:a6424900a9f7f00e323e545d800db9cad" id="r_a6424900a9f7f00e323e545d800db9cad"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a6424900a9f7f00e323e545d800db9cad">Destroy</a> (bool keepComponent=true)</td></tr>
@@ -191,6 +193,7 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a78bff25697317e4e8013d74f469c0744" id="r_a78bff25697317e4e8013d74f469c0744"><td class="memItemLeft">TransformComponent&#160;</td><td class="memItemRight"><a class="el" href="#a78bff25697317e4e8013d74f469c0744">Transform</a></td></tr>
 <tr class="memdesc:a78bff25697317e4e8013d74f469c0744"><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifying the transformation of the node (position, rotation, scale).  <br /></td></tr>
+<tr class="memitem:a7982f9f91d8d1eed48864fe6b053a1e1" id="r_a7982f9f91d8d1eed48864fe6b053a1e1"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a7982f9f91d8d1eed48864fe6b053a1e1">Scripts</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -264,6 +267,23 @@ Protected Attributes</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>The descendant will not be added if it already has a parent. Use the Move method in this case. </dd></dl>
 
 <p>Reimplemented in <a class="el" href="class_first_person_player_node.html#ae71d3db813fb0f0095a0553a4e2227c9">FirstPersonPlayerNode</a>, and <a class="el" href="class_physical_object_node.html#a2e77e9e85001d63c7122f198e48f0e5e">PhysicalObjectNode</a>.</p>
+
+</div>
+</div>
+<a id="a0421bb1286ac10ff10089ca0ec530db6" name="a0421bb1286ac10ff10089ca0ec530db6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0421bb1286ac10ff10089ca0ec530db6">&#9670;&#160;</a></span>AddScript()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Node3D::AddScript </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>scriptClass</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -602,14 +622,14 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a43e1b9fb82ed5f2f1562a2deff3bdaa8" name="a43e1b9fb82ed5f2f1562a2deff3bdaa8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a43e1b9fb82ed5f2f1562a2deff3bdaa8">&#9670;&#160;</a></span>GetNodeScripts()</h2>
+<a id="a6ea3cbfdeef3e4257e3833436ee986bf" name="a6ea3cbfdeef3e4257e3833436ee986bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ea3cbfdeef3e4257e3833436ee986bf">&#9670;&#160;</a></span>GetNodeScripts()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const std::string Node3D::GetNodeScripts </td>
+          <td class="memname">const std::vector&lt; std::string &gt; &amp; Node3D::GetNodeScripts </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -1142,6 +1162,23 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ae3b6ad309180d07af80de50529268a24" name="ae3b6ad309180d07af80de50529268a24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3b6ad309180d07af80de50529268a24">&#9670;&#160;</a></span>RemoveScript()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Node3D::RemoveScript </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>scriptClass</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ac3c409d8a4cc8477550d6dfe9d33d0a3" name="ac3c409d8a4cc8477550d6dfe9d33d0a3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac3c409d8a4cc8477550d6dfe9d33d0a3">&#9670;&#160;</a></span>Rename()</h2>
 
@@ -1383,6 +1420,20 @@ Protected Attributes</h2></td></tr>
 <p>World position vector. </p>
 <dl class="section warning"><dt>Warning</dt><dd>Direct modification of the this parameter is not permitted. This parameter is automatically updated after calling OnUpdate. </dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="#a56c86bc234ba5ac79612a352d1f00fe2" title="Called every tick on a node update.">OnUpdate</a> </dd></dl>
+
+</div>
+</div>
+<a id="a7982f9f91d8d1eed48864fe6b053a1e1" name="a7982f9f91d8d1eed48864fe6b053a1e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7982f9f91d8d1eed48864fe6b053a1e1">&#9670;&#160;</a></span>Scripts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; Node3D::Scripts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>

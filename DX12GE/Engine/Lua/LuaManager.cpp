@@ -22,7 +22,9 @@ std::string const luaSciptsFolder = "../GameEngineDev/x64/Debug/scripts/";
 static SingleGpuGame* p_scene;
 static NodeGraphSystem* p_grapsh_system;
 static std::vector<std::string> lua_classes_vector;
+static std::vector<std::string> lua_file_classes;
 static std::map<std::string, std::vector<std::string>> lua_classes_map;
+static std::map<std::string, std::vector<std::string>> node_to_classes;
 static sol::state lua;
 
 //////////////////////////////////////////////////////////////////////
@@ -112,6 +114,33 @@ int lua_set_camera_target(lua_State* L)
 sol::table get_lua_class(std::string name)
 {
 	return lua[name];
+}
+
+Node3D* lua_get_child(Node3D* object, std::string childName)
+{
+	assert(object != nullptr, "Attempt to call get child to on null object!");
+
+	return object->GetChild(childName);
+}
+
+int lua_change_color(Object3DNode* object, float r, float g, float b)
+{
+	//object->MaterialsOverride
+	return 1;
+}
+
+Node3D* lua_get_parent(Node3D* object)
+{
+	assert(object != nullptr, "Attempt to call get parent to on null object!");
+
+	return object->GetParent();
+}
+
+Vector3 lua_get_object_world_direction(Node3D* object)
+{
+	assert(object != nullptr, "Attempt to call get world direction to on null object!");
+
+	return object->GetWorldDirection();
 }
 
 int lua_transform_move_to(Node3D* object, float x, float y, float z)
@@ -274,20 +303,17 @@ std::vector<std::string> FindAllLuaFiles(const std::string& rootPath,
 	return result;
 }
 
-LuaManager::LuaManager()
+void LuaManager::LoadScrtipts()
 {
-	//sol::state lua;
 	if (EngineConfig::IsReleaseMode)
 	{
 
 	}
 	else
 	{
-		lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
-
+		lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io, sol::lib::math);
 		lua.set_function("Register", &lua_register_class);
 		lua.set_function("LoadObjectWithModel", &lua_load_object_with_model);
-		//	lua.set_function("GetCamera", &lua_get_camera);
 		lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
 		lua.set_function("TranslateTo", &lua_transform_move_to);
 		lua.set_function("GetObjectOnScene", &lua_get_object_on_scene);
@@ -296,8 +322,11 @@ LuaManager::LuaManager()
 		lua.set_function("TranslateBy", &lua_transform_move_by);
 		lua.set_function("CallError", &lua_call_assert);
 		lua.set_function("GetVelocity", &lua_get_velocity);
-		lua.set_function("AddImpule", &lua_add_impulse);
+		lua.set_function("AddImpulse", &lua_add_impulse);
 		lua.set_function("GetNodeType", &lua_get_node_type);
+		lua.set_function("GetWorldDirection", &lua_get_object_world_direction);
+		lua.set_function("GetChild", &lua_get_child);
+		lua.set_function("GetParent", &lua_get_parent);
 
 		fs::path currentDir = fs::current_path().parent_path().parent_path();
 		std::cout << currentDir << std::endl;
@@ -308,12 +337,35 @@ LuaManager::LuaManager()
 		std::cout << "\nFound " << count << " Lua files:" << std::endl;
 		for (size_t i = 0; i < luaFiles.size(); ++i) {
 			std::cout << "  [" << (i + 1) << "/" << count << "] " << luaFiles[i] << std::endl;
+			size_t lastSlash = luaFiles[i].find_last_of("/\\");
+			if (lastSlash != std::string::npos)
+			{
+				lua_file_classes.push_back(luaFiles[i].substr(lastSlash + 1));
+			}
+			else
+			{
+				lua_file_classes.push_back(luaFiles[i]);
+			}
 			lua.safe_script_file(luaFiles[i]);
 		}
-		lua.safe_script_file(luaSciptsFolder + "Core.lua");
 	}
+}
 
+/*void LuaManager::CallCollision(int32_t ObjectID1, uint32_t ObjectID2)
+{
+	Object3DNode* node_one = p_grapsh_system->GetObjectByID(ObjectID1);
+	std::vector<std::string> scripts = node_one->GetNodeScripts();
 
+	//sol::table temp_class = lua[lua_class];
+	//temp_class["OnMouseMovementInputReceived"](temp_class, e.X, e.Y);
+
+	Object3DNode* node_two = p_grapsh_system->GetObjectByID(ObjectID2);
+}*/
+
+LuaManager::LuaManager()
+{
+	//sol::state lua;
+	LoadScrtipts();
 }
 
 LuaManager::~LuaManager()
@@ -383,7 +435,7 @@ void LuaManager::Start()
 	}
 }
 
-std::string LuaManager::CreateValidClass(std::string className, std::string objId)
+std::string LuaManager::CreateValidClass(std::string className, std::string objId, NodeTypeEnum type)
 {
 	if (lua_classes_map.find(className) == lua_classes_map.end())
 	{
@@ -395,11 +447,35 @@ std::string LuaManager::CreateValidClass(std::string className, std::string objI
 	lua_classes_map[className].emplace_back(actualName);
 	std::string highCaseName = className;
 	std::transform(highCaseName.begin(), highCaseName.end(), highCaseName.begin(), ::toupper);
+	std::string components = "";
+	if (type >= NodeTypeEnum::NODE_TYPE_NODE3D)
+	{
+		components += actualName + ":AddComponent(Transform)\n";
+	}
+
+	if (type >= NodeTypeEnum::NODE_TYPE_OBJECT3D)
+	{
+
+	}
+
+	if (type >= NodeTypeEnum::NODE_TYPE_PHYSICAL_OBJECT3D)
+	{
+		components += actualName + ":AddComponent(Physics)\n";
+	}
 	lua.safe_script("if " + actualName + " ~= nil then return end \n" + actualName + " = " + highCaseName + ":new(\"" + actualName + "\")" +
-		"\n" + actualName + ":SetEntityName(\"" + objId + "\")\n");
+		"\n" + actualName + ":SetEntityName(\"" + objId + "\")\n" + components);
 
 	lua_register_class(actualName);
 	return actualName;
+}
+
+void LuaManager::ReloadScripts()
+{
+	lua_classes_vector.clear();
+	lua_file_classes.clear();
+	lua_classes_map.clear();
+	lua.~state();
+	lua = sol::state();
 }
 
 void LuaManager::StartScript(std::string className)
@@ -413,4 +489,10 @@ void LuaManager::UpdateScript(std::string script)
 {
 	sol::table temp_class = lua[script];
 	temp_class["Update"](temp_class);
+}
+
+
+std::vector<std::string>& LuaManager::GetAllFoundScriptClasses()
+{
+	return lua_file_classes;
 }

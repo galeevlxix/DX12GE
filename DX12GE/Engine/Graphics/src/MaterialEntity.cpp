@@ -59,6 +59,7 @@ void MaterialEntity::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
     ShaderResources::GetGeometryPassCB()->HasDiffuseNormalEmissive = m_HasDiffuseNormalEmissive;
     ShaderResources::GetGeometryPassCB()->HasOcclusionRoughnessMetallicCombined = m_HasOcclusionRoughnessMetallicCombined;
+    ShaderResources::GetGeometryPassCB()->AlbedoColor = m_AlbedoColor;
     ShaderResources::SetGeometryPassCB(commandList, 1);
 
     RenderTexture(commandList, 2, m_DiffuseTextureId,     m_HasDiffuseNormalEmissive.x);

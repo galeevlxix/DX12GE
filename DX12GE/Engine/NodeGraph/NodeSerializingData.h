@@ -20,6 +20,8 @@ struct MaterialSerializingData
 	std::string Roughness;
 	std::string GltfMetallicRoughness;
 	std::string AmbientOcclusion;
+
+	DirectX::SimpleMath::Vector3 AlbedoColor;
 };
 
 /// An additional structure that helps save the node to a file.

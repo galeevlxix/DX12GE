@@ -221,6 +221,10 @@ void Object3DNode::CreateJsonData(json& j)
                 mat["ao_map"] = texture->GetResourcePath();
             }
 
+            mat["albedo_color_x"] = material->m_AlbedoColor.x;
+            mat["albedo_color_y"] = material->m_AlbedoColor.y;
+            mat["albedo_color_z"] = material->m_AlbedoColor.z;
+
 			j["materials_override"].push_back(mat);
         }
 	}
@@ -252,6 +256,8 @@ void Object3DNode::LoadOverrideMaterials(ComPtr<ID3D12GraphicsCommandList2> comm
         
         newMaterial->Name = materialData.Name != "" ? materialData.Name : "NewMaterial";
         newMaterial->Load(commandList, imagePaths);
+
+        newMaterial->m_AlbedoColor = Vector4(materialData.AlbedoColor.x, materialData.AlbedoColor.y, materialData.AlbedoColor.z, 1.0f);
 
         MaterialsOverride[materialData.index] = newMaterial;
     }

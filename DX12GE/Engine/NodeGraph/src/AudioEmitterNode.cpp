@@ -24,14 +24,16 @@ AudioEmitterNode::AudioEmitterNode() : Node3D(), m_AudioComponentId(- 1)
 
 void AudioEmitterNode::OnUpdate(const double& deltaTime)
 {
-    if (m_Voice && IsFinished())
+    if (IsFinished())
     {
-        DestroyPlayingSound();
-    }
-
-    if (!m_Voice && Loop)
-    {
-        SpawnPlayingSound(true);
+        if (Loop)
+        {
+            RestartPlayingSound();
+        }
+        else
+        {
+            DestroyPlayingSound();
+        }
     }
 
     bool dirty = Transform.IsCacheDirty();
@@ -44,9 +46,9 @@ void AudioEmitterNode::OnUpdate(const double& deltaTime)
     AudioSystem* system = Singleton::GetAudioSystem();
     AudioListenerNode* listener = Singleton::GetNodeGraph()->GetCurrentListener();
 
-    if (!listener || (!m_Voice || IsFinished()))
+    if (!listener || !m_Voice)
     {
-        StopPlayingSound();
+        DestroyPlayingSound();
         return;
     }
 
@@ -95,7 +97,7 @@ void AudioEmitterNode::OnUpdate(const double& deltaTime)
     m_Voice->SetFrequencyRatio(freq);
 }
 
-bool AudioEmitterNode::StartPlayingSound()
+bool AudioEmitterNode::StartOrContinuePlayingSound()
 {
     if (!m_Voice || FAILED(m_Voice->Start(0)))
     {
@@ -106,7 +108,7 @@ bool AudioEmitterNode::StartPlayingSound()
     return true;
 }
 
-bool AudioEmitterNode::StopPlayingSound()
+bool AudioEmitterNode::PausePlayingSound()
 {
     if (!m_Voice || FAILED(m_Voice->Stop(0)))
     {
@@ -145,7 +147,7 @@ bool AudioEmitterNode::SpawnPlayingSound(bool startPlay)
 
     if (startPlay)
     {
-        if (!StartPlayingSound())
+        if (!StartOrContinuePlayingSound())
             return false;
     }
 
@@ -156,17 +158,24 @@ bool AudioEmitterNode::SpawnPlayingSound(bool startPlay)
 
 bool AudioEmitterNode::DestroyPlayingSound()
 {
+    m_IsPlaying = false;
     if (m_Voice)
     {
         if (!IsFinished())
         {
-            StopPlayingSound();
+            PausePlayingSound();
         }
         m_Voice->DestroyVoice();
         m_Voice = nullptr;
         return true;
     }
     return false;
+}
+
+bool AudioEmitterNode::RestartPlayingSound()
+{
+    DestroyPlayingSound();
+    return SpawnPlayingSound();
 }
 
 bool AudioEmitterNode::IsFinished()

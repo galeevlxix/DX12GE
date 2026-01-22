@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['thirdpersonplayernode_0',['ThirdPersonPlayerNode',['../class_third_person_player_node.html',1,'']]]
+  ['skyboxnode_0',['SkyBoxNode',['../class_sky_box_node.html',1,'']]],
+  ['spotlightnode_1',['SpotLightNode',['../class_spot_light_node.html',1,'']]]
 ];

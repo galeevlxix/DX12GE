@@ -22,6 +22,7 @@ cbuffer GeometryPassData : register(b1)
 {
     float4 HasDiffuseNormalEmissive;
     float4 HasOcclusionRoughnessMetallicCombined;
+    float4 AlbedoColor;
     uint ObjectId;
 };
 
@@ -51,6 +52,7 @@ PSOutput main(PSInput IN)
     
     OUT.Position = IN.WorldPos;
     OUT.Diffuse = HasDiffuseNormalEmissive.x > 0.5f ? DiffuseTextureSB.Sample(StaticSampler, IN.TextCoord) : float4(1.0f, 1.0f, 1.0f, 1.0f);
+    OUT.Diffuse *= AlbedoColor;
     OUT.Normal = HasDiffuseNormalEmissive.y > 0.5f ? CalculateNormalMap(IN.Normal.rgb, IN.Tangent.rgb, IN.Bitangent.rgb, IN.TextCoord) : IN.Normal;    
     OUT.Emissive = HasDiffuseNormalEmissive.z > 0.5f ? EmissiveTextureSB.Sample(StaticSampler, IN.TextCoord) : float4(0.0f, 0.0f, 0.0f, 1.0f);
     

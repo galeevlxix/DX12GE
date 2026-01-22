@@ -14,6 +14,7 @@ var class_node_graph_system =
     [ "GetCurrentPlayer", "class_node_graph_system.html#a42befe00b6c35a850605a173e61045a2", null ],
     [ "GetCurrentSkyBox", "class_node_graph_system.html#acbe7f91a73ca3bd483ff5ad971afef60", null ],
     [ "GetNodeByPath", "class_node_graph_system.html#a7a8e138e326bd42b99a496c4c7d7d611", null ],
+    [ "GetObjectByID", "class_node_graph_system.html#a04840a3248739097662c7e72136039df", null ],
     [ "GetPointLightComponents", "class_node_graph_system.html#a55beb1ac78658cb2dc3631bba3c13f69", null ],
     [ "GetPointLightsCount", "class_node_graph_system.html#a4c0e185769638a5b4928748d89fa0070", null ],
     [ "GetRoot", "class_node_graph_system.html#a43be04690e0d188eec5c8867f893f20b", null ],

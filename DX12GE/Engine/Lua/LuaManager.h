@@ -3,6 +3,7 @@
 #include "sol/sol.hpp"
 #include "sol/config.hpp"
 #include "sol/forward.hpp"
+#include "../DX12GE/Engine/NodeGraph/NodeTypeEnum.h"
 
 extern "C"
 {
@@ -39,7 +40,7 @@ public:
 	{
 		float x;
 		float y;
-		float z;
+		//float z;
 	};
 
 private:
@@ -78,8 +79,12 @@ public:
 	static void CLose() {
 		lua_close(L);
 	}
-	static std::string CreateValidClass(std::string className, std::string objId);
+	static std::string CreateValidClass(std::string className, std::string objId, NodeTypeEnum type);
 	static void StartScript(std::string className);
+	static void ReloadScripts();
 	static void UpdateScript(std::string script);
+	static std::vector<std::string>& GetAllFoundScriptClasses();
+	static void LoadScrtipts();
+	//static void CallCollision(int32_t ObjectID1, uint32_t ObjectID2);
 };
 
