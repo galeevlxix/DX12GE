@@ -28,6 +28,7 @@ function Vector3(x, y, z)
     return vector3
 end
 
+local t = math.random()
 --- Creates a rotator (Euler angles) as a table with type "rot".
 ---@param yaw   number Rotation around Y axis (left/right)
 ---@param pitch number Rotation around X axis (up/down)
@@ -112,7 +113,6 @@ NODE_TYPE_AUDIO_EMITTER        = 14
 function Class(child, parent)
     setmetatable(child, { __index = parent })
 end
-
 -- ===================================================================
 -- BASE CLASS: GameObject
 -- ===================================================================
@@ -189,8 +189,13 @@ end
 
 --- Triggered when entering a collision.
 ---@param other userdata C++ pointer to the colliding object
-function GameObject:OnCollisionEnter(other)
+function GameObject:OnOverlap(other)
+    --print("collision ", other)
     -- Stub
+end
+
+function GameObject:OnHit( other )
+	-- body
 end
 
 --- Handles mouse movement input.
@@ -397,6 +402,7 @@ The following functions are exported from C++ via sol2 and available in Lua:
 | Register                | lua_register_class              | Registers a Lua class in the active list |
 | LoadObjectWithModel     | lua_load_object_with_model      | Loads a model and auto-creates a Lua object |
 | GetClass                | get_lua_class                   | Returns Lua class table by name (rarely used) |
+| GetComponent            | (node, name of component or field) | returns Component or field
 
 Examples:
   local obj = GetObjectOnScene("Player")

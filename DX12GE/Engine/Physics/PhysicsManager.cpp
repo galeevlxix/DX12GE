@@ -4,6 +4,7 @@
 #include "Jolt/Physics/Collision/Shape/Shape.h"
 #include <Jolt/Physics/Collision/RayCast.h>
 #include <Jolt/Physics/Collision/CastResult.h>
+#include "LuaManager.h"
 #include <Jolt/Physics/Collision/CollisionCollectorImpl.h>
 
 namespace Physics
@@ -355,6 +356,7 @@ namespace Physics
 		{
 			if (ObjectID == BodiesMap[Bodies.first] || ObjectID == BodiesMap[Bodies.second])
 			{
+				LuaManager::CallHit(BodiesMap[Bodies.first], BodiesMap[Bodies.second]);
 				return true;
 			}
 		}
@@ -364,7 +366,8 @@ namespace Physics
 
 	void PhysicsManager::OnBodiesOverlap(uint32_t ObjectID1, uint32_t ObjectID2)
 	{
-		cout << "Collision detected, first body index - " << ObjectID1 << ", second body index - " << ObjectID2 << endl;
+		//cout << "Collision detected, first body index - " << ObjectID1 << ", second body index - " << ObjectID2 << endl;
+		LuaManager::CallCollision(ObjectID1, ObjectID2);
 	}
 
 	std::map<uint32_t, Vector3> PhysicsManager::CastRay(Vector3 Origin, Vector3 Direction, float Length)

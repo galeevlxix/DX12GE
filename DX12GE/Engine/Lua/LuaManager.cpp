@@ -4,6 +4,7 @@
 #include "../SingleGpuGame.h"
 #include <vector>
 #include <cctype>
+#include "../DX12GE/Engine/NodeGraph/NodeTypeEnum.h"
 #include <filesystem>
 #include "../DX12GE/EngineConfig.h"
 #include <algorithm>
@@ -24,9 +25,8 @@ static NodeGraphSystem* p_grapsh_system;
 static std::vector<std::string> lua_classes_vector;
 static std::vector<std::string> lua_file_classes;
 static std::map<std::string, std::vector<std::string>> lua_classes_map;
-static std::map<std::string, std::vector<std::string>> node_to_classes;
+static std::map<std::string, std::vector<std::string>> node_path_to_classes;
 static sol::state lua;
-
 //////////////////////////////////////////////////////////////////////
 //LUA API ZONE
 Node3D* lua_get_object_on_scene(std::string name)
@@ -47,6 +47,19 @@ int lua_rotate_object_by_rotator(Node3D* object, float y, float p, float r)
 	object->Transform.Rotate(DirectX::SimpleMath::Vector3(y, p, r));
 
 	return 1;
+}
+
+sol::table lua_get_script_component_from_node(Node3D* object, const std::string& component)
+{
+	const std::string& path{ object->GetNodePath() };
+	
+	for (const auto& item : node_path_to_classes[path])
+	{
+		const std::string& componentPath{ item + "." + component};
+		return lua[componentPath];
+	}
+
+	return sol::nil;
 }
 
 int lua_call_assert(std::string text)
@@ -311,7 +324,7 @@ void LuaManager::LoadScrtipts()
 	}
 	else
 	{
-		lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io, sol::lib::math);
+		lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io, sol::lib::math, sol::lib::os);
 		lua.set_function("Register", &lua_register_class);
 		lua.set_function("LoadObjectWithModel", &lua_load_object_with_model);
 		lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
@@ -327,12 +340,12 @@ void LuaManager::LoadScrtipts()
 		lua.set_function("GetWorldDirection", &lua_get_object_world_direction);
 		lua.set_function("GetChild", &lua_get_child);
 		lua.set_function("GetParent", &lua_get_parent);
+		lua.set_function("GetComponent", &lua_get_script_component_from_node);
 
 		fs::path currentDir = fs::current_path().parent_path().parent_path();
 		std::cout << currentDir << std::endl;
 		std::vector<std::string> luaFiles;
 		size_t count = FindAllLuaFiles(currentDir.string(), luaFiles);
-
 
 		std::cout << "\nFound " << count << " Lua files:" << std::endl;
 		for (size_t i = 0; i < luaFiles.size(); ++i) {
@@ -351,16 +364,41 @@ void LuaManager::LoadScrtipts()
 	}
 }
 
-/*void LuaManager::CallCollision(int32_t ObjectID1, uint32_t ObjectID2)
+void LuaManager::CallCollision(int32_t ObjectID1, uint32_t ObjectID2)
 {
-	Object3DNode* node_one = p_grapsh_system->GetObjectByID(ObjectID1);
-	std::vector<std::string> scripts = node_one->GetNodeScripts();
+	Object3DNode* node_one{ p_grapsh_system->GetObjectByID(ObjectID1) };
+	Object3DNode* node_two{ p_grapsh_system->GetObjectByID(ObjectID2) };
 
-	//sol::table temp_class = lua[lua_class];
-	//temp_class["OnMouseMovementInputReceived"](temp_class, e.X, e.Y);
+	for (const auto & sc : node_path_to_classes[node_one->GetObjectFilePath()])
+	{ 
+		sol::table temp_class = lua[sc];
+		temp_class["OnOverlap"](temp_class, node_two->GetObjectFilePath());
+	}
+	
+	for (const auto& sc : node_path_to_classes[node_two->GetObjectFilePath()])
+	{
+		sol::table temp_class = lua[sc];
+		temp_class["OnOverlap"](temp_class, node_one->GetObjectFilePath());
+	}
+}
 
-	Object3DNode* node_two = p_grapsh_system->GetObjectByID(ObjectID2);
-}*/
+void LuaManager::CallHit(int32_t ObjectID1, uint32_t ObjectID2)
+{
+	Object3DNode* node_one{ p_grapsh_system->GetObjectByID(ObjectID1) };
+	Object3DNode* node_two{ p_grapsh_system->GetObjectByID(ObjectID2) };
+
+	for (const auto& sc : node_path_to_classes[node_one->GetObjectFilePath()])
+	{
+		sol::table temp_class = lua[sc];
+		temp_class["OnHit"](temp_class, node_two->GetObjectFilePath());
+	}
+
+	for (const auto& sc : node_path_to_classes[node_two->GetObjectFilePath()])
+	{
+		sol::table temp_class = lua[sc];
+		temp_class["OnHit"](temp_class, node_one->GetObjectFilePath());
+	}
+}
 
 LuaManager::LuaManager()
 {
@@ -464,6 +502,15 @@ std::string LuaManager::CreateValidClass(std::string className, std::string objI
 	}
 	lua.safe_script("if " + actualName + " ~= nil then return end \n" + actualName + " = " + highCaseName + ":new(\"" + actualName + "\")" +
 		"\n" + actualName + ":SetEntityName(\"" + objId + "\")\n" + components);
+
+	if (node_path_to_classes.find(objId) == node_path_to_classes.end())
+	{
+		node_path_to_classes.insert({ objId, std::vector<std::string>{actualName} });
+	}
+	else
+	{
+		node_path_to_classes[objId].push_back(actualName);
+	}
 
 	lua_register_class(actualName);
 	return actualName;

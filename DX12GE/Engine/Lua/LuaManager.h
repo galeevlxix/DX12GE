@@ -1,5 +1,5 @@
 #pragma once
-#include "../SingleGpuGame.h"
+#include "../DX12GE/Engine/NodeGraph/NodeGraphSystem.h"
 #include "sol/sol.hpp"
 #include "sol/config.hpp"
 #include "sol/forward.hpp"
@@ -17,47 +17,10 @@ extern "C"
 
 class LuaManager
 {
-public:
-	enum LuaTypes
-	{
-		Number,
-		String,
-		Boolean,
-		UserData,
-		Table,
-		Function
-	};
-
-	struct LuaValueType
-	{
-		LuaValueType(intptr_t* dataPtr, LuaTypes type) : dataPtr(dataPtr), type(type) {};
-
-		intptr_t* dataPtr;
-		LuaTypes type;
-	};
-
-	struct Vector3
-	{
-		float x;
-		float y;
-		//float z;
-	};
-
 private:
 	LuaManager();
 	virtual ~LuaManager();
-	void LoadErrorStack();
-	bool CheckLua(lua_State* L, int r);
-	std::string ReadStringFromTable(std::string tableName, std::string keyName);
-	long double ReadNumderFromTable(std::string tableName, std::string keyName);
-	bool ReadBoolFromTable(std::string tableName, std::string keyName);
 
-	template<typename... Args>
-	void CallLuaFunction(std::string functionName, const std::tuple<Args...>& tuple1, const int ouputsCount);
-
-	template<typename T>
-	void PushToLua(const T& value);
-	std::string ReadUserDataFromTable(std::string tableName, std::string keyName);
 	static lua_State* L;
 	static LuaManager* p_instance;
 public:
@@ -85,6 +48,8 @@ public:
 	static void UpdateScript(std::string script);
 	static std::vector<std::string>& GetAllFoundScriptClasses();
 	static void LoadScrtipts();
-	//static void CallCollision(int32_t ObjectID1, uint32_t ObjectID2);
+	static void CallCollision(int32_t ObjectID1, uint32_t ObjectID2);
+	static void CallHit(int32_t ObjectID1, uint32_t ObjectID2);
+	//static void CallCollision(std::string ObjectID1, std::string ObjectID2);
 };
 
