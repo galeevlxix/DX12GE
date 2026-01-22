@@ -56,7 +56,7 @@ namespace Physics
 	bool PhysicsManager::GenerateCollision(uint32_t ObjectID, const vector<Vector3>& Vertices, Vector3 Position,
 		Vector3 Rotation, float Mass, Vector3 Scale, CollisionTypeEnum CollisionType, DOFEnum DOF)
 	{		
-		if (CollisionType >= COLLISION_TYPE_CAPSULE && Vertices.size() == 0)
+		if (CollisionType >= COLLISION_TYPE_CONVEX && Vertices.size() == 0)
 		{
 			std::cout << "No vertices to generate convex collision" << endl;
 			return false;
@@ -83,13 +83,9 @@ namespace Physics
 			AddConvexCollision(Vertices, Scale);
 			CollisionShape = CurrentShape;
 			break;
-			
-		case COLLISION_TYPE_PLAYER:
-			AddConvexCollision(Vertices, Scale);
-			CollisionShape = CurrentShape;
-			break;
 		
 		case COLLISION_TYPE_STATIC_MESH:
+		case COLLISION_TYPE_TRIGGER_MESH:
 			AddStaticMeshCollision(Vertices, Scale);
 			CollisionShape = CurrentShape;
 			break;
@@ -102,7 +98,7 @@ namespace Physics
 		ObjectLayer layer;
 		EActivation activationType;
 		
-		if (CollisionType == COLLISION_TYPE_STATIC_MESH)
+		if (CollisionType >= COLLISION_TYPE_STATIC_MESH)
 		{
 			motionType = EMotionType::Static;
 			activationType = EActivation::DontActivate;
@@ -117,6 +113,11 @@ namespace Physics
 						
 		BodyCreationSettings meshSettings(CollisionShape, static_cast<RVec3>(Position),
 										  Quat::sEulerAngles(static_cast<Vec3Arg>(Rotation)), motionType, layer);
+		
+		if (CollisionType == COLLISION_TYPE_TRIGGER_MESH)
+		{
+			meshSettings.mIsSensor = true;
+		}
 		
 		MassProperties MassProperties;
 		MassProperties.ScaleToMass(Mass);
@@ -140,6 +141,9 @@ namespace Physics
 		case DOF_2D:
 			meshSettings.mAllowedDOFs = EAllowedDOFs::Plane2D;
 			break;
+			
+		case DOF_NONE:
+			meshSettings.mAllowedDOFs = EAllowedDOFs::None;
 			
 		default:
 			break;
@@ -360,7 +364,7 @@ namespace Physics
 
 	void PhysicsManager::OnBodiesOverlap(uint32_t ObjectID1, uint32_t ObjectID2)
 	{
-		//cout << "Collision detected, first body index - " << ObjectID1 << ", second body index - " << ObjectID2 << endl;
+		cout << "Collision detected, first body index - " << ObjectID1 << ", second body index - " << ObjectID2 << endl;
 	}
 
 	std::map<uint32_t, Vector3> PhysicsManager::CastRay(Vector3 Origin, Vector3 Direction, float Length)
