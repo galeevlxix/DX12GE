@@ -401,16 +401,16 @@ void LuaManager::CallCollision(int32_t ObjectID1, uint32_t ObjectID2)
 	Object3DNode* node_one{ p_grapsh_system->GetObjectByID(ObjectID1) };
 	Object3DNode* node_two{ p_grapsh_system->GetObjectByID(ObjectID2) };
 
-	for (const auto & sc : node_path_to_classes[node_one->GetObjectFilePath()])
+	for (const auto & sc : node_path_to_classes[node_one->GetNodePath()])
 	{ 
 		sol::table temp_class = lua[sc];
-		temp_class["OnOverlap"](temp_class, node_two->GetObjectFilePath());
+		temp_class["OnOverlap"](temp_class, node_two->GetNodePath());
 	}
 	
-	for (const auto& sc : node_path_to_classes[node_two->GetObjectFilePath()])
+	for (const auto& sc : node_path_to_classes[node_two->GetNodePath()])
 	{
 		sol::table temp_class = lua[sc];
-		temp_class["OnOverlap"](temp_class, node_one->GetObjectFilePath());
+		temp_class["OnOverlap"](temp_class, node_one->GetNodePath());
 	}
 }
 
@@ -419,16 +419,16 @@ void LuaManager::CallHit(int32_t ObjectID1, uint32_t ObjectID2)
 	Object3DNode* node_one{ p_grapsh_system->GetObjectByID(ObjectID1) };
 	Object3DNode* node_two{ p_grapsh_system->GetObjectByID(ObjectID2) };
 
-	for (const auto& sc : node_path_to_classes[node_one->GetObjectFilePath()])
+	for (const auto& sc : node_path_to_classes[node_one->GetNodePath()])
 	{
 		sol::table temp_class = lua[sc];
-		temp_class["OnHit"](temp_class, node_two->GetObjectFilePath());
+		temp_class["OnHit"](temp_class, node_two->GetNodePath());
 	}
 
-	for (const auto& sc : node_path_to_classes[node_two->GetObjectFilePath()])
+	for (const auto& sc : node_path_to_classes[node_two->GetNodePath()])
 	{
 		sol::table temp_class = lua[sc];
-		temp_class["OnHit"](temp_class, node_one->GetObjectFilePath());
+		temp_class["OnHit"](temp_class, node_one->GetNodePath());
 	}
 }
 
