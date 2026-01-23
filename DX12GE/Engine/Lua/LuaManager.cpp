@@ -360,7 +360,7 @@ void LuaManager::LoadScrtipts()
 		lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
 		lua.set_function("TranslateTo", &lua_transform_move_to);
 		lua.set_function("GetObjectOnScene", &lua_get_object_on_scene);
-		lua.set_function("GetTransfromPosition", &lua_get_object_pos);
+		lua.set_function("GetTransformPosition", &lua_get_object_pos);
 		lua.set_function("GetClass", &get_lua_class);
 		lua.set_function("TranslateBy", &lua_transform_move_by);
 		lua.set_function("CallError", &lua_call_assert);
