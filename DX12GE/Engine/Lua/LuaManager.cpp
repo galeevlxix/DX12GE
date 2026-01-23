@@ -39,7 +39,35 @@ Node3D* lua_get_object_on_scene(std::string name)
 
 int lua_get_node_type(Node3D* object)
 {
+	assert(object != nullptr, "Attempt to call get node type on null object!");
+
 	return object->GetType();
+}
+
+int lua_destroy_node_by_node(Node3D* object)
+{
+	//	assert(object != nullptr, "Attempt to call destroy on null object!");
+
+	const std::string path{ object->GetNodePath() };
+	for (const auto& sc : node_path_to_classes[path])
+	{
+		lua_classes_vector.erase(std::remove(lua_classes_vector.begin(), lua_classes_vector.end(), sc));
+	}
+	node_path_to_classes.extract(path);
+	object->Destroy(false);
+
+	return 1;
+}
+
+int lua_destroy_node_by_path(std::string path)
+{
+	const auto& object = p_grapsh_system->GetNodeByPath(path);
+
+//	assert(object != nullptr, "Attempt to call destroy on null object!");
+
+	object->Destroy(false);
+
+	return 1;
 }
 
 int lua_rotate_object_by_rotator(Node3D* object, float y, float p, float r)
@@ -373,6 +401,8 @@ void LuaManager::LoadScrtipts()
 		lua.set_function("GetComponent", &lua_get_script_component_from_node);
 		lua.set_function("GetAIState", &lua_get_ai_state);
 		lua.set_function("SetAIState", &lua_set_ai_state);
+		lua.set_function("DestroyNodeByNode", &lua_destroy_node_by_node);
+		lua.set_function("DestroyNodeByNodePath", &lua_destroy_node_by_path);
 
 		fs::path currentDir = fs::current_path().parent_path().parent_path();
 		std::cout << currentDir << std::endl;
@@ -401,16 +431,27 @@ void LuaManager::CallCollision(int32_t ObjectID1, uint32_t ObjectID2)
 	Object3DNode* node_one{ p_grapsh_system->GetObjectByID(ObjectID1) };
 	Object3DNode* node_two{ p_grapsh_system->GetObjectByID(ObjectID2) };
 
-	for (const auto & sc : node_path_to_classes[node_one->GetNodePath()])
-	{ 
-		sol::table temp_class = lua[sc];
-		temp_class["OnOverlap"](temp_class, node_two->GetNodePath());
+	std::string path_one = node_one != NULL ? node_one->GetNodePath() : "nil";
+	std::string path_two = node_two != NULL ? node_two->GetNodePath() : "nil";
+
+	lua["GloballCollided"](path_one, path_two);
+
+	if (path_one != "nil")
+	{
+		for (const auto& sc : node_path_to_classes[path_one])
+		{
+			sol::table temp_class = lua[sc];
+			temp_class["OnOverlap"](temp_class, path_two);
+		}
 	}
 	
-	for (const auto& sc : node_path_to_classes[node_two->GetNodePath()])
+	if (path_two != "nil")
 	{
-		sol::table temp_class = lua[sc];
-		temp_class["OnOverlap"](temp_class, node_one->GetNodePath());
+		for (const auto& sc : node_path_to_classes[path_two])
+		{
+			sol::table temp_class = lua[sc];
+			temp_class["OnOverlap"](temp_class, path_one);
+		}
 	}
 }
 
@@ -491,8 +532,11 @@ void LuaManager::PerformUpdate()
 {
 	for (const auto& lua_class : lua_classes_vector)
 	{
-		sol::table temp_class = lua[lua_class];
-		temp_class["Update"](temp_class);
+		if (lua_class != "")
+		{
+			sol::table temp_class = lua[lua_class];
+			temp_class["Update"](temp_class);
+		}
 	}
 }
 
