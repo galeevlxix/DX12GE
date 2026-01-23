@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <system_error>
 #include <direct.h> 
+#include "../DX12GE/Engine/NodeGraph/AINode.h"
 #include "LuaManager.h"
 //#define SOL_ALL_SAFETIES_ON 0
 
@@ -47,6 +48,35 @@ int lua_rotate_object_by_rotator(Node3D* object, float y, float p, float r)
 	object->Transform.Rotate(DirectX::SimpleMath::Vector3(y, p, r));
 
 	return 1;
+}
+
+bool lua_get_ai_state(AINode* object)
+{
+	assert(object != nullptr, "Attempt to call get ai state on null object!");
+
+	try
+	{
+		return object->IsEnabled();
+	}
+	catch (std::exception& ex)
+	{
+		return false;
+	}
+}
+
+int lua_set_ai_state(AINode* object, bool state)
+{
+	assert(object != nullptr, "Attempt to call get ai state on null object!");
+
+	try
+	{
+		object->SetEnabled(state);
+		return 1;
+	}
+	catch (std::exception& ex)
+	{
+		return 1;
+	}
 }
 
 sol::table lua_get_script_component_from_node(Node3D* object, const std::string& component)
@@ -341,6 +371,8 @@ void LuaManager::LoadScrtipts()
 		lua.set_function("GetChild", &lua_get_child);
 		lua.set_function("GetParent", &lua_get_parent);
 		lua.set_function("GetComponent", &lua_get_script_component_from_node);
+		lua.set_function("GetAIState", &lua_get_ai_state);
+		lua.set_function("SetAIState", &lua_set_ai_state);
 
 		fs::path currentDir = fs::current_path().parent_path().parent_path();
 		std::cout << currentDir << std::endl;
