@@ -120,6 +120,37 @@ sol::table lua_get_script_component_from_node(Node3D* object, const std::string&
 	return sol::nil;
 }
 
+int lua_change_camera()
+{
+	if (Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player") == Singleton::GetNodeGraph()->GetCurrentPlayer())
+	{
+		Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player")->SetCurrent();
+	}
+	else
+	{
+		Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player")->SetCurrent();
+	}
+
+	return 1;
+}
+
+CameraNode* lua_get_cam()
+{
+	return p_grapsh_system->GetCurrentCamera();
+}
+
+const std::string& lua_cast_ray()
+{
+	auto ray = Singleton::GetPhysicsManager()->CastRay(p_grapsh_system->GetCurrentCamera()->GetWorldPosition(), p_grapsh_system->GetCurrentCamera()->GetWorldDirection(), distance);
+
+	if (ray.size() == 0)
+	{
+		return std::string{ "empty " };
+	}
+
+	return Singleton::GetNodeGraph()->GetObjectByID(ray.rbegin()->first)->GetNodePath();
+}
+
 int lua_call_assert(std::string text)
 {
 	std::cout << "Error: " << text << std::endl;
@@ -218,7 +249,7 @@ int lua_transform_move_to(Node3D* object, float x, float y, float z)
 {
 	assert(object != nullptr, "Attempt to call move to on null object!");
 
-	object->Transform.SetPosition(DirectX::SimpleMath::Vector3(x, y, z));
+	static_cast<PhysicalObjectNode*>(object)->Transform.SetScale(400);
 
 	return 1;
 }
@@ -401,6 +432,9 @@ void LuaManager::LoadScrtipts()
 		lua.set_function("GetComponent", &lua_get_script_component_from_node);
 		lua.set_function("GetAIState", &lua_get_ai_state);
 		lua.set_function("SetAIState", &lua_set_ai_state);
+		lua.set_function("GetCurrentCamera", &lua_get_cam);
+		lua.set_function("CastRay", &lua_cast_ray);
+		lua.set_function("ChangeCamera", &lua_change_camera);
 		lua.set_function("DestroyNodeByNode", &lua_destroy_node_by_node);
 		lua.set_function("DestroyNodeByNodePath", &lua_destroy_node_by_path);
 

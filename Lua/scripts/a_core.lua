@@ -432,6 +432,9 @@ The following functions are exported from C++ via sol2 and available in Lua:
 | `SetAIState`            | `object: AINode*`, `state: boolean`                  | `1`                                                         | Включает/выключает ИИ-поведение у узла. |
 | 'DestroyNodeByNode'      | Node3D*
 | DestroyNodeByNodePath   | string node path
+| GetCurrentCamera          | no                                                 |  CameraMode* (Node3D*) ready to move by translate and so on
+| CastRay                   | float range                                          | node path of nearest
+| ChangeCamera              | no                                                  | np                                                         | changes camera from 1st to 3rd
 
 Examples:
   local obj = GetObjectOnScene("Player")
