@@ -223,8 +223,16 @@ void FirstPersonPlayerNode::OnMouseMoved(MouseMotionEventArgs& e)
 		if (m_angle_v + m_dy * MouseSensitivity > -PI / 2.0f && m_angle_v + m_dy * MouseSensitivity < PI / 2.0f)
 			m_angle_v += m_dy * MouseSensitivity;
 
-		m_prevX = e.X;
-		m_prevY = e.Y;
+		if (Singleton::GetWindow()->GetCurrentCursorState() == CURSOR_STATE_HIDE_AND_GRAB)
+		{
+			m_prevX = Singleton::GetWindow()->GetClientWidth() / 2;
+			m_prevY = Singleton::GetWindow()->GetClientHeight() / 2;
+		}
+		else
+		{
+			m_prevX = e.X;
+			m_prevY = e.Y;
+		}
 	}
 }
 

@@ -26,7 +26,7 @@ bool SingleGpuGame::Initialize()
     // INITIALIZE
     ShaderResources::Create(true);
     DescriptorHeaps::OnInit(m_Device, GraphicAdapterPrimary);
-    
+
 
     // PIPELINES
     m_GeometryPassPipeline.Initialize(m_Device);
@@ -116,6 +116,7 @@ bool SingleGpuGame::LoadContent()
     }    
 
     Singleton::Initialize();
+    Singleton::SetWindow(m_pWindow);
     Singleton::GetSelection()->SetTextureBuffer(m_GBuffer.GetBuffer(GBuffer::TargetType::ID));
     Singleton::GetNodeGraph()->WindowRatio = static_cast<float>(GetClientWidth()) / static_cast<float>(GetClientHeight());
     Singleton::GetSerializer()->Load(commandList);
@@ -506,6 +507,15 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
 
     switch (e.Key)
     {
+    case KeyCode::U:
+        Singleton::GetWindow()->SetCursor(CURSOR_STATE_SHOW);
+        break;
+    case KeyCode::H:
+        Singleton::GetWindow()->SetCursor(CURSOR_STATE_HIDE);
+        break;
+    case KeyCode::Y:
+        Singleton::GetWindow()->SetCursor(CURSOR_STATE_HIDE_AND_GRAB);
+        break;
     case KeyCode::Escape:
         Application::Get().Quit(0);
         break;
@@ -627,11 +637,6 @@ void SingleGpuGame::RefreshTitle(UpdateEventArgs& e)
         frameCounter++;
         timer += e.ElapsedTime;
     }
-}
-
-Node3D* SingleGpuGame::Get(std::string name)
-{
-    return nullptr;
 }
 
 void SingleGpuGame::UnloadContent()

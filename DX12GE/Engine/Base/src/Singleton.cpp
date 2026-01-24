@@ -9,6 +9,7 @@ static CurrentPass* Pass = nullptr;
 static AudioSystem* Audio = nullptr;
 static PhysicsManager* PhysMgr = nullptr;
 static NodeIdGenerator* NodeIdGen = nullptr;
+static shared_ptr<Window> Wind = nullptr;
 
 static bool m_IsInitialized = false;
 
@@ -59,6 +60,7 @@ void Singleton::Destroy()
 	Pass = nullptr;
 	Audio = nullptr;
 	NodeIdGen = nullptr;
+	Wind = nullptr;
 }
 
 CommandExecutor* Singleton::GetExecutor()
@@ -104,6 +106,16 @@ PhysicsManager* Singleton::GetPhysicsManager()
 NodeIdGenerator* Singleton::GetNodeIdGenerator()
 {
 	return NodeIdGen;
+}
+
+shared_ptr<Window> Singleton::GetWindow()
+{
+	return Wind;
+}
+
+void Singleton::SetWindow(shared_ptr<Window> window)
+{
+	Wind = window;
 }
 
 bool Singleton::IsInitialized()

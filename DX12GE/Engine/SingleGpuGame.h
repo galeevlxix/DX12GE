@@ -45,14 +45,13 @@ public:
     virtual bool LoadContent() override;
     virtual void RemoveObjectFromScene(std::string name);
     virtual void AddObjectOnScene(std::string name);
-    virtual Node3D* Get(std::string name);
     virtual void UnloadContent() override;
     virtual void Destroy() override;
     
 private:
 
     // API
-
+    
     ComPtr<ID3D12Device2> m_Device;
 
     uint64_t m_FenceValues[Window::BufferCount] = {};
@@ -114,8 +113,6 @@ private:
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void GenerateCollisions()const;
     void UpdateObjectsTransforms(UpdateEventArgs& e);
-
     void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
-
     void RefreshTitle(UpdateEventArgs& e);
 };

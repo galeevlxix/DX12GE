@@ -9,6 +9,7 @@
 Window::Window(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync)
     : m_hWnd(hWnd)
     , m_WindowName(windowName)
+    , m_CurrentCursorState(CURSOR_STATE_SHOW)
     , m_ClientWidth(clientWidth)
     , m_ClientHeight(clientHeight)
     , m_VSync(vSync)
@@ -176,6 +177,11 @@ void Window::OnUpdate(UpdateEventArgs&)
         LuaManager::PerformUpdate();
         UpdateEventArgs updateEventArgs(m_UpdateClock.GetDeltaSeconds(), m_UpdateClock.GetTotalSeconds());
         pGame->OnUpdate(updateEventArgs);
+
+        if (m_CurrentCursorState == CURSOR_STATE_HIDE_AND_GRAB)
+        {
+            CenterCursor();
+        }
     }
 }
 
@@ -284,7 +290,7 @@ void Window::OnMouseWheel(MouseWheelEventArgs& e)
         {
             pGame->OnMouseWheel(e);
         }
-    
+
     }
 }
 
@@ -393,6 +399,54 @@ void Window::UpdateRenderTargetViews()
 void Window::UpdateWindowText(std::wstring newText)
 {
     SetWindowTextW(m_hWnd, newText.c_str());
+}
+
+void Window::SetCursor(WindowCursorState cursorState)
+{
+    if (m_CurrentCursorState == cursorState) return;
+    
+    switch (cursorState)
+    {
+    case CURSOR_STATE_SHOW:
+    {
+        ::ShowCursor(TRUE);
+    }        
+        break;
+    case CURSOR_STATE_HIDE:
+    {
+        if (m_CurrentCursorState == CURSOR_STATE_SHOW)
+        {
+            ::ShowCursor(FALSE);
+        }
+    }        
+        break;
+    case CURSOR_STATE_HIDE_AND_GRAB:
+    {
+        if (m_CurrentCursorState == CURSOR_STATE_SHOW)
+        {
+            ::ShowCursor(FALSE);
+        }
+    }
+        break;
+    default:
+        return;
+    }    
+
+    m_CurrentCursorState = cursorState;
+}
+
+void Window::CenterCursor()
+{
+    POINT p;
+    p.x = m_ClientWidth / 2;
+    p.y = m_ClientHeight / 2;
+    ::ClientToScreen(m_hWnd, &p);
+    ::SetCursorPos(p.x, p.y);
+}
+
+WindowCursorState Window::GetCurrentCursorState()
+{
+    return m_CurrentCursorState;
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE Window::GetCurrentRenderTargetView() const
