@@ -28,7 +28,6 @@ function Vector3(x, y, z)
     return vector3
 end
 
-local t = math.random()
 --- Creates a rotator (Euler angles) as a table with type "rot".
 ---@param yaw   number Rotation around Y axis (left/right)
 ---@param pitch number Rotation around X axis (up/down)
@@ -102,6 +101,32 @@ NODE_TYPE_AI                   = 11
 NODE_TYPE_PHYSICAL_OBJECT3D    = 12
 NODE_TYPE_AUDIO_LISTENER       = 13
 NODE_TYPE_AUDIO_EMITTER        = 14
+
+
+--[[ GLOBAL COLLIDED MANAGER
+    if you want to decet every ingame collision just write somethig like:
+
+    function collide( obj1, obj2 )
+	    print("car collide")
+    end
+    AddCollisionHandler(collide)
+
+    And next time when collision will happen this function will run
+    you can as much functions as you need, just remeber about params, you should use two input params
+--]]
+local GlobalCollisionHandlers = {}
+function AddCollisionHandler( handler )
+	if type(handler) == "function" then
+        GlobalCollisionHandlers[#GlobalCollisionHandlers + 1] = handler
+    end
+end
+
+function GloballCollided( obj1, obj2 )
+	for k,v in pairs (GlobalCollisionHandlers) do
+        v(obj1, obj2)
+    end
+end
+
 
 -- ===================================================================
 -- INHERITANCE SYSTEM
@@ -405,6 +430,11 @@ The following functions are exported from C++ via sol2 and available in Lua:
 | `GetComponent`          | `object: Node3D*`, `component: string`               | `table` или `nil`                                           | Возвращает компонент или поле Lua-скрипта, привязанного к узлу. |
 | `GetAIState`            | `object: AINode*`                                    | `boolean`                                                   | Возвращает состояние ИИ (`true` — активен, `false` — выключен). |
 | `SetAIState`            | `object: AINode*`, `state: boolean`                  | `1`                                                         | Включает/выключает ИИ-поведение у узла. |
+| 'DestroyNodeByNode'      | Node3D*
+| DestroyNodeByNodePath   | string node path
+| GetCurrentCamera          | no                                                 |  CameraMode* (Node3D*) ready to move by translate and so on
+| CastRay                   | float range                                          | node path of nearest
+| ChangeCamera              | no                                                  | np                                                         | changes camera from 1st to 3rd
 
 Examples:
   local obj = GetObjectOnScene("Player")
