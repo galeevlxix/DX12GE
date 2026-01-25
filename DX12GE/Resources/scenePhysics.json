@@ -1408,7 +1408,6 @@
     "mass": 2000.0,
     "friction_scale": 1.0,
     "scripts": [
-      "Car"
     ]
   },
   {
