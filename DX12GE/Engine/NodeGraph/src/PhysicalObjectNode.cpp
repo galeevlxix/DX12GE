@@ -57,6 +57,7 @@ void PhysicalObjectNode::DrawDebug()
 {
     Object3DNode::DrawDebug();
     
+    /*
     std::vector<Vector3>* ModelVertices = ResourceStorage::GetObject3D(m_ComponentId)->GetVertices();
     
     for (int i = 0; i < ModelVertices->size(); i += 3)
@@ -68,6 +69,7 @@ void PhysicalObjectNode::DrawDebug()
             
         Singleton::GetDebugRender()->DrawTriangle(P0, P1, P2, SimpleMath::Color(0.f, 1.f, 0.f, 1.f));
     }
+    */
 }
 
 void PhysicalObjectNode::AddImpulse(Vector3 direction, float Magnitude)
