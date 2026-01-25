@@ -157,7 +157,7 @@ void ImGuiController::Create(HWND hWnd)
 
 	if (fb.root.empty())
 	{
-		fb.root = "D:/GameEngineDev/DX12GE/Resources";
+		fb.root = "../../DX12GE/Resources";
 		fb.current = fb.root;
 	}
 
