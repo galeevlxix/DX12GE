@@ -89,8 +89,9 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
                 m_FlyRadius * sin(m_angle_v),
                 m_FlyRadius * cos(m_angle_v) * sin(-m_angle_h));
 
-            const Matrix& localRotMat = Transform.GetLocalRotationMatrix();
-            m_Camera->Transform.SetPosition(Vector3::Transform(camLocalPos, localRotMat.Invert()));
+            //const Matrix& localRotMat = Transform.GetLocalRotationMatrix();
+            //m_Camera->Transform.SetPosition(Vector3::Transform(camLocalPos, localRotMat.Invert()));
+            m_Camera->Transform.SetPosition(camLocalPos);
 
             m_Camera->Transform.LocalLookAt(CameraAnchor);
         }

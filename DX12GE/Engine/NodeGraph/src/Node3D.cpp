@@ -51,7 +51,18 @@ void Node3D::OnUpdate(const double& deltaTime)
 
         if (m_Parent)
         { 
-            m_WorldMatrixCache = m_WorldMatrixCache * m_Parent->GetWorldMatrix();
+            if (m_Type == NODE_TYPE_CAMERA && m_Parent->GetType() == NODE_TYPE_THIRD_PERSON_PLAYER)
+            {
+				// For third person camera, do not apply parent's scale to the camera world matrix
+				const Vector3& parentLocalPosition = m_Parent->Transform.GetPosition();
+				DirectX::XMMATRIX parentLocalTranslation = DirectX::XMMatrixTranslation(parentLocalPosition.x, parentLocalPosition.y, parentLocalPosition.z);
+				DirectX::XMMATRIX parentGlobalTransform = parentLocalTranslation * m_Parent->GetParent()->GetWorldMatrix();
+				m_WorldMatrixCache = m_WorldMatrixCache * parentGlobalTransform;
+            }
+            else
+            {
+                m_WorldMatrixCache = m_WorldMatrixCache * m_Parent->GetWorldMatrix();
+            }           
         }
 
         for (auto child : m_Children)
