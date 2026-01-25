@@ -139,7 +139,7 @@ CameraNode* lua_get_cam()
 	return p_grapsh_system->GetCurrentCamera();
 }
 
-const std::string& lua_cast_ray()
+const std::string& lua_cast_ray(float distance)
 {
 	auto ray = Singleton::GetPhysicsManager()->CastRay(p_grapsh_system->GetCurrentCamera()->GetWorldPosition(), p_grapsh_system->GetCurrentCamera()->GetWorldDirection(), distance);
 
