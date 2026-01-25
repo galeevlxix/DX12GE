@@ -120,16 +120,25 @@ sol::table lua_get_script_component_from_node(Node3D* object, const std::string&
 	return sol::nil;
 }
 
-int lua_change_camera()
+Node3D* lua_change_camera()
 {
 	if (Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player") == Singleton::GetNodeGraph()->GetCurrentPlayer())
 	{
 		Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player")->SetCurrent();
+		return Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player");
 	}
 	else
 	{
 		Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player")->SetCurrent();
+		return Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player");
 	}
+}
+
+int lua_set_object_velocity(Node3D* object, float x, float y, float z)
+{
+	assert(object != nullptr, "Attempt to call set velocity on null object!");
+
+	Singleton::GetPhysicsManager()->SetObjectVelocity(object->GetNodeId(), DirectX::SimpleMath::Vector3(x, y, z));
 
 	return 1;
 }
@@ -166,51 +175,34 @@ int lua_set_rotation_to_rotator(Node3D* object, float y, float p, float r)
 	return 1;
 }
 
-int lua_add_impulse(PhysicalObjectNode* object, float x, float y, float z, float m)
+int lua_add_impulse(Node3D* object, float x, float y, float z, float m)
 {
 	assert(object != nullptr, "Attempt to call add impulse on null object!");
 
-	object->AddImpulse(DirectX::SimpleMath::Vector3(x, y, z), m);
+	static_cast<PhysicalObjectNode*>(object)->AddImpulse(DirectX::SimpleMath::Vector3(x, y, z), m);
 	return 1;
 }
 
-DirectX::SimpleMath::Vector3 lua_get_velocity(PhysicalObjectNode* object)
+sol::table lua_get_velocity(Node3D* object)
 {
 	assert(object != nullptr, "Attempt to call get velocity on null object!");
 
-	return object->GetVelocity();
+	const Vector3& vec = static_cast<PhysicalObjectNode*>(object)->GetVelocity();
+	return lua.create_table_with("x", vec.x,
+		"y", vec.y,
+		"z", vec.z);
 }
 
-std::map<std::string, float> lua_get_object_pos(Node3D* object)
+sol::table lua_get_object_pos(Node3D * object)
 {
 	assert(object != nullptr, "Attempt to call get position on null object!");
 	const auto pos = object->Transform.GetPosition();
-	std::map<std::string, float> posMap;
-	posMap.insert({ "x", pos.x });
-	posMap.insert({ "y", pos.y });
-	posMap.insert({ "z", pos.z });
-	return posMap;
-}
 
-
-int lua_set_camera_target(lua_State* L)
-{
-	const auto& target = static_cast<Node3D*>(lua_touserdata(L, 1));
-	const Vector3 objectPos = target->Transform.GetPosition() + Vector3(0.0f, 2.0f, 0.0f);
-
-	const float x = (float)lua_tonumber(L, 2);
-	const float y = (float)lua_tonumber(L, 3);
-	const float z = (float)lua_tonumber(L, 4);
-	const float flyRadius = (float)lua_tonumber(L, 5);
-
-	const Vector3 camPosition(objectPos + Vector3(x, y, z) * flyRadius);
-	//p_camera->Position = XMVectorSet(camPosition.x, camPosition.y, camPosition.z, 1.0f);
-
-	Vector3 razn = objectPos - camPosition;
-	razn.Normalize();
-	//p_camera->Target = XMVectorSet(razn.x , razn.y, razn.z, 1.0f);
-
-	return 1;
+	return lua.create_table_with(
+		"x", pos.x,
+		"y", pos.y,
+		"z", pos.z
+	);;
 }
 
 sol::table get_lua_class(std::string name)
@@ -238,11 +230,15 @@ Node3D* lua_get_parent(Node3D* object)
 	return object->GetParent();
 }
 
-Vector3 lua_get_object_world_direction(Node3D* object)
+sol::table lua_get_object_world_direction(Node3D* object)
 {
 	assert(object != nullptr, "Attempt to call get world direction to on null object!");
-
-	return object->GetWorldDirection();
+	const Vector3 vec = object->GetWorldDirection();
+	return lua.create_table_with(
+		"x", vec.x,
+		"y", vec.y,
+		"x", vec.z
+		);
 }
 
 int lua_transform_move_to(Node3D* object, float x, float y, float z)
@@ -437,6 +433,7 @@ void LuaManager::LoadScrtipts()
 		lua.set_function("ChangeCamera", &lua_change_camera);
 		lua.set_function("DestroyNodeByNode", &lua_destroy_node_by_node);
 		lua.set_function("DestroyNodeByNodePath", &lua_destroy_node_by_path);
+		lua.set_function("SetObjectVelocity", &lua_set_object_velocity);
 
 		fs::path currentDir = fs::current_path().parent_path().parent_path();
 		std::cout << currentDir << std::endl;

@@ -198,11 +198,12 @@ void Window::OnRender(RenderEventArgs&)
 
 void Window::OnKeyPressed(KeyEventArgs& e)
 {
-    if (EngineConfig::IsReleaseMode)
+    if (EngineConfig::IsUsingLuaInput)
     {
         LuaManager::ProceedKeyBoardInput(e.Key, true);
     }
-    else
+    
+    if (!EngineConfig::IsReleaseMode)
     {
         if (auto pGame = m_pGame.lock())
         {
@@ -213,11 +214,12 @@ void Window::OnKeyPressed(KeyEventArgs& e)
 
 void Window::OnKeyReleased(KeyEventArgs& e)
 {
-    if (EngineConfig::IsReleaseMode)
+    if (EngineConfig::IsUsingLuaInput)
     {
         LuaManager::ProceedKeyBoardInput(e.Key, false);
     }
-    else
+    
+    if (!EngineConfig::IsReleaseMode)
     {
         if (auto pGame = m_pGame.lock())
         {
@@ -229,11 +231,12 @@ void Window::OnKeyReleased(KeyEventArgs& e)
 // The mouse was moved
 void Window::OnMouseMoved(MouseMotionEventArgs& e)
 {
-    if (EngineConfig::IsReleaseMode)
+    if (EngineConfig::IsUsingLuaInput)
     {
         LuaManager::ProceedMouseMovementInput(e);
     }
-    else 
+    
+    if (!EngineConfig::IsReleaseMode)
     {
         if (auto pGame = m_pGame.lock())
         {
@@ -246,12 +249,13 @@ void Window::OnMouseMoved(MouseMotionEventArgs& e)
 // A button on the mouse was pressed
 void Window::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
-    if (EngineConfig::IsReleaseMode)
+    if (EngineConfig::IsUsingLuaInput)
     {
         LuaManager::ProceedMouseClickInput(e, true);
 
     }
-    else
+    
+    if (!EngineConfig::IsReleaseMode)
     {
         if (auto pGame = m_pGame.lock())
         {
@@ -264,11 +268,12 @@ void Window::OnMouseButtonPressed(MouseButtonEventArgs& e)
 // A button on the mouse was released
 void Window::OnMouseButtonReleased(MouseButtonEventArgs& e)
 {
-    if (EngineConfig::IsReleaseMode)
+    if (EngineConfig::IsUsingLuaInput)
     {
         LuaManager::ProceedMouseClickInput(e, false);
     }
-    else
+     
+    if (!EngineConfig::IsReleaseMode)
     {
         if (auto pGame = m_pGame.lock())
         {
@@ -280,11 +285,12 @@ void Window::OnMouseButtonReleased(MouseButtonEventArgs& e)
 // The mouse wheel was moved.
 void Window::OnMouseWheel(MouseWheelEventArgs& e)
 {
-    if (EngineConfig::IsReleaseMode)
+    if (EngineConfig::IsUsingLuaInput)
     {
         LuaManager::ProceedMouseWheelInput(e);
     }
-    else
+    
+    if (!EngineConfig::IsReleaseMode)
     {
         if (auto pGame = m_pGame.lock())
         {
