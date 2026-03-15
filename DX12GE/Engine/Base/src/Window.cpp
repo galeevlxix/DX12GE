@@ -1,9 +1,8 @@
 #include "../Application.h"
 #include "../CommandQueue.h"
-#include "../DX12GE/Engine/Lua/LuaManager.h"
 #include "../Window.h"
 #include "../Game.h"
-#include "LuaManager.h"
+#include "../../Base/LuaManager.h"
 #include "../DX12GE/EngineConfig.h"
 
 Window::Window(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync)

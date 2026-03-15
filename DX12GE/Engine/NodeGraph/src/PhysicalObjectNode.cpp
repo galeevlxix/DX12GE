@@ -1,5 +1,5 @@
 #include "../../Graphics/AssimpModelLoader.h"
-#include "../Graphics/ResourceStorage.h"
+#include "../../Graphics/ResourceStorage.h"
 #include "../../Base/Singleton.h"
 
 PhysicalObjectNode::PhysicalObjectNode() : Object3DNode()
@@ -56,20 +56,6 @@ void PhysicalObjectNode::SetCurrent()
 void PhysicalObjectNode::DrawDebug()
 {
     Object3DNode::DrawDebug();
-    
-    /*
-    std::vector<Vector3>* ModelVertices = ResourceStorage::GetObject3D(m_ComponentId)->GetVertices();
-    
-    for (int i = 0; i < ModelVertices->size(); i += 3)
-    {
-        //5% offset for better visibility
-        Vector3 P0(Vector3::Transform((*ModelVertices)[i] * 1.05f, GetWorldMatrix()));
-        Vector3 P1(Vector3::Transform((*ModelVertices)[i + 1] * 1.05f, GetWorldMatrix()));
-        Vector3 P2(Vector3::Transform((*ModelVertices)[i + 2] * 1.05f, GetWorldMatrix()));
-            
-        Singleton::GetDebugRender()->DrawTriangle(P0, P1, P2, SimpleMath::Color(0.f, 1.f, 0.f, 1.f));
-    }
-    */
 }
 
 void PhysicalObjectNode::AddImpulse(Vector3 direction, float Magnitude)

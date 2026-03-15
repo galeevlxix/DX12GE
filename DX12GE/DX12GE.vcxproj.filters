@@ -76,12 +76,6 @@
     <Filter Include="Файлы ресурсов\Shaders\Skybox">
       <UniqueIdentifier>{45e57c06-7f23-49e0-b921-5ad529d33b48}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Engine\Lua">
-      <UniqueIdentifier>{43627609-ce85-4e0b-a1a7-fbc618dd303f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Engine\Lua\scripts">
-      <UniqueIdentifier>{8e12bf99-bc8f-4671-8b7a-0cdceb28242b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\Engine\NodeGraph">
       <UniqueIdentifier>{76915497-05de-4cb3-b70d-73f56c1d4831}</UniqueIdentifier>
     </Filter>
@@ -93,9 +87,6 @@
     </Filter>
     <Filter Include="Файлы заголовков\Engine\AI">
       <UniqueIdentifier>{44162801-cdb6-43e4-9e1c-33c14b85dd23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Engine\Lua">
-      <UniqueIdentifier>{1162423b-9f7f-4568-8234-c3ad8bae6558}</UniqueIdentifier>
     </Filter>
     <Filter Include="Файлы заголовков\Engine\Physics">
       <UniqueIdentifier>{a3c7615e-09b8-40b2-8892-b3b94bf11000}</UniqueIdentifier>
@@ -318,9 +309,6 @@
     <ClCompile Include="Engine\AI\src\Leaves.cpp">
       <Filter>Исходные файлы\Engine\AI</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Lua\LuaManager.cpp">
-      <Filter>Исходные файлы\Engine\Lua</Filter>
-    </ClCompile>
     <ClCompile Include="EngineConfig.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
@@ -330,28 +318,7 @@
     <ClCompile Include="Engine\NodeGraph\src\PhysicalObjectNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_demo.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_draw.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_tables.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_widgets.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\ImGui\src\ImGuiController.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_impl_dx12.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_impl_win32.cpp">
       <Filter>Исходные файлы\Engine\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Engine\AI\src\AIComponent.cpp">
@@ -389,6 +356,30 @@
     </ClCompile>
     <ClCompile Include="Engine\Lua\LuaManager.cpp">
       <Filter>Исходные файлы\Engine\Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ImGui\src\imgui_widgets.cpp">
+      <Filter>Исходные файлы\Engine\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ImGui\src\imgui.cpp">
+      <Filter>Исходные файлы\Engine\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ImGui\src\imgui_demo.cpp">
+      <Filter>Исходные файлы\Engine\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ImGui\src\imgui_draw.cpp">
+      <Filter>Исходные файлы\Engine\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ImGui\src\imgui_impl_dx12.cpp">
+      <Filter>Исходные файлы\Engine\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ImGui\src\imgui_impl_win32.cpp">
+      <Filter>Исходные файлы\Engine\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ImGui\src\imgui_tables.cpp">
+      <Filter>Исходные файлы\Engine\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\src\LuaManager.cpp">
+      <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -635,21 +626,6 @@
     <ClInclude Include="Engine\AI\Utility.h">
       <Filter>Файлы заголовков\Engine\AI</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Lua\include\lua.h">
-      <Filter>Файлы заголовков\Engine\Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Lua\include\luaconf.h">
-      <Filter>Файлы заголовков\Engine\Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Lua\include\lualib.h">
-      <Filter>Файлы заголовков\Engine\Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Lua\LuaManager.h">
-      <Filter>Файлы заголовков\Engine\Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Lua\include\lauxlib.h">
-      <Filter>Файлы заголовков\Engine\Lua</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\NodeGraph\NodeIdGenerator.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
@@ -734,17 +710,8 @@
     <ClInclude Include="Engine\Lua\LuaManager.h">
       <Filter>Файлы заголовков\Engine\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Lua\include\lualib.h">
-      <Filter>Файлы заголовков\Engine\Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Lua\include\luaconf.h">
-      <Filter>Файлы заголовков\Engine\Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Lua\include\lua.h">
-      <Filter>Файлы заголовков\Engine\Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Lua\include\lauxlib.h">
-      <Filter>Файлы заголовков\Engine\Lua</Filter>
+    <ClInclude Include="Engine\Base\LuaManager.h">
+      <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

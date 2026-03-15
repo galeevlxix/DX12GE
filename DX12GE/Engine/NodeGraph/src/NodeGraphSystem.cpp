@@ -1,6 +1,6 @@
 #include "../NodeGraphSystem.h"
 #include "../../Base/Singleton.h"
-#include "LuaManager.h"
+#include "../../Base/LuaManager.h"
 
 NodeGraphSystem::NodeGraphSystem()
 {

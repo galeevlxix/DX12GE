@@ -1,7 +1,7 @@
 #include "../SceneJsonSerializer.h"
 #include "../../Graphics/ResourceStorage.h"
+#include "../../Base/LuaManager.h"
 #include "../Singleton.h"
-#include "LuaManager.h"
 #include "../DX12GE/EngineConfig.h"
 #include <fstream>
 

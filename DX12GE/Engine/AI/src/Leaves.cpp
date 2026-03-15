@@ -1,5 +1,5 @@
 #include "../Leaves.h"
-#include "../NodeGraph/AINode.h"
+#include "../../NodeGraph/AINode.h"
 
 using namespace DirectX::SimpleMath;
 

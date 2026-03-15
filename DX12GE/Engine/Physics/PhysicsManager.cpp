@@ -4,7 +4,7 @@
 #include "Jolt/Physics/Collision/Shape/Shape.h"
 #include <Jolt/Physics/Collision/RayCast.h>
 #include <Jolt/Physics/Collision/CastResult.h>
-#include "LuaManager.h"
+#include "../Base/LuaManager.h"
 #include <Jolt/Physics/Collision/CollisionCollectorImpl.h>
 
 namespace Physics

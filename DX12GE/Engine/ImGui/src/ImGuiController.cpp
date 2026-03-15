@@ -5,14 +5,14 @@
 #include "../imgui_impl_dx12.h"
 #include <tchar.h>
 
-#include "../Base/Application.h"
-#include "LuaManager.h"
-#include "../Base/CommandQueue.h"
-#include "../Base/Singleton.h"
-#include "../Base/SceneJsonSerializer.h"
+#include "../../Base/Application.h"
+#include "../../Base/LuaManager.h"
+#include "../../Base/CommandQueue.h"
+#include "../../Base/Singleton.h"
+#include "../../Base/SceneJsonSerializer.h"
 
-#include "../Graphics/DescriptorHeaps.h"
-#include "../Graphics/ResourceStorage.h"
+#include "../../Graphics/DescriptorHeaps.h"
+#include "../../Graphics/ResourceStorage.h"
 
 static bool isInitialized = false;
 static bool isShowingScriptsToAdd = false;

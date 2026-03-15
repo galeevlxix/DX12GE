@@ -3,8 +3,8 @@
 #include <Shlwapi.h>
 
 #include "Engine/Base/Application.h"
+#include "Engine/Base/LuaManager.h"
 #include "Game/GameSample.h"
-#include "Engine/Lua/LuaManager.h"
 #include "EngineConfig.h"
 #include <dxgidebug.h>
 

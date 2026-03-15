@@ -2,11 +2,10 @@
 #include "../resource.h"
 #include "../Window.h"
 #include "../CommandQueue.h"
-#include "../DX12GE/Engine/Lua/LuaManager.h"
+#include "../DX12GE/Engine/Base/LuaManager.h"
 #include "../Game.h"
-#include "../ImGui/ImGuiController.h"
-
-#include "../ImGui/imgui_impl_win32.h"
+#include "../../ImGui/ImGuiController.h"
+#include "../../ImGui/imgui_impl_win32.h"
 
 constexpr wchar_t WINDOW_CLASS_NAME[] = L"DX12RenderWindowClass";
 
