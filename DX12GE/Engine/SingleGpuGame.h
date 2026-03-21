@@ -7,7 +7,7 @@
 #include "Base/Window.h"
 #include "Base/CommandQueue.h"
 #include "Base/Singleton.h"
-#include "Base/TestTime.h"
+#include "Base/AudioSystem.h"
 
 #include "Pipelines/Pipeline.h"
 #include "Pipelines/ShadowMapPipeline.h"
@@ -45,11 +45,11 @@ public:
     virtual bool LoadContent() override;
     virtual void UnloadContent() override;
     virtual void Destroy() override;
-
+    
 private:
 
     // API
-
+    
     ComPtr<ID3D12Device2> m_Device;
 
     uint64_t m_FenceValues[Window::BufferCount] = {};
@@ -57,8 +57,6 @@ private:
     D3D12_RECT m_ScissorRect;
 
     bool m_Initialized = false;
-
-    TestTime* test;
 
     // SCENE
     LightManager m_Lights;
@@ -105,18 +103,14 @@ private:
     void DrawSkybox(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawDebugObjects(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawParticles(ComPtr<ID3D12GraphicsCommandList2> commandList);
-
-    void DrawSceneToShadowMaps();
-    void DrawSceneToGBuffer();
-    void LightPassRender();
-    void DrawSSR();
-    void MergeResults();
-
+    void DrawForwardOther(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSceneToShadowMaps(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSceneToGBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void GenerateCollisions()const;
+    void UpdateObjectsTransforms(UpdateEventArgs& e);
     void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
-
     void RefreshTitle(UpdateEventArgs& e);
-
-    // testing 
-    
-    
 };

@@ -1,7 +1,6 @@
 #include "../MaterialEntity.h"
 #include "../ShaderResources.h"
 #include "../ResourceStorage.h"
-#include "../../Base/Application.h"
 
 uint32_t MaterialEntity::AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, std::string& path)
 {
@@ -15,7 +14,7 @@ uint32_t MaterialEntity::AddTexture(ComPtr<ID3D12GraphicsCommandList2> commandLi
     std::shared_ptr<TextureComponent> texture = ResourceStorage::GetTexture(id);
 
     if (!texture->IsInitialized())
-        texture->OnLoad(commandList, path, Application::Get().GetPrimaryDevice(), GraphicAdapterPrimary);
+        texture->OnLoad(commandList, path);
     
     return id;
 }
@@ -60,6 +59,7 @@ void MaterialEntity::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
     ShaderResources::GetGeometryPassCB()->HasDiffuseNormalEmissive = m_HasDiffuseNormalEmissive;
     ShaderResources::GetGeometryPassCB()->HasOcclusionRoughnessMetallicCombined = m_HasOcclusionRoughnessMetallicCombined;
+    ShaderResources::GetGeometryPassCB()->AlbedoColor = m_AlbedoColor;
     ShaderResources::SetGeometryPassCB(commandList, 1);
 
     RenderTexture(commandList, 2, m_DiffuseTextureId,     m_HasDiffuseNormalEmissive.x);
@@ -76,6 +76,38 @@ void MaterialEntity::DestroyTexture(uint32_t textureId)
 {
     if (textureId == -1) return;
     ResourceStorage::DeleteTextureComponentForever(textureId);
+}
+
+MaterialEntity* MaterialEntity::Duplicate()
+{
+	MaterialEntity* material = new MaterialEntity();
+
+    material->m_DrawIt = CanDrawIt();
+    material->m_MaterialType = Type::COPY;
+    material->Name = Name;
+
+    material->m_DiffuseTextureId = m_DiffuseTextureId;
+    material->m_NormalTextureId = m_NormalTextureId;
+    material->m_EmissiveTextureId = m_EmissiveTextureId;
+    material->m_MetallicTextureId = m_MetallicTextureId;
+    material->m_RoughnessTextureId = m_RoughnessTextureId;
+    material->m_GltfMetallicRoughnessTextureId = m_GltfMetallicRoughnessTextureId;
+    material->m_AOTextureId = m_AOTextureId;
+
+    material->m_HasDiffuseNormalEmissive.x = static_cast<float>(IsNotNull(m_DiffuseTextureId));
+    material->m_HasDiffuseNormalEmissive.y = static_cast<float>(IsNotNull(m_NormalTextureId));
+    material->m_HasDiffuseNormalEmissive.z = static_cast<float>(IsNotNull(m_EmissiveTextureId));
+    material->m_HasDiffuseNormalEmissive.w = 1.234567f;
+
+    material->m_HasOcclusionRoughnessMetallicCombined.x = static_cast<float>(IsNotNull(m_AOTextureId));
+    material->m_HasOcclusionRoughnessMetallicCombined.w = static_cast<float>(IsNotNull(m_GltfMetallicRoughnessTextureId));
+    if (m_HasOcclusionRoughnessMetallicCombined.w < 0.5f)
+    {
+        material->m_HasOcclusionRoughnessMetallicCombined.y = static_cast<float>(IsNotNull(m_RoughnessTextureId));
+        material->m_HasOcclusionRoughnessMetallicCombined.z = static_cast<float>(IsNotNull(m_MetallicTextureId));
+    }
+
+    return material;
 }
 
 void MaterialEntity::Destroy()

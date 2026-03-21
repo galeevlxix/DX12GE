@@ -45,7 +45,6 @@ public:
 	void SetToRead(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void SetToCopyDest(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void SetToCopySource(ComPtr<ID3D12GraphicsCommandList2> commandList);
-	void SetToCommon(ComPtr<ID3D12GraphicsCommandList2> commandList);
 	void SetToState(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_RESOURCE_STATES newState);
 
 	void SetGraphicsRootDescriptorTable(int slot, ComPtr<ID3D12GraphicsCommandList2> commandList);

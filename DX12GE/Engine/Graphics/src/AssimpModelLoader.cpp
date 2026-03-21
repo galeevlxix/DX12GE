@@ -1,6 +1,5 @@
 #include "../AssimpModelLoader.h"
 #include "../../Base/Application.h"
-#include "../VertexStructures.h"
 #include "../ResourceStorage.h"
 
 #include <assimp/Importer.hpp>
@@ -17,7 +16,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
     if (object->IsInitialized())
         return id;
 
-    printf("Загрузка компонента из файла объекта: %s\n", filePath.c_str());
+    printf("Loading component from object file: %s\n", filePath.c_str());
 
     Assimp::Importer importer;
     
@@ -71,13 +70,20 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
             }
         }
 
+        materials[i]->Name = pScene->mMaterials[i]->GetName().C_Str();
+        if (materials[i]->Name == "")
+        {
+            materials[i]->Name = "NewMaterial";
+        }
         materials[i]->Load(commandList, imagePaths);
     }
 
     std::vector<Mesh3DComponent*> meshes;
 
     float yOffset = 0.0f;
-
+    
+    std::vector<Vector3>* ModelVertices = new std::vector<Vector3>();
+    
     for (unsigned int meshIndex = 0; meshIndex < pScene->mNumMeshes; meshIndex++)
     {
         meshes.push_back(new Mesh3DComponent());
@@ -115,7 +121,7 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
             Vertices.push_back(v);
         }
 
-        meshes[meshIndex]->m_Material = materials[paiMesh->mMaterialIndex];
+        meshes[meshIndex]->Material = materials[paiMesh->mMaterialIndex];
 
         for (unsigned int faceIndex = 0; faceIndex < paiMesh->mNumFaces; faceIndex++)
         {
@@ -127,11 +133,16 @@ uint32_t AssimpModelLoader::LoadModelData(ComPtr<ID3D12GraphicsCommandList2> com
         }
 
         meshes[meshIndex]->OnLoad<VertexStruct>(commandList, Vertices, Indices);
+                
+        for (int i = 0; i < Indices.size(); ++i)
+        {
+            ModelVertices->push_back(Vertices[Indices[i]].Position);
+        }
     }
 
     OutYOffset = yOffset;
 
-    object->OnLoad(meshes);
+    object->OnLoad(meshes, ModelVertices);
     object->ResourcePath = filePath;
 
     return id;

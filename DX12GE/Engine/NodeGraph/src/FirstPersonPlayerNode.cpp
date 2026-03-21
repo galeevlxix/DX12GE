@@ -1,6 +1,6 @@
 #include "../../Base/Singleton.h"
 
-FirstPersonPlayerNode::FirstPersonPlayerNode() : Object3DNode()
+FirstPersonPlayerNode::FirstPersonPlayerNode() : PhysicalObjectNode()
 {
 	m_Type = NODE_TYPE_FIRST_PERSON_PLAYER;
 	Rename("FirstPersonPlayerNode");
@@ -23,6 +23,11 @@ FirstPersonPlayerNode::FirstPersonPlayerNode() : Object3DNode()
 	m_dy = 0;
 }
 
+bool FirstPersonPlayerNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
+{
+	return PhysicalObjectNode::Create(commandList, filePath);
+}
+
 void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 {
 	if (IsCurrent() && m_PressedInputs.RBC)
@@ -42,7 +47,7 @@ void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 
 		Transform.SetRotationY(m_angle_h);
 
-		const Matrix& parMat = m_Parrent->GetWorldMatrix();
+		const SimpleMath::Matrix& parMat = m_Parent->GetWorldMatrix();
 		Vector3 direction = GetWorldDirection();
 		
 		if (m_Camera)
@@ -83,38 +88,37 @@ void FirstPersonPlayerNode::OnUpdate(const double& deltaTime)
 		}
 	}
 
-	Object3DNode::OnUpdate(deltaTime);
+	PhysicalObjectNode::OnUpdate(deltaTime);
 }
 
 void FirstPersonPlayerNode::Destroy(bool keepComponent)
 {
 	m_Camera = nullptr;
-	Object3DNode::Destroy(keepComponent);
+	PhysicalObjectNode::Destroy(keepComponent);
 }
 
 bool FirstPersonPlayerNode::AddChild(Node3D* node)
 {
-	if (!Object3DNode::AddChild(node)) return false;
+	if (!PhysicalObjectNode::AddChild(node)) return false;
 
 	if (!m_Camera)
 	{
 		if (CameraNode* camera = dynamic_cast<CameraNode*>(node))
 		{
-			camera->SetRatio(Singleton::GetNodeGraph()->WindowRatio);
 			SetCamera(camera);
 		}
 	}
 	return true;
 }
 
-Node3D* FirstPersonPlayerNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* FirstPersonPlayerNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new FirstPersonPlayerNode();
 	}
 
-	Object3DNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+	PhysicalObjectNode::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
@@ -132,7 +136,7 @@ Node3D* FirstPersonPlayerNode::Clone(Node3D* newParrent, bool cloneChildrenRecur
 
 void FirstPersonPlayerNode::CreateJsonData(json& j)
 {
-	Object3DNode::CreateJsonData(j);
+	PhysicalObjectNode::CreateJsonData(j);
 
 	j["sens_mouse"] = MouseSensitivity;
 	j["sens_wheel"] = WheelSensitivity;
@@ -149,7 +153,7 @@ void FirstPersonPlayerNode::CreateJsonData(json& j)
 
 void FirstPersonPlayerNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 {
-	Object3DNode::LoadFromJsonData(nodeData);
+	PhysicalObjectNode::LoadFromJsonData(nodeData);
 
 	MouseSensitivity = nodeData.MouseSensitivity;
 	WheelSensitivity = nodeData.WheelSensitivity;
@@ -171,7 +175,7 @@ void FirstPersonPlayerNode::SetCurrent()
 	}
 	else
 	{
-		printf("Внимание! Невозможно сделать FirstPersonPlayerNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
+		printf("Attention! Unable to make FirstPersonPlayerNode::%s active! The node is not in the scene tree!\n", m_Name.c_str());
 	}
 }
 
@@ -182,7 +186,7 @@ bool FirstPersonPlayerNode::IsCurrent()
 
 void FirstPersonPlayerNode::SetCamera(CameraNode* camera)
 {
-	if (camera == nullptr || camera->GetParrent() != this) return;
+	if (camera == nullptr || camera->GetParent() != this) return;
 	m_Camera = camera;
 	m_angle_h = Transform.GetRotation().y;
 	m_angle_v = m_Camera->Transform.GetRotation().x;
@@ -190,58 +194,85 @@ void FirstPersonPlayerNode::SetCamera(CameraNode* camera)
 
 void FirstPersonPlayerNode::OnKeyPressed(KeyEventArgs& e)
 {
-	Object3DNode::OnKeyPressed(e);
-	m_PressedInputs.OnKeyPressed(e);
+	PhysicalObjectNode::OnKeyPressed(e);
+	if (IsCurrent())
+	{
+		m_PressedInputs.OnKeyPressed(e);
+	}
 }
 
 void FirstPersonPlayerNode::OnKeyReleased(KeyEventArgs& e)
 {
-	Object3DNode::OnKeyReleased(e);
-	m_PressedInputs.OnKeyReleased(e);
+	PhysicalObjectNode::OnKeyReleased(e);
+	if (IsCurrent())
+	{
+		m_PressedInputs.OnKeyReleased(e);
+	}
 }
 
 void FirstPersonPlayerNode::OnMouseMoved(MouseMotionEventArgs& e)
 {
-	Object3DNode::OnMouseMoved(e);
+	PhysicalObjectNode::OnMouseMoved(e);
 
-	if (!m_PressedInputs.RBC) return;
+	if (IsCurrent() && m_PressedInputs.RBC)
+	{
+		m_dx = e.X - m_prevX;
+		m_dy = e.Y - m_prevY;
 
-	m_dx = e.X - m_prevX;
-	m_dy = e.Y - m_prevY;
+		m_angle_h -= m_dx * MouseSensitivity;
+		if (m_angle_v + m_dy * MouseSensitivity > -PI / 2.0f && m_angle_v + m_dy * MouseSensitivity < PI / 2.0f)
+			m_angle_v += m_dy * MouseSensitivity;
 
-	m_angle_h -= m_dx * MouseSensitivity;
-	if (m_angle_v + m_dy * MouseSensitivity > -PI / 2.0f && m_angle_v + m_dy * MouseSensitivity < PI / 2.0f)
-		m_angle_v += m_dy * MouseSensitivity;
-
-	m_prevX = e.X;
-	m_prevY = e.Y;
+		if (Singleton::GetWindow()->GetCurrentCursorState() == CURSOR_STATE_HIDE_AND_GRAB)
+		{
+			m_prevX = Singleton::GetWindow()->GetClientWidth() / 2;
+			m_prevY = Singleton::GetWindow()->GetClientHeight() / 2;
+		}
+		else
+		{
+			m_prevX = e.X;
+			m_prevY = e.Y;
+		}
+	}
 }
 
 void FirstPersonPlayerNode::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
-	Object3DNode::OnMouseButtonPressed(e);
-	m_PressedInputs.OnMouseButtonPressed(e);
+	PhysicalObjectNode::OnMouseButtonPressed(e);
 
-	if (e.Button == 2) //Right mouse
+	if (IsCurrent())
 	{
-		m_prevX = e.X;
-		m_prevY = e.Y;
+		m_PressedInputs.OnMouseButtonPressed(e);
+
+		if (e.Button == 2) //Right mouse
+		{
+			m_prevX = e.X;
+			m_prevY = e.Y;
+		}
 	}
 }
 
 void FirstPersonPlayerNode::OnMouseButtonReleased(MouseButtonEventArgs& e)
 {
-	Object3DNode::OnMouseButtonReleased(e);
-	m_PressedInputs.OnMouseButtonReleased(e);
+	PhysicalObjectNode::OnMouseButtonReleased(e);
 
-	if (e.Button == 2) //Right mouse
+	if (IsCurrent())
 	{
-		m_dx = 0;
+		m_PressedInputs.OnMouseButtonReleased(e);
+
+		if (e.Button == 2) //Right mouse
+		{
+			m_dx = 0;
+		}
 	}
 }
 
 void FirstPersonPlayerNode::OnMouseWheel(MouseWheelEventArgs& e)
 {
-	Object3DNode::OnMouseWheel(e);
-	m_Camera->Fov = std::clamp(m_Camera->Fov - e.WheelDelta * WheelSensitivity, 20.0f, 120.0f);
+	PhysicalObjectNode::OnMouseWheel(e);
+
+	if (IsCurrent())
+	{
+		m_Camera->Fov = std::clamp(m_Camera->Fov - e.WheelDelta * WheelSensitivity, 20.0f, 120.0f);
+	}
 }

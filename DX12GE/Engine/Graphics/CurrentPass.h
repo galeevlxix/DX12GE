@@ -13,11 +13,7 @@ public:
 		TransparentParticles = 5,
 		Debug = 6,
 		Skybox = 7,
-		CopyPrimaryDeviceDataToSharedMemory = 8,
-		CopySharedMemoryDataToPrimaryDevice = 9,
-		CopySecondDeviceDataToSharedMemory = 10,
-		CopySharedMemoryDataToSecondDevice = 11,
-		None = 12
+		None = 8
 	};
 
 	EPass Get();
@@ -25,21 +21,4 @@ public:
 
 private:
 	EPass Pass = CurrentPass::None;
-};
-
-static const char* EPassNames[] =
-{
-	"Shadow",
-	"Geometry",
-	"Lighting",
-	"SSR",
-	"Merging",
-	"TransparentParticles",
-	"Debug",
-	"Skybox",
-	"CopyPrimaryDeviceDataToSharedMemory",
-	"CopySharedMemoryDataToPrimaryDevice",
-	"CopySecondDeviceDataToSharedMemory",
-	"CopySharedMemoryDataToSecondDevice",
-	"None"
 };

@@ -3,50 +3,69 @@
 #include "Node3D.h"
 #include "../Base/DX12LibPCH.h"
 #include "../Base/CollisionBox.h"
+#include "../Graphics/MaterialEntity.h"
 
-// Класс узла 3Д объекта
+/// \brief 3D object node class.
 class Object3DNode : public Node3D
 {
 protected:
+
+	/// \brief ID of the 3D object component in the resource storage.
 	uint32_t m_ComponentId;
 
 public:
+
+	/// \brief Visibility of the 3D object.
 	bool IsVisible;
+
+	/// \brief List of material overrides for the 3D object. If the array is empty, the object's original materials are used.
+	std::vector<MaterialEntity*> MaterialsOverride;
+
+	/// \brief Index of the selected material in the Materials array.
+	int SelectedMaterial = 0;
 
 	Object3DNode();
 
-	// Загружает данные узла
+	/// \brief Loads node data.
+	/// \param filePath The path to the file that stores data about meshes, vertices, and indices. For example, .obj or .gltf.
+	/// \return Returns true if creation was successful. Returns false otherwise.
 	virtual bool Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath);
 
-	// Отрисовка 3Д объекта
+	/// \brief 3D object rendering.
+	/// \note Called automatically by the engine if the node is in the scene tree. No need to call it explicitly.
 	virtual void Render(ComPtr<ID3D12GraphicsCommandList2> commandList, const DirectX::XMMATRIX& viewProjMatrix);
 	
-	// Уничтожает данный узел и всех потомков узла
-	// Узел также удаляется из списка потомков своего родителя
-	// При keepComponent = false из памяти также удаляется компонент с данными, если в дереве сцены нет других узлов, использующих этот компонент (распространяется на потомков)
 	virtual void Destroy(bool keepComponent = true) override;
 	
-	// Устанавливает новый компонент объекта (ресурс с данными) по id для данного узла
+	/// \brief Sets a new object component (resource with data) by id for this node.
 	virtual void SetComponentId(uint32_t newId);
 
-	// Возвращает id компонента (ресурса с данными) в ResourceStorage
+	/// \brief Returns the id of a component (resource with data) in the resource storage.
 	virtual uint32_t GetComponentId() { return m_ComponentId; }
 
+	virtual void UpdateTransform(DirectX::SimpleMath::Matrix InTransform = DirectX::SimpleMath::Matrix());
+
+	/// \brief Checks whether a 3D object is valid for rendering.
+	/// \return Returns false if the creation of the 3D object was not successful or if the 3D object is broken. Returns true otherwise.
 	virtual bool IsValid() { return m_ComponentId != -1; }
 
+	/// \brief Returns the data file of a 3D object. 
 	virtual const std::string GetObjectFilePath();
+
+	/// \brief Returns AABB of object 3d component.
+	/// \throws std::runtime_error If this object 3d node is invalid
 	const CollisionBox& GetCollisionBox();
 	
-	virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
+	virtual Node3D* Clone(Node3D* newParent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
 
 	virtual void DrawDebug() override;
 
 	virtual void CreateJsonData(json& j) override;
 
 	virtual void LoadFromJsonData(const NodeSerializingData& nodeData) override;
+	void LoadOverrideMaterials(ComPtr<ID3D12GraphicsCommandList2> commandList, const NodeSerializingData& nodeData);
 
 private:
-	// Возвращает true, если в дереве существует узел с таким же id компонента
-	// Если root определен, обход дерева начинается с него
 	bool TreeHasObjects3DWithComponentId(uint32_t id, Node3D* current = nullptr);
+	void ClearMaterialsOverride();
 };

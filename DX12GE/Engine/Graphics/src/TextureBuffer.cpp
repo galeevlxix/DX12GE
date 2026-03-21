@@ -105,14 +105,6 @@ void TextureBuffer::SetToCopySource(ComPtr<ID3D12GraphicsCommandList2> commandLi
     m_CurrentState = D3D12_RESOURCE_STATE_COPY_SOURCE;
 }
 
-void TextureBuffer::SetToCommon(ComPtr<ID3D12GraphicsCommandList2> commandList)
-{
-    if (m_CurrentState == D3D12_RESOURCE_STATE_COMMON) return;
-
-    TransitionResource(commandList, m_Resource, m_CurrentState, D3D12_RESOURCE_STATE_COMMON);
-    m_CurrentState = D3D12_RESOURCE_STATE_COMMON;
-}
-
 void TextureBuffer::SetToState(ComPtr<ID3D12GraphicsCommandList2> commandList, D3D12_RESOURCE_STATES newState)
 {
     if (m_CurrentState == newState) return;
@@ -148,7 +140,7 @@ void TextureBuffer::BuildResource()
 
     CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
 
-    m_CurrentState = D3D12_RESOURCE_STATE_COMMON;
+    m_CurrentState = D3D12_RESOURCE_STATE_GENERIC_READ;
 
     ThrowIfFailed(
         m_Device->CreateCommittedResource(

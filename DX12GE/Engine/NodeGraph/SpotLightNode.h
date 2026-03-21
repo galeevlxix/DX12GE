@@ -3,17 +3,18 @@
 #include "Node3D.h"
 #include "../Graphics/GraphicsComponents.h"
 
-// Класс узла прожекторного источника света
+/// \brief Class of spotlight light source node.
 class SpotLightNode : public Node3D
 {
 public:	
+	/// \brief Parameters of the spot light.
 	SpotLightComponent LightData;
 
 	SpotLightNode();
 
 	virtual void OnUpdate(const double& deltaTime) override;
 
-	virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
+	virtual Node3D* Clone(Node3D* newParent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
 
 	virtual void DrawDebug() override;
 
