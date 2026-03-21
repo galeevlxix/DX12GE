@@ -2,10 +2,13 @@
 #include "../CommandQueue.h"
 #include "../Window.h"
 #include "../Game.h"
+#include "../../Base/LuaManager.h"
+#include "../DX12GE/EngineConfig.h"
 
 Window::Window(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync)
     : m_hWnd(hWnd)
     , m_WindowName(windowName)
+    , m_CurrentCursorState(CURSOR_STATE_SHOW)
     , m_ClientWidth(clientWidth)
     , m_ClientHeight(clientHeight)
     , m_VSync(vSync)
@@ -170,9 +173,14 @@ void Window::OnUpdate(UpdateEventArgs&)
     if (auto pGame = m_pGame.lock())
     {
         m_FrameCounter++;
-
+        LuaManager::PerformUpdate();
         UpdateEventArgs updateEventArgs(m_UpdateClock.GetDeltaSeconds(), m_UpdateClock.GetTotalSeconds());
         pGame->OnUpdate(updateEventArgs);
+
+        if (m_CurrentCursorState == CURSOR_STATE_HIDE_AND_GRAB)
+        {
+            CenterCursor();
+        }
     }
 }
 
@@ -189,53 +197,105 @@ void Window::OnRender(RenderEventArgs&)
 
 void Window::OnKeyPressed(KeyEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsUsingLuaInput)
     {
-        pGame->OnKeyPressed(e);
+        LuaManager::ProceedKeyBoardInput(e.Key, true);
+    }
+    
+    if (!EngineConfig::IsReleaseMode)
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnKeyPressed(e);
+        }
     }
 }
 
 void Window::OnKeyReleased(KeyEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsUsingLuaInput)
     {
-        pGame->OnKeyReleased(e);
+        LuaManager::ProceedKeyBoardInput(e.Key, false);
+    }
+    
+    if (!EngineConfig::IsReleaseMode)
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnKeyReleased(e);
+        }
     }
 }
 
 // The mouse was moved
 void Window::OnMouseMoved(MouseMotionEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsUsingLuaInput)
     {
-        pGame->OnMouseMoved(e);
+        LuaManager::ProceedMouseMovementInput(e);
+    }
+    
+    if (!EngineConfig::IsReleaseMode)
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnMouseMoved(e);
+
+        }
     }
 }
 
 // A button on the mouse was pressed
 void Window::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsUsingLuaInput)
     {
-        pGame->OnMouseButtonPressed(e);
+        LuaManager::ProceedMouseClickInput(e, true);
+
     }
+    
+    if (!EngineConfig::IsReleaseMode)
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnMouseButtonPressed(e);
+        }
+    }
+
 }
 
 // A button on the mouse was released
 void Window::OnMouseButtonReleased(MouseButtonEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsUsingLuaInput)
     {
-        pGame->OnMouseButtonReleased(e);
+        LuaManager::ProceedMouseClickInput(e, false);
+    }
+     
+    if (!EngineConfig::IsReleaseMode)
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnMouseButtonReleased(e);
+        }
     }
 }
 
 // The mouse wheel was moved.
 void Window::OnMouseWheel(MouseWheelEventArgs& e)
 {
-    if (auto pGame = m_pGame.lock())
+    if (EngineConfig::IsUsingLuaInput)
     {
-        pGame->OnMouseWheel(e);
+        LuaManager::ProceedMouseWheelInput(e);
+    }
+    
+    if (!EngineConfig::IsReleaseMode)
+    {
+        if (auto pGame = m_pGame.lock())
+        {
+            pGame->OnMouseWheel(e);
+        }
+
     }
 }
 
@@ -346,7 +406,55 @@ void Window::UpdateWindowText(std::wstring newText)
     SetWindowTextW(m_hWnd, newText.c_str());
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE Window::GetCurrentRenderTargetView() const
+void Window::SetCursor(WindowCursorState cursorState)
+{
+    if (m_CurrentCursorState == cursorState) return;
+    
+    switch (cursorState)
+    {
+    case CURSOR_STATE_SHOW:
+    {
+        ::ShowCursor(TRUE);
+    }        
+        break;
+    case CURSOR_STATE_HIDE:
+    {
+        if (m_CurrentCursorState == CURSOR_STATE_SHOW)
+        {
+            ::ShowCursor(FALSE);
+        }
+    }        
+        break;
+    case CURSOR_STATE_HIDE_AND_GRAB:
+    {
+        if (m_CurrentCursorState == CURSOR_STATE_SHOW)
+        {
+            ::ShowCursor(FALSE);
+        }
+    }
+        break;
+    default:
+        return;
+    }    
+
+    m_CurrentCursorState = cursorState;
+}
+
+void Window::CenterCursor()
+{
+    POINT p;
+    p.x = m_ClientWidth / 2;
+    p.y = m_ClientHeight / 2;
+    ::ClientToScreen(m_hWnd, &p);
+    ::SetCursorPos(p.x, p.y);
+}
+
+WindowCursorState Window::GetCurrentCursorState()
+{
+    return m_CurrentCursorState;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE Window::GetCurrentRenderTargetViewCPU() const
 {
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_d3d12RTVDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
         m_CurrentBackBufferIndex, m_RTVDescriptorSize);

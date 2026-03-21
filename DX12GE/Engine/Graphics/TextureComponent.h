@@ -3,38 +3,6 @@
 #include "../Base/DX12LibPCH.h"
 #include <string>
 
-enum TextureType
-{
-    NONE = 0,
-    DIFFUSE = 1,
-    SPECULAR = 2,
-    AMBIENT = 3,
-    EMISSIVE = 4,
-    HEIGHT = 5,
-    NORMALS = 6,
-    SHININESS = 7,
-    OPACITY = 8,
-    DISPLACEMENT = 9,
-    LIGHTMAP = 10,
-    REFLECTION = 11,
-    BASE_COLOR = 12,
-    NORMAL_CAMERA = 13,
-    EMISSION_COLOR = 14,
-    METALNESS = 15,
-    DIFFUSE_ROUGHNESS = 16,
-    AMBIENT_OCCLUSION = 17,
-    UNKNOWN = 18,
-    SHEEN = 19,
-    CLEARCOAT = 20,
-    TRANSMISSION = 21,
-    MAYA_BASE = 22,
-    MAYA_SPECULAR = 23,
-    MAYA_SPECULAR_COLOR = 24,
-    MAYA_SPECULAR_ROUGHNESS = 25,
-    ANISOTROPY = 26,
-    GLTF_METALLIC_ROUGHNESS = 27,
-};
-
 class TextureComponent
 {
 public:
@@ -47,11 +15,9 @@ private:
 
     std::string m_ResourcePath;
 
-    GraphicsAdapter m_GraphicsAdapter;
-
 public:
-    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& path, ComPtr<ID3D12Device2> device, GraphicsAdapter adapter);
-    void OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& path, ComPtr<ID3D12Device2> device, GraphicsAdapter adapter);
+    void OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& path);
+    void OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& path);
 
     void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot);
     void Destroy();

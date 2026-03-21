@@ -17,14 +17,14 @@ EnvironmentNode::EnvironmentNode() : Node3D()
 	Rename("EnvironmentNode");
 }
 
-Node3D* EnvironmentNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* EnvironmentNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new EnvironmentNode();
 	}
 
-	Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+	Node3D::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
@@ -105,7 +105,7 @@ void EnvironmentNode::SetCurrent()
 	}
 	else
 	{
-		printf("Внимание! Невозможно сделать EnvironmentNode::%s активным! Узел не находится в дереве сцены!\n", m_Name.c_str());
+		printf("Attention! EnvironmentNode::%s cannot be activated! The node is not located in the scene tree!\n", m_Name.c_str());
 	}
 }
 

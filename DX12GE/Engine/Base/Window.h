@@ -13,6 +13,13 @@
 #include "Events.h"
 #include "HighResolutionClock.h"
 
+enum WindowCursorState
+{
+    CURSOR_STATE_SHOW,
+    CURSOR_STATE_HIDE,
+    CURSOR_STATE_HIDE_AND_GRAB
+};
+
 // Forward-declare the DirectXTemplate class.
 class Game;
 
@@ -78,7 +85,7 @@ public:
     /**
      * Get the render target view for the current back buffer.
      */
-    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRenderTargetView() const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRenderTargetViewCPU() const;
 
     /**
      * Get the back buffer resource for the current back buffer.
@@ -87,6 +94,8 @@ public:
 
     void UpdateWindowText(std::wstring newText);
 
+    void SetCursor(WindowCursorState cursorState);
+    WindowCursorState GetCurrentCursorState();
 protected:
     // The Window procedure needs to call protected methods of this class.
     friend LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -131,7 +140,7 @@ protected:
     // Update the render target views for the swapchain back buffers.
     void UpdateRenderTargetViews();
 
-    
+
 
 private:
     // Windows should not be copied.
@@ -142,6 +151,7 @@ private:
 
     std::wstring m_WindowName;
 
+    WindowCursorState m_CurrentCursorState;
     int m_ClientWidth;
     int m_ClientHeight;
     bool m_VSync;
@@ -163,4 +173,5 @@ private:
     RECT m_WindowRect;
     bool m_IsTearingSupported;
 
+    void CenterCursor();
 };

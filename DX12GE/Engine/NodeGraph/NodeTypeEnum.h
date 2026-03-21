@@ -2,6 +2,7 @@
 #include <string>
 #include "../Base/SimpleMath.h"
 
+/// Types of all possible nodes in the scene tree
 enum NodeTypeEnum
 {
 	NODE_TYPE_NODE3D,
@@ -13,6 +14,48 @@ enum NodeTypeEnum
 	NODE_TYPE_DIRECTIONAL_LIGHT,
 	NODE_TYPE_POINT_LIGHT,
 	NODE_TYPE_SPOT_LIGHT,
-	NODE_TYPE_PARTICLES, // не реализован
-	NODE_TYPE_SKYBOX
+	NODE_TYPE_PARTICLES, // not implemented
+	NODE_TYPE_SKYBOX,
+	NODE_TYPE_AI,
+	NODE_TYPE_PHYSICAL_OBJECT3D,
+	NODE_TYPE_AUDIO_LISTENER,
+	NODE_TYPE_AUDIO_EMITTER
 };
+
+static const char* GetTypeName(NodeTypeEnum type)
+{
+	switch (type)
+	{
+	case NODE_TYPE_NODE3D:
+		return "NODE3D";
+	case NODE_TYPE_OBJECT3D:
+		return "OBJECT3D";
+	case NODE_TYPE_FIRST_PERSON_PLAYER:
+		return "FIRST_PERSON_PLAYER";
+	case NODE_TYPE_THIRD_PERSON_PLAYER:
+		return "THIRD_PERSON_PLAYER";
+	case NODE_TYPE_CAMERA:
+		return "CAMERA";
+	case NODE_TYPE_ENVIRONMENT:
+		return "ENVIRONMENT";
+	case NODE_TYPE_DIRECTIONAL_LIGHT:
+		return "DIRECTIONAL_LIGHT";
+	case NODE_TYPE_POINT_LIGHT:
+		return "POINT_LIGHT";
+	case NODE_TYPE_SPOT_LIGHT:
+		return "SPOT_LIGHT";
+	case NODE_TYPE_PARTICLES:
+		return "PARTICLES";
+	case NODE_TYPE_SKYBOX:
+		return "SKYBOX";
+	case NODE_TYPE_AI:
+		return "AI";
+	case NODE_TYPE_PHYSICAL_OBJECT3D:
+		return "PHYSICAL_OBJECT3D";
+	case NODE_TYPE_AUDIO_LISTENER:
+		return "AUDIO_LISTENER";
+	case NODE_TYPE_AUDIO_EMITTER:
+		return "AUDIO_EMITTER";
+	}
+	return "NONE";
+}

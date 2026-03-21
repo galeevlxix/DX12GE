@@ -84,7 +84,7 @@ void LightManager::AddSpotLight(Vector3 pos, Vector3 color, Vector3 dir, float c
 		Node3D* gas1 = Singleton::GetNodeGraph()->GetRoot()->GetChild("gas1");
 
 		SpotLightNode* sLightNode = new SpotLightNode();
-		Matrix m = gas->Transform.GetLocalMatrix();		
+		SimpleMath::Matrix m = gas->Transform.GetLocalMatrix();		
 		sLightNode->Transform.SetPosition(Vector3::Transform(pos, m.Invert()));
 		sLightNode->Transform.RotateDegrees(Vector3(90, 0, 0));
 		sLightNode->LightData = sLight;

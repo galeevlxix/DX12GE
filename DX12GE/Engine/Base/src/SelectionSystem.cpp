@@ -94,23 +94,26 @@ void SelectionSystem::OnMouseButtonPressed(MouseButtonEventArgs& e)
         }
 
         auto obj = std::next(objects.begin(), id);
-        SelectedNode(obj->second);
+        SelectNode(obj->second);
 	}
 }
 
-void SelectionSystem::SelectedNode(Node3D* node)
+void SelectionSystem::SelectNode(Node3D* node)
 {
-    bool hasEntity = false;
+    if (IsSelected(node)) return;
+    m_Selected.push_back(node);
+}
+
+bool SelectionSystem::IsSelected(Node3D* node)
+{
     for (auto selected : m_Selected)
     {
         if (node == selected)
         {
-            hasEntity = true;
-            break;
+            return true;
         }
     }
-    if (hasEntity) return;
-    m_Selected.push_back(node);
+    return false;
 }
 
 void SelectionSystem::DeselectAll()

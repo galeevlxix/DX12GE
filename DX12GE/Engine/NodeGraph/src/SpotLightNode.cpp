@@ -14,14 +14,14 @@ void SpotLightNode::OnUpdate(const double& deltaTime)
 	LightData.PointLightProperties.WorldPosition = m_WorldPositionCache;
 }
 
-Node3D* SpotLightNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* SpotLightNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new SpotLightNode();
 	}
 
-	Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+	Node3D::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
 	if (cloneNode)
 	{
@@ -35,11 +35,15 @@ Node3D* SpotLightNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, No
 void SpotLightNode::DrawDebug()
 {
 	Node3D::DrawDebug();
-	Singleton::GetDebugRender()->DrawArrow(
-		m_WorldPositionCache,
-		m_WorldPositionCache + m_WorldDirectionCache,
-		LightData.PointLightProperties.BaseLightProperties.Color,
-		abs(m_WorldDirectionCache.y) == 1.0f ? Vector3::UnitX : Vector3::UnitY);
+
+	Singleton::GetDebugRender()->DrawCone(
+		m_WorldPositionCache, m_WorldDirectionCache, acos(LightData.Cutoff) * 2.0f,
+		{
+			LightData.PointLightProperties.BaseLightProperties.Color.x,
+			LightData.PointLightProperties.BaseLightProperties.Color.y,
+			LightData.PointLightProperties.BaseLightProperties.Color.z
+		}
+	);
 }
 
 void SpotLightNode::CreateJsonData(json& j)

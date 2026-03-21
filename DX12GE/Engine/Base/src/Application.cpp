@@ -2,7 +2,10 @@
 #include "../resource.h"
 #include "../Window.h"
 #include "../CommandQueue.h"
+#include "../DX12GE/Engine/Base/LuaManager.h"
 #include "../Game.h"
+#include "../../ImGui/ImGuiController.h"
+#include "../../ImGui/imgui_impl_win32.h"
 
 constexpr wchar_t WINDOW_CLASS_NAME[] = L"DX12RenderWindowClass";
 
@@ -15,6 +18,9 @@ static WindowMap gs_Windows;
 static WindowNameMap gs_WindowByName;
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // A wrapper struct to allow shared pointers for the window class.
 struct MakeWindow : public Window
@@ -84,13 +90,8 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
         PrimaryDevice->SetName(L"Primary Device");
 
         PrimaryDirectCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
-        PrimaryDirectCommandQueue->GetD3D12CommandQueue()->SetName(L"PrimaryDirectCommandQueue");
-
         PrimaryComputeCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
-        PrimaryComputeCommandQueue->GetD3D12CommandQueue()->SetName(L"PrimaryComputeCommandQueue");
-
         PrimaryCopyCommandQueue = std::make_shared<CommandQueue>(PrimaryDevice, D3D12_COMMAND_LIST_TYPE_COPY);
-        PrimaryCopyCommandQueue->GetD3D12CommandQueue()->SetName(L"PrimaryCopyCommandQueue");
     }
 
     if (SecondAdapter)
@@ -104,13 +105,8 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
         SecondDevice->SetName(L"Second Device");
         
         SecondDirectCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_DIRECT);
-        SecondDirectCommandQueue->GetD3D12CommandQueue()->SetName(L"SecondDirectCommandQueue");
-
         SecondComputeCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COMPUTE);
-        SecondComputeCommandQueue->GetD3D12CommandQueue()->SetName(L"SecondComputeCommandQueue");
-
         SecondCopyCommandQueue = std::make_shared<CommandQueue>(SecondDevice, D3D12_COMMAND_LIST_TYPE_COPY);
-        SecondCopyCommandQueue->GetD3D12CommandQueue()->SetName(L"SecondCopyCommandQueue");
     }
 
     if (PrimaryAdapter || SecondAdapter)
@@ -207,7 +203,6 @@ std::vector<ComPtr<IDXGIAdapter4>> Application::GetAdapters()
         }
     }
 
-    // Сортировка адаптеров по убыванию видеопамяти
     for (int i = 0; i < adapters.size() - 1; ++i)
     {
         for (int j = 0; j < adapters.size() - i - 1; ++j)
@@ -357,6 +352,7 @@ int Application::Run(std::shared_ptr<Game> pGame)
     if (!pGame->LoadContent()) return 2;
 
     MSG msg = { 0 };
+    LuaManager::Start();
     while (msg.message != WM_QUIT)
     {
         if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
@@ -515,6 +511,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 
     if (pWindow)
     {
+        if (ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam))
+            return true;
+
         switch (message)
         {
         case WM_PAINT:
@@ -531,6 +530,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         case WM_SYSKEYDOWN:
         case WM_KEYDOWN:
         {
+            if (ImGuiController::CursorOnWindow())
+                break;
+
             MSG charMsg;
             // Get the Unicode character (UTF-16)
             unsigned int c = 0;
@@ -583,6 +585,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
             break;
         case WM_MOUSEMOVE:
         {
+            if (ImGuiController::CursorOnWindow())
+                break;
+
             bool lButton = (wParam & MK_LBUTTON) != 0;
             bool rButton = (wParam & MK_RBUTTON) != 0;
             bool mButton = (wParam & MK_MBUTTON) != 0;
@@ -600,6 +605,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         case WM_RBUTTONDOWN:
         case WM_MBUTTONDOWN:
         {
+            if (ImGuiController::CursorOnWindow())
+                break;
+
             bool lButton = (wParam & MK_LBUTTON) != 0;
             bool rButton = (wParam & MK_RBUTTON) != 0;
             bool mButton = (wParam & MK_MBUTTON) != 0;
@@ -632,6 +640,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         break;
         case WM_MOUSEWHEEL:
         {
+            if (ImGuiController::CursorOnWindow())
+                break;
+
             // The distance the mouse wheel is rotated.
             // A positive value indicates the wheel was rotated to the right.
             // A negative value indicates the wheel was rotated to the left.

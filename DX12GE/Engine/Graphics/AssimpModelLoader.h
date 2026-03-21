@@ -1,6 +1,7 @@
 #pragma once
 #include "../Base/DX12LibPCH.h"
 #include "Mesh3DComponent.h"
+#include "../Graphics/VertexStructures.h"
 #include <string>
 #include <vector>
 

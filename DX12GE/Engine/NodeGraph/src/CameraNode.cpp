@@ -3,35 +3,49 @@
 CameraNode::CameraNode() : Node3D()
 {
 	m_Type = NODE_TYPE_CAMERA;
+
 	m_Up = Vector3::Up;
 	m_Ratio = 1.0f;
 	Fov = 60.0f;
 	ZNear = 0.1f;
 	ZFar = 300.0f;
+
+	Rename("CameraNode");
 }
 
-const Matrix CameraNode::GetViewProjMatrix()
+void CameraNode::OnUpdate(const double& deltaTime)
 {
-	Matrix view = Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
-	Matrix proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
-	return view * proj;
+	bool dirty = Transform.IsCacheDirty();
+	Node3D::OnUpdate(deltaTime);
+	if (dirty)
+	{
+		m_Up = TransformComponent::CalculateUpVector(m_WorldDirectionCache);
+		m_ViewMatrixCache = SimpleMath::Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
+		m_ViewMatrixNoTransCache = SimpleMath::Matrix::CreateLookAt(SimpleMath::Vector3::Zero, m_WorldDirectionCache, m_Up);
+	}
+	SetRatio(Singleton::GetNodeGraph()->WindowRatio);
 }
 
-const Matrix CameraNode::GetViewProjMatrixNoTranslation()
+const SimpleMath::Matrix CameraNode::GetViewProjMatrix()
 {
-	Matrix viewNoTrans = Matrix::CreateLookAt(Vector3::Zero, m_WorldDirectionCache, m_Up);
-	Matrix proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, 1000.0);
-	return viewNoTrans * proj;
+	SimpleMath::Matrix proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
+	return m_ViewMatrixCache * proj;
 }
 
-Node3D* CameraNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
+const SimpleMath::Matrix CameraNode::GetViewProjMatrixNoTranslation()
+{
+	SimpleMath::Matrix proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, 1000.0);
+	return m_ViewMatrixNoTransCache * proj;
+}
+
+Node3D* CameraNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
 	if (!cloneNode)
 	{
 		cloneNode = new CameraNode();
 	}
 
-	Node3D::Clone(newParrent, cloneChildrenRecursive, cloneNode);
+	Node3D::Clone(newParent, cloneChildrenRecursive, cloneNode);
 
 	if (CameraNode* camera = dynamic_cast<CameraNode*>(cloneNode))
 	{
@@ -46,18 +60,21 @@ Node3D* CameraNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3
 void CameraNode::DrawDebug()
 {
 	Node3D::DrawDebug();
-	Matrix view = Matrix::CreateLookAt(m_WorldPositionCache, m_WorldPositionCache + m_WorldDirectionCache, m_Up);
-	Matrix proj = Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
-	Singleton::GetDebugRender()->DrawFrustrum(view, proj);
+	SimpleMath::Matrix proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XMConvertToRadians(Fov), m_Ratio, ZNear, ZFar);
+	Singleton::GetDebugRender()->DrawFrustrum(m_ViewMatrixCache, proj);
 }
 
 void CameraNode::CreateJsonData(json& j)
 {
 	Node3D::CreateJsonData(j);
-
 	j["cam_fov"] = Fov;
 	j["cam_z_near"] = ZNear;
 	j["cam_z_far"] = ZFar;
+
+	if (IsCurrent())
+	{
+		j["is_current"] = true;
+	}
 }
 
 void CameraNode::LoadFromJsonData(const NodeSerializingData& nodeData)
@@ -66,11 +83,16 @@ void CameraNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 	Fov = nodeData.camFov;
 	ZNear = nodeData.camZNear;
 	ZFar = nodeData.camZFar;
+
+	if (nodeData.isCurrent)
+	{
+		SetCurrent();
+	}
 }
 
 void CameraNode::SetCurrent()
 {
-	if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(m_Parrent))
+	if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(m_Parent))
 	{
 		player->SetCamera(this);
 	}
@@ -78,7 +100,7 @@ void CameraNode::SetCurrent()
 
 bool CameraNode::IsCurrent()
 {
-	if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(m_Parrent))
+	if (FirstPersonPlayerNode* player = dynamic_cast<FirstPersonPlayerNode*>(m_Parent))
 	{
 		return player->GetCamera() == this;
 	}

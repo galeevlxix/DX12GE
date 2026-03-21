@@ -10,9 +10,7 @@ const DirectX::XMMATRIX& TransformComponent::GetLocalMatrix()
     {
         m_LocalMatrixCache = 
             DirectX::XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z) *
-            DirectX::XMMatrixRotationX(m_Rotation.x) *
-            DirectX::XMMatrixRotationY(m_Rotation.y) *
-            DirectX::XMMatrixRotationZ(m_Rotation.z) *
+            DirectX::XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y, m_Rotation.z) *
             DirectX::XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
     }
     return m_LocalMatrixCache;
@@ -190,4 +188,27 @@ const Vector3 TransformComponent::GetRotationDegrees()
 const Vector3& TransformComponent::GetScale()
 {
     return m_Scale;
+}
+
+Vector3 TransformComponent::CalculateUpVector(Vector3 worldDirection)
+{
+    Vector3 worldUp = { 0.0f, 1.0f, 0.0f };
+    
+    if (fabs(worldDirection.Dot(worldUp)) > 0.999999f)
+    {
+        worldUp = { 1.0f, 0.0f, 0.0f };
+    }
+
+    Vector3 right = worldUp.Cross(worldDirection);
+    right.Normalize();
+
+    Vector3 up = worldDirection.Cross(right);
+    up.Normalize();
+
+    if (up.y < 0.0f) 
+    {
+        up = -up;
+    }
+    
+    return up;
 }

@@ -3,18 +3,19 @@
 #include "Node3D.h"
 #include "../Graphics/GraphicsComponents.h"
 
-// Класс узла направленного источника света
-// Только один такой узел в дереве сцены может быть активным 
+/// \brief Class of directional light source node.
+/// \note Only one such node in the scene tree can be active. 
 class DirectionalLightNode : public Node3D
 {
 public:
+	/// \brief Parameters of the light source.
 	DirectionalLightComponent LightData;
 
 	DirectionalLightNode();
 
 	virtual void OnUpdate(const double& deltaTime) override;
 
-	virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
+	virtual Node3D* Clone(Node3D* newParent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
 
 	virtual void DrawDebug() override;
 
@@ -23,5 +24,8 @@ public:
 	virtual void LoadFromJsonData(const NodeSerializingData& nodeData) override;
 
 	virtual void SetCurrent() override;
+
+	/// \brief Checks whether this directional light is active in the scene.
+	/// \return Returns true if this light is current. Returns false otherwise.
 	bool IsCurrent();
 };

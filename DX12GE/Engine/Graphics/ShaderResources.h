@@ -29,13 +29,13 @@ struct CommonLightProperties
 
 struct ObjectConstantBuffer
 {
-	Matrix WorldViewProjection;
-	Matrix ModelViewProjection;
+	DirectX::SimpleMath::Matrix WorldViewProjection;
+	DirectX::SimpleMath::Matrix ModelViewProjection;
 };
 
 struct ShadowConstantBuffer
 {
-	Matrix ShadowTransforms[CASCADES_COUNT];
+	DirectX::SimpleMath::Matrix ShadowTransforms[CASCADES_COUNT];
 };
 
 struct WorldConstantBuffer
@@ -47,7 +47,7 @@ struct WorldConstantBuffer
 
 struct ParticleConstantBuffer
 {
-	Matrix ViewProjection;
+	DirectX::SimpleMath::Matrix ViewProjection;
 	Vector4 CameraPosition;
 };
 
@@ -72,12 +72,13 @@ struct GeometryPassConstantBuffer
 {
 	Vector4 HasDiffuseNormalEmissive;
 	Vector4 HasOcclusionRoughnessMetallicCombined;
+	Vector4 AlbedoColor;
 	UINT ObjectId;
 };
 
 struct SSRConstantBuffer
 {
-	Matrix ViewProjection;
+	DirectX::SimpleMath::Matrix ViewProjection;
 	Vector4 CameraPos;
 	float RayStep;
 	float MaxDistance;

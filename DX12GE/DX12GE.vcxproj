@@ -24,6 +24,7 @@
     <ProjectGuid>{43c88e78-cde2-4f58-8183-7abc505c9218}</ProjectGuid>
     <RootNamespace>DX12GE</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>BianEngine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -70,6 +71,15 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(SolutionDir)Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</ExternalIncludePath>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>D:\Real Engine\GameEngineDev\Lua;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -104,14 +114,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/FS</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)Windows\lib\assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Windows\dll;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mt.lib;d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;Shlwapi.lib;DirectXTex.lib;lua54.lib;Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Windows\lib;..\packages\directxtex_desktop_2019.2024.10.29.1\native\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,12 +144,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DX12GE.cpp" />
+    <ClCompile Include="EngineConfig.cpp" />
+    <ClCompile Include="Engine\AI\src\AIComponent.cpp" />
+    <ClCompile Include="Engine\AI\src\Behavior.cpp" />
+    <ClCompile Include="Engine\AI\src\BehaviorTree.cpp" />
+    <ClCompile Include="Engine\AI\src\BehaviorTreeBuilder.cpp" />
+    <ClCompile Include="Engine\AI\src\Blackboard.cpp" />
+    <ClCompile Include="Engine\AI\src\Composites.cpp" />
+    <ClCompile Include="Engine\AI\src\Decorators.cpp" />
+    <ClCompile Include="Engine\AI\src\Leaves.cpp" />
     <ClCompile Include="Engine\Base\src\Application.cpp" />
+    <ClCompile Include="Engine\Base\src\AudioSystem.cpp" />
     <ClCompile Include="Engine\Base\src\CommandExecutor.cpp" />
     <ClCompile Include="Engine\Base\src\CommandQueue.cpp" />
     <ClCompile Include="Engine\Base\src\DX12LibPCH.cpp" />
     <ClCompile Include="Engine\Base\src\Game.cpp" />
     <ClCompile Include="Engine\Base\src\HighResolutionClock.cpp" />
+    <ClCompile Include="Engine\Base\src\LuaManager.cpp" />
     <ClCompile Include="Engine\Base\src\SceneJsonSerializer.cpp" />
     <ClCompile Include="Engine\Base\src\SelectionSystem.cpp" />
     <ClCompile Include="Engine\Base\src\SimpleMath.cpp" />
@@ -167,7 +189,16 @@
     <ClCompile Include="Engine\Graphics\src\TextureComponent.cpp" />
     <ClCompile Include="Engine\Graphics\src\Texture3D.cpp" />
     <ClCompile Include="Engine\Graphics\src\TransformComponent.cpp" />
-    <ClCompile Include="Engine\MultiGpuGame.cpp" />
+    <ClCompile Include="Engine\ImGui\src\imgui.cpp" />
+    <ClCompile Include="Engine\ImGui\src\ImGuiController.cpp" />
+    <ClCompile Include="Engine\ImGui\src\imgui_demo.cpp" />
+    <ClCompile Include="Engine\ImGui\src\imgui_draw.cpp" />
+    <ClCompile Include="Engine\ImGui\src\imgui_impl_dx12.cpp" />
+    <ClCompile Include="Engine\ImGui\src\imgui_impl_win32.cpp" />
+    <ClCompile Include="Engine\ImGui\src\imgui_tables.cpp" />
+    <ClCompile Include="Engine\ImGui\src\imgui_widgets.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\AudioEmitterNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\AudioListenerNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\CameraNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\DirectionalLightNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\EnvironmentNode.cpp" />
@@ -176,10 +207,88 @@
     <ClCompile Include="Engine\NodeGraph\src\NodeGraphSystem.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\Object3DNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\ParticlesNode.cpp" />
+    <ClCompile Include="Engine\NodeGraph\src\PhysicalObjectNode.cpp">
+      <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+      <BrowseInformation>false</BrowseInformation>
+      <BrowseInformationFile>x64\Debug\</BrowseInformationFile>
+      <CompileAs>Default</CompileAs>
+      <UseDynamicDebugging>false</UseDynamicDebugging>
+      <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <ErrorReporting>Prompt</ErrorReporting>
+      <ExpandAttributedSource>false</ExpandAttributedSource>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableASAN>false</EnableASAN>
+      <EnableFuzzer>false</EnableFuzzer>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <EnableVectorLength>NotSet</EnableVectorLength>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <GenerateModuleDependencies>false</GenerateModuleDependencies>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ModuleDependenciesFile>x64\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>x64\Debug\</ModuleOutputFile>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <ObjectFileName>x64\Debug\</ObjectFileName>
+      <CallingConvention>Cdecl</CallingConvention>
+      <ProgramDataBaseFileName>x64\Debug\vc143.pdb</ProgramDataBaseFileName>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>x64\Debug\DX12GE.pch</PrecompiledHeaderOutputFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessKeepComments>false</PreprocessKeepComments>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+      <ShowIncludes>false</ShowIncludes>
+      <SourceDependenciesFile>x64\Debug\</SourceDependenciesFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <SpectreMitigation>false</SpectreMitigation>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <TrackerLogDirectory>x64\Debug\DX12GE.tlog\</TrackerLogDirectory>
+      <TranslateIncludes>false</TranslateIncludes>
+      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <XMLDocumentationFileName>x64\Debug\</XMLDocumentationFileName>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <IntelJCCErratum>false</IntelJCCErratum>
+      <BuildStlModules>false</BuildStlModules>
+      <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+      <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+      <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+      <PreprocessorDefinitions>HAS_DIRECTXTEX;_DEBUG;_CONSOLE;_UNICODE;UNICODE;</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>E:\Projects\GameEngineDev\packages\directxtex_desktop_2019.2024.10.29.1\build\native\..\..\include;..\Include;E:\Projects\GameEngineDev\DX12GE\Engine\Lua</AdditionalIncludeDirectories>
+      <LinkCompiled>true</LinkCompiled>
+    </ClCompile>
     <ClCompile Include="Engine\NodeGraph\src\PointLightNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\SpotLightNode.cpp" />
     <ClCompile Include="Engine\NodeGraph\src\ThirdPersonPlayerNode.cpp" />
+    <ClCompile Include="Engine\Physics\PhysicsManager.cpp" />
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\LightPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\MergingPipeline.cpp" />
@@ -195,7 +304,19 @@
     <ClCompile Include="Game\GameSample.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EngineConfig.h" />
+    <ClInclude Include="Engine\AI\AIComponent.h" />
+    <ClInclude Include="Engine\AI\Behavior.h" />
+    <ClInclude Include="Engine\AI\BehaviorTree.h" />
+    <ClInclude Include="Engine\AI\BehaviorTreeBuilder.h" />
+    <ClInclude Include="Engine\AI\Blackboard.h" />
+    <ClInclude Include="Engine\AI\Composites.h" />
+    <ClInclude Include="Engine\AI\Decorators.h" />
+    <ClInclude Include="Engine\AI\Leaves.h" />
+    <ClInclude Include="Engine\AI\Utility.h" />
     <ClInclude Include="Engine\Base\Application.h" />
+    <ClInclude Include="Engine\Base\AudioSystem.h" />
+    <ClInclude Include="Engine\Base\AudioWavComponent.h" />
     <ClInclude Include="Engine\Base\CollisionBox.h" />
     <ClInclude Include="Engine\Base\CommandExecutor.h" />
     <ClInclude Include="Engine\Base\CommandQueue.h" />
@@ -207,13 +328,13 @@
     <ClInclude Include="Engine\Base\HighResolutionClock.h" />
     <ClInclude Include="Engine\Base\InputSystem.h" />
     <ClInclude Include="Engine\Base\json.hpp" />
+    <ClInclude Include="Engine\Base\LuaManager.h" />
     <ClInclude Include="Engine\Base\SceneJsonSerializer.h" />
     <ClInclude Include="Engine\Base\KeyCodes.h" />
     <ClInclude Include="Engine\Base\resource.h" />
     <ClInclude Include="Engine\Base\SelectionSystem.h" />
     <ClInclude Include="Engine\Base\SimpleMath.h" />
     <ClInclude Include="Engine\Base\Singleton.h" />
-    <ClInclude Include="Engine\Base\TestTime.h" />
     <ClInclude Include="Engine\Base\UploadBuffer.h" />
     <ClInclude Include="Engine\Base\Window.h" />
     <ClInclude Include="Engine\Graphics\AssimpModelLoader.h" />
@@ -240,21 +361,36 @@
     <ClInclude Include="Engine\Graphics\Texture3D.h" />
     <ClInclude Include="Engine\Graphics\TransformComponent.h" />
     <ClInclude Include="Engine\Graphics\VertexStructures.h" />
-    <ClInclude Include="Engine\MultiGpuGame.h" />
+    <ClInclude Include="Engine\ImGui\imconfig.h" />
+    <ClInclude Include="Engine\ImGui\imgui.h" />
+    <ClInclude Include="Engine\ImGui\ImGuiController.h" />
+    <ClInclude Include="Engine\ImGui\imgui_impl_dx12.h" />
+    <ClInclude Include="Engine\ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="Engine\ImGui\imgui_internal.h" />
+    <ClInclude Include="Engine\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="Engine\ImGui\imstb_textedit.h" />
+    <ClInclude Include="Engine\ImGui\imstb_truetype.h" />
+    <ClInclude Include="Engine\NodeGraph\AudioEmitterNode.h" />
+    <ClInclude Include="Engine\NodeGraph\AudioListenerNode.h" />
+    <ClInclude Include="Engine\NodeGraph\AINode.h" />
     <ClInclude Include="Engine\NodeGraph\CameraNode.h" />
     <ClInclude Include="Engine\NodeGraph\DirectionalLightNode.h" />
     <ClInclude Include="Engine\NodeGraph\EnvironmentNode.h" />
     <ClInclude Include="Engine\NodeGraph\FirstPersonPlayerNode.h" />
     <ClInclude Include="Engine\NodeGraph\Node3D.h" />
     <ClInclude Include="Engine\NodeGraph\NodeGraphSystem.h" />
+    <ClInclude Include="Engine\NodeGraph\NodeIdGenerator.h" />
     <ClInclude Include="Engine\NodeGraph\NodeSerializingData.h" />
     <ClInclude Include="Engine\NodeGraph\NodeTypeEnum.h" />
     <ClInclude Include="Engine\NodeGraph\Object3DNode.h" />
     <ClInclude Include="Engine\NodeGraph\ParticlesNode.h" />
+    <ClInclude Include="Engine\NodeGraph\PhysicalObjectNode.h" />
     <ClInclude Include="Engine\NodeGraph\PointLightNode.h" />
     <ClInclude Include="Engine\NodeGraph\SkyBoxNode.h" />
     <ClInclude Include="Engine\NodeGraph\SpotLightNode.h" />
     <ClInclude Include="Engine\NodeGraph\ThirdPersonPlayerNode.h" />
+    <ClInclude Include="Engine\Physics\PhysicsDataTypes.h" />
+    <ClInclude Include="Engine\Physics\PhysicsManager.h" />
     <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\LightPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\MergingPipeline.h" />
@@ -407,16 +543,30 @@
     <None Include="..\README.md" />
     <None Include="Engine\Base\SimpleMath.inl" />
     <None Include="packages.config" />
+    <None Include="Resources\scene lite(Timur).json" />
     <None Include="Resources\scene lite.json" />
+    <None Include="Resources\scenePhysics.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Engine\Lua\scripts\TestScript.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Engine\Lua\LuaBuild.bat" />
+    <Content Include="Engine\Lua\scripts\Core.lua" />
+    <Content Include="Engine\Lua\scripts\Player.lua" />
+    <Content Include="Engine\Lua\scripts\TestScript2.lua" />
+    <Content Include="package.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets" Condition="Exists('..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets')" />
+    <Import Project="..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets" Condition="Exists('..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets')" />
+    <Import Project="..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets" Condition="Exists('..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtex_desktop_2019.2024.10.29.1\build\native\directxtex_desktop_2019.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtex_desktop_2019.2025.10.28.1\build\native\directxtex_desktop_2019.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets'))" />
   </Target>
 </Project>

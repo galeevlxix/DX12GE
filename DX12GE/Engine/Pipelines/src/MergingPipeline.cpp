@@ -32,13 +32,16 @@ void MergingPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
 	D3D12_ROOT_SIGNATURE_FLAGS m_RootSignatureFlags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+	CD3DX12_ROOT_PARAMETER1 rootParameters[3];
 
 	const CD3DX12_DESCRIPTOR_RANGE1 colTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 	rootParameters[0].InitAsDescriptorTable(1, &colTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
 
 	const CD3DX12_DESCRIPTOR_RANGE1 ssrTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
 	rootParameters[1].InitAsDescriptorTable(1, &ssrTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	const CD3DX12_DESCRIPTOR_RANGE1 ormTexDesc(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
+	rootParameters[2].InitAsDescriptorTable(1, &ormTexDesc, D3D12_SHADER_VISIBILITY_PIXEL);
 
 	const CD3DX12_STATIC_SAMPLER_DESC samplers[1] =
 	{
