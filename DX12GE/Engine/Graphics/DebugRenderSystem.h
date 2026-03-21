@@ -21,31 +21,11 @@ private:
 
 	bool isLinesDirty = true;
 
-	// render axes
-
-	const DirectX::SimpleMath::Color AxisXColor = DirectX::SimpleMath::Color(1.0f, 0.0f, 0.0f);
-	const DirectX::SimpleMath::Color AxisYColor = DirectX::SimpleMath::Color(0.0f, 1.0f, 0.0f);
-	const DirectX::SimpleMath::Color AxisZColor = DirectX::SimpleMath::Color(0.0f, 0.0f, 1.0f);
-
-	// render cellural field
-
-	const DirectX::SimpleMath::Color CellularFieldColorLevel1 = DirectX::SimpleMath::Color(0.25f, 0.25f, 0.25f);
-	const DirectX::SimpleMath::Color CellularFieldColorLevel2 = DirectX::SimpleMath::Color(0.125f, 0.125f, 0.125f);
-	const DirectX::SimpleMath::Color CellularFieldColorLevel3 = DirectX::SimpleMath::Color(0.05f, 0.05f, 0.05f);
-
-	const int CellularFieldFieldSizeLevel1 = 512;
-	const int CellularFieldFieldSizeLevel2 = 128;
-	const int CellularFieldFieldSizeLevel3 = 32;
-
-	const int CellularFieldHeightLevel2 = 64;
-	const int CellularFieldHeightLevel3 = 16;
-
 	void CreateLine(const Vector3& pos0, const Vector3& pos1, const Color& color);
 public:
 	void OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
 
 	void DrawLine(const Vector3& pos0, const Vector3& pos1, const Color& color);
-	void DrawTriangle(const Vector3& pos0, const Vector3& pos1, const Vector3& pos2, const Color& color);
 	void DrawBoundingBox(const BoundingBox& box);
 	void DrawBoundingBox(const BoundingBox& box, const Matrix& transform);
 	void DrawBoundingBox(const CollisionBox& box, const Matrix& transform);
@@ -59,9 +39,6 @@ public:
 	void DrawSphere(const double& radius, const Vector3& color, const Matrix& transform, int density);
 	void DrawPlane(const Vector4& p, const Color& color, float sizeWidth, float sizeNormal, bool drawCenterCross);
 	void DrawFrustrum(const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj);
-	void DrawCone(const Vector3& pos, const Vector3& forward, float angle, const Color& color);
-
-	void DrawCellularFieldAndAxes(const Vector3& cameraPos);
 
 	void Clear();
 	void Destroy();

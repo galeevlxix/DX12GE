@@ -14,11 +14,6 @@ ThirdPersonPlayerNode::ThirdPersonPlayerNode() : FirstPersonPlayerNode()
 	Rename("ThirdPersonPlayerNode");
 }
 
-bool ThirdPersonPlayerNode::Create(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
-{
-    return FirstPersonPlayerNode::Create(commandList, filePath);
-}
-
 void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
 {
     if (IsCurrent())
@@ -41,10 +36,10 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
             Vector3 direction = Vector3::Backward;
             if (m_Camera)
             {
-                direction = m_Camera->GetWorldDirection();
+                direction = m_Camera->GetWorldDirection(); 
             }
 
-            const Matrix& parMat = m_Parent->GetWorldMatrix();
+            const Matrix& parMat = m_Parrent->GetWorldMatrix();
             direction = Vector3::Transform(direction, parMat.Invert());
             direction.y = 0.0f;
 
@@ -82,16 +77,21 @@ void ThirdPersonPlayerNode::OnUpdate(const double& deltaTime)
             }
         }
 
+        Transform.SetPosition(0, Transform.GetPosition().y, 0);
+
         if (m_Camera)
         {
+            m_angle_h += PI / 180.0f;
+            m_angle_v = PI / 6;
+            m_FlyRadius = 70.0f;
+
             Vector3 camLocalPos = CameraAnchor + Vector3(
                 m_FlyRadius * cos(m_angle_v) * cos(-m_angle_h),
                 m_FlyRadius * sin(m_angle_v),
                 m_FlyRadius * cos(m_angle_v) * sin(-m_angle_h));
 
-            //const Matrix& localRotMat = Transform.GetLocalRotationMatrix();
-            //m_Camera->Transform.SetPosition(Vector3::Transform(camLocalPos, localRotMat.Invert()));
-            m_Camera->Transform.SetPosition(camLocalPos);
+            const Matrix& localRotMat = Transform.GetLocalRotationMatrix();
+            m_Camera->Transform.SetPosition(Vector3::Transform(camLocalPos, localRotMat.Invert()));
 
             m_Camera->Transform.LocalLookAt(CameraAnchor);
         }
@@ -106,14 +106,14 @@ void ThirdPersonPlayerNode::Destroy(bool keepComponent)
 	Object3DNode::Destroy(keepComponent);
 }
 
-Node3D* ThirdPersonPlayerNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* ThirdPersonPlayerNode::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
         cloneNode = new ThirdPersonPlayerNode();
     }
 
-    FirstPersonPlayerNode::Clone(newParent, cloneChildrenRecursive, cloneNode);
+    FirstPersonPlayerNode::Clone(newParrent, cloneChildrenRecursive, cloneNode);
 
     if (cloneNode)
     {
@@ -150,8 +150,5 @@ void ThirdPersonPlayerNode::LoadFromJsonData(const NodeSerializingData& nodeData
 void ThirdPersonPlayerNode::OnMouseWheel(MouseWheelEventArgs& e)
 {
     Object3DNode::OnMouseWheel(e);
-    if (IsCurrent())
-    {
-        m_FlyRadius = std::clamp(m_FlyRadius - e.WheelDelta * WheelSensitivity, MinFlyRadius, MaxFlyRadius);
-    }
+    m_FlyRadius = std::clamp(m_FlyRadius - e.WheelDelta * WheelSensitivity, MinFlyRadius, MaxFlyRadius);
 }

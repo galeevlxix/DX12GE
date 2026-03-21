@@ -1,41 +1,23 @@
 #include "../../Base/Singleton.h"
 
-Node3D::Node3D() : m_Parent(nullptr)
+Node3D::Node3D() : m_Parrent(nullptr)
 {
     m_Type = NODE_TYPE_NODE3D;
     m_WorldMatrixCache = DirectX::XMMATRIX();
     Transform.SetDefault();
-    Scripts = std::vector<std::string>();
     Rename("Node3D");
-
-    m_UniqueID = Singleton::GetNodeIdGenerator()->GetNextId();
 }
 
 const std::string Node3D::GetNodePath()
 {
     std::string nodePath = m_Name;
-    Node3D* Parent = m_Parent;
-    while (Parent)
+    Node3D* parrent = m_Parrent;
+    while (parrent)
     {
-        nodePath = Parent->GetName() + "/" + nodePath;
-        Parent = Parent->GetParent();
+        nodePath = parrent->GetName() + "/" + nodePath;
+        parrent = parrent->GetParrent();
     }
     return nodePath;
-}
-
-const std::vector<std::string>& Node3D::GetNodeScripts()
-{
-    return Scripts;
-}
-
-void Node3D::AddScript(const std::string& scriptClass)
-{
-    Scripts.push_back(scriptClass);
-}
-
-void Node3D::RemoveScript(std::string& scriptClass)
-{
-    Scripts.erase(find(Scripts.begin(), Scripts.end(), scriptClass));
 }
 
 void SetTransformCacheStatus(TransformComponent& transform, bool cacheIsDirty)
@@ -49,25 +31,14 @@ void Node3D::OnUpdate(const double& deltaTime)
     {
         m_WorldMatrixCache = Transform.GetLocalMatrix();
 
-        if (m_Parent)
+        if (m_Parrent)
         { 
-            if (m_Type == NODE_TYPE_CAMERA && m_Parent->GetType() == NODE_TYPE_THIRD_PERSON_PLAYER)
-            {
-				// For third person camera, do not apply parent's scale to the camera world matrix
-				const Vector3& parentLocalPosition = m_Parent->Transform.GetPosition();
-				DirectX::XMMATRIX parentLocalTranslation = DirectX::XMMatrixTranslation(parentLocalPosition.x, parentLocalPosition.y, parentLocalPosition.z);
-				DirectX::XMMATRIX parentGlobalTransform = parentLocalTranslation * m_Parent->GetParent()->GetWorldMatrix();
-				m_WorldMatrixCache = m_WorldMatrixCache * parentGlobalTransform;
-            }
-            else
-            {
-                m_WorldMatrixCache = m_WorldMatrixCache * m_Parent->GetWorldMatrix();
-            }           
+            m_WorldMatrixCache = m_WorldMatrixCache * m_Parrent->GetWorldMatrix();
         }
 
         for (auto child : m_Children)
         {
-            child.second->NotifyParentChanged();
+            child.second->NotifyParrentChanged();
         }
 
         m_WorldPositionCache = Vector3::Transform(Vector3::Zero, m_WorldMatrixCache);
@@ -94,10 +65,10 @@ void Node3D::Destroy(bool keepComponent)
         delete child;
     }
 
-    if (m_Parent)
+    if (m_Parrent)
     {
-        m_Parent->RemoveChild(m_Name);
-        m_Parent = nullptr;
+        m_Parrent->RemoveChild(m_Name);
+        m_Parrent = nullptr;
     }
 }
 
@@ -125,11 +96,6 @@ void Node3D::CreateJsonData(json& j)
     j["trans_scl_x"] = scl.x;
     j["trans_scl_y"] = scl.y;
     j["trans_scl_z"] = scl.z;
-
-    if (Scripts.size() > 0)
-    {
-        j["scripts"] = Scripts;
-    }
 }
 
 void Node3D::LoadFromJsonData(const NodeSerializingData& nodeData)
@@ -137,34 +103,30 @@ void Node3D::LoadFromJsonData(const NodeSerializingData& nodeData)
     Transform.SetPosition(nodeData.pos);
     Transform.SetRotation(nodeData.rot);
     Transform.SetScale(nodeData.scl);
-    if (nodeData.scripts.size() > 0)
-    {
-        Scripts = nodeData.scripts;
-    }
 }
 
-void Node3D::NotifyParentChanged()
+void Node3D::NotifyParrentChanged()
 {
     SetTransformCacheStatus(Transform, true);
 }
 
 void Node3D::Rename(const std::string& name)
 {
-    if (name.find('/') != std::string::npos || name.find('%') != std::string::npos) return;// throw std::invalid_argument(name + " contains '/' or '%'");
+    if (name.find('/') != std::string::npos || name.find('%') != std::string::npos) throw;
     
     std::string newName = name;
-    if (m_Parent)
+    if (m_Parrent)
     {
         int number = 2;
-        while (m_Parent->HasChild(newName))
+        while (m_Parrent->HasChild(newName))
         {
             newName = name + "_" + std::to_string(number);
             number++;
         }
 
-        if (m_Parent->GetChild(m_Name) == this)
+        if (m_Parrent->GetChild(m_Name) == this)
         {
-            m_Parent->RenameChild(m_Name, newName);
+            m_Parrent->RenameChild(m_Name, newName);
         }        
     } 
     m_Name = newName;
@@ -182,11 +144,11 @@ void Node3D::RenameChild(const std::string& oldName, const std::string& newName)
 
 bool Node3D::IsInsideTree()
 {
-    if (!m_Parent)
+    if (!m_Parrent)
     {
         return this == Singleton::GetNodeGraph()->GetRoot();
     }
-    return m_Parent->IsInsideTree();
+    return m_Parrent->IsInsideTree();
 }
 
 Node3D* Node3D::GetChild(const std::string& name)
@@ -215,9 +177,9 @@ const std::vector<std::string> Node3D::GetChildrenNames()
     return names;
 }
 
-Node3D* Node3D::GetParent()
+Node3D* Node3D::GetParrent()
 {
-    return m_Parent;
+    return m_Parrent;
 }
 
 Node3D* Node3D::FindNodeRecursive(const std::string& name)
@@ -238,15 +200,15 @@ Node3D* Node3D::FindNodeRecursive(const std::string& name)
     return nullptr;
 }
 
-Node3D* Node3D::FindParentRecursive(const std::string& name)
+Node3D* Node3D::FindParrentRecursive(const std::string& name)
 {
-    if (m_Parent)
+    if (m_Parrent)
     {
-        if (m_Parent->GetName() == name)
+        if (m_Parrent->GetName() == name)
         {
-            return m_Parent;
+            return m_Parrent;
         }
-        return m_Parent->FindParentRecursive(name);
+        return m_Parrent->FindParrentRecursive(name);
     }
 
     return nullptr;
@@ -254,11 +216,11 @@ Node3D* Node3D::FindParentRecursive(const std::string& name)
 
 bool Node3D::AddChild(Node3D* node)
 {
-    if (!node || node == this || node->m_Parent) return false;
+    if (!node || node == this || node->m_Parrent) return false;
 
 	const std::string name = node->GetName();
 
-    node->m_Parent = this;
+    node->m_Parrent = this;
     if (HasChild(name))
     {
         node->Rename(name);
@@ -292,19 +254,19 @@ bool Node3D::HasChild(const std::string& name)
     return pair != m_Children.end();
 }
 
-bool Node3D::Move(Node3D* newParent)
+bool Node3D::Move(Node3D* newParrent)
 {
-    if (!newParent || newParent == this || newParent == m_Parent || Singleton::GetNodeGraph()->GetRoot() == this) return false;
+    if (!newParrent || newParrent == this || newParrent == m_Parrent || Singleton::GetNodeGraph()->GetRoot() == this) return false;
 
-    if (m_Parent)
+    if (m_Parrent)
     {
-        m_Parent->RemoveChild(m_Name);
-        m_Parent = nullptr;
+        m_Parrent->RemoveChild(m_Name);
+        m_Parrent = nullptr;
     }
-    return newParent->AddChild(this);
+    return newParrent->AddChild(this);
 }
 
-Node3D* Node3D::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
+Node3D* Node3D::Clone(Node3D* newParrent, bool cloneChildrenRecursive, Node3D* cloneNode)
 {
     if (!cloneNode)
     {
@@ -317,12 +279,12 @@ Node3D* Node3D::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cl
     cloneNode->Transform.SetRotation(Transform.GetRotation());
     cloneNode->Transform.SetScale(Transform.GetScale());
 
-    if (!newParent)
+    if (!newParrent)
     {
-        newParent = m_Parent;
+        newParrent = m_Parrent;
     }
 
-    if (newParent && !newParent->AddChild(cloneNode))
+    if (!newParrent->AddChild(cloneNode))
     {
         delete cloneNode;
         cloneNode = nullptr;

@@ -11,8 +11,6 @@ void DescriptorHeaps::LoadCBV(ComPtr<ID3D12Device2> device, DescriptorHeaps* hea
 		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
 	};
 	device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&heaps->m_cbvHeap));
-
-	heaps->CbvHeapAllocator.Create(device, heaps->m_cbvHeap);
 }
 
 void DescriptorHeaps::LoadSampler(ComPtr<ID3D12Device2> device, DescriptorHeaps* heaps)
@@ -135,6 +133,12 @@ D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeaps::GetGPUHandle(D3D12_DESCRIPTOR_HEAP_
 ComPtr<ID3D12DescriptorHeap> DescriptorHeaps::GetCBVHeap(GraphicsAdapter graphicsAdapter) { return GetHeaps(graphicsAdapter)->m_cbvHeap; }
 ComPtr<ID3D12DescriptorHeap> DescriptorHeaps::GetDSVHeap(GraphicsAdapter graphicsAdapter) { return GetHeaps(graphicsAdapter)->m_dsvHeap; }
 
+HandlePair DescriptorHeaps::BatchHandles(D3D12_DESCRIPTOR_HEAP_TYPE type, GraphicsAdapter graphicsAdapter)
+{
+	DescriptorHeaps* heaps = GetHeaps(graphicsAdapter);
+	return { GetCPUHandle(type, heaps->m_usedSize[type], graphicsAdapter), GetGPUHandle(type, heaps->m_usedSize[type]++, graphicsAdapter) };
+}
+
 int DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE type, GraphicsAdapter graphicsAdapter)
 {
 	switch (type)
@@ -154,7 +158,17 @@ int DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE type, GraphicsA
 
 int DescriptorHeaps::GetNextFreeCBVIndex(GraphicsAdapter graphicsAdapter)
 {
-	return GetHeaps(graphicsAdapter)->CbvHeapAllocator.AllocByIndex();
+	static int CBVindexPrimary = 0;
+	static int CBVindexSecond = 0;
+
+	if (graphicsAdapter == GraphicAdapterPrimary)
+	{
+		return CBVindexPrimary++;
+	}
+	else
+	{
+		return CBVindexSecond++;
+	}
 }
 
 int DescriptorHeaps::GetNextFreeRTVIndex(GraphicsAdapter graphicsAdapter)
@@ -190,25 +204,16 @@ int DescriptorHeaps::GetNextFreeDSVIndex(GraphicsAdapter graphicsAdapter)
 void DescriptorHeaps::Destroy()
 {
 	if (m_cbvHeap)
-	{
 		m_cbvHeap.Reset();
-		CbvHeapAllocator.Destroy();
-	}
 
 	if (m_samplerHeap)
-	{
 		m_samplerHeap.Reset();
-	}
 
 	if (m_rtvHeap)
-	{
 		m_rtvHeap.Reset();
-	}
 
 	if (m_dsvHeap)
-	{
 		m_dsvHeap.Reset();
-	}
 }
 
 void DescriptorHeaps::DestroyAll()

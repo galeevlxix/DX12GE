@@ -8,9 +8,9 @@
 
 using namespace DirectX;
 
-void TextureComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& path)
+void TextureComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& path, ComPtr<ID3D12Device2> device, GraphicsAdapter adapter)
 {
-    auto device = Application::Get().GetPrimaryDevice();
+    m_GraphicsAdapter = adapter;
 
     ScratchImage image;
     ScratchImage mipChain;
@@ -99,12 +99,12 @@ void TextureComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, co
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srvDesc.Texture2D.MipLevels = m_Resource->GetDesc().MipLevels;
 
-    m_SRVHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, GraphicAdapterPrimary);
+    m_SRVHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_GraphicsAdapter);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(
         DescriptorHeaps::GetCPUHandle(
             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-            m_SRVHeapIndex, GraphicAdapterPrimary)
+            m_SRVHeapIndex, m_GraphicsAdapter)
     );
 
     device->CreateShaderResourceView(m_Resource.Get(), &srvDesc, handle);
@@ -116,9 +116,9 @@ void TextureComponent::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList, co
 	m_ResourcePath = path;
 }
 
-void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& path)
+void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& path, ComPtr<ID3D12Device2> device, GraphicsAdapter adapter)
 {
-    auto device = Application::Get().GetPrimaryDevice();
+    m_GraphicsAdapter = adapter;
 
     // Загружаем DDS кубическую текстуру
     ScratchImage image;
@@ -133,7 +133,7 @@ void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandL
 
     if (!(metadata.miscFlags & TEX_MISC_TEXTURECUBE))
     {
-        printf("The file is not a cubic texture (cubemap DDS).\n");
+        printf("Файл не является кубической текстурой (cubemap DDS)\n");
         return;
     }
 
@@ -195,8 +195,6 @@ void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandL
         }
     }
 
-    //PrepareUpload(device.Get(), mipChain.GetImages(), mipChain.GetImageCount(), mipMetadata, subresources);
-
     // Создаём промежуточный upload buffer
     UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_Resource.Get(), 0, static_cast<UINT>(subresources.size()));
 
@@ -239,13 +237,13 @@ void TextureComponent::OnLoadCubemap(ComPtr<ID3D12GraphicsCommandList2> commandL
     srvDesc.TextureCube.MostDetailedMip = 0;
     srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
 
-    m_SRVHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, GraphicAdapterPrimary);
+    m_SRVHeapIndex = DescriptorHeaps::GetNextFreeIndex(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_GraphicsAdapter);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(
         DescriptorHeaps::GetCPUHandle(
             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
             m_SRVHeapIndex,
-            GraphicAdapterPrimary)
+            m_GraphicsAdapter)
     );
 
     device->CreateShaderResourceView(m_Resource.Get(), &srvDesc, handle);
@@ -263,7 +261,7 @@ void TextureComponent::OnRender(ComPtr<ID3D12GraphicsCommandList2> commandList, 
         slot,
         DescriptorHeaps::GetGPUHandle(
             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 
-            m_SRVHeapIndex, GraphicAdapterPrimary)
+            m_SRVHeapIndex, m_GraphicsAdapter)
     );
 }
 
@@ -281,12 +279,12 @@ void TextureComponent::Destroy()
 
 D3D12_CPU_DESCRIPTOR_HANDLE TextureComponent::GetCpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE heapType)
 {
-    return DescriptorHeaps::GetCPUHandle(heapType, m_SRVHeapIndex, GraphicAdapterPrimary);
+    return DescriptorHeaps::GetCPUHandle(heapType, m_SRVHeapIndex, m_GraphicsAdapter);
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE TextureComponent::GetGpuDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE heapType)
 {
-    return DescriptorHeaps::GetGPUHandle(heapType, m_SRVHeapIndex, GraphicAdapterPrimary);
+    return DescriptorHeaps::GetGPUHandle(heapType, m_SRVHeapIndex, m_GraphicsAdapter);
 }
 
 bool TextureComponent::IsInitialized()

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../Base/DX12LibPCH.h"
 #include "TextureComponent.h"
 

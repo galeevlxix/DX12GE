@@ -12,15 +12,12 @@
 #include "SpotLightNode.h"
 #include "ParticlesNode.h"
 #include "CameraNode.h"
-#include "AudioListenerNode.h"
-#include "AudioEmitterNode.h"
-#include "PhysicalObjectNode.h"
 
 #include "../Graphics/GraphicsComponents.h"
 
 #include <vector> 
 
-/// \brief Scene tree management system
+// Система управления деревом сцены
 class NodeGraphSystem
 {
 	Node3D* m_SceneRootNode;
@@ -33,9 +30,6 @@ class NodeGraphSystem
 	DirectionalLightNode* m_CurrentDirectionalLight;
 	FirstPersonPlayerNode* m_CurrentPlayer;
 	SkyBoxNode* m_CurrentSkyBox;
-
-	std::map<std::string, AudioEmitterNode*> m_AllAudioEmitters;
-	AudioListenerNode* m_CurrentListener;
 
 	EnvironmentNode* m_DefaultEnvironment;
 	DirectionalLightNode* m_DefaultDirectionalLight;
@@ -53,9 +47,6 @@ class NodeGraphSystem
 	friend void SkyBoxNode::SetCurrent();
 	friend bool SkyBoxNode::IsCurrent();
 
-	friend void AudioListenerNode::SetCurrent();
-	friend bool AudioListenerNode::IsCurrent();
-
 	friend bool Node3D::AddChild(Node3D* node);
 	void OnNodeAdded(Node3D* node);
 
@@ -71,69 +62,50 @@ private:
 public:
 	NodeGraphSystem();
 
-	/// \brief Returns the root node of the scene.
+	// Возвращает корневой узел сцены
 	Node3D* GetRoot() { return m_SceneRootNode; }
 
-	/// \brief Reset the scene tree.
-	void Reset(bool keepComponent = true);
-
-	/// \brief Destroys the scene tree.
+	// Уничтожает дерево сцены
 	void Destroy();
 	
-	/// \brief Returns all scene nodes as a list.
+	// Возвращает все узлы сцены в виде массива
 	const std::vector<Node3D*> GetAllNodes() { return GetNodesRecursive(m_SceneRootNode); }
 
-	/// \brief Returns all 3D objects in the scene as a dictionary (path to node -> node).
+	// Возвращает все 3Д объекты в сцене в виде словаря (путь к узлу -> указатель на узел)
 	const std::map<std::string, Object3DNode*>& GetAll3DObjects() { return m_All3DObjects; }
-	
-	/// \return Returns Object reference with matching ID
-	Object3DNode* GetObjectByID(uint32_t ID);
 
-	/// \brief Finds a node along its path in the scene tree.
-	/// \return Returns the node if it is found. Returns nullptr otherwise.
+	// Находит узел по его пути в дереве сцены
 	Node3D* GetNodeByPath(const std::string& nodePath);
 
-	/// \brief Returns a string representation of the scene tree.
+	// Возвращает строковое представление дерева сцены
 	const std::string Print(Node3D* current = nullptr, int depth = 0);
 
-	/// \brief Returns the current scene environment node.
-	/// \return Returns the active environment if it exists. Returns default environment otherwise.
+	// Возвращает текущий узел окружения сцены
 	EnvironmentNode* GetCurrentEnvironment();
 
-	/// \brief Returns the current directional light node of the scene.
-	/// \return Returns the active directional light if it exists. Returns default directional light otherwise.
+	// Возвращает текущий узел направленного света сцены
 	DirectionalLightNode* GetCurrentDirectionalLight();
 
-	/// \brief Returns the current player node of the scene.
-	/// \return Returns the active player if it exists. Returns nullptr otherwise.
+	// Возвращает текущий узел игрока сцены
 	FirstPersonPlayerNode* GetCurrentPlayer() { return m_CurrentPlayer; }
 
-	/// \brief Returns the current camera node of the scene.
-	/// \return Returns the active camera if it exists. Returns default camera otherwise.
+	// Возвращает текущую камеру сцены
 	CameraNode* GetCurrentCamera();
 
-	/// \brief Returns the current skybox node of the scene.
-	/// \return Returns the active skybox if it exists. Returns nullptr otherwise.
+	// Возвращает текущий узел скайбокса сцены
 	SkyBoxNode* GetCurrentSkyBox() { return m_CurrentSkyBox; }
 
-	/// \brief Returns an array of all point light source components in the scene.
+	// Возвращает массив всех компонентов точечных источников света в сцене
 	const std::vector<PointLightComponent> GetPointLightComponents();
 
-	/// \brief Returns an array of all spotlight light source components in the scene.
+	// Возвращает массив всех компонентов прожекторных источников света в сцене
 	const std::vector<SpotLightComponent> GetSpotLightComponents();
 
-	/// \brief Returns the number of point light sources in the scene.
+	// Возвращает количество точечных источников света в сцене
 	const size_t GetPointLightsCount() { return m_AllPointLights.size(); }
 
-	/// \brief Returns the number of spotlight light sources in the scene.
+	// Возвращает количество прожекторных источников света в сцене
 	const size_t GetSpotLightsCount() { return m_AllSpotLights.size(); }
-
-	/// \brief Returns all sound sources (audio emitters) in the scene as a dictionary (path to node -> node).
-	const std::map<std::string, AudioEmitterNode*>& GetAllAudioEmitters() { return m_AllAudioEmitters; }
-
-	/// \brief Returns the current listener node of the scene.
-	/// \return Returns the active listener if it exists. Returns nullptr otherwise.
-	AudioListenerNode* GetCurrentListener() { return m_CurrentListener; }
 
 	void OnKeyPressed(KeyEventArgs& e);
 	void OnKeyReleased(KeyEventArgs& e) { m_SceneRootNode->OnKeyReleased(e); }
@@ -143,27 +115,20 @@ public:
 	void OnMouseButtonReleased(MouseButtonEventArgs& e) { m_SceneRootNode->OnMouseButtonReleased(e); }
 	void OnResize(ResizeEventArgs& e);
 
-	/// \brief Creates a new node and adds it to the scene.
-	/// \param nodePath Sets the parent and name of the new node.
-	/// \param type Node type for the new node.
-	/// \return Returns the created node if creation was successful. Returns nullptr otherwise.
+	// Создаёт новый узел и добавляет его на сцену
+	// Возвращает созданный узел, если создание прошло успешно (nullptr - в противном случае)
 	Node3D* CreateNewNodeInScene(const std::string& nodePath, NodeTypeEnum type);
 
-	/// \brief Removes the node from the scene.
-	/// \param nodePath Node path of the node.
-	/// \param destroy If it is true, the node's component data is completely removed from memory.
-	/// \return Returns true if the deletion was successful. Returns false otherwise.
+	// Удаляет узел со сцены
+	// Если destroy = true, узел удаляется полностью из памяти
+	// Возвращает true, если удаление прошло успешно
 	bool RemoveNodeFromScene(const std::string& nodePath, bool destroy = false);
 
-	/// \brief Completely clones the node and adds the clone to the scene.
-	/// \param nodePath Node path of the original node.
-	/// \param pathOfNewParent Node path of the new parent for this clone.
-	/// \return Returns the clone node if creation was successful. Returns nullptr otherwise.
-	Node3D* CloneNode(const std::string& nodePath, const std::string& pathOfNewParent);
+	// Полностью клонирует узел и добавляет клон на сцену
+	// Возвращает узел клона, если создание прошло успешно (nullptr - в противном случае)
+	Node3D* CloneNode(const std::string& nodePath, const std::string& pathOfNewParrent);
 
-	/// \brief Moves the node to the new parent node
-	/// \param nodePath Node path of the node.
-	/// \param pathOfNewParent Node path of the new parent for this node.
-	/// \return Returns true if the move was successful. Returns false otherwise.
-	bool MoveNode(const std::string& nodePath, const std::string& pathOfNewParent);
+	// Перемещает узел в узел нового родителя
+	// Возвращает true, если перемещение прошло успешно
+	bool MoveNode(const std::string& nodePath, const std::string& pathOfNewParrent);
 };

@@ -6,7 +6,6 @@
 static std::map<std::string, uint32_t> m_Names;
 static std::vector<std::shared_ptr<Object3DComponent>> m_Objects;
 static std::vector<std::shared_ptr<TextureComponent>> m_Textures;
-static std::vector<std::shared_ptr<AudioWavComponent>> m_Audio;
 
 uint32_t ResourceStorage::Find(const std::string& name)
 {
@@ -17,8 +16,7 @@ uint32_t ResourceStorage::Find(const std::string& name)
 uint32_t ResourceStorage::AddObject3D(const std::string& name)
 {
     uint32_t foundId = Find(name);
-    if (foundId != -1 && GetObject3D(foundId) != nullptr)
-        return foundId;
+    if (foundId != -1) return foundId;
 
     uint32_t id = static_cast<uint32_t>(m_Objects.size());
     m_Objects.push_back(std::make_shared<Object3DComponent>());
@@ -30,7 +28,7 @@ uint32_t ResourceStorage::AddObject3D(const std::string& name)
 uint32_t ResourceStorage::AddTexture(const std::string& name)
 {
     uint32_t foundId = Find(name);
-    if (foundId != -1 && GetTexture(foundId) != nullptr)
+    if (foundId != -1) 
         return foundId;
 
     uint32_t id = static_cast<uint32_t>(m_Textures.size());
@@ -38,19 +36,6 @@ uint32_t ResourceStorage::AddTexture(const std::string& name)
     m_Names.emplace(name, id);
 
 	return id;
-}
-
-uint32_t ResourceStorage::AddAudio(const std::string& name)
-{
-    uint32_t foundId = Find(name);
-    if (foundId != -1 && GetAudio(foundId) != nullptr)
-        return foundId;
-
-    uint32_t id = static_cast<uint32_t>(m_Audio.size());
-    m_Audio.push_back(std::make_shared<AudioWavComponent>());
-    m_Names.emplace(name, id);
-
-    return id;
 }
 
 std::shared_ptr<Object3DComponent> ResourceStorage::GetObject3D(uint32_t id)
@@ -69,14 +54,6 @@ std::shared_ptr<TextureComponent> ResourceStorage::GetTexture(uint32_t id)
     return m_Textures[id];
 }
 
-std::shared_ptr<AudioWavComponent> ResourceStorage::GetAudio(uint32_t id)
-{
-    if (id < 0 || id >= m_Audio.size())
-        return nullptr;
-
-    return m_Audio[id];
-}
-
 std::shared_ptr<Object3DComponent> ResourceStorage::GetObject3DByName(const std::string& name)
 {
     uint32_t foundId = Find(name);
@@ -90,14 +67,6 @@ std::shared_ptr<TextureComponent> ResourceStorage::GetTextureByName(const std::s
     uint32_t foundId = Find(name);
     if (foundId >= 0 && foundId < m_Textures.size())
         return m_Textures[foundId];
-    return nullptr;
-}
-
-std::shared_ptr<AudioWavComponent> ResourceStorage::GetAudioByName(const std::string& name)
-{
-    uint32_t foundId = Find(name);
-    if (foundId >= 0 && foundId < m_Audio.size())
-        return m_Audio[foundId];
     return nullptr;
 }
 
@@ -125,18 +94,6 @@ void ResourceStorage::DeleteTextureComponentForever(uint32_t id)
     m_Textures[id] = nullptr;
 }
 
-void ResourceStorage::DeleteAudioComponentForever(uint32_t id)
-{
-    if (id < 0 || id >= m_Audio.size())
-        return;
-
-    if (!m_Audio[id]) return;
-
-    m_Audio[id]->Destroy();
-    m_Audio[id].reset();
-    m_Audio[id] = nullptr;
-}
-
 size_t ResourceStorage::ObjectsCount()
 {
     return m_Objects.size();
@@ -145,11 +102,6 @@ size_t ResourceStorage::ObjectsCount()
 size_t ResourceStorage::TexturesCount()
 {
     return m_Textures.size();
-}
-
-size_t ResourceStorage::AudioCount()
-{
-    return m_Audio.size();
 }
 
 void ResourceStorage::Destroy()
@@ -169,14 +121,6 @@ void ResourceStorage::Destroy()
         tex = nullptr;
     }
     m_Textures.clear();
-
-    for (auto audio : m_Audio)
-    {
-        audio->Destroy();
-        audio.reset();
-        audio = nullptr;
-    }
-    m_Audio.clear();
 
     m_Names.clear();
 }

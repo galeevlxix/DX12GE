@@ -5,10 +5,10 @@
 
 void ParticleSystem::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	m_Texture.OnLoad(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png");
+	m_Device = Application::Get().GetPrimaryDevice();
+	m_Texture.OnLoad(commandList, "../../DX12GE/Resources/Particle Textures/circle_05.png", m_Device, GraphicAdapterPrimary);
 	CreateParticleGroupPrototype(static_cast<int>(pow(2, 10)));
 
-	m_Device = Application::Get().GetPrimaryDevice();
 }
 
 void ParticleSystem::Destroy()

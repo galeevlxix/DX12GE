@@ -3,18 +3,17 @@
 #include "Node3D.h"
 #include "../Graphics/GraphicsComponents.h"
 
-/// \brief Point light source node class.
+// Класс узла точечного источника света
 class PointLightNode : public Node3D
 {
 public:
-	/// \brief Parameters of the point light.
 	PointLightComponent LightData;
 
 	PointLightNode();
 
 	virtual void OnUpdate(const double& deltaTime) override;
 
-	virtual Node3D* Clone(Node3D* newParent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
+	virtual Node3D* Clone(Node3D* newParrent = nullptr, bool cloneChildrenRecursive = false, Node3D* cloneNode = nullptr) override;
 
 	virtual void DrawDebug() override;
 

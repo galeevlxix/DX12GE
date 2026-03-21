@@ -1,5 +1,4 @@
 #include "GameSample.h"
-#include "../Engine/Base/LuaManager.h"
 
 GameSample::GameSample(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
 {

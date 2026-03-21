@@ -37,7 +37,7 @@ private:
 
 public:
 
-	MaterialEntity* Material = nullptr;
+    MaterialEntity* m_Material;
 
     bool IsInitialized() { return m_Initialized; }
 };
