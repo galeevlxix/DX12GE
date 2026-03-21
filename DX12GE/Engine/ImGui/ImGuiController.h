@@ -2,6 +2,7 @@
 
 #include "../Base/DX12LibPCH.h"
 #include "../NodeGraph/Node3D.h"
+#include "../Base/Window.h"
 
 #include <algorithm>
 #include <filesystem>
@@ -11,12 +12,14 @@ namespace fs = std::filesystem;
 class ImGuiController
 {
 public:
-	static void Create(HWND hWnd);
+	static void Create(std::shared_ptr<Window> window);
 	static void OnRenderStart();
 	static void OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList);
 
 	static bool CursorOnWindow();
 	static void ShutDown();
+
+	static void ChangeVisiblity();
 
 private:
 

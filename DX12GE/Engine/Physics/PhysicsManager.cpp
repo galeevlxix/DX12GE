@@ -237,14 +237,14 @@ namespace Physics
 			return;
 		}
 		
-		float CurrentFramerate = 1.f / inDeltaTime;
+		float CurrentFramerate = 1.f / static_cast<float>(inDeltaTime);
 		
 		if (CurrentFramerate < 1.f)
 		{
 			CurrentFramerate = 60.f;
 		}
 		// If you take larger steps than 1 / 60th of a second you need to do multiple collision steps in order to keep the simulation stable. Do 1 collision step per 1 / 60th of a second (round up).
-		const int cCollisionSteps = ceil(CurrentFramerate / 60.f);
+		const int cCollisionSteps = static_cast<int>(ceil(CurrentFramerate / 60.f));
 
 		// Step the world
 		m_PhysicsSystem.Update(1.f / CurrentFramerate, cCollisionSteps, m_pTempAllocator.get(), m_pJobSystem.get());

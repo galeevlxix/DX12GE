@@ -454,7 +454,7 @@ WindowCursorState Window::GetCurrentCursorState()
     return m_CurrentCursorState;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE Window::GetCurrentRenderTargetView() const
+D3D12_CPU_DESCRIPTOR_HANDLE Window::GetCurrentRenderTargetViewCPU() const
 {
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_d3d12RTVDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
         m_CurrentBackBufferIndex, m_RTVDescriptorSize);

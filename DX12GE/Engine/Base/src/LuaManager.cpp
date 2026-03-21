@@ -39,14 +39,20 @@ Node3D* lua_get_object_on_scene(std::string name)
 
 int lua_get_node_type(Node3D* object)
 {
-	assert(object != nullptr, "Attempt to call get node type on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call get node type on null object!");
+	}
 
 	return object->GetType();
 }
 
 int lua_destroy_node_by_node(Node3D* object)
 {
-	//	assert(object != nullptr, "Attempt to call destroy on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call destroy on null object!");
+	}
 
 	const std::string path{ object->GetNodePath() };
 	for (const auto& sc : node_path_to_classes[path])
@@ -63,7 +69,10 @@ int lua_destroy_node_by_path(std::string path)
 {
 	const auto& object = p_grapsh_system->GetNodeByPath(path);
 
-//	assert(object != nullptr, "Attempt to call destroy on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call destroy on null object!");
+	}
 
 	object->Destroy(false);
 
@@ -72,7 +81,11 @@ int lua_destroy_node_by_path(std::string path)
 
 int lua_rotate_object_by_rotator(Node3D* object, float y, float p, float r)
 {
-	assert(object != nullptr, "Attempt to call rotate on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call rotate on null object!");
+	}
+
 	object->Transform.Rotate(DirectX::SimpleMath::Vector3(y, p, r));
 
 	return 1;
@@ -80,7 +93,10 @@ int lua_rotate_object_by_rotator(Node3D* object, float y, float p, float r)
 
 bool lua_get_ai_state(AINode* object)
 {
-	assert(object != nullptr, "Attempt to call get ai state on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call get ai state on null object!");
+	}
 
 	try
 	{
@@ -94,7 +110,10 @@ bool lua_get_ai_state(AINode* object)
 
 int lua_set_ai_state(AINode* object, bool state)
 {
-	assert(object != nullptr, "Attempt to call get ai state on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call get ai state on null object!");
+	}
 
 	try
 	{
@@ -109,6 +128,11 @@ int lua_set_ai_state(AINode* object, bool state)
 
 sol::table lua_get_script_component_from_node(Node3D* object, const std::string& component)
 {
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call get script component on null object!");
+	}
+
 	const std::string& path{ object->GetNodePath() };
 	
 	for (const auto& item : node_path_to_classes[path])
@@ -120,23 +144,12 @@ sol::table lua_get_script_component_from_node(Node3D* object, const std::string&
 	return sol::nil;
 }
 
-Node3D* lua_change_camera()
-{
-	if (Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player") == Singleton::GetNodeGraph()->GetCurrentPlayer())
-	{
-		Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player")->SetCurrent();
-		return Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player");
-	}
-	else
-	{
-		Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player")->SetCurrent();
-		return Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player");
-	}
-}
-
 int lua_set_object_velocity(Node3D* object, float x, float y, float z)
 {
-	assert(object != nullptr, "Attempt to call set velocity on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call set velocity on null object!");
+	}
 
 	Singleton::GetPhysicsManager()->SetObjectVelocity(object->GetNodeId(), DirectX::SimpleMath::Vector3(x, y, z));
 
@@ -148,7 +161,7 @@ CameraNode* lua_get_cam()
 	return p_grapsh_system->GetCurrentCamera();
 }
 
-const std::string& lua_cast_ray(float distance)
+const std::string lua_cast_ray(float distance)
 {
 	auto ray = Singleton::GetPhysicsManager()->CastRay(p_grapsh_system->GetCurrentCamera()->GetWorldPosition(), p_grapsh_system->GetCurrentCamera()->GetWorldDirection(), distance);
 
@@ -169,7 +182,10 @@ int lua_call_assert(std::string text)
 
 int lua_set_rotation_to_rotator(Node3D* object, float y, float p, float r)
 {
-	assert(object != nullptr, "Attempt to call rotate on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call rotate on null object!");
+	}
 
 	object->Transform.SetRotation(DirectX::SimpleMath::Vector3(y, p, r));
 	return 1;
@@ -177,7 +193,10 @@ int lua_set_rotation_to_rotator(Node3D* object, float y, float p, float r)
 
 int lua_add_impulse(Node3D* object, float x, float y, float z, float m)
 {
-	assert(object != nullptr, "Attempt to call add impulse on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call add impulse on null object!");
+	}
 
 	static_cast<PhysicalObjectNode*>(object)->AddImpulse(DirectX::SimpleMath::Vector3(x, y, z), m);
 	return 1;
@@ -185,7 +204,10 @@ int lua_add_impulse(Node3D* object, float x, float y, float z, float m)
 
 sol::table lua_get_velocity(Node3D* object)
 {
-	assert(object != nullptr, "Attempt to call get velocity on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call get velocity on null object!");
+	}
 
 	const Vector3& vec = static_cast<PhysicalObjectNode*>(object)->GetVelocity();
 	return lua.create_table_with("x", vec.x,
@@ -195,7 +217,11 @@ sol::table lua_get_velocity(Node3D* object)
 
 sol::table lua_get_object_pos(Node3D * object)
 {
-	assert(object != nullptr, "Attempt to call get position on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call get position on null object!");
+	}
+
 	const auto pos = object->Transform.GetPosition();
 
 	return lua.create_table_with(
@@ -212,27 +238,36 @@ sol::table get_lua_class(std::string name)
 
 Node3D* lua_get_child(Node3D* object, std::string childName)
 {
-	assert(object != nullptr, "Attempt to call get child to on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call get child to on null object!");
+	}
 
 	return object->GetChild(childName);
 }
 
 int lua_change_color(Object3DNode* object, float r, float g, float b)
 {
-	//object->MaterialsOverride
 	return 1;
 }
 
 Node3D* lua_get_parent(Node3D* object)
 {
-	assert(object != nullptr, "Attempt to call get parent to on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call get parent to on null object!");
+	}
 
 	return object->GetParent();
 }
 
 sol::table lua_get_object_world_direction(Node3D* object)
 {
-	assert(object != nullptr, "Attempt to call get world direction to on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call get world direction to on null object!");
+	}
+
 	const Vector3 vec = object->GetWorldDirection();
 	return lua.create_table_with(
 		"x", vec.x,
@@ -243,7 +278,10 @@ sol::table lua_get_object_world_direction(Node3D* object)
 
 int lua_transform_move_to(Node3D* object, float x, float y, float z)
 {
-	assert(object != nullptr, "Attempt to call move to on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call move to on null object!");
+	}
 
 	static_cast<PhysicalObjectNode*>(object)->Transform.SetScale(400);
 
@@ -252,7 +290,10 @@ int lua_transform_move_to(Node3D* object, float x, float y, float z)
 
 int lua_transform_move_by(Node3D* object, float x, float y, float z)
 {
-	assert(object != nullptr, "Attempt to call move to on null object!");
+	if (object == nullptr)
+	{
+		throw std::runtime_error("Attempt to call move to on null object!");
+	}
 
 	object->Transform.Move(DirectX::SimpleMath::Vector3(x, y, z));
 
@@ -261,7 +302,6 @@ int lua_transform_move_by(Node3D* object, float x, float y, float z)
 
 int lua_load_object_with_model(std::string name)
 {
-	p_scene->AddObjectOnScene(name);
 	std::string highCaseName = name;
 	std::transform(highCaseName.begin(), highCaseName.end(), highCaseName.begin(), ::toupper);
 	lua.safe_script("if " + name + " ~= nil then return end \n" + highCaseName + " = {}\n" + "Class(" + highCaseName + ", GameObject)\n" + name + " = " + highCaseName + ":new(\"" + name + "\")" +
@@ -281,7 +321,10 @@ int lua_register_class(std::string id)
 {
 	for (const auto& element : lua_classes_vector)
 	{
-		assert(element != id, "Attempt to register class that already registered!");
+		if (element == id)
+		{
+			throw std::runtime_error("Attempt to register class that already registered!");
+		}
 	}
 
 	lua_classes_vector.push_back(id);
@@ -394,8 +437,8 @@ size_t FindAllLuaFiles(const std::string& rootPath,
 }
 
 
-std::vector<std::string> FindAllLuaFiles(const std::string& rootPath,
-	bool caseInsensitive = true) {
+std::vector<std::string> FindAllLuaFiles(const std::string& rootPath, bool caseInsensitive = true) 
+{
 	std::vector<std::string> result;
 	FindAllLuaFiles(rootPath, result, caseInsensitive);
 	return result;
@@ -430,7 +473,6 @@ void LuaManager::LoadScrtipts()
 		lua.set_function("SetAIState", &lua_set_ai_state);
 		lua.set_function("GetCurrentCamera", &lua_get_cam);
 		lua.set_function("CastRay", &lua_cast_ray);
-		lua.set_function("ChangeCamera", &lua_change_camera);
 		lua.set_function("DestroyNodeByNode", &lua_destroy_node_by_node);
 		lua.set_function("DestroyNodeByNodePath", &lua_destroy_node_by_path);
 		lua.set_function("SetObjectVelocity", &lua_set_object_velocity);
@@ -587,7 +629,7 @@ std::string LuaManager::CreateValidClass(std::string className, std::string objI
 		lua_classes_map.insert({ className, std::vector<std::string>() });
 	}
 
-	int index = lua_classes_map[className].size();
+	size_t index = lua_classes_map[className].size();
 	std::string actualName = std::format("{}{}", className, index);
 	lua_classes_map[className].emplace_back(actualName);
 	std::string highCaseName = className;

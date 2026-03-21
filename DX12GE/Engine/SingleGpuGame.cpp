@@ -27,7 +27,6 @@ bool SingleGpuGame::Initialize()
     ShaderResources::Create(true);
     DescriptorHeaps::OnInit(m_Device, GraphicAdapterPrimary);
 
-
     // PIPELINES
     m_GeometryPassPipeline.Initialize(m_Device);
     m_LightPassPipeline.Initialize(m_Device);
@@ -60,37 +59,6 @@ bool SingleGpuGame::Initialize()
     
     return true;
 }
-//
-// void SingleGpuGame::AddObjectOnScene(std::string name)
-// {
-//     if (!m_Objects.contains(name))
-//     {
-//         shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-//         ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-//
-//         Object3DEntity* entity = new Object3DEntity();
-//
-//         std::string modelPath = "../../DX12GE/Resources/Models/cars/buchanka/scene.gltf";
-//
-//         m_Objects.insert({ name, entity });
-//
-//         m_Objects[name]->OnLoad(commandList, modelPath);
-//
-//         m_Objects[name]->Transform.SetPosition(DirectX::SimpleMath::Vector3(.0f, .0f, .0f));
-//         m_Objects[name]->Transform.SetRotation(DirectX::SimpleMath::Vector3(.0f, .0f, .0f));
-//         m_Objects[name]->Transform.SetScale(DirectX::SimpleMath::Vector3(1.f, 1.f, 1.f));
-//     }
-// }
-//
-// void SingleGpuGame::RemoveObjectFromScene(std::string name)
-// {
-//     if (m_Objects.contains(name))
-//     {
-//         Object3DEntity* entity = m_Objects[name];
-//         m_Objects.erase(name);
-//         entity->Destroy();
-//     }
-// }
 
 static Node3D* CreateObj(const std::string& nodePath, ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
 {
@@ -112,7 +80,7 @@ bool SingleGpuGame::LoadContent()
 
     if (!EngineConfig::IsReleaseMode)
     {
-        ImGuiController::Create(m_pWindow->GetWindowHandle());
+        ImGuiController::Create(m_pWindow);
     }    
 
     Singleton::Initialize();
@@ -138,47 +106,6 @@ bool SingleGpuGame::LoadContent()
     m_Initialized = true;
     return true;
 }
-
-void SingleGpuGame::RemoveObjectFromScene(std::string name)
-{
-}
-
-void SingleGpuGame::AddObjectOnScene(std::string name)
-{
-}
-
-
-// void SingleGpuGame::AddObjectOnScene(std::string name)
-// {
-//     if (!m_Objects.contains(name))
-//     {
-//         shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-//         ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-//
-//         Object3DNode* node = new Object3DNode();
-//
-//         std::string modelPath = "../../DX12GE/Resources/Models/cars/buchanka/scene.gltf";
-//
-//         m_Objects.insert({ name, entity });
-//
-//         m_Objects[name]->OnLoad(commandList, modelPath);
-//
-//         m_Objects[name]->Transform.SetPosition(DirectX::SimpleMath::Vector3(.0f, .0f, .0f));
-//         m_Objects[name]->Transform.SetRotation(DirectX::SimpleMath::Vector3(.0f, .0f, .0f));
-//         m_Objects[name]->Transform.SetScale(DirectX::SimpleMath::Vector3(1.f, 1.f, 1.f));
-//     }
-// }
-//
-// void SingleGpuGame::RemoveObjectFromScene(std::string name)
-// {
-//     if (m_Objects.contains(name))
-//     {
-//         Object3DNode* entity = m_Objects[name];
-//         m_Objects.erase(name);
-//         entity->Destroy();
-//     }
-// }
-
 
 void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 {
@@ -266,10 +193,6 @@ void SingleGpuGame::UpdateObjectsTransforms(UpdateEventArgs& e)
         if (PhysRef != nullptr && PostPhysicsTransforms.contains(PhysRef->GetNodeId()))
         {                 
             PhysRef->UpdateTransform(PostPhysicsTransforms[PhysRef->GetNodeId()]);
-            
-            //For debug rendering
-            //std::vector<Vector3>* Vertices = new std::vector<Vector3>;
-            //PhysRef->SetCollisionGeometry(Singleton::GetPhysicsManager()->GetBodyCollision(PhysRef->GetNodeId(), Vertices));
         }
     }
 }
@@ -397,7 +320,7 @@ void SingleGpuGame::MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList)
     Singleton::GetCurrentPass()->Set(CurrentPass::Merging);
 
     ComPtr<ID3D12Resource> backBuffer = m_pWindow->GetCurrentBackBuffer();
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetView();
+    D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetViewCPU();
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer->dsvCpuHandleIndex, GraphicAdapterPrimary);
     TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
@@ -507,15 +430,6 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
 
     switch (e.Key)
     {
-    case KeyCode::U:
-        Singleton::GetWindow()->SetCursor(CURSOR_STATE_SHOW);
-        break;
-    case KeyCode::H:
-        Singleton::GetWindow()->SetCursor(CURSOR_STATE_HIDE);
-        break;
-    case KeyCode::Y:
-        Singleton::GetWindow()->SetCursor(CURSOR_STATE_HIDE_AND_GRAB);
-        break;
     case KeyCode::Escape:
         Application::Get().Quit(0);
         break;
@@ -525,18 +439,11 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::V:
         m_pWindow->ToggleVSync();
         break;
+    case KeyCode::U:
+        ImGuiController::ChangeVisiblity();
+        break;
     case KeyCode::P:
         m_stopParticles = !m_stopParticles;
-        break;
-    case KeyCode::B:
-        if (Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player") == Singleton::GetNodeGraph()->GetCurrentPlayer())
-        {
-            Singleton::GetNodeGraph()->GetNodeByPath("root/tp_player")->SetCurrent();
-        }
-        else
-        {
-            Singleton::GetNodeGraph()->GetNodeByPath("root/fp_player")->SetCurrent();
-        }
         break;
     case KeyCode::R:
         auto commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);

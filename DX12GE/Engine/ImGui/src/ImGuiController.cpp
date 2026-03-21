@@ -17,6 +17,9 @@
 static bool isInitialized = false;
 static bool isShowingScriptsToAdd = false;
 static bool isShowingScriptsToRemove = false;
+static bool DrawUI = false;
+static bool Started = false;
+
 /////////////////////////// FOR FILE SYSTEM MANAGER
 
 struct FileBrowserState
@@ -45,6 +48,8 @@ static FileBrowserState fb;
 ///////////////////////////
 
 static const int APP_NUM_FRAMES_IN_FLIGHT = 2;
+
+std::shared_ptr<Window> MainWindow;
 
 static ComPtr<ID3D12Device2> device;
 static std::shared_ptr<CommandQueue> commandQueue;
@@ -111,9 +116,11 @@ static std::string GetMultilineText(const std::string& text, int lineLength)
 	return out;
 }
 
-void ImGuiController::Create(HWND hWnd)
+void ImGuiController::Create(std::shared_ptr<Window> window)
 {
 	if (isInitialized) return;
+
+	MainWindow = window;
 
 	device = Application::Get().GetPrimaryDevice();
 	commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
@@ -139,7 +146,7 @@ void ImGuiController::Create(HWND hWnd)
 	style.FontScaleDpi = main_scale;        // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
 
 	// Setup Platform/Renderer backends
-	ImGui_ImplWin32_Init(hWnd);
+	ImGui_ImplWin32_Init(window->GetWindowHandle());
 
 	ImGui_ImplDX12_InitInfo init_info = {};
 	init_info.Device = device.Get();
@@ -167,6 +174,8 @@ void ImGuiController::Create(HWND hWnd)
 void ImGuiController::OnRenderStart()
 {
 	if (!isInitialized) return;
+
+	if (!DrawUI || Started) return;
 
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -372,11 +381,16 @@ void ImGuiController::OnRenderStart()
 		}
 	}
 	Commands.clear();
+
+	Started = true;
 }
 
 void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
 	if (!isInitialized) return;
+
+	if (!Started) return;
+	Started = false;
 
 	bool show_demo_window = false;
 
@@ -569,6 +583,10 @@ void ImGuiController::ShutDown()
 	isInitialized = false;
 }
 
+void ImGuiController::ChangeVisiblity()
+{
+	DrawUI = !DrawUI;
+}
 
 bool ImGuiController::AddVector3Edit(const char* label, Vector3& value)
 {

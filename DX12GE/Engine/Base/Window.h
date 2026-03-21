@@ -85,7 +85,7 @@ public:
     /**
      * Get the render target view for the current back buffer.
      */
-    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRenderTargetView() const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRenderTargetViewCPU() const;
 
     /**
      * Get the back buffer resource for the current back buffer.
