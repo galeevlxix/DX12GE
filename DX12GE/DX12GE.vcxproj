@@ -292,6 +292,7 @@
     <ClCompile Include="Engine\Pipelines\src\GeometryPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\LightPassPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\MergingPipeline.cpp" />
+    <ClCompile Include="Engine\Pipelines\src\OutputFinalPipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\ParticleComputePipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\ParticlePipeline.cpp" />
     <ClCompile Include="Engine\Pipelines\src\Pipeline.cpp" />
@@ -394,6 +395,7 @@
     <ClInclude Include="Engine\Pipelines\GeometryPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\LightPassPipeline.h" />
     <ClInclude Include="Engine\Pipelines\MergingPipeline.h" />
+    <ClInclude Include="Engine\Pipelines\OutputFinalPipeline.h" />
     <ClInclude Include="Engine\Pipelines\ParticleComputePipeline.h" />
     <ClInclude Include="Engine\Pipelines\ParticlePipeline.h" />
     <ClInclude Include="Engine\Pipelines\Pipeline.h" />
@@ -440,6 +442,14 @@
     </FxCompile>
     <FxCompile Include="Resources\Shaders\MergingVertexShader.hlsl">
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\OutputFinalFragmentShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\OutputFinalVertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
     </FxCompile>

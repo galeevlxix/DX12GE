@@ -15,12 +15,13 @@ class ImGuiController
 public:
 	static void Create(std::shared_ptr<Window> window);
 	static void OnRenderStart();
-	static void OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList, std::shared_ptr<TextureBuffer> tb);
+	static void OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList, std::shared_ptr<TextureBuffer> texture);
 
 	static bool CursorOnWindow();
 	static void ShutDown();
 
 	static void ChangeVisiblity();
+	static bool IsVisible();
 
 private:
 

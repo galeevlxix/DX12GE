@@ -37,6 +37,7 @@ bool SingleGpuGame::Initialize()
     m_SSRPipeline.Initialize(m_Device);
     m_MergingPipeline.Initialize(m_Device);
     m_SkyboxPipeline.Initialize(m_Device);
+    m_OutputFinalPipeline.Initialize(m_Device);
 
     // 3D SCENE
     m_CascadedShadowMap.Create(m_Device);
@@ -50,6 +51,10 @@ bool SingleGpuGame::Initialize()
     m_LightPassBuffer = std::make_shared<TextureBuffer>();
     m_LightPassBuffer->SetName(L"LightPass");
     m_LightPassBuffer->Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, false);
+
+    m_FinalBuffer = std::make_shared<TextureBuffer>();
+    m_FinalBuffer->SetName(L"Final Buffer");
+    m_FinalBuffer->Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, false);
 
     m_DepthBuffer = std::make_shared<DepthBuffer>();
     m_DepthBuffer->Init(GraphicAdapterPrimary);
@@ -319,14 +324,11 @@ void SingleGpuGame::MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
     Singleton::GetCurrentPass()->Set(CurrentPass::Merging);
 
-    ComPtr<ID3D12Resource> backBuffer = m_pWindow->GetCurrentBackBuffer();
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetViewCPU();
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer->dsvCpuHandleIndex, GraphicAdapterPrimary);
-    TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-    FLOAT clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-    commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
+    m_FinalBuffer->SetToWriteAndClear(commandList);
+    m_FinalBuffer->BindRenderTarget(commandList, dsv);
+
     commandList->RSSetViewports(1, &m_Viewport);
     commandList->RSSetScissorRects(1, &m_ScissorRect);
 
@@ -340,9 +342,34 @@ void SingleGpuGame::MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList)
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->DrawInstanced(3, 1, 0, 0);
 
+    m_FinalBuffer->SetToRead(commandList);
+}
+
+void SingleGpuGame::OutputFinalResult(ComPtr<ID3D12GraphicsCommandList2> commandList)
+{
+    Singleton::GetCurrentPass()->Set(CurrentPass::Merging);
+
+    ComPtr<ID3D12Resource> backBuffer = m_pWindow->GetCurrentBackBuffer();
+    D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_pWindow->GetCurrentRenderTargetViewCPU();
+    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DescriptorHeaps::GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, m_DepthBuffer->dsvCpuHandleIndex, GraphicAdapterPrimary);
+    TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+    FLOAT clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+    commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
+    commandList->RSSetViewports(1, &m_Viewport);
+    commandList->RSSetScissorRects(1, &m_ScissorRect);
+
+    commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap(GraphicAdapterPrimary).GetAddressOf());
+    
+    /*m_OutputFinalPipeline.Set(commandList);
+    commandList->SetGraphicsRootDescriptorTable(0, m_FinalBuffer->SrvGPU());
+    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commandList->DrawInstanced(3, 1, 0, 0);*/
+
     if (!EngineConfig::IsReleaseMode)
     {
-        ImGuiController::OnRenderEnd(1, commandList, m_LightPassBuffer);
+        ImGuiController::OnRenderEnd(1, commandList, m_FinalBuffer);
     }
 
     TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -401,20 +428,37 @@ void SingleGpuGame::OnRender(RenderEventArgs& e)
     UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
     ShaderResources::GetUploadBuffer()->Reset();
 
+    // draw preliminary buffers
     {
         ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+        commandList->SetName(L"Draw preliminary buffers Command List");
+
         DrawSceneToShadowMaps(commandList);
         DrawSceneToGBuffer(commandList);
         DrawSSR(commandList);
+
         uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
         commandQueue->WaitForFenceValue(fenceValue);
     }
 
+    // draw main buffers
     {
         ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-        
+        commandList->SetName(L"Draw main buffers Command List");
+
         LightPassRender(commandList);
         MergeResults(commandList);
+
+        uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
+        commandQueue->WaitForFenceValue(fenceValue);        
+    }
+
+    // draw ui
+    {
+        ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+        commandList->SetName(L"Draw UI Command List");
+
+        OutputFinalResult(commandList);
 
         m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
         currentBackBufferIndex = m_pWindow->Present();
@@ -492,6 +536,7 @@ void SingleGpuGame::OnResize(ResizeEventArgs& e)
     m_GBuffer.Resize(e.Width, e.Height);
     m_LightPassBuffer->Resize(e.Width, e.Height);
     m_SSRBuffer->Resize(e.Width, e.Height);
+    m_FinalBuffer->Resize(e.Width, e.Height);
 }
 
 void SingleGpuGame::DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix)
@@ -579,6 +624,10 @@ void SingleGpuGame::Destroy()
     m_SSRBuffer.reset();
     m_SSRBuffer = nullptr;
 
+    m_FinalBuffer->Destroy();
+    m_FinalBuffer.reset();
+    m_FinalBuffer = nullptr;
+
     m_ParticleSystem.Destroy();
     m_tex3d.Destroy();
 
@@ -590,6 +639,8 @@ void SingleGpuGame::Destroy()
     m_SSRPipeline.Destroy();
     m_MergingPipeline.Destroy();
     m_LightPassPipeline.Destroy();
+    m_SkyboxPipeline.Destroy();
+    m_OutputFinalPipeline.Destroy();
 
     ShaderResources::Destroy();
     DescriptorHeaps::DestroyAll();

@@ -385,7 +385,7 @@ void ImGuiController::OnRenderStart()
 	Started = true;
 }
 
-void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList, std::shared_ptr<TextureBuffer> tb)
+void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList, std::shared_ptr<TextureBuffer> texture)
 {
 	if (!isInitialized) return;
 
@@ -457,15 +457,17 @@ void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommand
 	}
 
 	{
-		static ImGuiWindowFlags ViewportFlags = ImGuiWindowFlags_NoCollapse;
-		ImGui::Begin("Viewport", (bool*)0, ViewportFlags);
+		ImGui::SetNextWindowPos(ImVec2(wSize.x, 0), ImGuiCond_Always);
+		ImVec2 size = { windowSize.x - wSize.x * 2, windowSize.y - wSize.y};
 
-		auto oldState = tb->GetResourceState();
-		tb->SetToState(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-		ImTextureID textureId = (ImTextureID)tb->SrvGPU().ptr;
-		ImVec2 size = { static_cast<float>(tb->GetWidth()) / 3.f , static_cast<float>(tb->GetHeight()) / 3.f };
+		ImGui::SetNextWindowSize(size, ImGuiCond_Always);
+
+		ImGui::Begin("Viewport", (bool*)0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+		D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = texture->SrvGPU();
+		texture->SetToState(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		ImTextureID textureId = (ImTextureID)srvGpuHandle.ptr;
 		ImGui::Image(textureId, size);
-		tb->SetToState(commandList, oldState);
 		
 		ImGui::End();
 	}
@@ -600,6 +602,11 @@ void ImGuiController::ShutDown()
 void ImGuiController::ChangeVisiblity()
 {
 	DrawUI = !DrawUI;
+}
+
+bool ImGuiController::IsVisible()
+{
+	return DrawUI;
 }
 
 bool ImGuiController::AddVector3Edit(const char* label, Vector3& value)

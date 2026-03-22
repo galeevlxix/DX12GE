@@ -18,6 +18,7 @@
 #include "Pipelines/SSRPipeline.h"
 #include "Pipelines/MergingPipeline.h"
 #include "Pipelines/SkyboxPipeline.h"
+#include "Pipelines/OutputFinalPipeline.h"
 
 #include "Graphics/DescriptorHeaps.h"
 #include "Graphics/CascadedShadowMap.h"
@@ -66,6 +67,7 @@ private:
     GBuffer m_GBuffer;
     std::shared_ptr<TextureBuffer> m_LightPassBuffer;
     std::shared_ptr<TextureBuffer> m_SSRBuffer;
+    std::shared_ptr<TextureBuffer> m_FinalBuffer;
 
     // PARTICLES
 
@@ -86,6 +88,7 @@ private:
     MergingPipeline m_MergingPipeline;
     LightPassPipeline m_LightPassPipeline;
     SkyboxPipeline m_SkyboxPipeline;
+    OutputFinalPipeline m_OutputFinalPipeline;
 
 protected:
     virtual void OnUpdate(UpdateEventArgs& e) override;
@@ -109,6 +112,7 @@ private:
     void LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void DrawSSR(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList);
+    void OutputFinalResult(ComPtr<ID3D12GraphicsCommandList2> commandList);
     void GenerateCollisions()const;
     void UpdateObjectsTransforms(UpdateEventArgs& e);
     void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);

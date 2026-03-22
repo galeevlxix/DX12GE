@@ -100,6 +100,9 @@
     <Filter Include="Файлы заголовков\Engine\ImGui">
       <UniqueIdentifier>{227167f1-5b15-41d5-aa4e-1c5ff2661f72}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы ресурсов\Shaders\OutputFinalResult">
+      <UniqueIdentifier>{5a982ad6-d3d4-46c5-aef6-9480eeafc369}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX12GE.cpp">
@@ -354,9 +357,6 @@
     <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Lua\LuaManager.cpp">
-      <Filter>Исходные файлы\Engine\Lua</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\ImGui\src\imgui_widgets.cpp">
       <Filter>Исходные файлы\Engine\ImGui</Filter>
     </ClCompile>
@@ -380,6 +380,9 @@
     </ClCompile>
     <ClCompile Include="Engine\Base\src\LuaManager.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Pipelines\src\OutputFinalPipeline.cpp">
+      <Filter>Исходные файлы\Engine\Pipelines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -707,11 +710,11 @@
     <ClInclude Include="Engine\NodeGraph\SkyBoxNode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Lua\LuaManager.h">
-      <Filter>Файлы заголовков\Engine\Lua</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Base\LuaManager.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Pipelines\OutputFinalPipeline.h">
+      <Filter>Файлы заголовков\Engine\Pipelines</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -796,6 +799,12 @@
     </FxCompile>
     <FxCompile Include="Resources\Shaders\SkyboxPixelShader.hlsl">
       <Filter>Файлы ресурсов\Shaders\Skybox</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\OutputFinalVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\OutputFinalResult</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\OutputFinalFragmentShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\OutputFinalResult</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
