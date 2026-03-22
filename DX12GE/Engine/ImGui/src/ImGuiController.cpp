@@ -17,7 +17,7 @@
 static bool isInitialized = false;
 static bool isShowingScriptsToAdd = false;
 static bool isShowingScriptsToRemove = false;
-static bool DrawUI = false;
+static bool DrawUI = true;
 static bool Started = false;
 
 /////////////////////////// FOR FILE SYSTEM MANAGER
@@ -385,7 +385,7 @@ void ImGuiController::OnRenderStart()
 	Started = true;
 }
 
-void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList)
+void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList, std::shared_ptr<TextureBuffer> tb)
 {
 	if (!isInitialized) return;
 
@@ -453,6 +453,20 @@ void ImGuiController::OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommand
 		}
 
 		UpdateSceneTree(Singleton::GetNodeGraph()->GetRoot());
+		ImGui::End();
+	}
+
+	{
+		static ImGuiWindowFlags ViewportFlags = ImGuiWindowFlags_NoCollapse;
+		ImGui::Begin("Viewport", (bool*)0, ViewportFlags);
+
+		auto oldState = tb->GetResourceState();
+		tb->SetToState(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		ImTextureID textureId = (ImTextureID)tb->SrvGPU().ptr;
+		ImVec2 size = { static_cast<float>(tb->GetWidth()) / 3.f , static_cast<float>(tb->GetHeight()) / 3.f };
+		ImGui::Image(textureId, size);
+		tb->SetToState(commandList, oldState);
+		
 		ImGui::End();
 	}
 

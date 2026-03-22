@@ -117,6 +117,8 @@ public:
 	static void OnInit(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter);
 	static void DestroyAll();
 
+    static bool IsInitialized(GraphicsAdapter graphicsAdapter);
+
     static DescriptorHeaps* GetHeaps(GraphicsAdapter graphicsAdapter);
 
 	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT index, GraphicsAdapter graphicsAdapter);

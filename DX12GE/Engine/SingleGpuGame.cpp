@@ -342,7 +342,7 @@ void SingleGpuGame::MergeResults(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
     if (!EngineConfig::IsReleaseMode)
     {
-        ImGuiController::OnRenderEnd(1, commandList);
+        ImGuiController::OnRenderEnd(1, commandList, m_LightPassBuffer);
     }
 
     TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

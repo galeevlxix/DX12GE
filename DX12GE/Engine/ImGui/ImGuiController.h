@@ -3,6 +3,7 @@
 #include "../Base/DX12LibPCH.h"
 #include "../NodeGraph/Node3D.h"
 #include "../Base/Window.h"
+#include "../Graphics/TextureBuffer.h"
 
 #include <algorithm>
 #include <filesystem>
@@ -14,7 +15,7 @@ class ImGuiController
 public:
 	static void Create(std::shared_ptr<Window> window);
 	static void OnRenderStart();
-	static void OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList);
+	static void OnRenderEnd(double deltaTime, ComPtr<ID3D12GraphicsCommandList2> commandList, std::shared_ptr<TextureBuffer> tb);
 
 	static bool CursorOnWindow();
 	static void ShutDown();

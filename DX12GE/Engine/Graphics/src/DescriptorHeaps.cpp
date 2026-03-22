@@ -59,6 +59,8 @@ DescriptorHeaps* DescriptorHeaps::GetHeaps(GraphicsAdapter graphicsAdapter)
 
 void DescriptorHeaps::OnInit(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter)
 {
+	if (IsInitialized(graphicsAdapter)) return;
+
 	DescriptorHeaps* heaps = new DescriptorHeaps();
 
 	heaps->m_incrementSize[0] = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -218,4 +220,16 @@ void DescriptorHeaps::DestroyAll()
 
 	if (pSingleSecondDevice)
 		pSingleSecondDevice->Destroy();
+}
+
+bool DescriptorHeaps::IsInitialized(GraphicsAdapter graphicsAdapter)
+{
+	if (graphicsAdapter == GraphicAdapterPrimary)
+	{
+		return pSinglePrimaryDevice != nullptr;
+	}
+	else
+	{
+		return pSingleSecondDevice != nullptr;
+	}
 }
