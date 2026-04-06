@@ -9,5 +9,5 @@ public:
 	void Save();
 	void Load(ComPtr<ID3D12GraphicsCommandList2> commandList);
 
-	std::string path = "../../DX12GE/Resources/scenePhysics.json";
+	std::string path = "C:/Users/gtimu/source/repos/DX12GE/Resources/scenePhysics.json";
 };

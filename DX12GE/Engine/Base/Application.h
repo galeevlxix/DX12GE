@@ -45,6 +45,8 @@ public:
     * returned.
     */
     std::shared_ptr<Window> CreateRenderWindow(const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync = true);
+    
+    void CreateRenderViewport(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync);
 
     /**
     * Destroy a window given the window name.
@@ -98,6 +100,8 @@ public:
 
     ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type);
     UINT GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type) const;
+
+    static int GetWindowCount();
 
 protected:
 

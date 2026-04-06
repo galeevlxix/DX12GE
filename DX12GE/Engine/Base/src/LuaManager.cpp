@@ -97,15 +97,7 @@ bool lua_get_ai_state(AINode* object)
 	{
 		throw std::runtime_error("Attempt to call get ai state on null object!");
 	}
-
-	try
-	{
-		return object->IsEnabled();
-	}
-	catch (std::exception& ex)
-	{
-		return false;
-	}
+	return object->IsEnabled();
 }
 
 int lua_set_ai_state(AINode* object, bool state)
@@ -446,7 +438,7 @@ std::vector<std::string> FindAllLuaFiles(const std::string& rootPath, bool caseI
 
 void LuaManager::LoadScrtipts()
 {
-	if (EngineConfig::IsReleaseMode)
+	if (false)
 	{
 
 	}

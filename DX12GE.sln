@@ -5,6 +5,10 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BianEngine", "DX12GE\DX12GE.vcxproj", "{43C88E78-CDE2-4F58-8183-7ABC505C9218}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BianLauncher", "BianLauncher\BianLauncher.vcxproj", "{5D78BE3F-8BB4-4465-9236-43EFFD5361B3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BianEditor", "BianEditor\BianEditor.vcxproj", "{246DF206-72A4-4979-B0C1-5249EB165816}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +25,22 @@ Global
 		{43C88E78-CDE2-4F58-8183-7ABC505C9218}.Release|x64.Build.0 = Release|x64
 		{43C88E78-CDE2-4F58-8183-7ABC505C9218}.Release|x86.ActiveCfg = Release|Win32
 		{43C88E78-CDE2-4F58-8183-7ABC505C9218}.Release|x86.Build.0 = Release|Win32
+		{5D78BE3F-8BB4-4465-9236-43EFFD5361B3}.Debug|x64.ActiveCfg = Debug|x64
+		{5D78BE3F-8BB4-4465-9236-43EFFD5361B3}.Debug|x64.Build.0 = Debug|x64
+		{5D78BE3F-8BB4-4465-9236-43EFFD5361B3}.Debug|x86.ActiveCfg = Debug|x64
+		{5D78BE3F-8BB4-4465-9236-43EFFD5361B3}.Debug|x86.Build.0 = Debug|x64
+		{5D78BE3F-8BB4-4465-9236-43EFFD5361B3}.Release|x64.ActiveCfg = Release|x64
+		{5D78BE3F-8BB4-4465-9236-43EFFD5361B3}.Release|x64.Build.0 = Release|x64
+		{5D78BE3F-8BB4-4465-9236-43EFFD5361B3}.Release|x86.ActiveCfg = Release|x64
+		{5D78BE3F-8BB4-4465-9236-43EFFD5361B3}.Release|x86.Build.0 = Release|x64
+		{246DF206-72A4-4979-B0C1-5249EB165816}.Debug|x64.ActiveCfg = Debug|x64
+		{246DF206-72A4-4979-B0C1-5249EB165816}.Debug|x64.Build.0 = Debug|x64
+		{246DF206-72A4-4979-B0C1-5249EB165816}.Debug|x86.ActiveCfg = Debug|x64
+		{246DF206-72A4-4979-B0C1-5249EB165816}.Debug|x86.Build.0 = Debug|x64
+		{246DF206-72A4-4979-B0C1-5249EB165816}.Release|x64.ActiveCfg = Release|x64
+		{246DF206-72A4-4979-B0C1-5249EB165816}.Release|x64.Build.0 = Release|x64
+		{246DF206-72A4-4979-B0C1-5249EB165816}.Release|x86.ActiveCfg = Release|x64
+		{246DF206-72A4-4979-B0C1-5249EB165816}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

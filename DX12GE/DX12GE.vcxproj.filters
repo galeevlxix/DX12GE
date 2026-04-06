@@ -222,9 +222,6 @@
     <ClCompile Include="Engine\Base\src\SceneJsonSerializer.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Base\src\CommandExecutor.cpp">
-      <Filter>Исходные файлы\Engine\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Graphics\src\CrossAdapterResource.cpp">
       <Filter>Исходные файлы\Engine\Graphics</Filter>
     </ClCompile>
@@ -318,12 +315,6 @@
     <ClCompile Include="Engine\Physics\PhysicsManager.cpp">
       <Filter>Исходные файлы\Engine\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\NodeGraph\src\PhysicalObjectNode.cpp">
-      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\ImGuiController.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\AI\src\AIComponent.cpp">
       <Filter>Исходные файлы\Engine\AI</Filter>
     </ClCompile>
@@ -357,32 +348,14 @@
     <ClCompile Include="Engine\NodeGraph\src\SkyBoxNode.cpp">
       <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_widgets.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_demo.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_draw.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_impl_dx12.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_impl_win32.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ImGui\src\imgui_tables.cpp">
-      <Filter>Исходные файлы\Engine\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Base\src\LuaManager.cpp">
       <Filter>Исходные файлы\Engine\Base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Pipelines\src\OutputFinalPipeline.cpp">
       <Filter>Исходные файлы\Engine\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\NodeGraph\src\PhysicalObjectNode.cpp">
+      <Filter>Исходные файлы\Engine\NodeGraph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -521,9 +494,6 @@
     <ClInclude Include="Engine\Base\SceneJsonSerializer.h">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Base\CommandExecutor.h">
-      <Filter>Файлы заголовков\Engine\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Graphics\CrossAdapterResource.h">
       <Filter>Файлы заголовков\Engine\Graphics</Filter>
     </ClInclude>
@@ -635,9 +605,6 @@
     <ClInclude Include="Engine\NodeGraph\AINode.h">
       <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\NodeGraph\PhysicalObjectNode.h">
-      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
-    </ClInclude>
     <ClInclude Include="EngineConfig.h">
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
@@ -646,33 +613,6 @@
     </ClInclude>
     <ClInclude Include="Engine\Physics\PhysicsManager.h">
       <Filter>Файлы заголовков\Engine\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ImGui\imconfig.h">
-      <Filter>Файлы заголовков\Engine\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ImGui\imgui.h">
-      <Filter>Файлы заголовков\Engine\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ImGui\imgui_impl_dx12.h">
-      <Filter>Файлы заголовков\Engine\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ImGui\imgui_impl_win32.h">
-      <Filter>Файлы заголовков\Engine\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ImGui\imgui_internal.h">
-      <Filter>Файлы заголовков\Engine\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ImGui\ImGuiController.h">
-      <Filter>Файлы заголовков\Engine\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ImGui\imstb_rectpack.h">
-      <Filter>Файлы заголовков\Engine\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ImGui\imstb_textedit.h">
-      <Filter>Файлы заголовков\Engine\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ImGui\imstb_truetype.h">
-      <Filter>Файлы заголовков\Engine\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="Engine\AI\AIComponent.h">
       <Filter>Файлы заголовков\Engine\AI</Filter>
@@ -716,6 +656,9 @@
     <ClInclude Include="Engine\Pipelines\OutputFinalPipeline.h">
       <Filter>Файлы заголовков\Engine\Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\NodeGraph\PhysicalObjectNode.h">
+      <Filter>Файлы заголовков\Engine\NodeGraph</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX12GE.rc">
@@ -723,103 +666,21 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\BE_ICON.ico">
-      <Filter>Файлы ресурсов</Filter>
-    </Image>
-    <Image Include="icon1.ico">
-      <Filter>Файлы ресурсов</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Resources\Shaders\PixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Default</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\VertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Default</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\SimplePixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Simple</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\SimpleVertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Simple</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\TexturedPixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Textured</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\TexturedVertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Textured</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ShadowMapPixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Shadow</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ShadowMapVertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Shadow</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\GeometryPassPixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\GeometryPass</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\GeometryPassVertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\GeometryPass</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\LightPassPixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\LightPass</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\LightPassVertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\LightPass</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticleVertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticlePixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticleGeometryShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\ParticleComputeShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\ParticleSystemShaders\SortParticleComputeShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\MergingPixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Merging</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\MergingVertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Merging</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\SSRPixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\SSR</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\SSRVertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\SSR</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\SkyboxVertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Skybox</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\SkyboxPixelShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\Skybox</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\OutputFinalVertexShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\OutputFinalResult</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\OutputFinalFragmentShader.hlsl">
-      <Filter>Файлы ресурсов\Shaders\OutputFinalResult</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
     <None Include="Engine\Base\SimpleMath.inl">
       <Filter>Файлы заголовков\Engine\Base</Filter>
     </None>
     <None Include="..\README.md" />
-    <None Include="Resources\scene lite.json">
+    <None Include="..\Resources\scene lite(Timur).json">
       <Filter>Файлы ресурсов</Filter>
     </None>
-    <None Include="Resources\scene lite(Timur).json">
+    <None Include="..\Resources\scene lite.json">
       <Filter>Файлы ресурсов</Filter>
     </None>
-    <None Include="Resources\scenePhysics.json">
+    <None Include="..\Resources\scene.json">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
+    <None Include="..\Resources\scenePhysics.json">
       <Filter>Файлы ресурсов</Filter>
     </None>
   </ItemGroup>
@@ -827,5 +688,87 @@
     <Text Include="Engine\Lua\scripts\TestScript.lua">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Resources\Shaders\ParticleSystemShaders\ParticleComputeShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\ParticleSystemShaders\ParticleGeometryShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\ParticleSystemShaders\ParticlePixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\ParticleSystemShaders\ParticleVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\ParticleSystemShaders\SortParticleComputeShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\ParticleSystem</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\GeometryPassPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\GeometryPass</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\GeometryPassVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\GeometryPass</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\LightPassPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\LightPass</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\LightPassVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\LightPass</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\MergingPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Merging</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\MergingVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Merging</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\OutputFinalFragmentShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\OutputFinalResult</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\OutputFinalVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\OutputFinalResult</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\PixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Default</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\VertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Default</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\ShadowMapPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\ShadowMapVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\SimplePixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Simple</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\SimpleVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Simple</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\SkyboxPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Skybox</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\SkyboxVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Skybox</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\SSRPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\SSR</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\SSRVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\SSR</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\TexturedPixelShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Textured</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shaders\TexturedVertexShader.hlsl">
+      <Filter>Файлы ресурсов\Shaders\Textured</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Resources\BE_ICON.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>

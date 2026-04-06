@@ -14,7 +14,7 @@
     "scripts": []
   },
   {
-    "file_path": "../../DX12GE/Resources/Skybox Textures/snowcube1024.dds",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Skybox Textures/snowcube1024.dds",
     "is_visible": true,
     "node_path": "root/SkyBoxNode",
     "node_type": 10,
@@ -30,7 +30,7 @@
     "scripts": []
   },
   {
-    "file_path": "../../DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
     "is_current": true,
     "is_visible": true,
     "node_path": "root/fp_player",
@@ -94,21 +94,7 @@
     "scripts": []
   },
   {
-    "is_current": true,
-    "node_path": "root/fp_player/main_camera/AudioListenerNode",
-    "node_type": 13,
-    "trans_pos_x": 0.0,
-    "trans_pos_y": -0.0,
-    "trans_pos_z": 0.0,
-    "trans_rot_x": 0.0,
-    "trans_rot_y": 0.0,
-    "trans_rot_z": 0.0,
-    "trans_scl_x": 1.0,
-    "trans_scl_y": 1.0,
-    "trans_scl_z": 1.0
-  },
-  {
-    "file_path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/gaz/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1",
     "node_type": 12,
@@ -1390,7 +1376,7 @@
     "scripts": []
   },
   {
-    "file_path": "../../DX12GE/Resources/Models/cars/audi/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/cars/audi/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1/audi1",
     "node_type": 12,
@@ -1411,7 +1397,7 @@
     ]
   },
   {
-    "file_path": "../../DX12GE/Resources/Models/cars/police/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/cars/police/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1/police1",
     "node_type": 12,
@@ -1431,7 +1417,7 @@
     "scripts": []
   },
   {
-    "file_path": "../../DX12GE/Resources/Models/knight-artorias/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/knight-artorias/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1/knight",
     "node_type": 12,
@@ -1451,7 +1437,7 @@
     "scripts": []
   },
   {
-    "file_path": "../../DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1/npc1",
     "node_type": 12,
@@ -1470,7 +1456,7 @@
     "scripts": []
   },
   {
-    "file_path": "../../DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1/npc2",
     "node_type": 12,
@@ -1489,7 +1475,7 @@
     "scripts": []
   },
   {
-    "file_path": "../../DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1/npc3",
     "node_type": 12,
@@ -1508,7 +1494,7 @@
     "scripts": []
   },
   {
-    "file_path": "../../DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas1/npc4",
     "node_type": 12,
@@ -1527,7 +1513,7 @@
     "scripts": []
   },
   {
-    "file_path": "../../DX12GE/Resources/Models/gaz/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/gaz/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas2",
     "node_type": 12,
@@ -1676,7 +1662,7 @@
     "scripts": []
   },
   {
-    "file_path": "../../DX12GE/Resources/Models/cars/audi/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/cars/audi/scene.gltf",
     "is_visible": true,
     "node_path": "root/gas2/audi2",
     "node_type": 12,
@@ -1696,29 +1682,10 @@
     "scripts": []
   },
   {
-    "audio_doppler": true,
-    "audio_loop": true,
-    "audio_pitch": 1.0,
-    "audio_ubiquitous": false,
-    "audio_volume": 1.0,
-    "file_path": "../../DX12GE/Resources/Sounds/blob-001 rev.wav",
-    "node_path": "root/gas2/AudioEmitterNode2",
-    "node_type": 14,
-    "trans_pos_x": 0.0,
-    "trans_pos_y": 5.0,
-    "trans_pos_z": 0.0,
-    "trans_rot_x": 0.0,
-    "trans_rot_y": 0.0,
-    "trans_rot_z": 0.0,
-    "trans_scl_x": 1.0,
-    "trans_scl_y": 1.0,
-    "trans_scl_z": 1.0
-  },
-  {
     "cam_anchor_x": 0.0,
     "cam_anchor_y": 4.5,
     "cam_anchor_z": 0.0,
-    "file_path": "../../DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
+    "file_path": "C:/Users/gtimu/source/repos/DX12GE/Resources/Models/Katamari Objects/prince_katamari_damacy/scene.gltf",
     "fly_rad_max": 30.0,
     "fly_rad_min": 2.0,
     "is_visible": true,
@@ -1744,25 +1711,6 @@
     "mass": 1.0,
     "friction_scale": 0.2,
     "scripts": []
-  },
-  {
-    "audio_doppler": false,
-    "audio_loop": false,
-    "audio_pitch": 1.0,
-    "audio_ubiquitous": false,
-    "audio_volume": 1.0,
-    "file_path": "../../DX12GE/Resources/Sounds/music.wav",
-    "node_path": "root/tp_player/AudioEmitterNode",
-    "node_type": 14,
-    "trans_pos_x": 0.0,
-    "trans_pos_y": -0.0,
-    "trans_pos_z": 0.0,
-    "trans_rot_x": 0.0,
-    "trans_rot_y": 0.0,
-    "trans_rot_z": 0.0,
-    "trans_scl_x": 1.0,
-    "trans_scl_y": 1.0,
-    "trans_scl_z": 1.0
   },
   {
     "cam_fov": 60.0,

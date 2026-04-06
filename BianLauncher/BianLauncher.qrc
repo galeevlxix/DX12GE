@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/BianLauncher">
+        <file>BE_ICON.ico</file>
+    </qresource>
+</RCC>

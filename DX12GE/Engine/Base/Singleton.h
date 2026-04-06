@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SceneJsonSerializer.h"
-#include "CommandExecutor.h"
 #include "SelectionSystem.h"
 #include "../Graphics/DebugRenderSystem.h"
 #include "../NodeGraph/NodeGraphSystem.h"
@@ -19,7 +18,6 @@ public:
 	static void Initialize();
 	static void Destroy();
 
-	static CommandExecutor* GetExecutor();
 	static DebugRenderSystem* GetDebugRender();
 	static SelectionSystem* GetSelection();
 	static NodeGraphSystem* GetNodeGraph();

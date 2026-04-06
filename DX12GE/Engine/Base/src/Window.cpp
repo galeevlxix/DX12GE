@@ -107,6 +107,8 @@ void Window::SetFullscreen(bool fullscreen)
     {
         m_Fullscreen = fullscreen;
 
+        if (EngineConfig::Output != EngineConfigRuntimeOutput::RUNTIME_OUTPUT_WINDOW) return;
+
         if (m_Fullscreen) // Switching to fullscreen.
         {
             // Store the current window dimensions so they can be restored 
@@ -173,11 +175,16 @@ void Window::OnUpdate(UpdateEventArgs&)
     if (auto pGame = m_pGame.lock())
     {
         m_FrameCounter++;
-        LuaManager::PerformUpdate();
+
+        if (EngineConfig::Mode == EngineConfigRuntimeMode::RUNTIME_MODE_PLAYING)
+        {
+            LuaManager::PerformUpdate();
+        }
+        
         UpdateEventArgs updateEventArgs(m_UpdateClock.GetDeltaSeconds(), m_UpdateClock.GetTotalSeconds());
         pGame->OnUpdate(updateEventArgs);
 
-        if (m_CurrentCursorState == CURSOR_STATE_HIDE_AND_GRAB)
+        if (EngineConfig::Mode == EngineConfigRuntimeMode::RUNTIME_MODE_PLAYING && m_CurrentCursorState == CURSOR_STATE_HIDE_AND_GRAB)
         {
             CenterCursor();
         }
@@ -197,105 +204,125 @@ void Window::OnRender(RenderEventArgs&)
 
 void Window::OnKeyPressed(KeyEventArgs& e)
 {
-    if (EngineConfig::IsUsingLuaInput)
+    switch (EngineConfig::Mode)
     {
-        LuaManager::ProceedKeyBoardInput(e.Key, true);
-    }
-    
-    if (!EngineConfig::IsReleaseMode)
-    {
+    case EngineConfigRuntimeMode::RUNTIME_MODE_EDITING:
         if (auto pGame = m_pGame.lock())
         {
             pGame->OnKeyPressed(e);
         }
+        break;
+
+    case EngineConfigRuntimeMode::RUNTIME_MODE_PLAYING:
+        LuaManager::ProceedKeyBoardInput(e.Key, true);
+        break;
+
+    default:
+        throw (std::runtime_error("Unknown Runtime Mode"));
     }
 }
 
 void Window::OnKeyReleased(KeyEventArgs& e)
 {
-    if (EngineConfig::IsUsingLuaInput)
+    switch (EngineConfig::Mode)
     {
-        LuaManager::ProceedKeyBoardInput(e.Key, false);
-    }
-    
-    if (!EngineConfig::IsReleaseMode)
-    {
+    case EngineConfigRuntimeMode::RUNTIME_MODE_EDITING:
         if (auto pGame = m_pGame.lock())
         {
             pGame->OnKeyReleased(e);
         }
+        break;
+
+    case EngineConfigRuntimeMode::RUNTIME_MODE_PLAYING:
+        LuaManager::ProceedKeyBoardInput(e.Key, false);
+        break;
+
+    default:
+        throw (std::runtime_error("Unknown Runtime Mode"));
     }
 }
 
 // The mouse was moved
 void Window::OnMouseMoved(MouseMotionEventArgs& e)
 {
-    if (EngineConfig::IsUsingLuaInput)
+    switch (EngineConfig::Mode)
     {
-        LuaManager::ProceedMouseMovementInput(e);
-    }
-    
-    if (!EngineConfig::IsReleaseMode)
-    {
+    case EngineConfigRuntimeMode::RUNTIME_MODE_EDITING:
         if (auto pGame = m_pGame.lock())
         {
             pGame->OnMouseMoved(e);
-
         }
+        break;
+
+    case EngineConfigRuntimeMode::RUNTIME_MODE_PLAYING:
+        LuaManager::ProceedMouseMovementInput(e);
+        break;
+
+    default:
+        throw (std::runtime_error("Unknown Runtime Mode"));
     }
 }
 
 // A button on the mouse was pressed
 void Window::OnMouseButtonPressed(MouseButtonEventArgs& e)
 {
-    if (EngineConfig::IsUsingLuaInput)
+    switch (EngineConfig::Mode)
     {
-        LuaManager::ProceedMouseClickInput(e, true);
-
-    }
-    
-    if (!EngineConfig::IsReleaseMode)
-    {
+    case EngineConfigRuntimeMode::RUNTIME_MODE_EDITING:
         if (auto pGame = m_pGame.lock())
         {
             pGame->OnMouseButtonPressed(e);
         }
-    }
+        break;
 
+    case EngineConfigRuntimeMode::RUNTIME_MODE_PLAYING:
+        LuaManager::ProceedMouseClickInput(e, true);
+        break;
+
+    default:
+        throw (std::runtime_error("Unknown Runtime Mode"));
+    }
 }
 
 // A button on the mouse was released
 void Window::OnMouseButtonReleased(MouseButtonEventArgs& e)
 {
-    if (EngineConfig::IsUsingLuaInput)
+    switch (EngineConfig::Mode)
     {
-        LuaManager::ProceedMouseClickInput(e, false);
-    }
-     
-    if (!EngineConfig::IsReleaseMode)
-    {
+    case EngineConfigRuntimeMode::RUNTIME_MODE_EDITING:
         if (auto pGame = m_pGame.lock())
         {
             pGame->OnMouseButtonReleased(e);
         }
+        break;
+
+    case EngineConfigRuntimeMode::RUNTIME_MODE_PLAYING:
+        LuaManager::ProceedMouseClickInput(e, false);
+        break;
+
+    default:
+        throw (std::runtime_error("Unknown Runtime Mode"));
     }
 }
 
 // The mouse wheel was moved.
 void Window::OnMouseWheel(MouseWheelEventArgs& e)
 {
-    if (EngineConfig::IsUsingLuaInput)
+    switch (EngineConfig::Mode)
     {
-        LuaManager::ProceedMouseWheelInput(e);
-    }
-    
-    if (!EngineConfig::IsReleaseMode)
-    {
+    case EngineConfigRuntimeMode::RUNTIME_MODE_EDITING:
         if (auto pGame = m_pGame.lock())
         {
             pGame->OnMouseWheel(e);
         }
+        break;
 
+    case EngineConfigRuntimeMode::RUNTIME_MODE_PLAYING:
+        LuaManager::ProceedMouseWheelInput(e);
+        break;
+
+    default:
+        throw (std::runtime_error("Unknown Runtime Mode"));
     }
 }
 
@@ -403,7 +430,10 @@ void Window::UpdateRenderTargetViews()
 
 void Window::UpdateWindowText(std::wstring newText)
 {
-    SetWindowTextW(m_hWnd, newText.c_str());
+    if (EngineConfig::Output == EngineConfigRuntimeOutput::RUNTIME_OUTPUT_WINDOW)
+    {
+        SetWindowTextW(m_hWnd, newText.c_str());
+    }    
 }
 
 void Window::SetCursor(WindowCursorState cursorState)

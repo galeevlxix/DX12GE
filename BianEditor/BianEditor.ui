@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BianEditorClass</class>
+ <widget class="QMainWindow" name="BianEditorClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1288</width>
+    <height>837</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">[scene file name] - [project name] - Bian Engine</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="BianEditor.qrc">
+    <normaloff>:/BianEditor/BE_ICON.ico</normaloff>:/BianEditor/BE_ICON.ico</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="BianEditor.qrc"/>
+ </resources>
+ <connections/>
+</ui>

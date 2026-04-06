@@ -116,5 +116,4 @@ private:
     void GenerateCollisions()const;
     void UpdateObjectsTransforms(UpdateEventArgs& e);
     void DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> commandList, XMMATRIX viewProjMatrix);
-    void RefreshTitle(UpdateEventArgs& e);
 };

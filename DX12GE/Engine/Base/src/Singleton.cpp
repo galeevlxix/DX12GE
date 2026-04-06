@@ -1,6 +1,5 @@
 #include "../Singleton.h"
 
-static CommandExecutor* Executor = nullptr;
 static DebugRenderSystem* DebugRender = nullptr;
 static SelectionSystem* Selection = nullptr;
 static NodeGraphSystem* NodeGraph = nullptr;
@@ -18,7 +17,6 @@ void Singleton::Initialize()
 	if (m_IsInitialized) return;
 
 	NodeIdGen = new NodeIdGenerator();
-	Executor = new CommandExecutor();
 	DebugRender = new DebugRenderSystem();
 	Selection = new SelectionSystem();
 	NodeGraph = new NodeGraphSystem();
@@ -37,13 +35,11 @@ void Singleton::Destroy()
 
 	m_IsInitialized = false;
 
-	Executor->Exit();
 	DebugRender->Destroy();
 	Selection->Destroy();
 	NodeGraph->Destroy();
 	Audio->Shutdown();
 
-	//delete Executor;
 	delete DebugRender;
 	delete Selection;
 	delete NodeGraph;
@@ -52,7 +48,6 @@ void Singleton::Destroy()
 	delete Audio;
 	delete NodeIdGen;
 
-	Executor = nullptr;
 	DebugRender = nullptr;
 	Selection = nullptr;
 	NodeGraph = nullptr;
@@ -61,11 +56,6 @@ void Singleton::Destroy()
 	Audio = nullptr;
 	NodeIdGen = nullptr;
 	Wind = nullptr;
-}
-
-CommandExecutor* Singleton::GetExecutor()
-{
-	return Executor;
 }
 
 DebugRenderSystem* Singleton::GetDebugRender()

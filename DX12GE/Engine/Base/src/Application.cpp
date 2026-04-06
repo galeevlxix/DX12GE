@@ -2,10 +2,9 @@
 #include "../resource.h"
 #include "../Window.h"
 #include "../CommandQueue.h"
-#include "../DX12GE/Engine/Base/LuaManager.h"
+#include "../LuaManager.h"
 #include "../Game.h"
-#include "../../ImGui/ImGuiController.h"
-#include "../../ImGui/imgui_impl_win32.h"
+#include "../../../EngineConfig.h"
 
 constexpr wchar_t WINDOW_CLASS_NAME[] = L"DX12RenderWindowClass";
 
@@ -14,13 +13,10 @@ using WindowMap = std::map< HWND, WindowPtr >;
 using WindowNameMap = std::map< std::wstring, WindowPtr >;
 
 static Application* gs_pSingelton = nullptr;
-static WindowMap gs_Windows;
+static WindowMap gs_Windows; 
 static WindowNameMap gs_WindowByName;
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-// Forward declare message handler from imgui_impl_win32.cpp
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // A wrapper struct to allow shared pointers for the window class.
 struct MakeWindow : public Window
@@ -30,43 +26,39 @@ struct MakeWindow : public Window
 
 Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSupported(false)
 {
-    // Windows 10 Creators update adds Per Monitor V2 DPI awareness context.
-    // Using this awareness context allows the client area of the window 
-    // to achieve 100% scaling while still allowing non-client window content to 
-    // be rendered in a DPI sensitive fashion.
-    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    if (EngineConfig::Output == EngineConfigRuntimeOutput::RUNTIME_OUTPUT_WINDOW)
+    {
+        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
 #if defined(_DEBUG)
-    // Always enable the debug layer before doing anything DX12 related
-    // so all possible errors generated while creating DX12 objects
-    // are caught by the debug layer.
-    ComPtr<ID3D12Debug> debugInterface;
-    ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)));
-    debugInterface->EnableDebugLayer();
+        ComPtr<ID3D12Debug> debugInterface;
+        ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)));
+        debugInterface->EnableDebugLayer();
 #endif
 
-    HICON loadedIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(APP_ICON));
-    if (!loadedIcon) 
-    {
-        MessageBoxW(nullptr, L"Icon not found!", L"Error", MB_OK);
-    }
+        HICON loadedIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(APP_ICON));
+        if (!loadedIcon)
+        {
+            MessageBoxW(nullptr, L"Icon not found!", L"Error", MB_OK);
+        }
 
-    WNDCLASSEXW wndClass = { 0 };
+        WNDCLASSEXW wndClass = { 0 };
 
-    wndClass.cbSize = sizeof(WNDCLASSEX);
-    wndClass.style = CS_HREDRAW | CS_VREDRAW;
-    wndClass.lpfnWndProc = &WndProc;
-    wndClass.hInstance = m_hInstance;
-    wndClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wndClass.hIcon = loadedIcon;
-    wndClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    wndClass.lpszMenuName = nullptr;
-    wndClass.lpszClassName = WINDOW_CLASS_NAME;
-    wndClass.hIconSm = loadedIcon;
+        wndClass.cbSize = sizeof(WNDCLASSEX);
+        wndClass.style = CS_HREDRAW | CS_VREDRAW;
+        wndClass.lpfnWndProc = &WndProc;
+        wndClass.hInstance = m_hInstance;
+        wndClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
+        wndClass.hIcon = loadedIcon;
+        wndClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+        wndClass.lpszMenuName = nullptr;
+        wndClass.lpszClassName = WINDOW_CLASS_NAME;
+        wndClass.hIconSm = loadedIcon;
 
-    if (!RegisterClassExW(&wndClass))
-    {
-        MessageBoxA(NULL, "Unable to register the window class.", "Error", MB_OK | MB_ICONERROR);
+        if (!RegisterClassExW(&wndClass))
+        {
+            MessageBoxA(NULL, "Unable to register the window class.", "Error", MB_OK | MB_ICONERROR);
+        }
     }
 
     auto adapters = GetAdapters();
@@ -117,6 +109,11 @@ Application::Application(HINSTANCE hInst) : m_hInstance(hInst) , m_TearingSuppor
 
 void Application::Create(HINSTANCE hInst)
 {
+    assert(
+        EngineConfig::Mode != EngineConfigRuntimeMode::RUNTIME_MODE_UNKNOWN &&
+        EngineConfig::Output != EngineConfigRuntimeOutput::RUNTIME_OUTPUT_UNKNOWN &&
+        "EngineConfig::Mode and EngineConfig::Output should be set before creating the application instance.");
+
     if (!gs_pSingelton)
     {
         gs_pSingelton = new Application(hInst);
@@ -319,8 +316,28 @@ std::shared_ptr<Window> Application::CreateRenderWindow(const std::wstring& wind
     return pWindow;
 }
 
+void Application::CreateRenderViewport(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync)
+{
+    WindowPtr pWindow = std::make_shared<MakeWindow>(hWnd, windowName, clientWidth, clientHeight, vSync);
+    gs_Windows.insert(WindowMap::value_type(hWnd, pWindow));
+    gs_WindowByName.insert(WindowNameMap::value_type(windowName, pWindow));
+}
+
+// Remove a window from our window lists.
+static void RemoveWindow(HWND hWnd)
+{
+    WindowMap::iterator windowIter = gs_Windows.find(hWnd);
+    if (windowIter != gs_Windows.end())
+    {
+        WindowPtr pWindow = windowIter->second;
+        gs_WindowByName.erase(pWindow->GetWindowName());
+        gs_Windows.erase(windowIter);
+    }
+}
+
 void Application::DestroyWindow(std::shared_ptr<Window> window)
 {
+    RemoveWindow(window->GetWindowHandle());
     if (window) window->Destroy();
 }
 
@@ -335,7 +352,7 @@ void Application::DestroyWindow(const std::wstring& windowName)
 
 std::shared_ptr<Window> Application::GetWindowByName(const std::wstring& windowName)
 {
-    std::shared_ptr<Window> window;
+    std::shared_ptr<Window> window = nullptr;
     WindowNameMap::iterator iter = gs_WindowByName.find(windowName);
     if (iter != gs_WindowByName.end())
     {
@@ -345,14 +362,15 @@ std::shared_ptr<Window> Application::GetWindowByName(const std::wstring& windowN
     return window;
 }
 
-
 int Application::Run(std::shared_ptr<Game> pGame)
 {
     if (!pGame->Initialize()) return 1;
     if (!pGame->LoadContent()) return 2;
 
-    MSG msg = { 0 };
     LuaManager::Start();
+
+    MSG msg = { 0 };
+    
     while (msg.message != WM_QUIT)
     {
         if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
@@ -454,16 +472,14 @@ UINT Application::GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE ty
     return PrimaryDevice->GetDescriptorHandleIncrementSize(type);
 }
 
-// Remove a window from our window lists.
-static void RemoveWindow(HWND hWnd)
+int Application::GetWindowCount()
 {
-    WindowMap::iterator windowIter = gs_Windows.find(hWnd);
-    if (windowIter != gs_Windows.end())
+    if (gs_Windows.size() != gs_WindowByName.size())
     {
-        WindowPtr pWindow = windowIter->second;
-        gs_WindowByName.erase(pWindow->GetWindowName());
-        gs_Windows.erase(windowIter);
+        throw std::runtime_error("Invalid count of windows");
     }
+    size_t count = gs_Windows.size();
+    return static_cast<int>(count);
 }
 
 // Convert the message ID into a MouseButton ID
@@ -511,9 +527,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 
     if (pWindow)
     {
-        if (ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam))
-            return true;
-
         switch (message)
         {
         case WM_PAINT:
@@ -530,9 +543,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         case WM_SYSKEYDOWN:
         case WM_KEYDOWN:
         {
-            if (ImGuiController::CursorOnWindow())
-                break;
-
             MSG charMsg;
             // Get the Unicode character (UTF-16)
             unsigned int c = 0;
@@ -585,9 +595,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
             break;
         case WM_MOUSEMOVE:
         {
-            if (ImGuiController::CursorOnWindow())
-                break;
-
             bool lButton = (wParam & MK_LBUTTON) != 0;
             bool rButton = (wParam & MK_RBUTTON) != 0;
             bool mButton = (wParam & MK_MBUTTON) != 0;
@@ -605,9 +612,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         case WM_RBUTTONDOWN:
         case WM_MBUTTONDOWN:
         {
-            if (ImGuiController::CursorOnWindow())
-                break;
-
             bool lButton = (wParam & MK_LBUTTON) != 0;
             bool rButton = (wParam & MK_RBUTTON) != 0;
             bool mButton = (wParam & MK_MBUTTON) != 0;
@@ -640,9 +644,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         break;
         case WM_MOUSEWHEEL:
         {
-            if (ImGuiController::CursorOnWindow())
-                break;
-
             // The distance the mouse wheel is rotated.
             // A positive value indicates the wheel was rotated to the right.
             // A negative value indicates the wheel was rotated to the left.
@@ -672,8 +673,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         {
             int width = ((int)(short)LOWORD(lParam));
             int height = ((int)(short)HIWORD(lParam));
-
-            
 
             ResizeEventArgs resizeEventArgs(width, height);
             pWindow->OnResize(resizeEventArgs);

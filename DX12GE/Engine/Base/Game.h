@@ -17,6 +17,7 @@ public:
      * Create the DirectX demo using the specified window dimensions.
      */
     Game(const std::wstring& name, int width, int height, bool vSync);
+
     virtual ~Game();
 
     int GetClientWidth() const

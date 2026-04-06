@@ -400,7 +400,8 @@ void SceneJsonSerializer::Load(ComPtr<ID3D12GraphicsCommandList2> commandList)
 
 	std::cout << "End of scene object loading." << std::endl;
 
-	if (!EngineConfig::IsReleaseMode)
+	// IN EDITOR
+	if (true)
 	{
 		for (const auto& node : nodesData)
 		{

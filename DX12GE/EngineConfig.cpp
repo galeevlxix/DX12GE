@@ -1,4 +1,4 @@
 #include "EngineConfig.h"
 
-bool EngineConfig::IsReleaseMode = true;
-bool EngineConfig::IsUsingLuaInput = false;
+EngineConfigRuntimeOutput EngineConfig::Output = EngineConfigRuntimeOutput::RUNTIME_OUTPUT_UNKNOWN;
+EngineConfigRuntimeMode EngineConfig::Mode = EngineConfigRuntimeMode::RUNTIME_MODE_UNKNOWN;

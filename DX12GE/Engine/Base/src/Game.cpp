@@ -1,6 +1,7 @@
 #include "../Game.h"
 #include "../Application.h"
 #include "../Window.h"
+#include "../../../EngineConfig.h"
 
 Game::Game(const std::wstring& name, int width, int height, bool vSync) : m_Name(name), m_Width(width), m_Height(height), m_vSync(vSync)
 {
@@ -21,7 +22,22 @@ bool Game::Initialize()
         return false;
     }
 
-    m_pWindow = Application::Get().CreateRenderWindow(m_Name, m_Width, m_Height, m_vSync);
+    switch (EngineConfig::Output)
+    {
+    case EngineConfigRuntimeOutput::RUNTIME_OUTPUT_EDITOR:
+        m_pWindow = Application::Get().GetWindowByName(m_Name);
+        if (!m_pWindow)
+        {
+            throw std::runtime_error("Viewport window was nullptr");
+        }
+        break;
+    case EngineConfigRuntimeOutput::RUNTIME_OUTPUT_WINDOW:
+        m_pWindow = Application::Get().CreateRenderWindow(m_Name, m_Width, m_Height, m_vSync);
+        break;
+    default:
+        throw std::runtime_error("Unknown runtime output type");
+    }
+
     m_pWindow->RegisterCallbacks(shared_from_this());
     m_pWindow->Show();
 
@@ -32,6 +48,7 @@ void Game::Destroy()
 {
     Application::Get().DestroyWindow(m_pWindow);
     m_pWindow.reset();
+    m_pWindow = nullptr;
 }
 
 void Game::OnUpdate(UpdateEventArgs& e)

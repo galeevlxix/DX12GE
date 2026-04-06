@@ -1,19 +1,15 @@
 #include "SingleGpuGame.h"
 
-#include "ImGui/ImGuiController.h"
 #include "Base/SceneJsonSerializer.h"
-#include "Graphics/ResourceStorage.h"
 #include "Graphics/ShaderResources.h"
-#include "Base/CommandExecutor.h"
 #include "../DX12GE/Engine/Physics/PhysicsManager.h"
-#include "../DX12GE/EngineConfig.h"
 
-#include <sstream>
 #include <string>
 #include <chrono>
-#include <fstream>
 
 #include "NodeGraph/PhysicalObjectNode.h"
+
+#include "../EngineConfig.h"
 
 SingleGpuGame::SingleGpuGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
                                                                                        , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
@@ -55,7 +51,7 @@ bool SingleGpuGame::Initialize()
     m_FinalBuffer = std::make_shared<TextureBuffer>();
     m_FinalBuffer->SetName(L"Final Buffer");
     m_FinalBuffer->Init(m_Device, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, false);
-
+     
     m_DepthBuffer = std::make_shared<DepthBuffer>();
     m_DepthBuffer->Init(GraphicAdapterPrimary);
     m_DepthBuffer->Resize(GetClientWidth(), GetClientHeight());
@@ -65,28 +61,10 @@ bool SingleGpuGame::Initialize()
     return true;
 }
 
-static Node3D* CreateObj(const std::string& nodePath, ComPtr<ID3D12GraphicsCommandList2> commandList, const std::string& filePath)
-{
-    Node3D* node = Singleton::GetNodeGraph()->CreateNewNodeInScene(nodePath, NODE_TYPE_OBJECT3D);
-    if (Object3DNode* obj3D = dynamic_cast<Object3DNode*>(node))
-    {
-        if (!obj3D->Create(commandList, filePath))
-        {
-            printf("Warning! The mesh node %s has not been initialized!\n", node->GetName().c_str());
-        }
-    }
-    return node;
-}
-
 bool SingleGpuGame::LoadContent()
 {
     shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
     ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-
-    if (!EngineConfig::IsReleaseMode)
-    {
-        ImGuiController::Create(m_pWindow);
-    }    
 
     Singleton::Initialize();
     Singleton::SetWindow(m_pWindow);
@@ -116,13 +94,7 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 {
     if (!m_Initialized || !Singleton::IsInitialized()) return;
     super::OnUpdate(e);
-
-    if (!EngineConfig::IsReleaseMode)
-    {
-        ImGuiController::OnRenderStart();
-        Singleton::GetExecutor()->Update();
-    }   
-
+     
     float elapsedTime = static_cast<float>(e.ElapsedTime);
 
     Singleton::GetNodeGraph()->GetRoot()->OnUpdate(e.ElapsedTime);
@@ -136,21 +108,18 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 	const Vector3& cameraPos = camera->GetWorldPosition(); 
 
     ShaderResources::GetWorldCB()->LightProps.CameraPos = Vector4(cameraPos);
-
     ShaderResources::GetSSRCB()->ViewProjection = viewProj;
     ShaderResources::GetSSRCB()->CameraPos = Vector4(cameraPos);
 
     m_ParticleSystem.OnUpdate(elapsedTime, m_stopParticles, viewProj, cameraPos);
     m_CascadedShadowMap.Update(cameraPos, ShaderResources::GetWorldCB()->DirLight.Direction);
     
-    if (!EngineConfig::IsReleaseMode)
+    if (EngineConfig::Mode == EngineConfigRuntimeMode::RUNTIME_MODE_EDITING)
     {
         Singleton::GetDebugRender()->Clear();
         Singleton::GetDebugRender()->DrawCellularFieldAndAxes(cameraPos);
         Singleton::GetSelection()->DrawDebug();
     }    
-
-    RefreshTitle(e);
 }
 
 void SingleGpuGame::GenerateCollisions() const
@@ -362,15 +331,10 @@ void SingleGpuGame::OutputFinalResult(ComPtr<ID3D12GraphicsCommandList2> command
 
     commandList->SetDescriptorHeaps(1, DescriptorHeaps::GetCBVHeap(GraphicAdapterPrimary).GetAddressOf());
     
-    /*m_OutputFinalPipeline.Set(commandList);
+    m_OutputFinalPipeline.Set(commandList);
     commandList->SetGraphicsRootDescriptorTable(0, m_FinalBuffer->SrvGPU());
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandList->DrawInstanced(3, 1, 0, 0);*/
-
-    if (!EngineConfig::IsReleaseMode)
-    {
-        ImGuiController::OnRenderEnd(1, commandList, m_FinalBuffer);
-    }
+    commandList->DrawInstanced(3, 1, 0, 0);
 
     TransitionResource(commandList, backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 }
@@ -474,18 +438,6 @@ void SingleGpuGame::OnKeyPressed(KeyEventArgs& e)
 
     switch (e.Key)
     {
-    case KeyCode::Escape:
-        Application::Get().Quit(0);
-        break;
-    case KeyCode::F11:
-        m_pWindow->ToggleFullscreen();
-        break;
-    case KeyCode::V:
-        m_pWindow->ToggleVSync();
-        break;
-    case KeyCode::U:
-        ImGuiController::ChangeVisiblity();
-        break;
     case KeyCode::P:
         m_stopParticles = !m_stopParticles;
         break;
@@ -552,52 +504,9 @@ void SingleGpuGame::DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> c
     }
 }
 
-void SingleGpuGame::RefreshTitle(UpdateEventArgs& e)
-{
-    static unsigned long frameCounter = 0;
-    static double timer = 0.0;
-
-    static const std::wstring winName = L"BianGame";
-
-    if (timer >= 1.0)
-    {
-        std::wstring fps = L" | Fps " + std::to_wstring(frameCounter);
-        fps = Align(fps, 10);
-
-        std::wstring mg = L" | Single-GPU";
-        mg = Align(mg, 10);
-
-        std::wstring cPos = L" | Pos " +
-            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldPosition().x, 1) + L"; " +
-            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldPosition().y, 1) + L"; " +
-            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldPosition().z, 1);
-        cPos = Align(cPos, 21);
-
-        std::wstring cTar = L" | Tar " +
-            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldDirection().x, 1) + L"; " +
-            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldDirection().y, 1) + L"; " +
-            rStr(Singleton::GetNodeGraph()->GetCurrentCamera()->GetWorldDirection().z, 1);
-        cTar = Align(cTar, 21);
-
-        m_pWindow->UpdateWindowText(winName + mg + fps + cPos + cTar);
-
-        timer = 0.0;
-        frameCounter = 0;
-    }
-    else
-    {
-        frameCounter++;
-        timer += e.ElapsedTime;
-    }
-}
-
 void SingleGpuGame::UnloadContent()
 {
     Singleton::Destroy();
-    if (!EngineConfig::IsReleaseMode)
-    {
-		ImGuiController::ShutDown();
-	}
 }
 
 void SingleGpuGame::Destroy()
@@ -650,16 +559,6 @@ void SingleGpuGame::Destroy()
 
     super::Destroy();
 }
-
-
-// Object3DNode* SingleGpuGame::Get(std::string name)
-// {
-//     if (!m_Obbjects.contains(name)) return nullptr;
-//
-//     return m_Objects[name];
-// }
-
-
 
 SingleGpuGame::~SingleGpuGame()
 {

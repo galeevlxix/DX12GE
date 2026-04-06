@@ -1,0 +1,4 @@
+{
+  "projects_directory": "$(user)\\BianProjects",
+  "editor_path": "$(user)\\source\\repos\\DX12GE\\x64\\Debug\\BianEditor\\BianEditor.exe"
+}

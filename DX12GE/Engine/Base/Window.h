@@ -38,7 +38,7 @@ public:
     /**
     * Destroy this window.
     */
-    void Destroy();
+    virtual void Destroy();
 
     const std::wstring& GetWindowName() const;
 
@@ -113,6 +113,8 @@ protected:
     // the window to callback functions in the Game class.
     void RegisterCallbacks(std::shared_ptr<Game> pGame);
 
+public:
+
     // Update and Draw can only be called by the application.
     virtual void OnUpdate(UpdateEventArgs& e);
     virtual void OnRender(RenderEventArgs& e);
@@ -134,15 +136,13 @@ protected:
     // The window was resized.
     virtual void OnResize(ResizeEventArgs& e);
 
+protected:
     // Create the swapchian.
     Microsoft::WRL::ComPtr<IDXGISwapChain4> CreateSwapChain();
 
     // Update the render target views for the swapchain back buffers.
     void UpdateRenderTargetViews();
 
-
-
-private:
     // Windows should not be copied.
     Window(const Window& copy) = delete;
     Window& operator=(const Window& other) = delete;

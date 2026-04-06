@@ -1,12 +1,9 @@
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
 #include <Shlwapi.h>
 
 #include "Engine/Base/Application.h"
-#include "Engine/Base/LuaManager.h"
 #include "Game/GameSample.h"
-#include "EngineConfig.h"
 #include <dxgidebug.h>
+#include "EngineConfig.h"
 
 void ReportLiveObjects()
 {
@@ -17,48 +14,68 @@ void ReportLiveObjects()
     dxgiDebug->Release();
 }
 
-int CALLBACK main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nCmdShow)
+bool ProcessCommandLine(int argc, char* argv[])
 {
-    int retCode = 0;
+    if (argv == nullptr) return false;
+
+    for (int i = 1; i < argc; ++i)
+    {
+        const char* arg = argv[i];
+		if (arg == nullptr) continue;
+
+        printf("%d) %s\n", i, arg);
+
+        if (arg == "--mode" || arg == "-m")
+        {
+            if (i + 1 < argc)
+            {
+                const char* mode = argv[i + 1];
+                if (mode == nullptr) return false;  
+
+                if (RuntimeModeMap.find(mode) == RuntimeModeMap.end()) return false;
+                EngineConfigRuntimeMode _mode = RuntimeModeMap.at(mode);
+
+                switch (_mode)
+                {
+                case EngineConfigRuntimeMode::RUNTIME_MODE_EDITING:
+
+                    break;
+
+                case EngineConfigRuntimeMode::RUNTIME_MODE_PLAYING:
+
+                    break;
+
+                default:
+                    break;
+                }
+			}
+        }
+    }
+}
+
+int main(int argc, char* argv[])
+{
     setlocale(LC_ALL, "Russian");
 
-    int argc = 0;
-    LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+    ProcessCommandLine(argc, argv);
 
-    if (argv != NULL)
-    {
-        for (int i = 1; i < argc; ++i)
-        {
-            std::wstring arg = argv[i];
-
-            if (arg == L"-debug")
-            {
-                EngineConfig::IsReleaseMode = true;
-                std::cout << "enbled release mode" << std::endl;
-            }
-        }
-
-        LocalFree(argv);
-    }
-    EngineConfig::IsReleaseMode = false;
-
-    auto manager = LuaManager::GetInstance();
+    HINSTANCE hInstance = GetModuleHandle(NULL);
 
     // Set the working directory to the path of the executable.
     WCHAR path[MAX_PATH];
-    HMODULE hModule = GetModuleHandleW(NULL);
-    if (GetModuleFileNameW(hModule, path, MAX_PATH) > 0)
+    if (GetModuleFileNameW(hInstance, path, MAX_PATH) > 0)
     {
         PathRemoveFileSpecW(path);
         SetCurrentDirectoryW(path);
     }
 
+    EngineConfig::Mode = EngineConfigRuntimeMode::RUNTIME_MODE_PLAYING;
+    EngineConfig::Output = EngineConfigRuntimeOutput::RUNTIME_OUTPUT_WINDOW;
+
     Application::Create(hInstance);
-    {
-        std::shared_ptr<GameSample> demo = std::make_shared<GameSample>(L"Bian Game", 1920, 1080, false);
-        retCode = Application::Get().Run(demo);
-        demo.reset();
-    }
+    std::shared_ptr<GameSample> demo = std::make_shared<GameSample>(L"Bian Game", 1920, 1080, false);
+    int retCode = Application::Get().Run(demo);
+    demo.reset();
 
     Application::Destroy();
 
