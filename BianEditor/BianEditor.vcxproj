@@ -72,6 +72,14 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)DX12GE;$(SolutionDir)Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>if exist "$(ProjectDir)*.cso" del /Q "$(ProjectDir)*.cso"
+
+
+copy /Y "$(SolutionDir)x64\Debug\BianEngine\*.cso" "$(ProjectDir)"
+
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
