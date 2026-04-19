@@ -5,7 +5,6 @@
 #include "../Base/Events.h"
 #include <map>
 #include <vector>
-#include <stdexcept>
 
 /// \brief Base class of a node in the scene tree.
 class Node3D

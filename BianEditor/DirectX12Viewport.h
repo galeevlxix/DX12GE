@@ -13,6 +13,8 @@ class DirectX12Viewport : public QWidget
 
     QTimer* m_renderTimer;
 
+    const QSize m_MinimumSize = QSize(320, 240);
+
 public:
     DirectX12Viewport(QWidget* parent = nullptr);
     ~DirectX12Viewport();

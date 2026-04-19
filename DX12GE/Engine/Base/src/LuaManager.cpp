@@ -1,18 +1,14 @@
 #include <iostream>
-#include <typeinfo>
 #include <string>
 #include "../../SingleGpuGame.h"
 #include <vector>
 #include <cctype>
 #include "../DX12GE/Engine/NodeGraph/NodeTypeEnum.h"
 #include <filesystem>
-#include "../DX12GE/EngineConfig.h"
 #include <algorithm>
 #include <system_error>
-#include <direct.h> 
 #include "../DX12GE/Engine/NodeGraph/AINode.h"
 #include "../LuaManager.h"
-//#define SOL_ALL_SAFETIES_ON 0
 
 namespace fs = std::filesystem;
 
@@ -68,14 +64,11 @@ int lua_destroy_node_by_node(Node3D* object)
 int lua_destroy_node_by_path(std::string path)
 {
 	const auto& object = p_grapsh_system->GetNodeByPath(path);
-
 	if (object == nullptr)
 	{
 		throw std::runtime_error("Attempt to call destroy on null object!");
 	}
-
 	object->Destroy(false);
-
 	return 1;
 }
 
@@ -85,9 +78,7 @@ int lua_rotate_object_by_rotator(Node3D* object, float y, float p, float r)
 	{
 		throw std::runtime_error("Attempt to call rotate on null object!");
 	}
-
 	object->Transform.Rotate(DirectX::SimpleMath::Vector3(y, p, r));
-
 	return 1;
 }
 
@@ -114,6 +105,7 @@ int lua_set_ai_state(AINode* object, bool state)
 	}
 	catch (std::exception& ex)
 	{
+		std::cout << "Error: " << ex.what() << std::endl;
 		return 1;
 	}
 }
@@ -202,9 +194,7 @@ sol::table lua_get_velocity(Node3D* object)
 	}
 
 	const Vector3& vec = static_cast<PhysicalObjectNode*>(object)->GetVelocity();
-	return lua.create_table_with("x", vec.x,
-		"y", vec.y,
-		"z", vec.z);
+	return lua.create_table_with("x", vec.x, "y", vec.y, "z", vec.z);
 }
 
 sol::table lua_get_object_pos(Node3D * object)
@@ -216,11 +206,7 @@ sol::table lua_get_object_pos(Node3D * object)
 
 	const auto pos = object->Transform.GetPosition();
 
-	return lua.create_table_with(
-		"x", pos.x,
-		"y", pos.y,
-		"z", pos.z
-	);;
+	return lua.create_table_with("x", pos.x, "y", pos.y, "z", pos.z);
 }
 
 sol::table get_lua_class(std::string name)
@@ -261,11 +247,7 @@ sol::table lua_get_object_world_direction(Node3D* object)
 	}
 
 	const Vector3 vec = object->GetWorldDirection();
-	return lua.create_table_with(
-		"x", vec.x,
-		"y", vec.y,
-		"x", vec.z
-		);
+	return lua.create_table_with("x", vec.x, "y", vec.y, "x", vec.z);
 }
 
 int lua_transform_move_to(Node3D* object, float x, float y, float z)
@@ -296,8 +278,7 @@ int lua_load_object_with_model(std::string name)
 {
 	std::string highCaseName = name;
 	std::transform(highCaseName.begin(), highCaseName.end(), highCaseName.begin(), ::toupper);
-	lua.safe_script("if " + name + " ~= nil then return end \n" + highCaseName + " = {}\n" + "Class(" + highCaseName + ", GameObject)\n" + name + " = " + highCaseName + ":new(\"" + name + "\")" +
-		"\n" + name + ":SetEntityName(\"" + name + "\")\n" + name + ":Start()\n" + name + ":AddComponent(Transform)\n");
+	lua.safe_script("if " + name + " ~= nil then return end \n" + highCaseName + " = {}\n" + "Class(" + highCaseName + ", GameObject)\n" + name + " = " + highCaseName + ":new(\"" + name + "\")" + "\n" + name + ":SetEntityName(\"" + name + "\")\n" + name + ":Start()\n" + name + ":AddComponent(Transform)\n");
 
 	if (lua_classes_map.find(name) == lua_classes_map.end())
 	{
@@ -327,7 +308,8 @@ int lua_register_class(std::string id)
 //////////////////////////////////////////////////////////////////////
 
 
-inline bool is_regular_file_safe(const fs::directory_entry& entry, std::error_code& ec) {
+inline bool is_regular_file_safe(const fs::directory_entry& entry, std::error_code& ec) 
+{
 	//        
 #if defined(_MSC_VER)
 	//  MSVC  is_regular_file   
@@ -347,87 +329,83 @@ inline bool is_regular_file_safe(const fs::directory_entry& entry, std::error_co
 #endif
 }
 
-size_t FindAllLuaFiles(const std::string& rootPath,
-	std::vector<std::string>& luaFiles,
-	bool caseInsensitive = true) {
+size_t FindAllLuaFiles(const std::string& rootPath, std::vector<std::string>& luaFiles, bool caseInsensitive = true) 
+{
 	size_t fileCount = 0;
 	std::error_code ec;
 
-	// ,   
 	fs::path rootPathFs(rootPath);
-	if (!fs::exists(rootPathFs, ec) || !fs::is_directory(rootPathFs, ec)) {
-		std::cerr << "Error: Directory does not exist or is not accessible: "
-			<< rootPath << std::endl;
-		if (ec) {
+	if (!fs::exists(rootPathFs, ec) || !fs::is_directory(rootPathFs, ec)) 
+	{
+		std::cerr << "Error: Directory does not exist or is not accessible: " << rootPath << std::endl;
+		if (ec) 
+		{
 			std::cerr << "System error: " << ec.message() << std::endl;
 		}
 		return 0;
 	}
 
-	try {
-		//    
+	try 
+	{
 		fs::recursive_directory_iterator dirIter(rootPathFs, ec);
-		if (ec) {
+		if (ec) 
+		{
 			std::cerr << "Error creating directory iterator for " << rootPath
 				<< ": " << ec.message() << std::endl;
 			return 0;
 		}
 
-		//      
-		for (const auto& entry : dirIter) {
-			ec.clear(); //      
+		for (const auto& entry : dirIter) 
+		{
+			ec.clear(); 
 
-			try {
-				// ,     
-				if (!is_regular_file_safe(entry, ec)) {
-					continue;
-				}
+			try 
+			{
+				if (!is_regular_file_safe(entry, ec)) continue;
 
 				const fs::path& filePath = entry.path();
 				std::string extension = filePath.extension().string();
 
-				//     (  )
-				if (caseInsensitive) {
+				if (caseInsensitive) 
+				{
 					std::string normalizedExt;
 					normalizedExt.reserve(extension.size());
-					for (char c : extension) {
+					for (char c : extension) 
+					{
 						normalizedExt.push_back(static_cast<char>(std::tolower(static_cast<unsigned char>(c))));
 					}
 					extension = normalizedExt;
 				}
 
-				//   .lua
-				if (extension == ".lua") {
-					//       
+				if (extension == ".lua") 
+				{
 					luaFiles.push_back(filePath.string());
 					++fileCount;
 				}
 			}
-			catch (const fs::filesystem_error& e) {
-				std::cerr << "Warning: Could not process file "
-					<< entry.path().string() << ": "
-					<< e.what() << std::endl;
+			catch (const fs::filesystem_error& e) 
+			{
+				std::cerr << "Warning: Could not process file " << entry.path().string() << ": " << e.what() << std::endl;
 				continue;
 			}
-			catch (const std::exception& e) {
-				std::cerr << "Warning: Unexpected error processing file "
-					<< entry.path().string() << ": "
-					<< e.what() << std::endl;
+			catch (const std::exception& e) 
+			{
+				std::cerr << "Warning: Unexpected error processing file " << entry.path().string() << ": " << e.what() << std::endl;
 				continue;
 			}
 		}
 	}
-	catch (const fs::filesystem_error& e) {
-		std::cerr << "Critical error traversing directory " << rootPath << ": "
-			<< e.what() << std::endl;
+	catch (const fs::filesystem_error& e) 
+	{
+		std::cerr << "Critical error traversing directory " << rootPath << ": " << e.what() << std::endl;
 	}
-	catch (const std::exception& e) {
+	catch (const std::exception& e) 
+	{
 		std::cerr << "Critical error in file traversal: " << e.what() << std::endl;
 	}
 
 	return fileCount;
 }
-
 
 std::vector<std::string> FindAllLuaFiles(const std::string& rootPath, bool caseInsensitive = true) 
 {
@@ -438,56 +416,50 @@ std::vector<std::string> FindAllLuaFiles(const std::string& rootPath, bool caseI
 
 void LuaManager::LoadScrtipts()
 {
-	if (false)
+	lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io, sol::lib::math, sol::lib::os);
+	lua.set_function("Register", &lua_register_class);
+	lua.set_function("LoadObjectWithModel", &lua_load_object_with_model);
+	lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
+	lua.set_function("TranslateTo", &lua_transform_move_to);
+	lua.set_function("GetObjectOnScene", &lua_get_object_on_scene);
+	lua.set_function("GetTransformPosition", &lua_get_object_pos);
+	lua.set_function("GetClass", &get_lua_class);
+	lua.set_function("TranslateBy", &lua_transform_move_by);
+	lua.set_function("CallError", &lua_call_assert);
+	lua.set_function("GetVelocity", &lua_get_velocity);
+	lua.set_function("AddImpulse", &lua_add_impulse);
+	lua.set_function("GetNodeType", &lua_get_node_type);
+	lua.set_function("GetWorldDirection", &lua_get_object_world_direction);
+	lua.set_function("GetChild", &lua_get_child);
+	lua.set_function("GetParent", &lua_get_parent);
+	lua.set_function("GetComponent", &lua_get_script_component_from_node);
+	lua.set_function("GetAIState", &lua_get_ai_state);
+	lua.set_function("SetAIState", &lua_set_ai_state);
+	lua.set_function("GetCurrentCamera", &lua_get_cam);
+	lua.set_function("CastRay", &lua_cast_ray);
+	lua.set_function("DestroyNodeByNode", &lua_destroy_node_by_node);
+	lua.set_function("DestroyNodeByNodePath", &lua_destroy_node_by_path);
+	lua.set_function("SetObjectVelocity", &lua_set_object_velocity);
+
+	fs::path currentDir = fs::current_path().parent_path().parent_path();
+	std::cout << currentDir << std::endl;
+	std::vector<std::string> luaFiles;
+	size_t count = FindAllLuaFiles(currentDir.string(), luaFiles);
+
+	std::cout << "\nFound " << count << " Lua files:" << std::endl;
+	for (size_t i = 0; i < luaFiles.size(); ++i) 
 	{
-
-	}
-	else
-	{
-		lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io, sol::lib::math, sol::lib::os);
-		lua.set_function("Register", &lua_register_class);
-		lua.set_function("LoadObjectWithModel", &lua_load_object_with_model);
-		lua.set_function("RotateBy", &lua_rotate_object_by_rotator);
-		lua.set_function("TranslateTo", &lua_transform_move_to);
-		lua.set_function("GetObjectOnScene", &lua_get_object_on_scene);
-		lua.set_function("GetTransformPosition", &lua_get_object_pos);
-		lua.set_function("GetClass", &get_lua_class);
-		lua.set_function("TranslateBy", &lua_transform_move_by);
-		lua.set_function("CallError", &lua_call_assert);
-		lua.set_function("GetVelocity", &lua_get_velocity);
-		lua.set_function("AddImpulse", &lua_add_impulse);
-		lua.set_function("GetNodeType", &lua_get_node_type);
-		lua.set_function("GetWorldDirection", &lua_get_object_world_direction);
-		lua.set_function("GetChild", &lua_get_child);
-		lua.set_function("GetParent", &lua_get_parent);
-		lua.set_function("GetComponent", &lua_get_script_component_from_node);
-		lua.set_function("GetAIState", &lua_get_ai_state);
-		lua.set_function("SetAIState", &lua_set_ai_state);
-		lua.set_function("GetCurrentCamera", &lua_get_cam);
-		lua.set_function("CastRay", &lua_cast_ray);
-		lua.set_function("DestroyNodeByNode", &lua_destroy_node_by_node);
-		lua.set_function("DestroyNodeByNodePath", &lua_destroy_node_by_path);
-		lua.set_function("SetObjectVelocity", &lua_set_object_velocity);
-
-		fs::path currentDir = fs::current_path().parent_path().parent_path();
-		std::cout << currentDir << std::endl;
-		std::vector<std::string> luaFiles;
-		size_t count = FindAllLuaFiles(currentDir.string(), luaFiles);
-
-		std::cout << "\nFound " << count << " Lua files:" << std::endl;
-		for (size_t i = 0; i < luaFiles.size(); ++i) {
-			std::cout << "  [" << (i + 1) << "/" << count << "] " << luaFiles[i] << std::endl;
-			size_t lastSlash = luaFiles[i].find_last_of("/\\");
-			if (lastSlash != std::string::npos)
-			{
-				lua_file_classes.push_back(luaFiles[i].substr(lastSlash + 1));
-			}
-			else
-			{
-				lua_file_classes.push_back(luaFiles[i]);
-			}
-			lua.safe_script_file(luaFiles[i]);
+		std::cout << "  [" << (i + 1) << "/" << count << "] " << luaFiles[i] << std::endl;
+		size_t lastSlash = luaFiles[i].find_last_of("/\\");
+		if (lastSlash != std::string::npos)
+		{
+			lua_file_classes.push_back(luaFiles[i].substr(lastSlash + 1));
 		}
+		else
+		{
+			lua_file_classes.push_back(luaFiles[i]);
+		}
+		lua.safe_script_file(luaFiles[i]);
 	}
 }
 
@@ -540,21 +512,26 @@ void LuaManager::CallHit(int32_t ObjectID1, uint32_t ObjectID2)
 
 LuaManager::LuaManager()
 {
-	//sol::state lua;
 	LoadScrtipts();
 }
 
 LuaManager::~LuaManager()
 {
+
 }
 
-
+LuaManager* LuaManager::GetInstance()
+{
+	if (p_instance == nullptr)
+	{
+		p_instance = new LuaManager();
+	}
+	return p_instance;
+}
 
 void LuaManager::SetGraspSystem(NodeGraphSystem* system)
 {
 	p_grapsh_system = system;
-	//const auto tuple = std::make_tuple(1, 2.5f, "dodik");
-	//p_instance->CallLuaFunction("DoThing", tuple, 1);
 }
 
 void LuaManager::ProceedMouseMovementInput(MouseMotionEventArgs& e)
@@ -614,6 +591,11 @@ void LuaManager::Start()
 	}
 }
 
+void LuaManager::CLose()
+{
+	lua_close(L);
+}
+
 std::string LuaManager::CreateValidClass(std::string className, std::string objId, NodeTypeEnum type)
 {
 	if (lua_classes_map.find(className) == lua_classes_map.end())
@@ -641,8 +623,7 @@ std::string LuaManager::CreateValidClass(std::string className, std::string objI
 	{
 		components += actualName + ":AddComponent(Physics)\n";
 	}
-	lua.safe_script("if " + actualName + " ~= nil then return end \n" + actualName + " = " + highCaseName + ":new(\"" + actualName + "\")" +
-		"\n" + actualName + ":SetEntityName(\"" + objId + "\")\n" + components);
+	lua.safe_script("if " + actualName + " ~= nil then return end \n" + actualName + " = " + highCaseName + ":new(\"" + actualName + "\")" + "\n" + actualName + ":SetEntityName(\"" + objId + "\")\n" + components);
 
 	if (node_path_to_classes.find(objId) == node_path_to_classes.end())
 	{
@@ -678,7 +659,6 @@ void LuaManager::UpdateScript(std::string script)
 	sol::table temp_class = lua[script];
 	temp_class["Update"](temp_class);
 }
-
 
 std::vector<std::string>& LuaManager::GetAllFoundScriptClasses()
 {

@@ -1,6 +1,4 @@
 #pragma once
-#include <string>
-#include "../Base/SimpleMath.h"
 
 /// Types of all possible nodes in the scene tree
 enum NodeTypeEnum

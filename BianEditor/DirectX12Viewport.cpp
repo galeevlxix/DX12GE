@@ -3,8 +3,6 @@
 
 DirectX12Viewport::DirectX12Viewport(QWidget* parent) : QWidget(parent), m_Width(420), m_Height(228), m_EngineWindow(nullptr), m_renderTimer(new QTimer(this))
 {
-    qDebug() << "viewport initializing";
-
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_NativeWindow);
@@ -33,12 +31,12 @@ DirectX12Viewport::DirectX12Viewport(QWidget* parent) : QWidget(parent), m_Width
         });
 
     m_renderTimer->start(0.01);
+
+    setMinimumSize(m_MinimumSize);
 }
 
 DirectX12Viewport::~DirectX12Viewport()
 {
-    qDebug() << "viewport destroying";
-
     m_EngineWindow.reset();
     m_EngineWindow = nullptr;
 }
@@ -57,7 +55,6 @@ void DirectX12Viewport::resizeEvent(QResizeEvent* event)
 {
     const QSize oldSize = event->oldSize();
     const QSize size = event->size();
-    qDebug() << "resizing viewport from " << oldSize.width() << "x" << oldSize.height() << " to " << size.width() << "x" << size.height();
 
     m_Width = size.width();
     m_Height = size.height();

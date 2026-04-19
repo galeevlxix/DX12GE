@@ -5,16 +5,13 @@
 #include "FirstPersonPlayerNode.h"
 #include "ThirdPersonPlayerNode.h"
 #include "SkyBoxNode.h"
-
 #include "EnvironmentNode.h"
 #include "DirectionalLightNode.h"
 #include "PointLightNode.h"
 #include "SpotLightNode.h"
-#include "ParticlesNode.h"
 #include "CameraNode.h"
 #include "AudioListenerNode.h"
 #include "AudioEmitterNode.h"
-#include "PhysicalObjectNode.h"
 
 #include "../Graphics/GraphicsComponents.h"
 

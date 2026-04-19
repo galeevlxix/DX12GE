@@ -94,12 +94,6 @@
     <Filter Include="Исходные файлы\Engine\Physics">
       <UniqueIdentifier>{c09e36a5-5355-4b3d-a842-3bbc7e3bbc39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Engine\ImGui">
-      <UniqueIdentifier>{c5c7773f-0c60-4db7-961e-e997f7a644a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Engine\ImGui">
-      <UniqueIdentifier>{227167f1-5b15-41d5-aa4e-1c5ff2661f72}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы ресурсов\Shaders\OutputFinalResult">
       <UniqueIdentifier>{5a982ad6-d3d4-46c5-aef6-9480eeafc369}</UniqueIdentifier>
     </Filter>

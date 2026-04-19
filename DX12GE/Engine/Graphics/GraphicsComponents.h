@@ -19,10 +19,10 @@
 
 struct BaseLightComponent
 {
-	// Цвет источника света
+	// Light source color
 	DirectX::SimpleMath::Vector3 Color = BIAN_COLOR_WHITE;
 
-	// Интенсивность источника света
+	// Light source intensity
 	float Intensity = 0.2f;
 
 	BaseLightComponent(DirectX::SimpleMath::Vector3 color, float intensity) :
@@ -36,11 +36,11 @@ struct BaseLightComponent
 
 struct DirectionalLightComponent
 {
-	// Свойства базового света для этого источника света
+	// Base light properties for this light source
 	BaseLightComponent BaseLightProperties = BaseLightComponent(BIAN_COLOR_WHITE, 1.0f);
 
-	// Только для чтения! Направление источника света в мировом пространстве
-	// Для изменения направления источника света, используйте Transform узла
+	// Read-only! Direction of the light source in world space
+	// To change the direction of the light source, use the Transform of the node
 	DirectX::SimpleMath::Vector4 Direction = { 1.0f, -1.0f, -1.0f, 1.0f };
 };
 
@@ -51,30 +51,30 @@ struct AttenuationComponent
 	float Exp = 0.032f;
 };
 
-// Компонент всенаправленного источника света
+// Point light source component
 struct PointLightComponent
 {
-	// Свойства базового света для этого источника света
+	// Base light properties for this light source
 	BaseLightComponent BaseLightProperties = BaseLightComponent(BIAN_COLOR_WHITE, 1.0f);
 
-	// Только для чтения! Позиция источника света в мировом пространстве
-	// Для изменения позиции источника света, используйте Transform узла
+	// Read-only! Position of the light source in world space
+	// To change the position of the light source, use the Transform of the node
 	DirectX::SimpleMath::Vector3 WorldPosition = { 0.0f, 0.0f, 0.0f };
 
-	// Параметры затухания источника света
+	// Attenuation properties of the light source
 	AttenuationComponent AttenuationProperties;
 };
 
-// Компонент прожекторного источника света
+// Spot light source component
 struct SpotLightComponent
 {
-	// Свойства всенаправленного света для этого прожекторного источника света
+	// Base light properties for this spot light source
 	PointLightComponent PointLightProperties;
 
-	// Только для чтения! Направление источника света в мировом пространстве
-	// Для изменения направления источника света, используйте Transform узла
+	// Read-only! Direction of the light source in world space
+	// To change the direction of the light source, use the Transform of the node
 	DirectX::SimpleMath::Vector3 WorldDirection = { 0.0f, 0.0f, -1.0 };
 
-	// Угол, на котором свет прожекторного источника заканчивается
+	// Angle at which the spot light source ends
 	float Cutoff = 0.65f;
 };
