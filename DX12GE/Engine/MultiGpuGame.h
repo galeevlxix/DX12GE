@@ -58,7 +58,7 @@ private:
     D3D12_VIEWPORT m_Viewport;
     D3D12_RECT m_ScissorRect;
 
-    bool m_IsFirstFrame = true;
+    //bool m_IsFirstFrame = true;
     bool m_Initialized = false;
 
     TestTime* test;

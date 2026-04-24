@@ -46,6 +46,12 @@ void TextureBuffer::Destroy()
 	m_Resource.Reset();
     m_Resource = nullptr;
 
+    if (m_CreateReadback)
+    {
+        m_ReadbackBuffer.Reset();
+        m_ReadbackBuffer = nullptr;
+    }
+
     m_Device.Reset();
     m_Device = nullptr;
 }

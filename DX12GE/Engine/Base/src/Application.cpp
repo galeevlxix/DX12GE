@@ -181,7 +181,6 @@ Application::~Application()
 
 std::vector<ComPtr<IDXGIAdapter4>> Application::GetAdapters()
 {
-    // Creating Factory
     ComPtr<IDXGIFactory4> dxgiFactory;
     UINT createFactoryFlags = 0;
 #if defined(_DEBUG)

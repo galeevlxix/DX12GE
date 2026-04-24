@@ -23,12 +23,12 @@ void SharedMemory::CopyToSharedMemory(SharedMemoryTextureBuffer textureType, std
 	}
 
 	// texture -> readback
-	auto state = src->GetResourceState();
+	//auto state = src->GetResourceState();
 	src->SetToCopySource(commandList);
 	D3D12_TEXTURE_COPY_LOCATION dst{ sharedBuffer.readbackBuffer.Get(), D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT, sharedBuffer.footprint };
 	D3D12_TEXTURE_COPY_LOCATION srcLoc{ src->GetResource().Get(), D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX, 0 };
 	commandList->CopyTextureRegion(&dst, 0, 0, 0, &srcLoc, nullptr);
-	src->SetToState(commandList, state);
+	//src->SetToState(commandList, state);
 }
 
 void SharedMemory::CopyFromSharedMemory(SharedMemoryTextureBuffer textureType, std::shared_ptr<TextureBuffer> dst, ComPtr<ID3D12GraphicsCommandList2> commandList)
@@ -58,13 +58,13 @@ void SharedMemory::CopyFromSharedMemory(SharedMemoryTextureBuffer textureType, s
 	sharedBuffer.readbackBuffer->Unmap(0, nullptr);
 
 	// upload -> texture
-	auto state = dst->GetResourceState();
+	//auto state = dst->GetResourceState();
 	dst->SetToCopyDest(commandList);
 	auto texDst = dst->GetResource();
 	D3D12_TEXTURE_COPY_LOCATION srcLoc{ sharedBuffer.uploadBuffer.Get(), D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT, sharedBuffer.footprint };
 	D3D12_TEXTURE_COPY_LOCATION dstLoc{ texDst.Get(), D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX, 0 };
 	commandList->CopyTextureRegion(&dstLoc, 0, 0, 0, &srcLoc, nullptr);
-	dst->SetToState(commandList, state);
+	//dst->SetToState(commandList, state);
 }
 
 bool SharedMemory::IsBufferEmpty(SharedMemoryTextureBuffer textureType)

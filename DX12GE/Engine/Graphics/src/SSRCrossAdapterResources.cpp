@@ -4,51 +4,49 @@
 std::shared_ptr<CrossAdapterResource> CrossAdapterTextureResources::CreateCrossResource(std::shared_ptr<TextureBuffer> buffer, const std::wstring& name)
 {
     auto desc = buffer->GetResource()->GetDesc();
-    return std::make_shared<CrossAdapterResource>(PrimaryDevice, SecondDevice, desc, name);
+    return std::make_shared<CrossAdapterResource>(m_PrimaryDevice, m_SecondDevice, desc, name);
 }
 
 void CrossAdapterTextureResources::Initialize()
 {
-    PositionBuffer = CreateCrossResource(PrimaryGBuffer->GetBuffer(GBuffer::POSITION), L"Shared GBuffer Position");
-    NormalBuffer = CreateCrossResource(PrimaryGBuffer->GetBuffer(GBuffer::NORMAL), L"Shared GBuffer Normal");
-    ORMBuffer = CreateCrossResource(PrimaryGBuffer->GetBuffer(GBuffer::ORM), L"Shared GBuffer ORM");
-    LightPassBuffer = CreateCrossResource(PrimaryLightPassResult, L"Shared Light Pass Result");
-    SSRBuffer = CreateCrossResource(PrimarySSRResult, L"Shared SSR Result");
+    m_PrimaryDevice = Application::Get().GetPrimaryDevice();
+    m_SecondDevice = Application::Get().GetSecondDevice();
+
+    m_PrimaryCopyCommandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
+    m_SecondCopyCommandQueue = Application::Get().GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
+
+    m_SharedPositionBuffer = CreateCrossResource(PrimaryGBuffer->GetBuffer(GBuffer::POSITION), L"Shared GBuffer Position");
+    m_SharedNormalBuffer = CreateCrossResource(PrimaryGBuffer->GetBuffer(GBuffer::NORMAL), L"Shared GBuffer Normal");
+    m_SharedORMBuffer = CreateCrossResource(PrimaryGBuffer->GetBuffer(GBuffer::ORM), L"Shared GBuffer ORM");
+    m_SharedLightPassBuffer = CreateCrossResource(PrimaryLightPassResult, L"Shared Light Pass Result");
+    m_SharedSSRBuffer = CreateCrossResource(PrimarySSRResult, L"Shared SSR Result");
 }
 
 void CrossAdapterTextureResources::SetStatesToPrimaryResources(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    PositionBuffer->GetPrimeResource()->SetToCopyDest(commandList);
-    NormalBuffer->GetPrimeResource()->SetToCopyDest(commandList);
-    ORMBuffer->GetPrimeResource()->SetToCopyDest(commandList);
-    LightPassBuffer->GetPrimeResource()->SetToCopyDest(commandList);
-    SSRBuffer->GetPrimeResource()->SetToCopySource(commandList);
+    m_SharedPositionBuffer->GetPrimarySharedResource()->SetToCopyDest(commandList);
+    m_SharedNormalBuffer->GetPrimarySharedResource()->SetToCopyDest(commandList);
+    m_SharedORMBuffer->GetPrimarySharedResource()->SetToCopyDest(commandList);
+    m_SharedLightPassBuffer->GetPrimarySharedResource()->SetToCopyDest(commandList);
+    m_SharedSSRBuffer->GetPrimarySharedResource()->SetToCopySource(commandList);
 
-    primaryStates = true;
+    m_PrimaryStatesAreReady = true;
 }
 
 void CrossAdapterTextureResources::SetStatesToSharedResources(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-    PositionBuffer->GetSharedResource()->SetToCopySource(commandList);
-    NormalBuffer->GetSharedResource()->SetToCopySource(commandList);
-    ORMBuffer->GetSharedResource()->SetToCopySource(commandList);
-    LightPassBuffer->GetSharedResource()->SetToCopySource(commandList);
-    SSRBuffer->GetSharedResource()->SetToCopyDest(commandList);
+    m_SharedPositionBuffer->GetSecondSharedResource()->SetToCopySource(commandList);
+    m_SharedNormalBuffer->GetSecondSharedResource()->SetToCopySource(commandList);
+    m_SharedORMBuffer->GetSecondSharedResource()->SetToCopySource(commandList);
+    m_SharedLightPassBuffer->GetSecondSharedResource()->SetToCopySource(commandList);
+    m_SharedSSRBuffer->GetSecondSharedResource()->SetToCopyDest(commandList);
 
-    secondStates = true;
+    m_SecondStatesAreReady = true;
 }
 
 void CrossAdapterTextureResources::CopyResource(ComPtr<ID3D12GraphicsCommandList2> commandList, std::shared_ptr<TextureBuffer> src, std::shared_ptr<TextureBuffer> dst, bool toShared)
 {
-    if (toShared)
-    {
-        src->SetToCopySource(commandList);
-    }
-    else
-    {
-        dst->SetToCopyDest(commandList);
-    }
-
+    toShared ? src->SetToCopySource(commandList) : dst->SetToCopyDest(commandList);
     commandList->CopyResource(dst->GetResource().Get(), src->GetResource().Get());
 }
 
@@ -56,78 +54,98 @@ void CrossAdapterTextureResources::CopyPrimaryDeviceDataToSharedMemory(TestTime*
 {
     test->BeginPass();
 
-    std::shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList(); 
+    ComPtr<ID3D12GraphicsCommandList2> commandList = m_PrimaryCopyCommandQueue->GetCommandList();
 
-    if (!primaryStates)
+    if (!m_PrimaryStatesAreReady)
         SetStatesToPrimaryResources(commandList);
 
-    CopyResource(commandList, PrimaryGBuffer->GetBuffer(GBuffer::POSITION), PositionBuffer->GetPrimeResource(),   true);
-    CopyResource(commandList, PrimaryGBuffer->GetBuffer(GBuffer::NORMAL),   NormalBuffer->GetPrimeResource(),     true);
-    CopyResource(commandList, PrimaryGBuffer->GetBuffer(GBuffer::ORM),      ORMBuffer->GetPrimeResource(),        true);
-    CopyResource(commandList, PrimaryLightPassResult,                       LightPassBuffer->GetPrimeResource(),  true);
+    CopyResource(commandList, PrimaryGBuffer->GetBuffer(GBuffer::POSITION), m_SharedPositionBuffer->GetPrimarySharedResource(),   true);
+    CopyResource(commandList, PrimaryGBuffer->GetBuffer(GBuffer::NORMAL),   m_SharedNormalBuffer->GetPrimarySharedResource(),     true);
+    CopyResource(commandList, PrimaryGBuffer->GetBuffer(GBuffer::ORM),      m_SharedORMBuffer->GetPrimarySharedResource(),        true);
+    CopyResource(commandList, PrimaryLightPassResult,                       m_SharedLightPassBuffer->GetPrimarySharedResource(),  true);
 
-    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);
+    m_CopyPrimaryDeviceDataToSharedMemoryFenceValue = m_PrimaryCopyCommandQueue->ExecuteCommandList(commandList);
 
     test->EndPass(CurrentPass::CopyPrimaryDeviceDataToSharedMemory);
+}
+
+void CrossAdapterTextureResources::WaitForCopyingPrimaryDeviceDataToSharedMemory(TestTime* test)
+{
+    test->BeginPass();
+    m_PrimaryCopyCommandQueue->WaitForFenceValue(m_CopyPrimaryDeviceDataToSharedMemoryFenceValue);
+    test->EndPass(CurrentPass::WaitPrimaryDeviceDataToSharedMemory);
 }
 
 void CrossAdapterTextureResources::CopySharedMemoryDataToPrimaryDevice(TestTime* test)
 {
     test->BeginPass();
 
-    std::shared_ptr<CommandQueue> commandQueue = Application::Get().GetPrimaryCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+    ComPtr<ID3D12GraphicsCommandList2> commandList = m_PrimaryCopyCommandQueue->GetCommandList();
 
-    if (!primaryStates)
+    if (!m_PrimaryStatesAreReady)
         SetStatesToPrimaryResources(commandList);
 
-    CopyResource(commandList, SSRBuffer->GetPrimeResource(), PrimarySSRResult, false);
+    CopyResource(commandList, m_SharedSSRBuffer->GetPrimarySharedResource(), PrimarySSRResult, false);
 
-    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);
+    m_CopySharedMemoryDataToPrimaryDeviceFenceValue = m_PrimaryCopyCommandQueue->ExecuteCommandList(commandList);
 
     test->EndPass(CurrentPass::CopySharedMemoryDataToPrimaryDevice);
+}
+
+void CrossAdapterTextureResources::WaitForCopyingSharedMemoryDataToPrimaryDevice(TestTime* test)
+{
+    test->BeginPass();
+    m_PrimaryCopyCommandQueue->WaitForFenceValue(m_CopySharedMemoryDataToPrimaryDeviceFenceValue);
+    test->EndPass(CurrentPass::WaitSharedMemoryDataToPrimaryDevice);
 }
 
 void CrossAdapterTextureResources::CopySecondDeviceDataToSharedMemory(TestTime* test)
 {
     test->BeginPass();
 
-    std::shared_ptr<CommandQueue> commandQueue = Application::Get().GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+    ComPtr<ID3D12GraphicsCommandList2> commandList = m_SecondCopyCommandQueue->GetCommandList();
 
-    if (!secondStates)
+    if (!m_SecondStatesAreReady)
         SetStatesToSharedResources(commandList);
 
-    CopyResource(commandList, SecondSSRResult, SSRBuffer->GetSharedResource(), true);
+    CopyResource(commandList, SecondSSRResult, m_SharedSSRBuffer->GetSecondSharedResource(), true);
 
-    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);
+    m_CopySecondDeviceDataToSharedMemoryFenceValue = m_SecondCopyCommandQueue->ExecuteCommandList(commandList);
 
     test->EndPass(CurrentPass::CopySecondDeviceDataToSharedMemory);
+}
+
+void CrossAdapterTextureResources::WaitForCopyingSecondDeviceDataToSharedMemory(TestTime* test)
+{
+    test->BeginPass();
+    m_SecondCopyCommandQueue->WaitForFenceValue(m_CopySecondDeviceDataToSharedMemoryFenceValue);
+    test->EndPass(CurrentPass::WaitSecondDeviceDataToSharedMemory);
 }
 
 void CrossAdapterTextureResources::CopySharedMemoryDataToSecondDevice(TestTime* test)
 {
     test->BeginPass();
 
-    std::shared_ptr<CommandQueue> commandQueue = Application::Get().GetSecondCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
-    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+    ComPtr<ID3D12GraphicsCommandList2> commandList = m_SecondCopyCommandQueue->GetCommandList();
 
-    if (!secondStates)
+    if (!m_SecondStatesAreReady)
         SetStatesToSharedResources(commandList);
 
-    CopyResource(commandList, PositionBuffer->GetSharedResource(),  SecondGBuffer->GetBuffer(GBuffer::POSITION),  false);
-    CopyResource(commandList, NormalBuffer->GetSharedResource(),    SecondGBuffer->GetBuffer(GBuffer::NORMAL),    false);
-    CopyResource(commandList, ORMBuffer->GetSharedResource(),       SecondGBuffer->GetBuffer(GBuffer::ORM),       false);
-    CopyResource(commandList, LightPassBuffer->GetSharedResource(), SecondLightPassResult,                        false);
+    CopyResource(commandList, m_SharedPositionBuffer->GetSecondSharedResource(),  SecondGBuffer->GetBuffer(GBuffer::POSITION),  false);
+    CopyResource(commandList, m_SharedNormalBuffer->GetSecondSharedResource(),    SecondGBuffer->GetBuffer(GBuffer::NORMAL),    false);
+    CopyResource(commandList, m_SharedORMBuffer->GetSecondSharedResource(),       SecondGBuffer->GetBuffer(GBuffer::ORM),       false);
+    CopyResource(commandList, m_SharedLightPassBuffer->GetSecondSharedResource(), SecondLightPassResult,                        false);
 
-    uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);
+    m_CopySharedMemoryDataToSecondDeviceFenceValue = m_SecondCopyCommandQueue->ExecuteCommandList(commandList);
 
     test->EndPass(CurrentPass::CopySharedMemoryDataToSecondDevice);
+}
+
+void CrossAdapterTextureResources::WaitForCopyingSharedMemoryDataToSecondDevice(TestTime* test)
+{
+    test->BeginPass();
+    m_SecondCopyCommandQueue->WaitForFenceValue(m_CopySharedMemoryDataToSecondDeviceFenceValue);
+    test->EndPass(CurrentPass::WaitSharedMemoryDataToSecondDevice);
 }
 
 void CrossAdapterTextureResources::Resize(UINT width, UINT height)
@@ -143,34 +161,34 @@ void CrossAdapterTextureResources::Resize(UINT width, UINT height)
     SecondSSRResult->Resize(width, height);
     SecondLightPassResult->Resize(width, height);
 
-    PositionBuffer->Resize(width, height);
-    NormalBuffer->Resize(width, height);
-    ORMBuffer->Resize(width, height);
-    LightPassBuffer->Resize(width, height);
-    SSRBuffer->Resize(width, height);
+    m_SharedPositionBuffer->Resize(width, height);
+    m_SharedNormalBuffer->Resize(width, height);
+    m_SharedORMBuffer->Resize(width, height);
+    m_SharedLightPassBuffer->Resize(width, height);
+    m_SharedSSRBuffer->Resize(width, height);
 }
 
 void CrossAdapterTextureResources::Destroy()
 {
-    PositionBuffer->Destroy();
-    PositionBuffer.reset();
-    PositionBuffer = nullptr;
+    m_SharedPositionBuffer->Destroy();
+    m_SharedPositionBuffer.reset();
+    m_SharedPositionBuffer = nullptr;
 
-    NormalBuffer->Destroy();
-    NormalBuffer.reset();
-    NormalBuffer = nullptr;
+    m_SharedNormalBuffer->Destroy();
+    m_SharedNormalBuffer.reset();
+    m_SharedNormalBuffer = nullptr;
 
-    ORMBuffer->Destroy();
-    ORMBuffer.reset();
-    ORMBuffer = nullptr;
+    m_SharedORMBuffer->Destroy();
+    m_SharedORMBuffer.reset();
+    m_SharedORMBuffer = nullptr;
 
-    LightPassBuffer->Destroy();
-    LightPassBuffer.reset();
-    LightPassBuffer = nullptr;
+    m_SharedLightPassBuffer->Destroy();
+    m_SharedLightPassBuffer.reset();
+    m_SharedLightPassBuffer = nullptr;
 
-    SSRBuffer->Destroy();
-    SSRBuffer.reset();
-    SSRBuffer = nullptr;
+    m_SharedSSRBuffer->Destroy();
+    m_SharedSSRBuffer.reset();
+    m_SharedSSRBuffer = nullptr;
 
 
     PrimaryDepthBuffer->Destroy();
@@ -208,9 +226,9 @@ void CrossAdapterTextureResources::Destroy()
     SecondSSRResult = nullptr;
 
 
-    PrimaryDevice.Reset();
-    PrimaryDevice = nullptr;
+    m_PrimaryDevice.Reset();
+    m_PrimaryDevice = nullptr;
 
-    SecondDevice.Reset();
-    SecondDevice = nullptr;
+    m_SecondDevice.Reset();
+    m_SecondDevice = nullptr;
 }

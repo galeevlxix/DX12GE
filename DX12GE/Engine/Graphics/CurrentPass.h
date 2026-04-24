@@ -17,7 +17,13 @@ public:
 		CopySharedMemoryDataToPrimaryDevice = 9,
 		CopySecondDeviceDataToSharedMemory = 10,
 		CopySharedMemoryDataToSecondDevice = 11,
-		None = 12
+
+		WaitPrimaryDeviceDataToSharedMemory = 12,
+		WaitSharedMemoryDataToPrimaryDevice = 13,
+		WaitSecondDeviceDataToSharedMemory = 14,
+		WaitSharedMemoryDataToSecondDevice = 15,
+
+		None = 16
 	};
 
 	EPass Get();
@@ -41,5 +47,9 @@ static const char* EPassNames[] =
 	"CopySharedMemoryDataToPrimaryDevice",
 	"CopySecondDeviceDataToSharedMemory",
 	"CopySharedMemoryDataToSecondDevice",
+	"WaitPrimaryDeviceDataToSharedMemory",
+	"WaitSharedMemoryDataToPrimaryDevice",
+	"WaitSecondDeviceDataToSharedMemory",
+	"WaitSharedMemoryDataToSecondDevice",
 	"None"
 };

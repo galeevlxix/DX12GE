@@ -10,11 +10,11 @@ using namespace std::chrono;
 
 class TestTime
 {
-	const std::string s_path = "../../DX12GE/Resources/single_time.txt";
-	const std::string m_path = "../../DX12GE/Resources/multi_time.txt";
+	const std::string singleGpuFilePath = "../../DX12GE/Resources/single_time.txt";
+	const std::string multiGpuFilePath = "../../DX12GE/Resources/multi_time.txt";
 
 	int frameCounter;
-	int maxFrames = 100;
+	int maxFrames = 1000;
 
 	std::map<CurrentPass::EPass, double> FramePassTime;
 	std::map<CurrentPass::EPass, double> TotalPassTime;
@@ -96,7 +96,7 @@ private:
 	{
 		printf("Среднее время: %f sec\n", totalDuration);
 
-		std::string path = s_path;
+		std::string filePath = singleGpuFilePath;
 
 		for (auto t : TotalPassTime)
 		{
@@ -104,12 +104,12 @@ private:
 
 			if (EPassNames[t.first] == "CopyPrimaryDeviceDataToSharedMemory")
 			{
-				path = m_path;
+				filePath = multiGpuFilePath;
 			}
 		}		
 
 		std::ofstream out;
-		out.open(path);
+		out.open(filePath);
 
 		for (auto t : frameDurations)
 		{

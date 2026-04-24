@@ -87,6 +87,8 @@ public:
 
     void UpdateWindowText(std::wstring newText);
 
+    uint64_t GetCurrentFrameNumber() { return m_FrameCounter;  }
+
 protected:
     // The Window procedure needs to call protected methods of this class.
     friend LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);

@@ -36,10 +36,8 @@ void GBuffer::Init(ComPtr<ID3D12Device2> device, GraphicsAdapter graphicsAdapter
 
     for (int i = 0; i < GBUFFER_COUNT; i++)
     {
-        m_Targets[i] = std::make_shared<TextureBuffer>();
-        
+        m_Targets[i] = std::make_shared<TextureBuffer>();       
         m_Targets[i]->SetName(names[i]);
-
         m_Targets[i]->Init(device, graphicsAdapter, width, height, formats[i], createReadback[i]);
     }
 }

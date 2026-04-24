@@ -4,24 +4,20 @@
 
 class CrossAdapterResource
 {
-private:
-	std::shared_ptr<TextureBuffer> m_PrimeResource;
-	std::shared_ptr<TextureBuffer> m_SharedResource;
-
-	ComPtr<ID3D12Heap> crossAdapterResourceHeap[2];
-
-	bool isInit = false;
+	std::shared_ptr<TextureBuffer> m_PrimarySharedResource;
+	std::shared_ptr<TextureBuffer> m_SecondSharedResource;
+	ComPtr<ID3D12Heap> m_CrossAdapterResourceHeap[2];
 
 public:
 
 	CrossAdapterResource(
 		ComPtr<ID3D12Device2> primaryDevice, 
 		ComPtr<ID3D12Device2> secondDevice,
-		D3D12_RESOURCE_DESC& resourceDesc,
+		D3D12_RESOURCE_DESC resourceDesc,
 		const std::wstring& name);
 
-	std::shared_ptr<TextureBuffer> GetPrimeResource();
-	std::shared_ptr<TextureBuffer> GetSharedResource();
+	std::shared_ptr<TextureBuffer> GetPrimarySharedResource();
+	std::shared_ptr<TextureBuffer> GetSecondSharedResource();
 
 	void Resize(const UINT newWidth, const UINT newHeight);
 

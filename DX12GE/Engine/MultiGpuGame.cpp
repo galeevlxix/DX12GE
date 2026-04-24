@@ -38,7 +38,7 @@ bool MultiGpuGame::Initialize()
 
     // PRIMARY DEVICE RESOURCES
 
-    m_CATR.PrimaryDevice = m_PrimaryDevice;
+    //m_CATR.m_PrimaryDevice = m_PrimaryDevice;
 
     m_CATR.PrimaryGBuffer = std::make_shared<GBuffer>();
     m_CATR.PrimaryGBuffer->Init(m_PrimaryDevice, GraphicAdapterPrimary, GetClientWidth(), GetClientHeight());
@@ -57,7 +57,7 @@ bool MultiGpuGame::Initialize()
 
     // SECOND DEVICE RESOURCES
 
-	m_CATR.SecondDevice = m_SecondDevice; 
+	//m_CATR.m_SecondDevice = m_SecondDevice; 
 
     m_CATR.SecondGBuffer = std::make_shared<GBuffer>();
     m_CATR.SecondGBuffer->Init(m_SecondDevice, GraphicAdapterSecond, GetClientWidth(), GetClientHeight());
@@ -417,21 +417,31 @@ void MultiGpuGame::MergeResults()
 
 void MultiGpuGame::RenderPrimaryGPU()
 {
-    if (!m_IsFirstFrame)
+    if (m_pWindow->GetCurrentFrameNumber() > 2)
     {
+        m_CATR.WaitForCopyingSecondDeviceDataToSharedMemory(test);
         m_CATR.CopySharedMemoryDataToPrimaryDevice(test);
     }
     DrawSceneToShadowMaps();
     DrawSceneToGBuffer();
     LightPassRender();
+    if (m_pWindow->GetCurrentFrameNumber() > 2)
+    {
+        m_CATR.WaitForCopyingSharedMemoryDataToPrimaryDevice(test);
+    }
     MergeResults();
     m_CATR.CopyPrimaryDeviceDataToSharedMemory(test);
 }
 
 void MultiGpuGame::RenderSecondGPU()
 {
-    if (m_IsFirstFrame) return;
+    if (m_pWindow->GetCurrentFrameNumber() == 1) return;
+
+    m_CATR.WaitForCopyingPrimaryDeviceDataToSharedMemory(test);
+
     m_CATR.CopySharedMemoryDataToSecondDevice(test);
+    m_CATR.WaitForCopyingSharedMemoryDataToSecondDevice(test);
+
     DrawSSR();
     m_CATR.CopySecondDeviceDataToSharedMemory(test);
 }
@@ -446,12 +456,10 @@ void MultiGpuGame::OnRender(RenderEventArgs& e)
     auto primaryFuture = std::async(std::launch::async, &MultiGpuGame::RenderPrimaryGPU, this);
     auto secondaryFuture = std::async(std::launch::async, &MultiGpuGame::RenderSecondGPU, this);
     
-    // Ждем завершения обоих
     primaryFuture.get();
     secondaryFuture.get();
 
     test->EndFrame();
-    m_IsFirstFrame = false;
 
     Singleton::GetCurrentPass()->Set(CurrentPass::None);
 }
