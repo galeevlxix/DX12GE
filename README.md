@@ -1,4 +1,11 @@
-# DirectX 12 Game Engine - Real Engine
+# DirectX 12 Game Engine - Bian Engine (Hybrid Multi-GPU)
+
+Реализация графического приложения с отражениями:
+![sd](https://github.com/galeevlxix/DX12GE/blob/Multi-GPU/DX12GE/Resources/render%20result.png)
+
+Эксперимент сравнения производительности подходов Single-GPU и Hybrid Multi-GPU:
+![test](https://github.com/galeevlxix/DX12GE/blob/Multi-GPU/DX12GE/Resources/test.png)
+
 ### Инструкция по сборке и запуску проекта:
 1) В терминале:
 ```
