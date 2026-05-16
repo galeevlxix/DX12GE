@@ -11,6 +11,8 @@
 
 #include "../EngineConfig.h"
 
+#include "Graphics/ResourceStorage.h"
+
 SingleGpuGame::SingleGpuGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
                                                                                        , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
                                                                                        , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height))) { }
@@ -112,7 +114,7 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
     ShaderResources::GetSSRCB()->CameraPos = Vector4(cameraPos);
 
     m_ParticleSystem.OnUpdate(elapsedTime, m_stopParticles, viewProj, cameraPos);
-    m_CascadedShadowMap.Update(cameraPos, ShaderResources::GetWorldCB()->DirLight.Direction);
+    m_CascadedShadowMap.Update(cameraPos, ShaderResources::GetWorldCB()->DirLight.WorldDirection);
     
     if (EngineConfig::Mode == EngineConfigRuntimeMode::RUNTIME_MODE_EDITING)
     {
@@ -124,7 +126,7 @@ void SingleGpuGame::OnUpdate(UpdateEventArgs& e)
 
 void SingleGpuGame::GenerateCollisions() const
 {
-    Singleton::GetNodeGraph()->GetRoot()->OnUpdate(0.f);
+    Singleton::GetNodeGraph()->GetRoot()->OnUpdate(0.1f);
     
     const auto& Objects = Singleton::GetNodeGraph()->GetAll3DObjects();
     for (auto obj : Objects)
@@ -238,8 +240,8 @@ void SingleGpuGame::LightPassRender(ComPtr<ID3D12GraphicsCommandList2> commandLi
 
     ShaderResources::SetGraphicsWorldCB(commandList, 0);
     ShaderResources::SetGraphicsShadowCB(commandList, 1);
-    SetGraphicsDynamicStructuredBuffer(commandList, 2, Singleton::GetNodeGraph()->GetPointLightComponents());
-    SetGraphicsDynamicStructuredBuffer(commandList, 3, Singleton::GetNodeGraph()->GetSpotLightComponents());
+    SetGraphicsDynamicStructuredBuffer(commandList, 2, ResourceStorage::GetPointLightComponentsArray());
+    SetGraphicsDynamicStructuredBuffer(commandList, 3, ResourceStorage::GetSpotLightComponentsArray());
     m_CascadedShadowMap.SetGraphicsRootDescriptorTables(4, commandList);
 
     m_GBuffer.SetGraphicsRootDescriptorTable(8,  GBuffer::POSITION, commandList);

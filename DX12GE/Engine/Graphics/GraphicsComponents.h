@@ -20,14 +20,18 @@
 struct BaseLightComponent
 {
 	// Light source color
-	DirectX::SimpleMath::Vector3 Color = BIAN_COLOR_WHITE;
+	DirectX::SimpleMath::Vector3 Color;
 
 	// Light source intensity
-	float Intensity = 0.2f;
+	float Intensity;
 
 	BaseLightComponent(DirectX::SimpleMath::Vector3 color, float intensity) :
 		Color(color), 
 		Intensity(intensity) { }
+
+	BaseLightComponent(BaseLightComponent* bLight) :
+		Color(bLight->Color),
+		Intensity(bLight->Intensity) { }
 
 	BaseLightComponent() :
 		Color(BIAN_COLOR_WHITE),
@@ -37,32 +41,61 @@ struct BaseLightComponent
 struct DirectionalLightComponent
 {
 	// Base light properties for this light source
-	BaseLightComponent BaseLightProperties = BaseLightComponent(BIAN_COLOR_WHITE, 1.0f);
+	BaseLightComponent BaseLightProperties;
 
 	// Read-only! Direction of the light source in world space
 	// To change the direction of the light source, use the Transform of the node
-	DirectX::SimpleMath::Vector4 Direction = { 1.0f, -1.0f, -1.0f, 1.0f };
+	DirectX::SimpleMath::Vector4 WorldDirection;
+
+	DirectionalLightComponent() : 
+		BaseLightProperties({ BIAN_COLOR_WHITE, 1.0f }),
+		WorldDirection(DirectX::SimpleMath::Vector4(1.0f, -1.0f, -1.0f, 1.0f )) { }
+
+	DirectionalLightComponent(DirectionalLightComponent* dLight) :
+		BaseLightProperties(dLight->BaseLightProperties),
+		WorldDirection(DirectX::SimpleMath::Vector4(1.0f, -1.0f, -1.0f, 1.0f)) { }
 };
 
 struct AttenuationComponent
 {
-	float Constant = 1.0f;
-	float Linear = 0.09f;
-	float Exp = 0.032f;
+	float Constant;
+	float Linear;
+	float Exp;
+
+	AttenuationComponent() :
+		Constant(1.0f),
+		Linear(0.09f),
+		Exp(0.032f) { }
+
+	AttenuationComponent(AttenuationComponent* atten) :
+		Constant(atten->Constant),
+		Linear(atten->Linear),
+		Exp(atten->Exp) { }
 };
 
 // Point light source component
 struct PointLightComponent
 {
 	// Base light properties for this light source
-	BaseLightComponent BaseLightProperties = BaseLightComponent(BIAN_COLOR_WHITE, 1.0f);
+	BaseLightComponent BaseLightProperties;
 
 	// Read-only! Position of the light source in world space
 	// To change the position of the light source, use the Transform of the node
-	DirectX::SimpleMath::Vector3 WorldPosition = { 0.0f, 0.0f, 0.0f };
+	DirectX::SimpleMath::Vector3 WorldPosition;
 
 	// Attenuation properties of the light source
 	AttenuationComponent AttenuationProperties;
+
+	PointLightComponent() :
+		BaseLightProperties({ BIAN_COLOR_WHITE, 1.0f }),
+		WorldPosition(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f)),
+		AttenuationProperties(AttenuationComponent())
+	{ }
+
+	PointLightComponent(PointLightComponent* pLight) :
+		BaseLightProperties(pLight->BaseLightProperties), 
+		WorldPosition(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f)),
+		AttenuationProperties(pLight->AttenuationProperties) { }
 };
 
 // Spot light source component
@@ -73,8 +106,18 @@ struct SpotLightComponent
 
 	// Read-only! Direction of the light source in world space
 	// To change the direction of the light source, use the Transform of the node
-	DirectX::SimpleMath::Vector3 WorldDirection = { 0.0f, 0.0f, -1.0 };
+	DirectX::SimpleMath::Vector3 WorldDirection;
 
 	// Angle at which the spot light source ends
-	float Cutoff = 0.65f;
+	float Cutoff;
+
+	SpotLightComponent() :
+		PointLightProperties(PointLightComponent()),
+		WorldDirection(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -1.0f)),
+		Cutoff(0.65f) { }
+
+	SpotLightComponent(SpotLightComponent *sLight) : 
+		PointLightProperties(sLight->PointLightProperties),
+		WorldDirection(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -1.0f)),
+		Cutoff(sLight->Cutoff) { }
 };

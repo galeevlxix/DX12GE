@@ -2,11 +2,29 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 static std::map<std::string, uint32_t> m_Names;
 static std::vector<std::shared_ptr<Object3DComponent>> m_Objects;
 static std::vector<std::shared_ptr<TextureComponent>> m_Textures;
 static std::vector<std::shared_ptr<AudioWavComponent>> m_Audio;
+
+static std::vector<PointLightComponent> m_PointLightComponents;
+static std::vector<uint32_t> m_PointLightFreeIndices;
+
+static std::vector<SpotLightComponent> m_SpotLightComponents;
+static std::vector<uint32_t> m_SpotLightFreeIndices;
+
+bool ArrayContains(std::vector<uint32_t>& array, const uint32_t& element)
+{
+    return std::binary_search(array.begin(), array.end(), element);
+}
+
+void InsertSorted(std::vector<uint32_t>& array, const uint32_t& element)
+{
+    auto it = std::lower_bound(array.begin(), array.end(), element);
+    array.insert(it, element);
+}
 
 uint32_t ResourceStorage::Find(const std::string& name)
 {
@@ -53,7 +71,45 @@ uint32_t ResourceStorage::AddAudio(const std::string& name)
     return id;
 }
 
-std::shared_ptr<Object3DComponent> ResourceStorage::GetObject3D(uint32_t id)
+uint32_t ResourceStorage::AddPointLightComponent()
+{
+    uint32_t id;
+
+    if (!m_PointLightFreeIndices.empty())
+    {
+        id = m_PointLightFreeIndices.back();
+        m_PointLightComponents[id] = PointLightComponent();
+        m_PointLightFreeIndices.pop_back();
+    }
+    else
+    {
+        id = static_cast<uint32_t>(m_PointLightComponents.size());
+        m_PointLightComponents.emplace_back();
+    }
+
+    return id;
+}
+
+uint32_t ResourceStorage::AddSpotLightComponent()
+{
+    uint32_t id;
+
+    if (!m_SpotLightFreeIndices.empty())
+    {
+        id = m_SpotLightFreeIndices.back();
+        m_SpotLightComponents[id] = SpotLightComponent();
+        m_SpotLightFreeIndices.pop_back();
+    }
+    else
+    {
+        id = static_cast<uint32_t>(m_SpotLightComponents.size());
+        m_SpotLightComponents.emplace_back();
+    }
+
+    return id;
+}
+
+std::shared_ptr<Object3DComponent> ResourceStorage::GetObject3D(const uint32_t& id)
 {
     if (id < 0 || id >= m_Objects.size()) 
         return nullptr;
@@ -61,7 +117,7 @@ std::shared_ptr<Object3DComponent> ResourceStorage::GetObject3D(uint32_t id)
     return m_Objects[id];
 }
 
-std::shared_ptr<TextureComponent> ResourceStorage::GetTexture(uint32_t id)
+std::shared_ptr<TextureComponent> ResourceStorage::GetTexture(const uint32_t& id)
 {
     if (id < 0 || id >= m_Textures.size())
         return nullptr;
@@ -69,12 +125,28 @@ std::shared_ptr<TextureComponent> ResourceStorage::GetTexture(uint32_t id)
     return m_Textures[id];
 }
 
-std::shared_ptr<AudioWavComponent> ResourceStorage::GetAudio(uint32_t id)
+std::shared_ptr<AudioWavComponent> ResourceStorage::GetAudio(const uint32_t& id)
 {
     if (id < 0 || id >= m_Audio.size())
         return nullptr;
 
     return m_Audio[id];
+}
+
+PointLightComponent* ResourceStorage::GetPointLightComponent(const uint32_t& id)
+{
+    if (id < 0 || id >= m_PointLightComponents.size() || ArrayContains(m_PointLightFreeIndices, id))
+        return nullptr;
+
+    return &m_PointLightComponents[id];
+}
+
+SpotLightComponent* ResourceStorage::GetSpotLightComponent(const uint32_t& id)
+{
+    if (id < 0 || id >= m_SpotLightComponents.size() || ArrayContains(m_SpotLightFreeIndices, id))
+        return nullptr;
+
+    return &m_SpotLightComponents[id];
 }
 
 std::shared_ptr<Object3DComponent> ResourceStorage::GetObject3DByName(const std::string& name)
@@ -101,7 +173,7 @@ std::shared_ptr<AudioWavComponent> ResourceStorage::GetAudioByName(const std::st
     return nullptr;
 }
 
-void ResourceStorage::DeleteObject3DComponentForever(uint32_t id)
+void ResourceStorage::DeleteObject3DComponentForever(const uint32_t& id)
 {
     if (id < 0 || id >= m_Objects.size())
         return;
@@ -113,7 +185,7 @@ void ResourceStorage::DeleteObject3DComponentForever(uint32_t id)
     m_Objects[id] = nullptr;
 }
 
-void ResourceStorage::DeleteTextureComponentForever(uint32_t id)
+void ResourceStorage::DeleteTextureComponentForever(const uint32_t& id)
 {
     if (id < 0 || id >= m_Textures.size())
         return;
@@ -125,7 +197,7 @@ void ResourceStorage::DeleteTextureComponentForever(uint32_t id)
     m_Textures[id] = nullptr;
 }
 
-void ResourceStorage::DeleteAudioComponentForever(uint32_t id)
+void ResourceStorage::DeleteAudioComponentForever(const uint32_t& id)
 {
     if (id < 0 || id >= m_Audio.size())
         return;
@@ -135,6 +207,24 @@ void ResourceStorage::DeleteAudioComponentForever(uint32_t id)
     m_Audio[id]->Destroy();
     m_Audio[id].reset();
     m_Audio[id] = nullptr;
+}
+
+void ResourceStorage::DeletePointLightComponentForever(const uint32_t& id)
+{
+    if (id < 0 || id >= m_PointLightComponents.size() || ArrayContains(m_PointLightFreeIndices, id))
+        return;
+
+    m_PointLightComponents[id].BaseLightProperties.Intensity = 0.0f;
+    InsertSorted(m_PointLightFreeIndices, id);
+}
+
+void ResourceStorage::DeleteSpotLightComponentForever(const uint32_t& id)
+{
+    if (id < 0 || id >= m_SpotLightComponents.size() || ArrayContains(m_SpotLightFreeIndices, id))
+        return;
+
+    m_SpotLightComponents[id].PointLightProperties.BaseLightProperties.Intensity = 0.0f;
+    InsertSorted(m_SpotLightFreeIndices, id);
 }
 
 size_t ResourceStorage::ObjectsCount()
@@ -150,6 +240,26 @@ size_t ResourceStorage::TexturesCount()
 size_t ResourceStorage::AudioCount()
 {
     return m_Audio.size();
+}
+
+size_t ResourceStorage::PointLightComponentsCount()
+{
+    return m_PointLightComponents.size();
+}
+
+size_t ResourceStorage::SpotLightComponentsCount()
+{
+    return m_SpotLightComponents.size();
+}
+
+std::vector<PointLightComponent>* ResourceStorage::GetPointLightComponentsArray()
+{
+    return &m_PointLightComponents;
+}
+
+std::vector<SpotLightComponent>* ResourceStorage::GetSpotLightComponentsArray()
+{
+    return &m_SpotLightComponents;
 }
 
 void ResourceStorage::Destroy()
@@ -179,4 +289,9 @@ void ResourceStorage::Destroy()
     m_Audio.clear();
 
     m_Names.clear();
+
+    m_PointLightComponents.clear();
+    m_PointLightFreeIndices.clear();
+    m_SpotLightComponents.clear();
+    m_SpotLightFreeIndices.clear();
 }

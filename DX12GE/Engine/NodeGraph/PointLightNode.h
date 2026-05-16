@@ -6,11 +6,17 @@
 /// \brief Point light source node class.
 class PointLightNode : public Node3D
 {
-public:
 	/// \brief Parameters of the point light.
-	PointLightComponent LightData;
+	PointLightComponent* m_LightDataComponent;
+	uint32_t m_LightDataComponentId;
+
+public:
 
 	PointLightNode();
+
+	void SetComponentId(uint32_t newId);
+
+	uint32_t GetComponentId() { return m_LightDataComponentId; }
 
 	virtual void OnUpdate(const double& deltaTime) override;
 

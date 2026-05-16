@@ -113,12 +113,12 @@ public:
 };
 
 template<typename T>
-static void SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const vector<T>& bufferData)
+static void SetGraphicsDynamicStructuredBuffer(ComPtr<ID3D12GraphicsCommandList2> commandList, uint32_t slot, const vector<T>* bufferData)
 {
-	size_t bufferSize = bufferData.size() * sizeof(T);
+	size_t bufferSize = bufferData->size() * sizeof(T);
 	size_t size = sizeof(T);
 	auto heapAllocation = ShaderResources::GetUploadBuffer()->Allocate(bufferSize, size);
-	memcpy(heapAllocation.CPU, bufferData.data(), bufferSize);
+	memcpy(heapAllocation.CPU, bufferData->data(), bufferSize);
 	commandList->SetGraphicsRootShaderResourceView(slot, heapAllocation.GPU);
 }
 

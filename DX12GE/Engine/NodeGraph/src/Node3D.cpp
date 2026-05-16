@@ -78,10 +78,17 @@ void Node3D::OnUpdate(const double& deltaTime)
         SetTransformCacheStatus(Transform, false);
     }
 
-    for (auto child : m_Children)
+    try
     {
-        child.second->OnUpdate(deltaTime);
+        for (auto child : m_Children)
+        {
+            child.second->OnUpdate(deltaTime);
+        }
     }
+    catch(const std::exception& ex)
+    {
+        std::cerr << ex.what() << std::endl;
+    }    
 }
 
 void Node3D::Destroy(bool keepComponent)

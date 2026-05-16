@@ -84,13 +84,18 @@ SamplerState gSampler : register(s0);
 SamplerState ShadowSampler : register(s1);
 
 // 0.15f, 0.3f, 0.6f, 1.0f
-static float splitDistances[3] = { 37.5, 75, 140 };
+static float splitDistances[3] = { 37.5, 75.0, 140.0 };
 
 static float PI = 3.14159265359;
 
+static float3 worldPos;
+static float3 normal;
+static float4 albedo;
+static float roughness;
+static float metalness;
+
 float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
 {
-    // Complete projection by doing division by w.
     float3 ProjCoords = ShadowPos.xyz / ShadowPos.w;
     ProjCoords.y = -ProjCoords.y;
     ProjCoords.xy = 0.5 * ProjCoords.xy + 0.5;
@@ -98,7 +103,6 @@ float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
     uint width, height;
     ShadowMapSB.GetDimensions(width, height);
 
-    // Texel size.
     float dx = 1.0f / (float) width;
 
     const float2 offsets[9] =
@@ -119,7 +123,7 @@ float CalcShadowFactor(float4 ShadowPos, Texture2D ShadowMapSB)
     return shadow / 9.0f;
 };
 
-float CalcShadowCascade(float3 worldPos, float Distance)
+float CalcShadowCascade(float Distance)
 {
     if (Distance < splitDistances[0])
         return CalcShadowFactor(mul(ShadowMapTransform0, float4(worldPos, 1.0)), ShadowMapSB0);
@@ -131,7 +135,7 @@ float CalcShadowCascade(float3 worldPos, float Distance)
     return CalcShadowFactor(mul(ShadowMapTransform3, float4(worldPos, 1.0)), ShadowMapSB3);
 }
 
-float3 DebugShadowCascade(float3 WorldPos, float Distance)
+float3 DebugShadowCascade(float Distance)
 {
     if (Distance < splitDistances[0])
         return float3(1.5f, 1, 1);
@@ -176,8 +180,11 @@ float3 FresnelSchlick(float cosTheta, float3 F0)
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-float3 CalculatePBRLight(float3 Color, float Intensity, float3 LightDirection, float3 worldPos, float3 normal, float4 albedo, float roughness, float metalness)
+float3 CalculatePBRLight(float3 Color, float Intensity, float3 LightDirection)
 {
+    if (Intensity == 0.0) 
+        return float3(0.0, 0.0, 0.0);
+    
     float3 PixelToEye = normalize(LightPropertiesCB.CameraPos.xyz - worldPos);
     
     float3 H = normalize(PixelToEye + LightDirection);    
@@ -198,17 +205,23 @@ float3 CalculatePBRLight(float3 Color, float Intensity, float3 LightDirection, f
     return (kD * albedo.rgb / PI + specular) * Color * Intensity * NdotL;
 }
 
-float3 CalcPointLight(PointLight pLight, float3 worldPos, float3 normal, float4 albedo, float roughness, float metalness)
+float3 CalcPointLight(PointLight pLight)
 {
+    if (pLight.Intensity == 0.0)
+        return float3(0.0, 0.0, 0.0);
+    
     float3 LightToPixel = worldPos - pLight.Position; 
     float Distance = length(LightToPixel);
-    float3 Color = CalculatePBRLight(pLight.Color, pLight.Intensity, -normalize(LightToPixel), worldPos, normal, albedo, roughness, metalness);
+    float3 Color = CalculatePBRLight(pLight.Color, pLight.Intensity, -normalize(LightToPixel));
     float Attenuation = pLight.AttenuationConstant + pLight.AttenuationLinear * Distance + pLight.AttenuationExp * Distance * Distance;
     return Color / Attenuation;
 }
 
-float3 CalcSpotLight(SpotLight sLight, float3 worldPos, float3 normal, float4 albedo, float roughness, float metalness)
+float3 CalcSpotLight(SpotLight sLight)
 {
+    if (sLight.Intensity == 0.0)
+        return float3(0.0, 0.0, 0.0);
+    
     float3 LightToPixel = normalize(worldPos - sLight.Position);
     float SpotFactor = dot(LightToPixel, sLight.Direction);
     
@@ -222,7 +235,7 @@ float3 CalcSpotLight(SpotLight sLight, float3 worldPos, float3 normal, float4 al
         pointLight.AttenuationLinear = sLight.AttenuationLinear;
         pointLight.AttenuationExp = sLight.AttenuationExp;
         
-        float3 Color = CalcPointLight(pointLight, worldPos, normal, albedo, roughness, metalness);
+        float3 Color = CalcPointLight(pointLight);
         return Color * (1.0 - (1.0 - SpotFactor) * 1.0 / (1.0 - sLight.Cutoff));
     }
 
@@ -231,13 +244,13 @@ float3 CalcSpotLight(SpotLight sLight, float3 worldPos, float3 normal, float4 al
 
 float4 main(PSInput input) : SV_Target
 {
-    float3 worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
-    float3 normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
-    float4 albedo = abs(gDiffuse.Sample(gSampler, input.TexCoord));
+    worldPos = gPosition.Sample(gSampler, input.TexCoord).xyz;
+    normal = normalize(gNormal.Sample(gSampler, input.TexCoord).xyz);
+    albedo = abs(gDiffuse.Sample(gSampler, input.TexCoord));    
     float4 emissive = gEmissive.Sample(gSampler, input.TexCoord);
     float4 orm = gORM.Sample(gSampler, input.TexCoord);
-    float roughness = orm.g;
-    float metalness = orm.b;
+    roughness = orm.g;
+    metalness = orm.b;
     
     if (albedo.a == 0.0)
         discard;
@@ -251,26 +264,21 @@ float4 main(PSInput input) : SV_Target
     float3 ambient = albedo.rgb * AmbientLightCB.Color * AmbientLightCB.Intensity;
 
     // Diffuse
-    float3 diffuse =
-        CalculatePBRLight(
-            DirectionalLightCB.Color,
-            DirectionalLightCB.Intensity,
-            -normalize(DirectionalLightCB.Direction.xyz),
-            worldPos, normal, albedo, roughness, metalness);
+    float3 diffuse = CalculatePBRLight(DirectionalLightCB.Color, DirectionalLightCB.Intensity, -normalize(DirectionalLightCB.Direction.xyz));
     
-    float shadowFactor = CalcShadowCascade(worldPos, cameraPixelDistance);
-    float3 lightingResult = ambient + diffuse * shadowFactor;// * DebugShadowCascade(worldPos, cameraPixelDistance).xyz;
+    float shadowFactor = CalcShadowCascade(cameraPixelDistance);
+    float3 lightingResult = ambient + diffuse * shadowFactor; // * DebugShadowCascade(worldPos, cameraPixelDistance).xyz;
     
     // Pointlights
     for (int pIndex = 0; pIndex < LightPropertiesCB.PointLightsCount; pIndex++)
     {
-        lightingResult += CalcPointLight(PointLightsSB[pIndex], worldPos, normal, albedo, roughness, metalness);
+        lightingResult += CalcPointLight(PointLightsSB[pIndex]);
     }
     
     // Spotlights
     for (int sIndex = 0; sIndex < LightPropertiesCB.SpotLightsCount; sIndex++)
     {
-        lightingResult += CalcSpotLight(SpotLightsSB[sIndex], worldPos, normal, albedo, roughness, metalness);
+        lightingResult += CalcSpotLight(SpotLightsSB[sIndex]);
     }
     
     float3 outputPixelColor = lightingResult + emissive.rgb;

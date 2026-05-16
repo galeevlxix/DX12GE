@@ -52,7 +52,16 @@ void MaterialEntity::Load(ComPtr<ID3D12GraphicsCommandList2> commandList, std::m
 
 void MaterialEntity::RenderTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, int slot, uint32_t textureId, float mask)
 {
-    if (mask > 0.5f) ResourceStorage::GetTexture(textureId)->OnRender(commandList, slot);
+    if (mask < 0.5f) return;
+    
+    std::shared_ptr<TextureComponent> texture = ResourceStorage::GetTexture(textureId);
+
+    if (!texture)
+    {
+        throw std::runtime_error("texture component was null");
+    }
+
+    texture->OnRender(commandList, slot);
 }
 
 void MaterialEntity::Render(ComPtr<ID3D12GraphicsCommandList2> commandList)

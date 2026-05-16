@@ -1,6 +1,7 @@
 #include "../NodeGraphSystem.h"
 #include "../../Base/Singleton.h"
 #include "../../Base/LuaManager.h"
+#include "../../Graphics/ResourceStorage.h"
 
 NodeGraphSystem::NodeGraphSystem()
 {
@@ -42,8 +43,6 @@ void NodeGraphSystem::Destroy()
 	m_SceneRootNode = nullptr;	
 
 	m_All3DObjects.clear();
-	m_AllPointLights.clear();
-	m_AllSpotLights.clear();
 	m_AllAudioEmitters.clear();
 
 	m_CurrentEnvironment = nullptr;
@@ -90,11 +89,11 @@ void NodeGraphSystem::OnNodeAdded(Node3D* node)
 		}
 		else if (PointLightNode* pLight = dynamic_cast<PointLightNode*>(node))
 		{
-			m_AllPointLights[nodePath] = pLight;
+			pLight->SetComponentId(ResourceStorage::AddPointLightComponent());
 		}
 		else if (SpotLightNode* sLight = dynamic_cast<SpotLightNode*>(node))
 		{
-			m_AllSpotLights[nodePath] = sLight;
+			sLight->SetComponentId(ResourceStorage::AddSpotLightComponent());
 		}
 		else if (AudioEmitterNode* emitter = dynamic_cast<AudioEmitterNode*>(node))
 		{
@@ -128,8 +127,6 @@ void NodeGraphSystem::OnNodeAdded(Node3D* node)
 			}
 		}
 
-		
-
 		for (Node3D* child : node->GetChildren())
 		{
 			OnNodeAdded(child);
@@ -152,17 +149,11 @@ void NodeGraphSystem::OnNodeRemoved(Node3D* node)
 		}
 		else if (PointLightNode* pLight = dynamic_cast<PointLightNode*>(node))
 		{
-			if (m_AllPointLights.contains(nodePath))
-			{
-				m_AllPointLights.erase(nodePath);
-			}
+			ResourceStorage::DeletePointLightComponentForever(pLight->GetComponentId());
 		}
 		else if (SpotLightNode* sLight = dynamic_cast<SpotLightNode*>(node))
 		{
-			if (m_AllSpotLights.contains(nodePath))
-			{
-				m_AllSpotLights.erase(nodePath);
-			}
+			ResourceStorage::DeleteSpotLightComponentForever(sLight->GetComponentId());
 		}
 		else if (AudioEmitterNode* emitter = dynamic_cast<AudioEmitterNode*>(node))
 		{
@@ -317,26 +308,6 @@ CameraNode* NodeGraphSystem::GetCurrentCamera()
 		m_DefaultCamera->OnUpdate(0.0f);
 	}
 	return m_DefaultCamera;
-}
-
-const std::vector<PointLightComponent> NodeGraphSystem::GetPointLightComponents()
-{
-	vector<PointLightComponent> result;
-	for (auto pLight : m_AllPointLights)
-	{
-		result.push_back(pLight.second->LightData);
-	}
-	return result;
-}
-
-const std::vector<SpotLightComponent> NodeGraphSystem::GetSpotLightComponents()
-{
-	vector<SpotLightComponent> result;
-	for (auto sLight : m_AllSpotLights)
-	{
-		result.push_back(sLight.second->LightData);
-	}
-	return result;
 }
 
 void NodeGraphSystem::OnKeyPressed(KeyEventArgs& e) 

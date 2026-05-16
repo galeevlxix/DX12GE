@@ -12,9 +12,6 @@
 #include "CameraNode.h"
 #include "AudioListenerNode.h"
 #include "AudioEmitterNode.h"
-
-#include "../Graphics/GraphicsComponents.h"
-
 #include <vector> 
 
 /// \brief Scene tree management system
@@ -23,8 +20,6 @@ class NodeGraphSystem
 	Node3D* m_SceneRootNode;
 
 	std::map<std::string, Object3DNode*> m_All3DObjects;
-	std::map<std::string, PointLightNode*> m_AllPointLights;
-	std::map<std::string, SpotLightNode*> m_AllSpotLights;
 
 	EnvironmentNode* m_CurrentEnvironment;
 	DirectionalLightNode* m_CurrentDirectionalLight;
@@ -112,18 +107,6 @@ public:
 	/// \brief Returns the current skybox node of the scene.
 	/// \return Returns the active skybox if it exists. Returns nullptr otherwise.
 	SkyBoxNode* GetCurrentSkyBox() { return m_CurrentSkyBox; }
-
-	/// \brief Returns an array of all point light source components in the scene.
-	const std::vector<PointLightComponent> GetPointLightComponents();
-
-	/// \brief Returns an array of all spotlight light source components in the scene.
-	const std::vector<SpotLightComponent> GetSpotLightComponents();
-
-	/// \brief Returns the number of point light sources in the scene.
-	const size_t GetPointLightsCount() { return m_AllPointLights.size(); }
-
-	/// \brief Returns the number of spotlight light sources in the scene.
-	const size_t GetSpotLightsCount() { return m_AllSpotLights.size(); }
 
 	/// \brief Returns all sound sources (audio emitters) in the scene as a dictionary (path to node -> node).
 	const std::map<std::string, AudioEmitterNode*>& GetAllAudioEmitters() { return m_AllAudioEmitters; }

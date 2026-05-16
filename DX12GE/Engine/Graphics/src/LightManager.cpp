@@ -1,4 +1,5 @@
 #include "../LightManager.h"
+#include "../ResourceStorage.h"
 
 void LightManager::OnUpdate(float deltaTime)
 {
@@ -43,11 +44,11 @@ void LightManager::OnUpdate(float deltaTime)
 	}	
 
 	// кол-ва источников света
-	ShaderResources::GetWorldCB()->LightProps.PointLightsCount = static_cast<float>(Singleton::GetNodeGraph()->GetPointLightsCount());
-	ShaderResources::GetWorldCB()->LightProps.SpotlightsCount = static_cast<float>(Singleton::GetNodeGraph()->GetSpotLightsCount());
+	ShaderResources::GetWorldCB()->LightProps.PointLightsCount = static_cast<float>(ResourceStorage::PointLightComponentsCount());
+	ShaderResources::GetWorldCB()->LightProps.SpotlightsCount = static_cast<float>(ResourceStorage::SpotLightComponentsCount());
 }
 
-void LightManager::AddPointLight(Vector3 pos, Vector3 color, float intensity, float AttenConst, float AttenLinear, float AttenExp)
+/*void LightManager::AddPointLight(Vector3 pos, Vector3 color, float intensity, float AttenConst, float AttenLinear, float AttenExp)
 {
 	PointLightComponent pLight;
 	pLight.BaseLightProperties.Color = color;
@@ -98,4 +99,4 @@ void LightManager::AddSpotLight(Vector3 pos, Vector3 color, Vector3 dir, float c
 void LightManager::AddSpotLight(Vector3 pos, Vector3 color, Vector3 dir, float cutoff, float intensity, AttenuationComponent atten)
 {
 	AddSpotLight(pos, color, dir, cutoff, intensity, atten.Constant, atten.Linear, atten.Exp);
-}
+}*/

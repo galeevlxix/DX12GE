@@ -10,7 +10,7 @@ DirectionalLightNode::DirectionalLightNode() : Node3D()
 void DirectionalLightNode::OnUpdate(const double& deltaTime)
 {
 	Node3D::OnUpdate(deltaTime);
-	LightData.Direction = Vector4(m_WorldDirectionCache);
+	LightData.WorldDirection = Vector4(m_WorldDirectionCache);
 }
 
 Node3D* DirectionalLightNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
