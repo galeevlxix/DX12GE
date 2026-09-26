@@ -42,8 +42,6 @@ private:
 
     CreateProjectWindow* m_CreateProjectWindow;
 
-    void ReadSettingsFile();
-    void RestoreSettingsFile();
 
     void AddProjectItem(const QString& name, const QString& path);
     void RemoveProjectItem(QListWidgetItem* item);

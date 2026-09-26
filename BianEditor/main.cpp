@@ -1,6 +1,4 @@
 #include "BianEditor.h"
-#include <QtWidgets/QApplication>
-
 #include "EngineController.h"
 
 int main(int argc, char *argv[])

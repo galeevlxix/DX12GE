@@ -22,6 +22,11 @@ namespace BianLauncherHelpers
         return userPath.toStdString();
     }
 
+    static void RestoreSettingsFile()
+    {
+
+    }
+
     static void ReadSettingsFile(BianLauncherSettings* result)
     {
         std::ifstream in;
