@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="/BianEditor">
+    <qresource prefix="/icons">
+        <file>BE_ICON.png</file>
         <file>BE_ICON.ico</file>
     </qresource>
 </RCC>

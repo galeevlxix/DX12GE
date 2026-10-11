@@ -48,6 +48,12 @@ void TextureBuffer::Destroy()
 
     m_Device.Reset();
     m_Device = nullptr;
+
+	if (m_CreateReadback)
+	{
+		m_ReadbackBuffer.Reset();
+		m_ReadbackBuffer = nullptr;
+	}
 }
 
 void TextureBuffer::Resize(UINT width, UINT height)

@@ -266,6 +266,7 @@ void ResourceStorage::Destroy()
 {
     for (auto obj : m_Objects)
     {
+		if (!obj) continue;
         obj->Destroy();
         obj.reset();
         obj = nullptr;
@@ -274,6 +275,7 @@ void ResourceStorage::Destroy()
 
     for (auto tex : m_Textures)
     {
+        if (!tex) continue;
         tex->Destroy();
         tex.reset();
         tex = nullptr;
@@ -282,6 +284,7 @@ void ResourceStorage::Destroy()
 
     for (auto audio : m_Audio)
     {
+        if (!audio) continue;
         audio->Destroy();
         audio.reset();
         audio = nullptr;

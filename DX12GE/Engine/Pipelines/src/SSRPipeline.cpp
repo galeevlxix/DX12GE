@@ -18,9 +18,9 @@ void SSRPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
 void SSRPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
 {
 	ThrowIfFailed(
-		D3DReadFileToBlob(L"SSRVertexShader.cso", &m_VertexShaderBlob));
+		D3DReadFileToBlob(L"shaders\\SSRVertexShader.cso", &m_VertexShaderBlob));
 	ThrowIfFailed(
-		D3DReadFileToBlob(L"SSRPixelShader.cso", &m_PixelShaderBlob));
+		D3DReadFileToBlob(L"shaders\\SSRPixelShader.cso", &m_PixelShaderBlob));
 
 	D3D12_FEATURE_DATA_ROOT_SIGNATURE m_RootSignatureFeatureData = {};
 	m_RootSignatureFeatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;

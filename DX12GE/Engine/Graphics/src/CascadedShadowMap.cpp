@@ -75,9 +75,10 @@ Matrix CascadedShadowMap::GetShadowViewProj(int index)
 
 void CascadedShadowMap::Destroy()
 {
-	for (auto cascade : m_Cascades)
+	for (auto& cascade : m_Cascades)
 	{
 		cascade.ShadowMapTexture->Destroy();
+		delete cascade.ShadowMapTexture;
 		cascade.ShadowMapTexture = nullptr;
 	}
 }

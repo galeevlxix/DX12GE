@@ -108,7 +108,8 @@ float4 fxaa(float2 fragCoord, float2 resolution)
         color = float4(rgbA, texColor.a);
     else
         color = float4(rgbB, texColor.a);
-    return color;
+    
+    return float4(lerp(rgbM, color.rgb, 1.0), texColor.a);
 }
 
 float4 main(PSInput input) : SV_Target

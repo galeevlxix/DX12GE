@@ -27,9 +27,9 @@ void ParticleComputePipeline::SetSortPSO(ComPtr<ID3D12GraphicsCommandList2> comm
 void ParticleComputePipeline::LoadShaders()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"ParticleComputeShader.cso", &m_UpdateShaderBlob));
+        D3DReadFileToBlob(L"shaders\\ParticleComputeShader.cso", &m_UpdateShaderBlob));
     ThrowIfFailed(
-        D3DReadFileToBlob(L"SortParticleComputeShader.cso", &m_SortShaderBlob));
+        D3DReadFileToBlob(L"shaders\\SortParticleComputeShader.cso", &m_SortShaderBlob));
 }
 
 void ParticleComputePipeline::CreateRootSignatureFeatureData(ComPtr<ID3D12Device2> device)

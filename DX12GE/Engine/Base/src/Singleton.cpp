@@ -39,6 +39,7 @@ void Singleton::Destroy()
 	Selection->Destroy();
 	NodeGraph->Destroy();
 	Audio->Shutdown();
+	PhysMgr->OnDestroy();
 
 	delete DebugRender;
 	delete Selection;

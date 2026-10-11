@@ -49,8 +49,7 @@ void EngineController::Quit()
     Application::Get().Flush();
     if (game)
     {
-        game->UnloadContent();
-        game->Destroy();
+        game->Destroy(); 
         game.reset();
     }   
     Application::Destroy();

@@ -17,7 +17,7 @@ DirectX12Viewport::DirectX12Viewport(QWidget* parent) : QWidget(parent), m_Width
             if (!m_EngineWindow) return;
 
             MSG msg;
-            while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) 
+            while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))    
             {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);

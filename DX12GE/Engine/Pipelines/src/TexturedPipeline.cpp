@@ -6,13 +6,13 @@ using namespace DirectX;
 void TexturedPipeline::LoadVertexShader()
 {
 	ThrowIfFailed(
-		D3DReadFileToBlob(L"TexturedVertexShader.cso", &m_VertexShaderBlob));
+		D3DReadFileToBlob(L"shaders\\TexturedVertexShader.cso", &m_VertexShaderBlob));
 }
 
 void TexturedPipeline::LoadPixelShader()
 {
 	ThrowIfFailed(
-		D3DReadFileToBlob(L"TexturedPixelShader.cso", &m_PixelShaderBlob));
+		D3DReadFileToBlob(L"shaders\\TexturedPixelShader.cso", &m_PixelShaderBlob));
 }
 
 void TexturedPipeline::CreateVertexInputLayout()

@@ -29,14 +29,14 @@ void SkyboxPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
 void SkyboxPipeline::LoadVertexShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"SkyboxVertexShader.cso", &m_VertexShaderBlob));
+        D3DReadFileToBlob(L"shaders\\SkyboxVertexShader.cso", &m_VertexShaderBlob));
 }
 
 // Load the pixel shader
 void SkyboxPipeline::LoadPixelShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"SkyboxPixelShader.cso", &m_PixelShaderBlob));
+        D3DReadFileToBlob(L"shaders\\SkyboxPixelShader.cso", &m_PixelShaderBlob));
 }
 
 void SkyboxPipeline::CreateVertexInputLayout()

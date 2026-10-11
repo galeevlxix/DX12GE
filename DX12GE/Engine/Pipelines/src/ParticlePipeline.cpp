@@ -26,19 +26,19 @@ void ParticlePipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
 void ParticlePipeline::LoadVertexShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"ParticleVertexShader.cso", &m_VertexShaderBlob));
+        D3DReadFileToBlob(L"shaders\\ParticleVertexShader.cso", &m_VertexShaderBlob));
 }
 
 void ParticlePipeline::LoadGeometryShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"ParticleGeometryShader.cso", &m_GeometryShaderBlob));
+        D3DReadFileToBlob(L"shaders\\ParticleGeometryShader.cso", &m_GeometryShaderBlob));
 }
 
 void ParticlePipeline::LoadPixelShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"ParticlePixelShader.cso", &m_PixelShaderBlob));
+        D3DReadFileToBlob(L"shaders\\ParticlePixelShader.cso", &m_PixelShaderBlob));
 }
 
 void ParticlePipeline::CreateVertexInputLayout()

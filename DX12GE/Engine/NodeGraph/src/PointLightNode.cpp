@@ -1,7 +1,7 @@
 #include "../../Base/Singleton.h"
 #include "../../Graphics/ResourceStorage.h"
 
-PointLightNode::PointLightNode() : Node3D(), m_LightDataComponent(nullptr), m_LightDataComponentId(-1)
+PointLightNode::PointLightNode() : Node3D(), m_LightDataComponentId(-1)
 {
 	m_Type = NODE_TYPE_POINT_LIGHT;
 	Rename("PointLightNode");
@@ -10,17 +10,25 @@ PointLightNode::PointLightNode() : Node3D(), m_LightDataComponent(nullptr), m_Li
 void PointLightNode::SetComponentId(uint32_t newId)
 {
 	m_LightDataComponentId = newId;
-	m_LightDataComponent = ResourceStorage::GetPointLightComponent(newId);
-	if (!m_LightDataComponent)
+	GetLightComponent();
+}
+
+PointLightComponent* PointLightNode::GetLightComponent()
+{
+	PointLightComponent* light = ResourceStorage::GetPointLightComponent(m_LightDataComponentId);
+	if (!light)
 	{
 		throw std::runtime_error("Point Light component id was invalid");
 	}
+	return light;
 }
 
 void PointLightNode::OnUpdate(const double& deltaTime)
 {
 	Node3D::OnUpdate(deltaTime);
-	m_LightDataComponent->WorldPosition = m_WorldPositionCache;
+
+	PointLightComponent* light = GetLightComponent();
+	light->WorldPosition = m_WorldPositionCache;
 }
 
 Node3D* PointLightNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, Node3D* cloneNode)
@@ -35,11 +43,12 @@ Node3D* PointLightNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, No
 	if (cloneNode && cloneNode->IsInsideTree())
 	{
 		PointLightNode* pLight = dynamic_cast<PointLightNode*>(cloneNode);
-		if (pLight->m_LightDataComponent && m_LightDataComponent)
-		{
-			pLight->m_LightDataComponent->BaseLightProperties = m_LightDataComponent->BaseLightProperties;
-			pLight->m_LightDataComponent->AttenuationProperties = m_LightDataComponent->AttenuationProperties;
-		}
+
+		PointLightComponent* cloneLight = pLight->GetLightComponent();
+		PointLightComponent* light = GetLightComponent();
+
+		cloneLight->BaseLightProperties = light->BaseLightProperties;
+		cloneLight->AttenuationProperties = light->AttenuationProperties;
 	}
 
 	return cloneNode;
@@ -48,31 +57,36 @@ Node3D* PointLightNode::Clone(Node3D* newParent, bool cloneChildrenRecursive, No
 void PointLightNode::DrawDebug()
 {
 	Node3D::DrawDebug();
-	Singleton::GetDebugRender()->DrawPoint(m_WorldPositionCache, 0.5f, m_LightDataComponent->BaseLightProperties.Color);
-	Singleton::GetDebugRender()->DrawSphere(0.5f, m_LightDataComponent->BaseLightProperties.Color, m_WorldMatrixCache, 10);
+	PointLightComponent* light = GetLightComponent();
+	Singleton::GetDebugRender()->DrawPoint(m_WorldPositionCache, 0.5f, light->BaseLightProperties.Color);
+	Singleton::GetDebugRender()->DrawSphere(0.5f, light->BaseLightProperties.Color, m_WorldMatrixCache, 10);
 }
 
 void PointLightNode::CreateJsonData(json& j)
 {
 	Node3D::CreateJsonData(j);
-	
-	j["light_color_r"] = m_LightDataComponent->BaseLightProperties.Color.x;
-	j["light_color_g"] = m_LightDataComponent->BaseLightProperties.Color.y;
-	j["light_color_b"] = m_LightDataComponent->BaseLightProperties.Color.z;
-	j["light_intensity"] = m_LightDataComponent->BaseLightProperties.Intensity;
 
-	j["light_atten_constant"] = m_LightDataComponent->AttenuationProperties.Constant;
-	j["light_atten_linear"] = m_LightDataComponent->AttenuationProperties.Linear;
-	j["light_atten_exp"] = m_LightDataComponent->AttenuationProperties.Exp;
+	PointLightComponent* light = GetLightComponent();
+	
+	j["light_color_r"] = light->BaseLightProperties.Color.x;
+	j["light_color_g"] = light->BaseLightProperties.Color.y;
+	j["light_color_b"] = light->BaseLightProperties.Color.z;
+	j["light_intensity"] = light->BaseLightProperties.Intensity;
+
+	j["light_atten_constant"] = light->AttenuationProperties.Constant;
+	j["light_atten_linear"] = light->AttenuationProperties.Linear;
+	j["light_atten_exp"] = light->AttenuationProperties.Exp;
 }
 
 void PointLightNode::LoadFromJsonData(const NodeSerializingData& nodeData)
 {
 	Node3D::LoadFromJsonData(nodeData);
 
-	m_LightDataComponent->BaseLightProperties.Color = nodeData.lightColor;
-	m_LightDataComponent->BaseLightProperties.Intensity = nodeData.lightIntensity;
-	m_LightDataComponent->AttenuationProperties.Constant = nodeData.lightAttenuation.x;
-	m_LightDataComponent->AttenuationProperties.Linear = nodeData.lightAttenuation.y;
-	m_LightDataComponent->AttenuationProperties.Exp = nodeData.lightAttenuation.z;
+	PointLightComponent* light = GetLightComponent();
+
+	light->BaseLightProperties.Color = nodeData.lightColor;
+	light->BaseLightProperties.Intensity = nodeData.lightIntensity;
+	light->AttenuationProperties.Constant = nodeData.lightAttenuation.x;
+	light->AttenuationProperties.Linear = nodeData.lightAttenuation.y;
+	light->AttenuationProperties.Exp = nodeData.lightAttenuation.z;
 }

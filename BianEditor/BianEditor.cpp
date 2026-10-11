@@ -27,8 +27,10 @@ BianEditor::BianEditor(QWidget *parent) : QMainWindow(parent)
     darkPalette.setColor(QPalette::Highlight, QColor(130, 130, 130));
     darkPalette.setColor(QPalette::HighlightedText, Qt::black);
     darkPalette.setColor(QPalette::PlaceholderText, QColor(130, 130, 130));
-    qApp->setPalette(darkPalette);
+    qApp->setPalette(darkPalette); 
     qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+
+	setWindowIcon(QIcon(":/icons/BE_ICON.png"));
     
     QWidget* central = ui.centralWidget;
     

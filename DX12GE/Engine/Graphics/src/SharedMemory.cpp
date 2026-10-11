@@ -74,7 +74,7 @@ bool SharedMemory::IsBufferEmpty(SharedMemoryTextureBuffer textureType)
 
 void SharedMemory::Destroy()
 {
-	for (SharedDesc buffer : m_SharedBuffers)
+	for (auto& buffer : m_SharedBuffers)
 	{
 		buffer.Destroy();
 	}

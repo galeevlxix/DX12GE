@@ -216,10 +216,18 @@ void DescriptorHeaps::Destroy()
 void DescriptorHeaps::DestroyAll()
 {
 	if (pSinglePrimaryDevice)
+	{
 		pSinglePrimaryDevice->Destroy();
+		delete pSinglePrimaryDevice;
+		pSinglePrimaryDevice = nullptr;
+	}
 
 	if (pSingleSecondDevice)
+	{
 		pSingleSecondDevice->Destroy();
+		delete pSingleSecondDevice;
+		pSingleSecondDevice = nullptr;
+	}
 }
 
 bool DescriptorHeaps::IsInitialized(GraphicsAdapter graphicsAdapter)

@@ -77,9 +77,10 @@ void Mesh3DComponent::Destroy()
     m_IndiciesCount = 0;
     m_VerticesCount = 0;
 
-    if (Material && Material->CanDrawIt())
+    if (Material)
     {
         Material->Destroy();
+        delete Material;
     }
     Material = nullptr;
 }

@@ -18,9 +18,9 @@ void MergingPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
 void MergingPipeline::CreateRootSignature(ComPtr<ID3D12Device2> device)
 {
 	ThrowIfFailed(
-		D3DReadFileToBlob(L"MergingVertexShader.cso", &m_VertexShaderBlob));
+		D3DReadFileToBlob(L"shaders\\MergingVertexShader.cso", &m_VertexShaderBlob));
 	ThrowIfFailed(
-		D3DReadFileToBlob(L"MergingPixelShader.cso", &m_PixelShaderBlob));
+		D3DReadFileToBlob(L"shaders\\MergingPixelShader.cso", &m_PixelShaderBlob));
 
 	D3D12_FEATURE_DATA_ROOT_SIGNATURE m_RootSignatureFeatureData = {};
 	m_RootSignatureFeatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;

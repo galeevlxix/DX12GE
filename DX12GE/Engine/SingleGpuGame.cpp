@@ -3,15 +3,13 @@
 #include "Base/SceneJsonSerializer.h"
 #include "Graphics/ShaderResources.h"
 #include "../DX12GE/Engine/Physics/PhysicsManager.h"
+#include "NodeGraph/PhysicalObjectNode.h"
+#include "../EngineConfig.h"
+#include "Graphics/ResourceStorage.h"
 
 #include <string>
 #include <chrono>
 
-#include "NodeGraph/PhysicalObjectNode.h"
-
-#include "../EngineConfig.h"
-
-#include "Graphics/ResourceStorage.h"
 
 SingleGpuGame::SingleGpuGame(const wstring& name, int width, int height, bool vSync) : super(name, width, height, vSync)
                                                                                        , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
@@ -394,42 +392,22 @@ void SingleGpuGame::OnRender(RenderEventArgs& e)
     UINT currentBackBufferIndex = m_pWindow->GetCurrentBackBufferIndex();
     ShaderResources::GetUploadBuffer()->Reset();
 
-    // draw preliminary buffers
-    {
-        ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-        commandList->SetName(L"Draw preliminary buffers Command List");
-
-        DrawSceneToShadowMaps(commandList);
-        DrawSceneToGBuffer(commandList);
-        DrawSSR(commandList);
-
-        uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-        commandQueue->WaitForFenceValue(fenceValue);
-    }
-
-    // draw main buffers
-    {
-        ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-        commandList->SetName(L"Draw main buffers Command List");
-
-        LightPassRender(commandList);
-        MergeResults(commandList);
-
-        uint64_t fenceValue = commandQueue->ExecuteCommandList(commandList);
-        commandQueue->WaitForFenceValue(fenceValue);        
-    }
-
     // draw ui
-    {
-        ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
-        commandList->SetName(L"Draw UI Command List");
+    ComPtr<ID3D12GraphicsCommandList2> commandList = commandQueue->GetCommandList();
+    commandList->SetName(L"Draw UI Command List");
 
-        OutputFinalResult(commandList);
+    DrawSceneToShadowMaps(commandList);
+    DrawSceneToGBuffer(commandList);
+    DrawSSR(commandList);
 
-        m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
-        currentBackBufferIndex = m_pWindow->Present();
-        commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
-    }
+    LightPassRender(commandList);
+    MergeResults(commandList);
+
+    OutputFinalResult(commandList);
+
+    m_FenceValues[currentBackBufferIndex] = commandQueue->ExecuteCommandList(commandList);
+    currentBackBufferIndex = m_pWindow->Present();
+    commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
 
     Singleton::GetCurrentPass()->Set(CurrentPass::None);
 }
@@ -509,6 +487,7 @@ void SingleGpuGame::DrawSceneObjectsForward(ComPtr<ID3D12GraphicsCommandList2> c
 void SingleGpuGame::UnloadContent()
 {
     Singleton::Destroy();
+	ResourceStorage::Destroy();
 }
 
 void SingleGpuGame::Destroy()

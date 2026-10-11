@@ -26,13 +26,13 @@ void LightPassPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
 void LightPassPipeline::LoadVertexShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"LightPassVertexShader.cso", &m_VertexShaderBlob));
+        D3DReadFileToBlob(L"shaders\\LightPassVertexShader.cso", &m_VertexShaderBlob));
 }
 
 void LightPassPipeline::LoadPixelShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"LightPassPixelShader.cso", &m_PixelShaderBlob));
+        D3DReadFileToBlob(L"shaders\\LightPassPixelShader.cso", &m_PixelShaderBlob));
 }
 
 void LightPassPipeline::CreateRootSignatureFeatureData(ComPtr<ID3D12Device2> device)

@@ -17,21 +17,21 @@ void GeometryPassPipeline::Initialize(ComPtr<ID3D12Device2> device)
 }
 
 void GeometryPassPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
-{
+{ 
     commandList->SetPipelineState(PipelineState.Get());
-    commandList->SetGraphicsRootSignature(RootSignature.Get());
+    commandList->SetGraphicsRootSignature(RootSignature.Get()); 
 }
 
 void GeometryPassPipeline::LoadVertexShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"GeometryPassVertexShader.cso", &m_VertexShaderBlob));
+        D3DReadFileToBlob(L"shaders\\GeometryPassVertexShader.cso", &m_VertexShaderBlob));
 }
 
 void GeometryPassPipeline::LoadPixelShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"GeometryPassPixelShader.cso", &m_PixelShaderBlob));
+        D3DReadFileToBlob(L"shaders\\GeometryPassPixelShader.cso", &m_PixelShaderBlob));
 }
 
 void GeometryPassPipeline::CreateVertexInputLayout()

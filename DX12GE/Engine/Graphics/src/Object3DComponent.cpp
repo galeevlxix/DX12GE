@@ -28,5 +28,6 @@ void Object3DComponent::Destroy()
     for (auto mesh : m_Meshes)
     {
         mesh->Destroy();
+        delete mesh;
     }
 }

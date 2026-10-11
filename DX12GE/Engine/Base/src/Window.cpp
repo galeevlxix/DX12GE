@@ -30,6 +30,13 @@ Window::~Window()
 {
     // Window should be destroyed with Application::DestroyWindow before
     // the window goes out of scope.
+
+    if (m_hWnd && EngineConfig::Output == EngineConfigRuntimeOutput::RUNTIME_OUTPUT_EDITOR)
+    {
+        DestroyWindow(m_hWnd);
+        m_hWnd = nullptr;
+    }
+
     assert(!m_hWnd && "Use Application::DestroyWindow before destruction.");
 }
 
@@ -63,10 +70,17 @@ void Window::Destroy()
         // Notify the registered game that the window is being destroyed.
         pGame->OnWindowDestroy();
     }
-    if (m_hWnd)
+    if (m_hWnd && EngineConfig::Output == EngineConfigRuntimeOutput::RUNTIME_OUTPUT_WINDOW)
     {
         DestroyWindow(m_hWnd);
         m_hWnd = nullptr;
+    }
+
+    m_dxgiSwapChain.Reset();
+    m_d3d12RTVDescriptorHeap.Reset();
+    for (int i = 0; i < BufferCount; ++i)
+    {
+        m_d3d12BackBuffers[i].Reset();
     }
 }
 

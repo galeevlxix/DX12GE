@@ -54,11 +54,11 @@ void SkyBoxNode::RenderTexture(ComPtr<ID3D12GraphicsCommandList2> commandList, i
 
 void SkyBoxNode::Destroy(bool keepComponent)
 {
-    // to do: fix bug
-    /*if (m_TextureId != -1 && !(keepComponent || TreeHasSkyboxesWithComponentId(m_TextureId)))
+    // to do: fix bug ??
+    if (m_TextureId != -1 && !(keepComponent || TreeHasSkyboxesWithComponentId(m_TextureId)))
     {
         ResourceStorage::DeleteTextureComponentForever(m_TextureId);
-    }*/
+    }
     m_TextureId = -1;
     Object3DNode::Destroy(keepComponent);
 }

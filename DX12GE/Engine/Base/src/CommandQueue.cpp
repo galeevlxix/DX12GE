@@ -26,6 +26,14 @@ CommandQueue::CommandQueue(ComPtr<ID3D12Device2> device, D3D12_COMMAND_LIST_TYPE
 
 CommandQueue::~CommandQueue()
 {
+    m_d3d12Device.Reset();
+    m_d3d12CommandQueue.Reset();
+    m_d3d12Fence.Reset();
+    if (m_FenceEvent)
+    {
+        ::CloseHandle(m_FenceEvent);
+        m_FenceEvent = nullptr;
+    }
 }
 
 uint64_t CommandQueue::Signal()

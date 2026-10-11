@@ -29,14 +29,14 @@ void ShadowMapPipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
 void ShadowMapPipeline::LoadVertexShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"ShadowMapVertexShader.cso", &m_VertexShaderBlob));
+        D3DReadFileToBlob(L"shaders\\ShadowMapVertexShader.cso", &m_VertexShaderBlob));
 }
 
 // Load the pixel shader
 void ShadowMapPipeline::LoadPixelShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"ShadowMapPixelShader.cso", &m_PixelShaderBlob));
+        D3DReadFileToBlob(L"shaders\\ShadowMapPixelShader.cso", &m_PixelShaderBlob));
 }
 
 void ShadowMapPipeline::CreateVertexInputLayout()

@@ -7,7 +7,6 @@
 class SpotLightNode : public Node3D
 {
 	/// \brief Parameters of the spot light.
-	SpotLightComponent* m_LightDataComponent;
 	uint32_t m_LightDataComponentId;
 
 public:	
@@ -17,6 +16,8 @@ public:
 	void SetComponentId(uint32_t newId);
 
 	uint32_t GetComponentId() { return m_LightDataComponentId; }
+
+	SpotLightComponent* GetLightComponent();
 
 	virtual void OnUpdate(const double& deltaTime) override;
 

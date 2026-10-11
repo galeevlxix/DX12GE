@@ -27,14 +27,14 @@ void Pipeline::Set(ComPtr<ID3D12GraphicsCommandList2> commandList)
 void Pipeline::LoadVertexShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"VertexShader.cso", &m_VertexShaderBlob));
+        D3DReadFileToBlob(L"shaders\\VertexShader.cso", &m_VertexShaderBlob));
 }
 
 // Load the pixel shader
 void Pipeline::LoadPixelShader()
 {
     ThrowIfFailed(
-        D3DReadFileToBlob(L"PixelShader.cso", &m_PixelShaderBlob));
+        D3DReadFileToBlob(L"shaders\\PixelShader.cso", &m_PixelShaderBlob));
 }
 
 void Pipeline::CreateVertexInputLayout()
