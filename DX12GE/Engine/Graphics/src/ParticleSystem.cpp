@@ -2,12 +2,9 @@
 #include "../ShaderResources.h"
 #include "../../Graphics/DescriptorHeaps.h"
 #include "../../Base/Application.h"
-#include <filesystem>
 
 void ParticleSystem::OnLoad(ComPtr<ID3D12GraphicsCommandList2> commandList)
 {
-	auto path = std::filesystem::current_path().string();
-
 	m_Texture.OnLoad(commandList, "C:/Users/gtimu/source/repos/DX12GE/Resources/Particle Textures/circle_05.png");
 	CreateParticleGroupPrototype(static_cast<int>(pow(2, 10)));
 
